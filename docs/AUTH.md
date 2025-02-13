@@ -11,12 +11,46 @@ We use a hybrid approach:
 
 ### Key Files
 
-#### 1. Core Authenticaion Files
+#### 1. Core Authentication Files
 
 1. `auth.ts` (root)
 2. `src/db/schema.ts`
-3. `app/auth/[...nextauth]/route.ts`
+3. `app/api/auth/[...nextauth]/route.ts`
 4. `middleware.ts`
+
+##### middleware.ts
+
+The middleware.ts file controls Next.js routing behavior before pages are rendered. For authentication, it:
+
+**Basic Usage**:
+
+- Checks if user is authenticated for protected routes
+- Automatically redirects to login if needed
+- Manages session tokens
+
+**Custom Usage**:
+
+- Access session data with `req.auth`
+- Add custom logic (e.g., role-based access)
+- Modify requests/responses
+- Log authentication events
+
+**Matcher Configuration**:
+
+- Defines which routes use the middleware
+- Excludes API routes and static files
+- Can be customized for specific paths
+
+Example custom middleware:
+
+````ts
+export default auth((req) => {
+// Check user role
+if (req.auth?.user?.role !== 'admin' && req.nextUrl.pathname.startsWith('/admin')) {
+return Response.redirect(new URL('/unauthorized', req.url))
+}
+})
+```
 
 - Contains database schema for users and OAuth accounts
 - Includes type definitions for database models
@@ -78,3 +112,4 @@ TypeScript types are automatically handled through:
 - User data persists in database
 - OAuth tokens stored securely in database
 - Environment variables must be kept secret
+````
