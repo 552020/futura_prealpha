@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useSession } from "next-auth/react";
 import { User } from "lucide-react";
-import AuthModal from "./AuthModal";
+import AuthModal from "./auth-modal";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 

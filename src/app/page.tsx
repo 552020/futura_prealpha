@@ -37,11 +37,3 @@ export default function Home() {
     </div>
   );
 }
-
-function Header() {
-  return (
-    <header>
-      <h1>Futura</h1>
-    </header>
-  );
-}

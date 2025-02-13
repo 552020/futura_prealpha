@@ -1,10 +1,11 @@
 import { pgTable, text, timestamp, uuid, json, boolean } from "drizzle-orm/pg-core";
+import type { DefaultSession } from "next-auth";
 
 // Users table
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name"),
-  email: text("email").unique().notNull(),
+  email: text("email").unique(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   username: text("username").unique(),
   image: text("image"),
@@ -110,6 +111,25 @@ export const verificationTokens = pgTable("verification_tokens", {
   token: text("token").notNull(),
   expires: timestamp("expires", { mode: "date" }).notNull(),
 });
+
+// Type definitions for Auth.js
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+    } & DefaultSession["user"];
+  }
+}
+
+// Type inference helpers
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+
+export type Account = typeof accounts.$inferSelect;
+export type NewAccount = typeof accounts.$inferInsert;
+
+export type Session = typeof sessions.$inferSelect;
+export type NewSession = typeof sessions.$inferInsert;
 
 // Type inference
 export type InsertUser = typeof users.$inferInsert;
