@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Camera } from "lucide-react";
 import { useSession } from "next-auth/react";
 import AuthModal from "../components/auth-modal";
+import Image from "next/image";
 
 export default function PhotoUploadDemo() {
   const { data: session } = useSession();
@@ -30,7 +31,13 @@ export default function PhotoUploadDemo() {
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="relative">
-        <img src={previewUrl || "/default-avatar.png"} alt="Preview" className="rounded-full w-32 h-32 object-cover" />
+        <Image
+          src={previewUrl || "/default-avatar.png"}
+          alt="Preview"
+          width={128}
+          height={128}
+          className="rounded-full object-cover"
+        />
         <label
           htmlFor="photo-upload-demo"
           className="absolute bottom-0 right-0 p-2 bg-primary rounded-full cursor-pointer hover:opacity-90"
