@@ -18,57 +18,146 @@ We use a hybrid approach:
 3. `app/api/auth/[...nextauth]/route.ts`
 4. `middleware.ts`
 
-##### middleware.ts
+##### 1. auth.ts
 
-The middleware.ts file controls Next.js routing behavior before pages are rendered. For authentication, it:
+The root configuration file sets up the authentication system:
 
-**Basic Usage**:
+```typescript
+import NextAuth from "next-auth";
+import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
 
-- Checks if user is authenticated for protected routes
-- Automatically redirects to login if needed
-- Manages session tokens
-
-**Custom Usage**:
-
-- Access session data with `req.auth`
-- Add custom logic (e.g., role-based access)
-- Modify requests/responses
-- Log authentication events
-
-**Matcher Configuration**:
-
-- Defines which routes use the middleware
-- Excludes API routes and static files
-- Can be customized for specific paths
-
-Example custom middleware:
-
-````ts
-export default auth((req) => {
-// Check user role
-if (req.auth?.user?.role !== 'admin' && req.nextUrl.pathname.startsWith('/admin')) {
-return Response.redirect(new URL('/unauthorized', req.url))
-}
-})
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  session: { strategy: "jwt" },
+  providers: [GitHub, Google],
+  callbacks: {
+    authorized({ request, auth }) {
+      const { pathname } = request.nextUrl;
+      // Protected route patterns
+      const protectedPatterns = [
+        "/admin", // Admin routes
+        "/user/", // User routes
+      ];
+      return protectedPatterns.some((pattern) => pathname.startsWith(pattern)) ? !!auth : true;
+    },
+  },
+});
 ```
 
-- Contains database schema for users and OAuth accounts
-- Includes type definitions for database models
+This file:
 
-#### 2. Auth components
+- Configures authentication providers (GitHub, Google)
+- Sets up session strategy (JWT)
+- Defines protected routes
+- Exports authentication utilities
+- Manages callback functions
 
-### Database Tables
+**Key Features**:
 
-1. **Users** (`users`)
+- JWT-based sessions for performance
+- Multiple OAuth providers
+- Route protection patterns
+- Debug mode in development
+- Custom callback handlers
 
-   - Stores user profile information
-   - Primary user data storage
+##### 2. schema.ts
 
-2. **Accounts** (`accounts`)
-   - Links OAuth accounts to users
-   - Enables multiple providers per user
+The database schema file defines the structure for authentication-related tables:
+
+```typescript
+import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
+
+export const users = pgTable("users", {
+  id: text("id").primaryKey(),
+  name: text("name"),
+  email: text("email").unique(),
+  emailVerified: timestamp("emailVerified", { mode: "date" }),
+  image: text("image"),
+});
+
+export const accounts = pgTable("accounts", {
+  userId: text("userId").notNull(),
+  type: text("type").notNull(),
+  provider: text("provider").notNull(),
+  providerAccountId: text("providerAccountId").notNull(),
+  refresh_token: text("refresh_token"),
+  access_token: text("access_token"),
+  expires_at: timestamp("expires_at", { mode: "date" }),
+  token_type: text("token_type"),
+  scope: text("scope"),
+  id_token: text("id_token"),
+  session_state: text("session_state"),
+});
+```
+
+This file:
+
+- Defines user profile storage
+- Manages OAuth account connections
+- Handles session data (when using database sessions)
+- Supports email verification
+
+##### 3. Route Handler
+
+The route handler file (`app/api/auth/[...nextauth]/route.ts`) is required to handle authentication requests:
+
+```typescript
+import { handlers } from "@/auth";
+export const { GET, POST } = handlers;
+```
+
+This file:
+
+- Creates the authentication API endpoints
+- Handles OAuth callbacks
+- Manages sign-in/sign-out requests
+- Processes session tokens
+
+**Important Notes**:
+
+- Must be placed in `app/api/auth/[...nextauth]/route.ts`
+- Exports both GET and POST handlers
+- Required for OAuth providers to work
+- Handles all auth-related API requests automatically
+
+The route handler works with Next.js App Router to provide:
+
+- OAuth authentication flow
+- Session management
+- Token handling
+- API endpoints for authentication
+
+##### 4. middleware.ts
+
+The middleware file controls routing behavior and authentication:
+
+```typescript
+export { auth as middleware } from "@/auth";
+
+// Configure which routes use the middleware
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};
+```
+
+This file:
+
+- Checks authentication status
+- Protects routes
+- Manages session tokens
+- Supports custom logic through callbacks
 
 ### Environment Variables
+
+Required variables for authentication:
+
+```env
+AUTH_SECRET=your-secret-key
+AUTH_GITHUB_ID=your-github-client-id
+AUTH_GITHUB_SECRET=your-github-client-secret
+AUTH_GOOGLE_ID=your-google-client-id
+AUTH_GOOGLE_SECRET=your-google-client-secret
+```
 
 ### Type Safety
 
@@ -112,4 +201,7 @@ TypeScript types are automatically handled through:
 - User data persists in database
 - OAuth tokens stored securely in database
 - Environment variables must be kept secret
-````
+
+```
+
+```
