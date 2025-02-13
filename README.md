@@ -3,6 +3,8 @@
 TODO
 
 - [ ] get client IDs and secrets for Google and GitHub for authenntication
+- [ ] add a Blog (eventually)
+- [ ] add a local Postgres for development
 
 ## Stack
 

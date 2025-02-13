@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@auth/drizzle-adapter':
+        specifier: ^1.7.4
+        version: 1.7.4
       '@auth/unstorage-adapter':
         specifier: ^2.7.4
         version: 2.7.4(unstorage@1.14.4)
@@ -139,6 +142,9 @@ packages:
         optional: true
       nodemailer:
         optional: true
+
+  '@auth/drizzle-adapter@1.7.4':
+    resolution: {integrity: sha512-OPZQakWWm5Hbx6okVMbtgI08WBliz/dCbFUXiPg9TThpp3Wh7MME/ubg4fW1oOp8P0gul6MkFvMVO733sVtd2w==}
 
   '@auth/unstorage-adapter@2.7.4':
     resolution: {integrity: sha512-NU+v2XOZM6TFoVD2/FYaE2EX9q9SjCGLozogcUMuxAdQewwYgp8MflkbhnIXpoWL+hqczCweCbw/v85s0fO+DA==}
@@ -2756,6 +2762,14 @@ snapshots:
       oauth4webapi: 3.1.4
       preact: 10.24.3
       preact-render-to-string: 6.5.11(preact@10.24.3)
+
+  '@auth/drizzle-adapter@1.7.4':
+    dependencies:
+      '@auth/core': 0.37.4
+    transitivePeerDependencies:
+      - '@simplewebauthn/browser'
+      - '@simplewebauthn/server'
+      - nodemailer
 
   '@auth/unstorage-adapter@2.7.4(unstorage@1.14.4)':
     dependencies:
