@@ -1,6 +1,7 @@
-import { pgTable, text, timestamp, uuid, json, boolean, primaryKey, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, json, boolean, primaryKey, integer } from "drizzle-orm/pg-core";
 import type { DefaultSession } from "next-auth";
-import type { AdapterAccount } from "@auth/core/adapters";
+// import type { AdapterAccount } from "@auth/core/adapters";
+import type { AdapterAccount } from "next-auth/adapters";
 // Users table - Core user data
 export const users = pgTable("user", {
   id: text("id")
