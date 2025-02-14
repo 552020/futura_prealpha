@@ -1,4 +1,5 @@
-"use client";
+// "use client";
+// We are removing this becuase the auth-components from Auth.js is a server component.
 
 // This is the header component from the Auth.js example.
 // import NavBar from "./nav-bar";
@@ -15,29 +16,21 @@
 //   );
 // }
 
-"use client";
-
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { UserCircle } from "lucide-react";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
+// import { useSession } from "next-auth/react";
+import { auth } from "@/auth";
 import { ModeToggle } from "./mode-toggle";
-import { useRouter } from "next/navigation";
 import NavBar from "./nav-bar";
-export default function Header() {
-  const { data: session } = useSession();
+import UserButton from "./user-button";
+
+export default async function Header() {
+  //   const { data: session } = useSession();
   // TODO: Check sessfion in Auth.js v4 vs v5
   // https://authjs.dev/getting-started/migrating-to-v5#authenticating-server-side
-  console.log("Session", session);
-  const router = useRouter();
-  const [showAuthModal, setShowAuthModal] = useState(false);
-
-  // Simple redirect - will need improvement
-  const handleProfileClick = () => {
-    // TODO: Improve this with proper session handling
-    router.push("/user/123/profile"); // Hardcoded for now
-  };
+  //   console.log("Session", session);
+  const session = await auth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white dark:bg-slate-950">
@@ -59,22 +52,17 @@ export default function Header() {
 
         {/* Right User controls */}
         <section className="user-controls-section flex items-center gap-4">
-          <div className="auth-controls flex items-center gap-2">
-            <Button variant="ghost" onClick={() => setShowAuthModal(true)}>
-              Log in
-            </Button>
-            <Button onClick={() => setShowAuthModal(true)}>Sign up</Button>
-            {false && ( // TODO: Show when user is logged in
-              <Button variant="ghost" onClick={() => console.log("Logout clicked")}>
-                Logout
-              </Button>
-            )}
-            <div className="profile-controls flex items-center gap-2 border-l pl-2">
-              <Button variant="ghost" size="icon" onClick={handleProfileClick}>
-                <UserCircle className="h-5 w-5" />
-              </Button>
+          <UserButton />
+          {/* Keep our custom profile button */}
+          {session && (
+            <div className="border-l pl-2">
+              <Link href={`/user/${session.user.id}/profile`}>
+                <Button variant="ghost" size="icon">
+                  <UserCircle className="h-5 w-5" />
+                </Button>
+              </Link>
             </div>
-          </div>
+          )}
           <ModeToggle />
         </section>
       </div>

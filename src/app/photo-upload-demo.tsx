@@ -9,7 +9,6 @@ import Image from "next/image";
 export default function PhotoUploadDemo() {
   const { data: session } = useSession();
   const [previewUrl, setPreviewUrl] = useState<string>();
-  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -21,7 +20,7 @@ export default function PhotoUploadDemo() {
 
   const handleSave = () => {
     if (!session) {
-      setShowAuthModal(true);
+      //   setShowAuthModal(true);
       return;
     }
     // Handle saving for logged-in users
