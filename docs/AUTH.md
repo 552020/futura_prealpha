@@ -99,7 +99,7 @@ This file:
 
 ##### 3. Route Handler
 
-The route handler file (`app/api/auth/[...nextauth]/route.ts`) is required to handle authentication requests:
+The route handler file (`app/auth/[...nextauth]/route.ts`) is required to handle authentication requests:
 
 ```typescript
 import { handlers } from "@/auth";
@@ -115,7 +115,7 @@ This file:
 
 **Important Notes**:
 
-- Must be placed in `app/api/auth/[...nextauth]/route.ts`
+- Must be placed in `app/auth/[...nextauth]/route.ts`
 - Exports both GET and POST handlers
 - Required for OAuth providers to work
 - Handles all auth-related API requests automatically

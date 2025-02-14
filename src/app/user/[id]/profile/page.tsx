@@ -1,5 +1,5 @@
 import React from "react";
-import { auth } from "../../../../../auth";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 interface Props {
@@ -17,7 +17,7 @@ const ProfilePage = async (props: Props) => {
   const session = await auth();
 
   if (!session) {
-    redirect("/api/auth/signin");
+    redirect("/auth/signin");
   }
 
   if (session.user.id !== resolvedParams.id) {

@@ -1,12 +1,12 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
-import Navbar from "@/components/nav-bar";
-
+import NavBar from "@/components/nav-bar";
+import Link from "next/link";
 export default function Home() {
   return (
     <div>
-      <Navbar />
+      <NavBar />
       <main>
         <div className="relative h-screen w-full overflow-hidden">
           <Image src="/hero/abstract-1.jpg" alt="Futura" fill className="absolute object-cover -z-10" priority />
@@ -20,14 +20,14 @@ export default function Home() {
             </h3>
             <div className="mt-8 space-x-4">
               <Button asChild className="bg-black text-white hover:bg-white hover:text-black">
-                <a href="#learn-more">Learn More</a>
+                <Link href="#learn-more">Learn More</Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
                 className="border-white text-black hover:bg-black hover:text-white hover:border-black"
               >
-                <a href="/start">Start Here</a>
+                <Link href="/start">Start Here</Link>
               </Button>
             </div>
           </div>
