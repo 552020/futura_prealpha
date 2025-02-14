@@ -41,40 +41,44 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky flex justify-center border-b">
-      {/* Left: Logo section */}
-      <section className="logo-section">
-        <Link href="/">
-          <div className="w-10 h-10 rounded-full bg-black dark:bg-white flex items-center justify-center">
-            <span className="text-2xl font-bold text-white dark:text-black">F</span>
-          </div>
-        </Link>
-      </section>
+    <header className="sticky top-0 z-50 w-full border-b bg-white dark:bg-slate-950">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        {/* Left: Logo section */}
+        <section className="logo-section flex items-center">
+          <Link href="/">
+            <div className="w-10 h-10 rounded-full bg-black dark:bg-white flex items-center justify-center">
+              <span className="text-2xl font-bold text-white dark:text-black">F</span>
+            </div>
+          </Link>
+        </section>
 
-      {/* Center: Navigation section */}
-      <nav className="navigation-section">
-        {/* <Link href="/about">About</Link> */}
-        <NavBar />
-      </nav>
+        {/* Center: Navigation */}
+        <nav className="navigation-section flex flex-1 justify-center">
+          {/* <Link href="/about">About</Link> */}
+          <NavBar />
+        </nav>
 
-      {/* Right User controls */}
-      <section className="user-controls-section">
-        <div className="auth-controls">
-          <Button onClick={() => setShowAuthModal(true)}>Log in</Button>
-          <Button onClick={() => setShowAuthModal(true)}>Sign up</Button>
-          {false && ( // TODO: Show when user is logged in
-            <Button variant="ghost" onClick={() => console.log("Logout clicked")}>
-              Logout
+        {/* Right User controls */}
+        <section className="user-controls-section flex items-center gap-4">
+          <div className="auth-controls flex items-center gap-2">
+            <Button variant="ghost" onClick={() => setShowAuthModal(true)}>
+              Log in
             </Button>
-          )}
-          <div className="profile-controls">
-            <Button variant="ghost" size="icon" onClick={handleProfileClick}>
-              <UserCircle />
-            </Button>
+            <Button onClick={() => setShowAuthModal(true)}>Sign up</Button>
+            {false && ( // TODO: Show when user is logged in
+              <Button variant="ghost" onClick={() => console.log("Logout clicked")}>
+                Logout
+              </Button>
+            )}
+            <div className="profile-controls flex items-center gap-2 border-l pl-2">
+              <Button variant="ghost" size="icon" onClick={handleProfileClick}>
+                <UserCircle className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
-        </div>
-        <ModeToggle />
-      </section>
+          <ModeToggle />
+        </section>
+      </div>
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </header>
   );

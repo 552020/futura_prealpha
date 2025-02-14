@@ -1,12 +1,12 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
-import NavBar from "@/components/nav-bar";
+import Header from "@/components/header";
 import Link from "next/link";
 export default function Home() {
   return (
     <div>
-      <NavBar />
+      <Header />
       <main>
         <div className="relative h-screen w-full overflow-hidden">
           <Image src="/hero/abstract-1.jpg" alt="Futura" fill className="absolute object-cover -z-10" priority />
