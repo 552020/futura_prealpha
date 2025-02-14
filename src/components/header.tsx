@@ -22,7 +22,6 @@ import { Button } from "./ui/button";
 import { UserCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import AuthModal from "./auth-modal";
 import { ModeToggle } from "./mode-toggle";
 import { useRouter } from "next/navigation";
 import NavBar from "./nav-bar";
@@ -79,7 +78,6 @@ export default function Header() {
           <ModeToggle />
         </section>
       </div>
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </header>
   );
 }

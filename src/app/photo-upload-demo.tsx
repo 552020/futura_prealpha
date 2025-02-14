@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera } from "lucide-react";
 import { useSession } from "next-auth/react";
-import AuthModal from "../components/auth-modal";
 import Image from "next/image";
 
 export default function PhotoUploadDemo() {
@@ -53,8 +52,6 @@ export default function PhotoUploadDemo() {
           <Button onClick={handleSave}>{session ? "Save Photo" : "Sign in to Save"}</Button>
         </div>
       )}
-
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </div>
   );
 }
