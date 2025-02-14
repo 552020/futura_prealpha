@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1739399517482,
-      "tag": "0000_naive_human_cannonball",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1739446245784,
-      "tag": "0001_curious_ghost_rider",
+      "when": 1739575987550,
+      "tag": "0000_brief_reaper",
       "breakpoints": true
     }
   ]

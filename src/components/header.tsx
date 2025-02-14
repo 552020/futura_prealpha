@@ -1,35 +1,12 @@
-// "use client";
-// We are removing this becuase the auth-components from Auth.js is a server component.
-
-// This is the header component from the Auth.js example.
-// import NavBar from "./nav-bar";
-// import UserButton from "./user-button";
-
-// export default function Header() {
-//   return (
-//     <header className="sticky flex justify-center border-b">
-//       <div className="mx-auto flex h-16 w-full max-w-3xl items-center justify-between px-4 sm:px-6">
-//         <NavBar />
-//         <UserButton />
-//       </div>
-//     </header>
-//   );
-// }
-
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { UserCircle } from "lucide-react";
-// import { useSession } from "next-auth/react";
 import { auth } from "@/auth";
 import { ModeToggle } from "./mode-toggle";
 import NavBar from "./nav-bar";
 import UserButton from "./user-button";
 
 export default async function Header() {
-  //   const { data: session } = useSession();
-  // TODO: Check sessfion in Auth.js v4 vs v5
-  // https://authjs.dev/getting-started/migrating-to-v5#authenticating-server-side
-  //   console.log("Session", session);
   const session = await auth();
 
   return (
