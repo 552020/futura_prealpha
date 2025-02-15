@@ -16,19 +16,19 @@ export default async function Header() {
         <section className="logo-section flex items-center">
           <Link href="/">
             <div className="w-10 h-10 rounded-full bg-black dark:bg-white flex items-center justify-center">
-              <span className="text-2xl font-bold text-white dark:text-black">F</span>
+              <span className="text-xl sm:text-2xl font-bold text-white dark:text-black">F</span>
             </div>
           </Link>
         </section>
 
         {/* Center: Navigation */}
-        <nav className="navigation-section flex flex-1 justify-center">
+        <nav className="navigation-section flex flex-1 justify-center text-xs sm:text-sm">
           {/* <Link href="/about">About</Link> */}
           <NavBar />
         </nav>
 
         {/* Right User controls */}
-        <section className="user-controls-section flex items-center gap-4">
+        <section className="user-controls-section flex items-center gap-4 sm:gap-6">
           <UserButton />
           {/* Keep our custom profile button */}
           {session && (
