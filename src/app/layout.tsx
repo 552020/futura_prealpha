@@ -6,6 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { InterfaceProvider } from "@/contexts/interface-context";
+import { OnboardingProvider } from "@/contexts/onboarding-context";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -33,9 +34,11 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <div className="relative min-h-screen flex flex-col">
               <InterfaceProvider>
-                <Header />
-                <main className="flex-1">{children}</main>
-                <Footer />
+                <OnboardingProvider>
+                  <Header />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </OnboardingProvider>
               </InterfaceProvider>
             </div>
           </ThemeProvider>

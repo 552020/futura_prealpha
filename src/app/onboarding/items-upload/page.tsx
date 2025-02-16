@@ -55,9 +55,6 @@ export default function ItemsUpload() {
         description: "Taking you to your profile...",
       });
 
-      // TODO: Show success feedback (toast/notification)
-      // TODO: Add loading state during transition
-
       // Switch to app interface mode
       setMode("app");
       // Navigate to profile with file data
