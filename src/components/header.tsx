@@ -8,10 +8,31 @@ import { ModeToggle } from "./mode-toggle";
 import { NavBar } from "./nav-bar";
 import UserButton from "./user-button";
 import { useInterface } from "@/contexts/interface-context";
+import { useEffect } from "react";
+// import { SignIn } from "@/components/auth-components";
+import { signIn } from "next-auth/react";
 
 export default function Header() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { mode } = useInterface();
+
+  // Add detailed logging
+  console.log("Session Status:", status); // "loading" | "authenticated" | "unauthenticated"
+  console.log("Session Data:", session); // Session object or null
+
+  // Log specific session details if authenticated
+  if (status === "authenticated" && session) {
+    console.log("User ID:", session.user?.id);
+    console.log("User Email:", session.user?.email);
+    console.log("Session Expires:", session.expires);
+    console.log("Full session object:", JSON.stringify(session, null, 2));
+  }
+
+  // Add effect to log status changes
+  useEffect(() => {
+    console.log("Status changed to:", status);
+    console.log("Session is now:", session);
+  }, [status, session]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white dark:bg-slate-950">
@@ -33,13 +54,25 @@ export default function Header() {
         {/* Right User controls */}
         <section className="user-controls-section flex items-center gap-4 sm:gap-6">
           <UserButton />
-          {session && (
+          {status === "loading" ? (
+            <div className="border-l pl-2">
+              <Button variant="ghost" size="icon" disabled>
+                <UserCircle className="h-5 w-5 opacity-50" />
+              </Button>
+            </div>
+          ) : status === "authenticated" && session?.user?.id ? (
             <div className="border-l pl-2">
               <Link href={`/user/${session.user.id}/profile`}>
                 <Button variant="ghost" size="icon">
                   <UserCircle className="h-5 w-5" />
                 </Button>
               </Link>
+            </div>
+          ) : (
+            <div className="border-l pl-2">
+              <Button variant="ghost" size="icon" onClick={() => signIn()}>
+                <UserCircle className="h-5 w-5" />
+              </Button>
             </div>
           )}
           <ModeToggle />
@@ -48,3 +81,30 @@ export default function Header() {
     </header>
   );
 }
+
+/** Note about useSession()
+ * useSession() returns an object containing two values: data and status:
+ *
+ * data: This can be three values: Session / undefined / null.
+ * - when the session hasn't been fetched yet, data will be undefined
+ * - in case it failed to retrieve the session, data will be null
+ * - in case of success, data will be Session.
+ *
+ * status: enum mapping to three possible session states:
+ * - "loading" | "authenticated" | "unauthenticated"
+ *
+ * Example Session Object:
+ * {
+ *   user: {
+ *     name: string
+ *     email: string
+ *     image: string
+ *   },
+ *   expires: Date // This is the expiry of the session, not any of the tokens within the session
+ * }
+ *
+ * Note: The session data returned to the client does not contain sensitive information
+ * such as the Session Token or OAuth tokens. It contains a minimal payload that includes
+ * enough data needed to display information on a page about the user who is signed in
+ * for presentation purposes (e.g name, email, image).
+ **/
