@@ -3,8 +3,9 @@
 import { useSession } from "next-auth/react";
 import { COPY_VARIATIONS } from "./_copy/variations";
 import { Plus, Loader2 } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { useInterface } from "@/contexts/interface-context";
+import { useOnboarding } from "@/contexts/onboarding-context";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
@@ -17,12 +18,9 @@ export default function ItemsUpload() {
   }
   const router = useRouter();
   const { setMode } = useInterface();
+  const { addFile, setCurrentStep } = useOnboarding();
   const copy = COPY_VARIATIONS.LEAVE_ONE_ITEM;
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadedFile, setUploadedFile] = useState<{
-    url: string;
-    file: File;
-  } | null>(null);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -38,27 +36,30 @@ export default function ItemsUpload() {
 
     try {
       setIsLoading(true);
-      // Create a URL for the file in memory
-      const url = URL.createObjectURL(file);
-      console.log("const url = URL.createObjectURL(file);");
-      console.log(url);
-      setUploadedFile({ url, file });
 
-      // Optional: Clean up the old URL if it exists
-      if (uploadedFile) {
-        URL.revokeObjectURL(uploadedFile.url);
+      // Optional: Validate file size
+      if (file.size > 50 * 1024 * 1024) {
+        // 50MB limit
+        throw new Error("File too large");
       }
 
-      // Show success toast
+      const url = URL.createObjectURL(file);
+
+      addFile({
+        url,
+        file,
+        uploadedAt: new Date(),
+      });
+
       toast({
         title: "File uploaded successfully!",
         description: "Taking you to your profile...",
       });
 
-      // Switch to app interface mode
+      // Update onboarding step
+      setCurrentStep("profile");
       setMode("app");
-      // Navigate to profile with file data
-      router.push(`/onboarding/profile?fileUrl=${url}&fileName=${file.name}`);
+      router.push("/onboarding/profile");
     } catch (error) {
       toast({
         variant: "destructive",
@@ -70,15 +71,6 @@ export default function ItemsUpload() {
       setIsLoading(false);
     }
   };
-
-  // Clean up URL when component unmounts
-  useEffect(() => {
-    return () => {
-      if (uploadedFile) {
-        URL.revokeObjectURL(uploadedFile.url);
-      }
-    };
-  }, [uploadedFile]);
 
   return (
     <div className="w-full max-w-[95%] sm:max-w-[90%] lg:max-w-[85%] mx-auto px-4 py-8 flex flex-col gap-16">
