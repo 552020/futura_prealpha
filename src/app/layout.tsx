@@ -5,6 +5,7 @@ import { ThemeProvider } from "../components/theme-provider";
 import { SessionProvider } from "next-auth/react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { InterfaceProvider } from "@/contexts/interface-context";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,9 +32,11 @@ export default function RootLayout({
         <SessionProvider basePath="/api/auth">
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <div className="relative min-h-screen flex flex-col">
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
+              <InterfaceProvider>
+                <Header />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </InterfaceProvider>
             </div>
           </ThemeProvider>
         </SessionProvider>

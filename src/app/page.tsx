@@ -21,7 +21,7 @@ export default function Home() {
             variant="outline"
             className="border-white text-black hover:bg-black hover:text-white hover:border-black"
           >
-            <Link href="/items-upload">Start Here</Link>
+            <Link href="/onboarding/items-upload">Start Here</Link>
           </Button>
         </div>
       </div>

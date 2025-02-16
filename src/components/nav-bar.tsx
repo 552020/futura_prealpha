@@ -1,11 +1,22 @@
-// "use client";
-
 import Link from "next/link";
 
-export default function NavBar() {
-  return (
-    <nav>
+interface NavbarProps {
+  mode: "marketing" | "app";
+}
+
+export function NavBar({ mode }: NavbarProps) {
+  return mode === "marketing" ? (
+    // Marketing navigation items
+    <>
       <Link href="/about">About</Link>
-    </nav>
+      <Link href="/pricing">Pricing</Link>
+    </>
+  ) : (
+    // App navigation items
+    <>
+      <Link href="/home">Home</Link>
+      <Link href="/vault">Vault</Link>
+      <Link href="/feed">Feed</Link>
+    </>
   );
 }

@@ -1,13 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { UserCircle } from "lucide-react";
-import { auth } from "@/auth";
+import { useSession } from "next-auth/react";
 import { ModeToggle } from "./mode-toggle";
-import NavBar from "./nav-bar";
+import { NavBar } from "./nav-bar";
 import UserButton from "./user-button";
+import { useInterface } from "@/contexts/interface-context";
 
-export default async function Header() {
-  const session = await auth();
+export default function Header() {
+  const { data: session } = useSession();
+  const { mode } = useInterface();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white dark:bg-slate-950">
@@ -22,15 +26,13 @@ export default async function Header() {
         </section>
 
         {/* Center: Navigation */}
-        <nav className="navigation-section flex flex-1 justify-center text-xs sm:text-sm">
-          {/* <Link href="/about">About</Link> */}
-          <NavBar />
+        <nav className="navigation-section flex flex-1 justify-center gap-6 text-xs sm:text-sm">
+          <NavBar mode={mode} />
         </nav>
 
         {/* Right User controls */}
         <section className="user-controls-section flex items-center gap-4 sm:gap-6">
           <UserButton />
-          {/* Keep our custom profile button */}
           {session && (
             <div className="border-l pl-2">
               <Link href={`/user/${session.user.id}/profile`}>
