@@ -6,7 +6,8 @@ import { UserCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { ModeToggle } from "./mode-toggle";
 import { NavBar } from "./nav-bar";
-import UserButton from "./user-button";
+// import UserButton from "./user-button";
+import UserButtonClient from "./user-button-client";
 import { useInterface } from "@/contexts/interface-context";
 import { useEffect } from "react";
 // import { SignIn } from "@/components/auth-components";
@@ -53,7 +54,7 @@ export default function Header() {
 
         {/* Right User controls */}
         <section className="user-controls-section flex items-center gap-4 sm:gap-6">
-          <UserButton />
+          <UserButtonClient />
           {status === "loading" ? (
             <div className="border-l pl-2">
               <Button variant="ghost" size="icon" disabled>
