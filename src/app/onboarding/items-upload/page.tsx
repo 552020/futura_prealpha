@@ -42,6 +42,14 @@ export default function ItemsUpload() {
     if (uploadedFile) {
       URL.revokeObjectURL(uploadedFile.url);
     }
+
+    // TODO: Show success feedback (toast/notification)
+    // TODO: Add loading state during transition
+
+    // Switch to app interface mode
+    setMode("app");
+    // Navigate to profile with file data
+    router.push(`/onboarding/profile?fileUrl=${url}&fileName=${file.name}`);
   };
 
   // Clean up URL when component unmounts
