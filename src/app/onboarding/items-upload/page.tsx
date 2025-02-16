@@ -2,11 +2,15 @@
 
 import { useSession } from "next-auth/react";
 import { COPY_VARIATIONS } from "./_copy/variations";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { useInterface } from "@/contexts/interface-context";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+
 export default function ItemsUpload() {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
   if (session) {
     console.log(session);
@@ -32,24 +36,42 @@ export default function ItemsUpload() {
       return;
     }
 
-    // Create a URL for the file in memory
-    const url = URL.createObjectURL(file);
-    console.log("const url = URL.createObjectURL(file);");
-    console.log(url);
-    setUploadedFile({ url, file });
+    try {
+      setIsLoading(true);
+      // Create a URL for the file in memory
+      const url = URL.createObjectURL(file);
+      console.log("const url = URL.createObjectURL(file);");
+      console.log(url);
+      setUploadedFile({ url, file });
 
-    // Optional: Clean up the old URL if it exists
-    if (uploadedFile) {
-      URL.revokeObjectURL(uploadedFile.url);
+      // Optional: Clean up the old URL if it exists
+      if (uploadedFile) {
+        URL.revokeObjectURL(uploadedFile.url);
+      }
+
+      // Show success toast
+      toast({
+        title: "File uploaded successfully!",
+        description: "Taking you to your profile...",
+      });
+
+      // TODO: Show success feedback (toast/notification)
+      // TODO: Add loading state during transition
+
+      // Switch to app interface mode
+      setMode("app");
+      // Navigate to profile with file data
+      router.push(`/onboarding/profile?fileUrl=${url}&fileName=${file.name}`);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Something went wrong",
+        description: "Please try uploading again.",
+      });
+      console.error("Upload error:", error);
+    } finally {
+      setIsLoading(false);
     }
-
-    // TODO: Show success feedback (toast/notification)
-    // TODO: Add loading state during transition
-
-    // Switch to app interface mode
-    setMode("app");
-    // Navigate to profile with file data
-    router.push(`/onboarding/profile?fileUrl=${url}&fileName=${file.name}`);
   };
 
   // Clean up URL when component unmounts
@@ -81,7 +103,7 @@ export default function ItemsUpload() {
           onKeyDown={(e) => e.key === "Enter" && handleUploadClick()}
           className="w-20 h-20 rounded-full bg-black hover:bg-white dark:bg-white dark:hover:bg-black flex items-center justify-center cursor-pointer text-white hover:text-black dark:text-black dark:hover:text-white border-2 border-transparent hover:border-black dark:hover:border-white transition-all"
         >
-          <Plus size={72} />
+          {isLoading ? <Loader2 size={72} className="animate-spin" /> : <Plus size={72} />}
         </div>
       </div>
     </div>
