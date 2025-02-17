@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 
 interface TempFile {
   url: string;
@@ -30,26 +30,13 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
   // Remove a file by URL
   const removeFile = (url: string) => {
-    setFiles((prev) => {
-      const newFiles = prev.filter((f) => f.url !== url);
-      // Cleanup URL
-      URL.revokeObjectURL(url);
-      return newFiles;
-    });
+    setFiles((prev) => prev.filter((f) => f.url !== url));
   };
 
   // Clear all files
   const clearFiles = () => {
-    files.forEach((f) => URL.revokeObjectURL(f.url));
     setFiles([]);
   };
-
-  // Cleanup URLs on unmount
-  useEffect(() => {
-    return () => {
-      files.forEach((f) => URL.revokeObjectURL(f.url));
-    };
-  }, [files]);
 
   return (
     <OnboardingContext.Provider

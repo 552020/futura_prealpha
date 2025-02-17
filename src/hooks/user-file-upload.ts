@@ -34,6 +34,7 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
       }
 
       const url = URL.createObjectURL(file);
+
       const fileData = {
         url,
         file,
@@ -41,7 +42,6 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
       };
 
       if (isOnboarding) {
-        // Onboarding flow
         addOnboardingFile(fileData);
         setCurrentStep("profile");
         toast({
