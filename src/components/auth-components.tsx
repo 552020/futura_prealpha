@@ -35,9 +35,21 @@
 import { signIn, signOut } from "next-auth/react";
 import { Button } from "./ui/button";
 
-export function SignIn({ provider, ...props }: { provider?: string } & React.ComponentPropsWithRef<typeof Button>) {
+// export function SignIn({ provider, ...props }: { provider?: string } & React.ComponentPropsWithRef<typeof Button>) {
+//   return (
+//     <Button {...props} onClick={() => signIn(provider)}>
+//       Sign In
+//     </Button>
+//   );
+// }
+
+export function SignIn({
+  provider,
+  callbackUrl = "/",
+  ...props
+}: { provider?: string; callbackUrl?: string } & React.ComponentPropsWithRef<typeof Button>) {
   return (
-    <Button {...props} onClick={() => signIn(provider)}>
+    <Button {...props} onClick={() => signIn(provider, { callbackUrl })}>
       Sign In
     </Button>
   );
