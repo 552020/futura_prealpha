@@ -3,6 +3,9 @@
 import { Profile } from "@/components/profile";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { SignInModal } from "@/components/sign-in-modal";
+import { useState, useEffect } from "react";
+import { useOnboarding } from "@/contexts/onboarding-context";
 
 /**
  * Note on Suspense and Component Structure:
@@ -24,6 +27,15 @@ function OnboardingProfilePage() {
   const searchParams = useSearchParams();
   const fileUrl = searchParams.get("fileUrl");
   const fileName = searchParams.get("fileName");
+  const [showSignInModal, setShowSignInModal] = useState(false);
+  const { files } = useOnboarding();
+
+  // Show modal when there are files
+  useEffect(() => {
+    if (files.length > 0) {
+      setShowSignInModal(true);
+    }
+  }, [files.length]);
 
   // Recreate the file object from URL params
   const uploadedFile =
@@ -34,7 +46,12 @@ function OnboardingProfilePage() {
         }
       : null;
 
-  return <Profile isOnboarding={true} uploadedFile={uploadedFile} />;
+  return (
+    <>
+      <Profile isOnboarding={true} uploadedFile={uploadedFile} />
+      <SignInModal isOpen={showSignInModal} onClose={() => setShowSignInModal(false)} />
+    </>
+  );
 }
 
 export default function SuspenseWrappedOnboardingProfilePage() {
