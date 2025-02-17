@@ -3,74 +3,25 @@
 import { useSession } from "next-auth/react";
 import { COPY_VARIATIONS } from "./_copy/variations";
 import { Plus, Loader2 } from "lucide-react";
-import { useRef, useState } from "react";
 import { useInterface } from "@/contexts/interface-context";
-import { useOnboarding } from "@/contexts/onboarding-context";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
+import { useFileUpload } from "@/hooks/user-file-upload";
 
 export default function ItemsUpload() {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { setMode } = useInterface();
+  const { isLoading, fileInputRef, handleUploadClick, handleFileChange } = useFileUpload({
+    isOnboarding: true,
+    onSuccess: () => {
+      setMode("app");
+      router.push("/onboarding/profile");
+    },
+  });
   const { data: session } = useSession();
   if (session) {
     console.log(session);
   }
-  const router = useRouter();
-  const { setMode } = useInterface();
-  const { addFile, setCurrentStep } = useOnboarding();
   const copy = COPY_VARIATIONS.LEAVE_ONE_ITEM;
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-      // User probably just cancelled the file picker
-      // No need for error feedback in this case
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-
-      // Optional: Validate file size
-      if (file.size > 50 * 1024 * 1024) {
-        // 50MB limit
-        throw new Error("File too large");
-      }
-
-      const url = URL.createObjectURL(file);
-
-      addFile({
-        url,
-        file,
-        uploadedAt: new Date(),
-      });
-
-      toast({
-        title: "File uploaded successfully!",
-        description: "Taking you to your profile...",
-      });
-
-      // Update onboarding step
-      setCurrentStep("profile");
-      setMode("app");
-      router.push("/onboarding/profile");
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Something went wrong",
-        description: "Please try uploading again.",
-      });
-      console.error("Upload error:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="w-full max-w-[95%] sm:max-w-[90%] lg:max-w-[85%] mx-auto px-4 py-8 flex flex-col gap-16">
