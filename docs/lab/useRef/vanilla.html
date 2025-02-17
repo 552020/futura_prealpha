@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Focus and Add Text Example</title>
+  </head>
+  <body>
+    <input id="myInput" placeholder="Type something..." />
+    <button id="focusButton">Focus Input</button>
+    <button id="addTextButton">Add "Hello"</button>
+
+    <script>
+      const inputElement = document.getElementById("myInput");
+      const focusButton = document.getElementById("focusButton");
+      const addTextButton = document.getElementById("addTextButton");
+
+      // When "Focus Input" is clicked, focus the input field
+      focusButton.addEventListener("click", function () {
+        inputElement.focus();
+      });
+
+      // When "Add 'Hello'" is clicked, add "Hello" to the input field
+      addTextButton.addEventListener("click", function () {
+        inputElement.value += "Hello ";
+      });
+    </script>
+  </body>
+</html>
