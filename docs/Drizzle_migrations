@@ -1,0 +1,55 @@
+# Drizzle Setup and Usage Guide
+
+## Reset the Database
+
+To reset the database, use the following command:
+
+```bash
+npx tsx scripts/reset-db.ts
+```
+
+---
+
+## What is `tsx`?
+
+`tsx` is a tool for running TypeScript and JavaScript files directly without needing to first compile TypeScript into JavaScript. It's part of the `tsx` package and provides an easy, zero-config way to execute TypeScript files.
+
+### Key Features of `tsx`:
+- **Run TypeScript directly**: No need to pre-compile `.ts` files.
+- **Fast setup**: Works out of the box without additional configuration.
+- **Supports modern features**: Compatible with the latest TypeScript and ECMAScript syntax.
+- **Alternative to `ts-node`**: Often faster and more optimized for performance.
+
+You can install `tsx` globally or use it via `npx` as shown in this guide.
+
+## Install drizzle-kit
+
+If you haven’t installed `drizzle-kit` yet, you can do so either globally or as a dev dependency:
+
+### Global Installation (Recommended for CLI Use):
+```bash
+npm install -g drizzle-kit
+```
+
+### Local Installation (Project-Specific):
+```bash
+npm install drizzle-kit --save-dev
+```
+
+---
+
+## Run Migrations
+
+To run migrations using `drizzle-kit`, use the following commands:
+
+```bash
+npx drizzle-kit migrate
+```
+
+To push your changes to the database:
+
+```bash
+npx drizzle-kit push
+```
+
+---
