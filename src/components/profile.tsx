@@ -2,9 +2,19 @@
 
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
-import { Plus, Share2, FileText, Music, Video, Archive, File, Loader2 } from "lucide-react";
+import {
+  Plus,
+  Share2,
+  FileText,
+  Music,
+  Video,
+  Archive,
+  File,
+  Loader2,
+} from "lucide-react";
 import { useOnboarding } from "@/contexts/onboarding-context";
 import { useFileUpload } from "./../hooks/user-file-upload";
+import { ShareFileForm } from "@/app/api/share-file-form";
 
 interface ProfileProps {
   isOnboarding?: boolean;
@@ -16,15 +26,18 @@ interface ProfileProps {
 
 export function Profile({ isOnboarding = false }: ProfileProps) {
   const { files, currentStep } = useOnboarding();
-  const { isLoading, fileInputRef, handleUploadClick, handleFileChange } = useFileUpload({
-    isOnboarding,
-  });
+  const { isLoading, fileInputRef, handleUploadClick, handleFileChange } =
+    useFileUpload({
+      isOnboarding,
+    });
 
   const getFileIcon = (type: string) => {
-    if (type.startsWith("text/") || type.includes("pdf")) return <FileText size={48} />;
+    if (type.startsWith("text/") || type.includes("pdf"))
+      return <FileText size={48} />;
     if (type.startsWith("audio/")) return <Music size={48} />;
     if (type.startsWith("video/")) return <Video size={48} />;
-    if (type.includes("zip") || type.includes("rar")) return <Archive size={48} />;
+    if (type.includes("zip") || type.includes("rar"))
+      return <Archive size={48} />;
     return <File size={48} />;
   };
 
@@ -39,7 +52,10 @@ export function Profile({ isOnboarding = false }: ProfileProps) {
       {files.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {files.map((file, index) => (
-            <Card key={index} className="aspect-square overflow-hidden relative">
+            <Card
+              key={index}
+              className="aspect-square overflow-hidden relative"
+            >
               {file.file.type.startsWith("image/") ? (
                 <Image
                   src={file.url}
@@ -71,13 +87,21 @@ export function Profile({ isOnboarding = false }: ProfileProps) {
       ) : (
         <Card className="aspect-square w-full max-w-2xl mx-auto overflow-hidden relative">
           <div className="w-full h-full flex items-center justify-center">
-            <p className="text-muted-foreground">Your vault awaits its first memory</p>
+            <p className="text-muted-foreground">
+              Your vault awaits its first memory
+            </p>
           </div>
         </Card>
       )}
 
       {/* Hidden file input */}
-      <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" multiple={false} />
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        className="hidden"
+        multiple={false}
+      />
 
       {/* Action Buttons */}
       <div className="flex justify-center gap-4 mt-8">
@@ -88,7 +112,11 @@ export function Profile({ isOnboarding = false }: ProfileProps) {
           onKeyDown={(e) => e.key === "Enter" && handleUploadClick()}
           className="w-14 h-14 rounded-full bg-black hover:bg-white dark:bg-white dark:hover:bg-black flex items-center justify-center cursor-pointer text-white hover:text-black dark:text-black dark:hover:text-white border-2 border-transparent hover:border-black dark:hover:border-white transition-all"
         >
-          {isLoading ? <Loader2 size={32} className="animate-spin" /> : <Plus size={32} />}
+          {isLoading ? (
+            <Loader2 size={32} className="animate-spin" />
+          ) : (
+            <Plus size={32} />
+          )}
         </div>
         <div
           role="button"
@@ -102,8 +130,13 @@ export function Profile({ isOnboarding = false }: ProfileProps) {
       {/* Celebration Layer */}
       {isOnboarding && files.length > 0 && currentStep === "profile" && (
         <Card className="mt-8 p-6 text-center">
-          <h3 className="text-xl font-semibold mb-4">First Memory Secured! 🔒</h3>
-          <p className="text-muted-foreground">Your digital vault has received its first treasure.</p>
+          <h3 className="text-xl font-semibold mb-4">
+            First Memory Secured! 🔒
+          </h3>
+          <p className="text-muted-foreground">
+            Your digital vault has received its first treasure.
+          </p>
+          <ShareFileForm />
         </Card>
       )}
     </div>
