@@ -1,10 +1,13 @@
 import { useState } from "react";
 
 export function ShareFileForm() {
-  const [fileId, setFileId] = useState("");
-  const [ownerId, setOwnerId] = useState("");
   const [sharedWithEmail, setSharedWithEmail] = useState("");
-  const [permissionLevel, setPermissionLevel] = useState("view"); // Default permission level
+  const ownerId = "placeholder-owner-id"; //Placeholder
+  const fileId = "placeholder-file-id"; //Placeholder
+  const permissionLevel = "view"; // Fixed permission level
+
+  //This will happen rather after registration
+  //Otherwise it makes flow more complicated
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -35,28 +38,6 @@ export function ShareFileForm() {
     <form onSubmit={handleSubmit}>
       <div>
         <label>
-          File ID:
-          <input
-            type="text"
-            value={fileId}
-            onChange={(e) => setFileId(e.target.value)}
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Owner ID:
-          <input
-            type="text"
-            value={ownerId}
-            onChange={(e) => setOwnerId(e.target.value)}
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label>
           Shared With Email:
           <input
             type="email"
@@ -64,18 +45,6 @@ export function ShareFileForm() {
             onChange={(e) => setSharedWithEmail(e.target.value)}
             required
           />
-        </label>
-      </div>
-      <div>
-        <label>
-          Permission Level:
-          <select
-            value={permissionLevel}
-            onChange={(e) => setPermissionLevel(e.target.value)}
-          >
-            <option value="view">View</option>
-            <option value="edit">Edit</option>
-          </select>
         </label>
       </div>
       <button type="submit">Share File</button>
