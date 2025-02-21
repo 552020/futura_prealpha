@@ -1,16 +1,40 @@
-import { useState } from "react";
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+// Define the schema for form validation
+const formSchema = z.object({
+  sharedWithEmail: z
+    .string()
+    .email("Invalid email address")
+    .nonempty("Email is required"),
+});
 
 export function ShareFileForm() {
-  const [sharedWithEmail, setSharedWithEmail] = useState("");
-  const ownerId = "placeholder-owner-id"; //Placeholder
-  const fileId = "placeholder-file-id"; //Placeholder
-  const permissionLevel = "view"; // Fixed permission level
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      sharedWithEmail: "",
+    },
+  });
 
-  //This will happen rather after registration
-  //Otherwise it makes flow more complicated
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const onSubmit = async (data: { sharedWithEmail: string }) => {
+    const ownerId = "placeholder-owner-id";
+    const fileId = "placeholder-file-id";
+    const permissionLevel = "view";
 
     const response = await fetch("/api/share-file", {
       method: "POST",
@@ -20,34 +44,44 @@ export function ShareFileForm() {
       body: JSON.stringify({
         fileId,
         ownerId,
-        sharedWithEmail,
+        sharedWithEmail: data.sharedWithEmail,
         permissionLevel,
       }),
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      alert(data.message);
-    } else {
-      const errorData = await response.json();
-      alert(errorData.error);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Error response:", errorText);
+      alert("An error occurred: " + errorText);
+      return;
     }
+
+    const responseData = await response.json();
+    alert(responseData.message);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>
-          Shared With Email:
-          <input
-            type="email"
-            value={sharedWithEmail}
-            onChange={(e) => setSharedWithEmail(e.target.value)}
-            required
-          />
-        </label>
-      </div>
-      <button type="submit">Share File</button>
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="sharedWithEmail"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Shared With Email</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="example@example.com"
+                  {...field}
+                  className="mx-auto  w-80"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Share File</Button>
+      </form>
+    </Form>
   );
 }
