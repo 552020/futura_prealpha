@@ -16,6 +16,7 @@ import { useOnboarding } from "@/contexts/onboarding-context";
 import { useFileUpload } from "./../hooks/user-file-upload";
 import { ShareFileForm } from "@/app/api/share-file-form";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 interface ProfileProps {
   isOnboarding?: boolean;
@@ -33,6 +34,7 @@ export function Profile({ isOnboarding = false }: ProfileProps) {
     });
 
   const [textInput, setTextInput] = useState("");
+  const session = useSession();
 
   const getFileIcon = (type: string) => {
     if (type.startsWith("text/") || type.includes("pdf"))
@@ -51,29 +53,32 @@ export function Profile({ isOnboarding = false }: ProfileProps) {
   const handleTextSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      const response = await fetch("/api/save-text", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: "placeholder-user-id",
-          title: "Your Title",
-          content: textInput,
-        }),
-      });
+    if (session.status === "authenticated") {
+      try {
+        const response = await fetch("/api/save-text", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: session.data.user.id,
+            title: "Your Title",
+            content: textInput,
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to save text.");
+        if (!response.ok) {
+          throw new Error("Failed to save text.");
+        }
+
+        const data = await response.json();
+        alert(data.message);
+        setTextInput("");
+      } catch (error) {
+        console.error("Error saving text:", error);
       }
-
-      const data = await response.json();
-      alert(data.message);
-      setTextInput("");
-    } catch (error) {
-      console.error("Error saving text:", error);
-      // alert("Failed to save text.");
+    } else {
+      console.error("User is not authenticated.");
     }
   };
 
