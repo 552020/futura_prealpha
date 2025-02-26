@@ -15,8 +15,6 @@ import {
 import { useOnboarding } from "@/contexts/onboarding-context";
 import { useFileUpload } from "./../hooks/user-file-upload";
 import { ShareFileForm } from "@/app/api/share-file-form";
-import { useState } from "react";
-import { useSession } from "next-auth/react";
 
 interface ProfileProps {
   isOnboarding?: boolean;
@@ -33,9 +31,6 @@ export function Profile({ isOnboarding = false }: ProfileProps) {
       isOnboarding,
     });
 
-  const [textInput, setTextInput] = useState("");
-  const session = useSession();
-
   const getFileIcon = (type: string) => {
     if (type.startsWith("text/") || type.includes("pdf"))
       return <FileText size={48} />;
@@ -44,42 +39,6 @@ export function Profile({ isOnboarding = false }: ProfileProps) {
     if (type.includes("zip") || type.includes("rar"))
       return <Archive size={48} />;
     return <File size={48} />;
-  };
-
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTextInput(e.target.value);
-  };
-
-  const handleTextSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (session.status === "authenticated") {
-      try {
-        const response = await fetch("/api/save-text", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: session.data.user.id,
-            title: "Your Title",
-            content: textInput,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to save text.");
-        }
-
-        const data = await response.json();
-        alert(data.message);
-        setTextInput("");
-      } catch (error) {
-        console.error("Error saving text:", error);
-      }
-    } else {
-      console.error("User is not authenticated.");
-    }
   };
 
   return (
@@ -180,24 +139,6 @@ export function Profile({ isOnboarding = false }: ProfileProps) {
           <ShareFileForm />
         </Card>
       )}
-
-      {/* Text Input Form */}
-      <form onSubmit={handleTextSubmit} className="mt-8">
-        <input
-          type="text"
-          value={textInput}
-          onChange={handleTextChange}
-          placeholder="Enter your text here"
-          className="border p-2 rounded w-full"
-          required
-        />
-        <button
-          type="submit"
-          className="mt-2 bg-blue-500 text-white p-2 rounded"
-        >
-          Save Text
-        </button>
-      </form>
     </div>
   );
 }
