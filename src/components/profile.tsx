@@ -16,8 +16,6 @@ import { useOnboarding } from "@/contexts/onboarding-context";
 import { useFileUpload } from "./../hooks/user-file-upload";
 import { ShareFileForm } from "@/app/api/share-file-form";
 import { useState } from "react";
-import { db } from "@/db/db";
-import { texts } from "@/db/schema";
 
 interface ProfileProps {
   isOnboarding?: boolean;
@@ -75,7 +73,7 @@ export function Profile({ isOnboarding = false }: ProfileProps) {
       setTextInput("");
     } catch (error) {
       console.error("Error saving text:", error);
-      alert("Failed to save text.");
+      // alert("Failed to save text.");
     }
   };
 
