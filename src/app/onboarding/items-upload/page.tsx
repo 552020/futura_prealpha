@@ -6,33 +6,55 @@ import { Plus, Loader2 } from "lucide-react";
 import { useInterface } from "@/contexts/interface-context";
 import { useRouter } from "next/navigation";
 import { useFileUpload } from "@/hooks/user-file-upload";
+import { TextUpload } from "@/components/text-upload";
 
 export default function ItemsUpload() {
   const router = useRouter();
   const { setMode } = useInterface();
-  const { isLoading, fileInputRef, handleUploadClick, handleFileChange } = useFileUpload({
-    isOnboarding: true,
-    onSuccess: () => {
-      setMode("app");
-      router.push("/onboarding/profile");
-    },
-  });
+  const { isLoading, fileInputRef, handleUploadClick, handleFileChange } =
+    useFileUpload({
+      isOnboarding: true,
+      onSuccess: () => {
+        setMode("app");
+        router.push("/onboarding/profile");
+      },
+    });
   const { data: session } = useSession();
   if (session) {
     console.log(session);
   }
   const copy = COPY_VARIATIONS.LEAVE_ONE_ITEM;
 
+  const handleTextSaved = (data: {
+    id: string;
+    title: string;
+    content: string;
+  }) => {
+    console.log("Text saved:", data);
+    setMode("app");
+    router.push("/onboarding/profile");
+  };
+
   return (
     <div className="w-full max-w-[95%] sm:max-w-[90%] lg:max-w-[85%] mx-auto px-4 py-8 flex flex-col gap-16">
       {/* Title and subtitle container */}
       <div className="max-w-4xl">
-        <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold mb-8 tracking-tight">{copy.title}</h1>
-        <p className="text-xl sm:text-2xl text-muted-foreground">{copy.subtitle}</p>
+        <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold mb-8 tracking-tight">
+          {copy.title}
+        </h1>
+        <p className="text-xl sm:text-2xl text-muted-foreground">
+          {copy.subtitle}
+        </p>
       </div>
 
       {/* Hidden file input */}
-      <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" multiple={false} />
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        className="hidden"
+        multiple={false}
+      />
 
       {/* Upload button container */}
       <div className="flex justify-center">
@@ -43,7 +65,14 @@ export default function ItemsUpload() {
           onKeyDown={(e) => e.key === "Enter" && handleUploadClick()}
           className="w-20 h-20 rounded-full bg-black hover:bg-white dark:bg-white dark:hover:bg-black flex items-center justify-center cursor-pointer text-white hover:text-black dark:text-black dark:hover:text-white border-2 border-transparent hover:border-black dark:hover:border-white transition-all"
         >
-          {isLoading ? <Loader2 size={72} className="animate-spin" /> : <Plus size={72} />}
+          {isLoading ? (
+            <Loader2 size={72} className="animate-spin" />
+          ) : (
+            <Plus size={72} />
+          )}
+        </div>
+        <div className="mt-8 max-w-2xl mx-auto">
+          <TextUpload onTextSaved={handleTextSaved} />
         </div>
       </div>
     </div>

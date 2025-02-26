@@ -9,7 +9,10 @@ interface UseFileUploadProps {
   onSuccess?: () => void;
 }
 
-export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUploadProps) {
+export function useFileUpload({
+  isOnboarding = false,
+  onSuccess,
+}: UseFileUploadProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { addFile: addOnboardingFile, setCurrentStep } = useOnboarding();
@@ -22,7 +25,9 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 

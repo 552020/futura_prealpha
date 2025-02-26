@@ -1,4 +1,12 @@
-import { pgTable, text, timestamp, json, boolean, primaryKey, integer } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  json,
+  boolean,
+  primaryKey,
+  integer,
+} from "drizzle-orm/pg-core";
 import type { DefaultSession } from "next-auth";
 // import type { AdapterAccount } from "@auth/core/adapters";
 import type { AdapterAccount } from "next-auth/adapters";
@@ -139,6 +147,23 @@ export const files = pgTable("files", {
       description?: string;
     }>()
     .default({}),
+});
+
+export const sharing = pgTable("sharing", {
+  id: text("id").primaryKey(),
+  resourceType: text("resource_type").notNull(),
+  resourceId: text("resource_id").notNull(),
+  ownerId: text("owner_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  sharedWithId: text("shared_with_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  recipientEmail: text("recipient_email"), // Optional field for email if the resource is shared with someone not in the system
+  permissionLevel: text("permission_level").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at"),
+  metadata: json("metadata").default({}),
 });
 
 // Type definitions for Auth.js
