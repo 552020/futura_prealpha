@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
+  CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Image, Loader2 } from "lucide-react";
@@ -104,14 +105,17 @@ export function PhotoUpload({ className, onPhotoSaved }: PhotoUploadProps) {
 
   return (
     <Card className={className}>
-      <CardHeader>
+      <CardHeader className="space-y-1">
         <CardTitle className="flex items-center gap-2">
           <Image className="w-5 h-5" />
-          <span>Upload a Photo</span>
+          Upload a Photo
         </CardTitle>
+        <CardDescription>
+          Share an image or photo from your device
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="grid w-full items-center gap-4">
           <input
             type="file"
             accept="image/*"
@@ -122,32 +126,52 @@ export function PhotoUpload({ className, onPhotoSaved }: PhotoUploadProps) {
           />
           <label
             htmlFor="photo-upload"
-            className="block w-full aspect-video border-2 border-dashed rounded-lg hover:border-primary cursor-pointer transition-colors"
+            className="group relative block w-full cursor-pointer"
           >
-            {preview ? (
-              <img
-                src={preview}
-                alt="Preview"
-                className="w-full h-full object-contain rounded-lg"
-              />
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-                <Image className="w-8 h-8 mb-2" />
-                <span>Click to select a photo</span>
-              </div>
-            )}
+            <div
+              className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 transition-colors hover:border-primary ${
+                preview ? "p-2" : "px-6 py-10"
+              }`}
+            >
+              {preview ? (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="rounded-md max-h-[300px] w-auto object-contain"
+                />
+              ) : (
+                <>
+                  <Image className="mx-auto h-10 w-10 text-muted-foreground/80" />
+                  <div className="mt-4 flex flex-col items-center gap-1">
+                    <span className="font-medium">
+                      Drop your photo here or click to browse
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      Supports JPG, PNG and GIF files
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
           </label>
         </div>
       </CardContent>
       <CardFooter className="flex justify-end">
-        <Button onClick={handleUpload} disabled={isSubmitting || !selectedFile}>
+        <Button
+          onClick={handleUpload}
+          disabled={isSubmitting || !selectedFile}
+          className="w-full sm:w-auto"
+        >
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Uploading...
             </>
           ) : (
-            "Upload Photo"
+            <>
+              <Image className="mr-2 h-4 w-4" />
+              Upload Photo
+            </>
           )}
         </Button>
       </CardFooter>

@@ -8,10 +8,11 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
+  CardDescription,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FileText } from "lucide-react";
+import { FileText, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface TextUploadProps {
@@ -95,27 +96,33 @@ export function TextUpload({ className, onTextSaved }: TextUploadProps) {
 
   return (
     <Card className={className}>
-      <CardHeader>
+      <CardHeader className="space-y-1">
         <CardTitle className="flex items-center gap-2">
           <FileText className="w-5 h-5" />
-          <span>Capture a Thought</span>
+          Capture a Thought
         </CardTitle>
+        <CardDescription>
+          Write down a memory or thought to preserve
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleTextSubmit} className="space-y-3">
-          <div>
+        <form
+          onSubmit={handleTextSubmit}
+          className="grid w-full items-center gap-4"
+        >
+          <div className="grid w-full gap-2">
             <Input
               type="text"
               value={title}
               onChange={handleTitleChange}
-              placeholder="Title (optional)"
-              className="mb-2"
+              placeholder="Give your memory a title (optional)"
+              className="w-full"
             />
-            <Input
-              type="text"
+            <textarea
               value={textInput}
-              onChange={handleTextChange}
+              onChange={(e) => setTextInput(e.target.value)}
               placeholder="Write something to remember..."
+              className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
             />
           </div>
@@ -125,8 +132,19 @@ export function TextUpload({ className, onTextSaved }: TextUploadProps) {
         <Button
           onClick={handleTextSubmit}
           disabled={isSubmitting || !textInput.trim()}
+          className="w-full sm:w-auto"
         >
-          {isSubmitting ? "Saving..." : "Save Memory"}
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <FileText className="mr-2 h-4 w-4" />
+              Save Memory
+            </>
+          )}
         </Button>
       </CardFooter>
     </Card>

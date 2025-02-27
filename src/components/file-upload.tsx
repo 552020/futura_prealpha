@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
   CardFooter,
+  CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { File, Upload, Loader2 } from "lucide-react";
@@ -100,14 +101,17 @@ export function FileUpload({ className, onFileSaved }: FileUploadProps) {
 
   return (
     <Card className={className}>
-      <CardHeader>
+      <CardHeader className="space-y-1">
         <CardTitle className="flex items-center gap-2">
           <File className="w-5 h-5" />
-          <span>Upload a File</span>
+          Upload a File
         </CardTitle>
+        <CardDescription>
+          Share a document, PDF, or other file from your device
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="grid w-full items-center gap-4">
           <input
             type="file"
             onChange={handleFileSelect}
@@ -117,21 +121,30 @@ export function FileUpload({ className, onFileSaved }: FileUploadProps) {
           />
           <label
             htmlFor="file-upload"
-            className="block w-full p-12 border-2 border-dashed rounded-lg hover:border-primary cursor-pointer transition-colors"
+            className="group relative block w-full cursor-pointer"
           >
-            <div className="flex flex-col items-center justify-center text-muted-foreground">
+            <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 px-6 py-10 text-center transition-colors hover:border-primary">
               {selectedFile ? (
                 <>
-                  <File className="w-8 h-8 mb-2" />
-                  <span className="font-medium">{selectedFile.name}</span>
-                  <span className="text-sm">
-                    {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                  </span>
+                  <File className="mx-auto h-10 w-10 text-muted-foreground/80" />
+                  <div className="mt-4 flex flex-col items-center gap-1">
+                    <span className="font-medium">{selectedFile.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                    </span>
+                  </div>
                 </>
               ) : (
                 <>
-                  <Upload className="w-8 h-8 mb-2" />
-                  <span>Click to select a file</span>
+                  <Upload className="mx-auto h-10 w-10 text-muted-foreground/80" />
+                  <div className="mt-4 flex flex-col items-center gap-1">
+                    <span className="font-medium">
+                      Drop your file here or click to browse
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      Support for documents, PDFs, and more
+                    </span>
+                  </div>
                 </>
               )}
             </div>
@@ -139,14 +152,21 @@ export function FileUpload({ className, onFileSaved }: FileUploadProps) {
         </div>
       </CardContent>
       <CardFooter className="flex justify-end">
-        <Button onClick={handleUpload} disabled={isSubmitting || !selectedFile}>
+        <Button
+          onClick={handleUpload}
+          disabled={isSubmitting || !selectedFile}
+          className="w-full sm:w-auto"
+        >
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Uploading...
             </>
           ) : (
-            "Upload File"
+            <>
+              <Upload className="mr-2 h-4 w-4" />
+              Upload File
+            </>
           )}
         </Button>
       </CardFooter>

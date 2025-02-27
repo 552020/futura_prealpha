@@ -2,13 +2,23 @@
 
 import { useSession } from "next-auth/react";
 import { COPY_VARIATIONS } from "./_copy/variations";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, FileText, Image, Upload } from "lucide-react";
 import { useInterface } from "@/contexts/interface-context";
 import { useRouter } from "next/navigation";
 import { useFileUpload } from "@/hooks/user-file-upload";
 import { TextUpload } from "@/components/text-upload";
 import { PhotoUpload } from "@/components/photo-upload";
 import { FileUpload } from "@/components/file-upload";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ItemsUpload() {
   const router = useRouter();
@@ -37,6 +47,18 @@ export default function ItemsUpload() {
     router.push("/onboarding/profile");
   };
 
+  const handlePhotoSaved = (data: any) => {
+    console.log("Photo saved:", data);
+    setMode("app");
+    router.push("/onboarding/profile");
+  };
+
+  const handleFileSaved = (data: any) => {
+    console.log("File saved:", data);
+    setMode("app");
+    router.push("/onboarding/profile");
+  };
+
   return (
     <div className="w-full max-w-[95%] sm:max-w-[90%] lg:max-w-[85%] mx-auto px-4 py-8 flex flex-col gap-16">
       {/* Title and subtitle container */}
@@ -58,37 +80,43 @@ export default function ItemsUpload() {
         multiple={false}
       />
 
-      {/* Upload button container */}
-      <div className="flex justify-center">
-        <div
-          role="button"
-          tabIndex={0}
+      {/* Upload options with shadcn Tabs */}
+      <div className="max-w-4xl mx-auto w-full">
+        <Tabs defaultValue="text" className="w-full">
+          <TabsList className="grid grid-cols-3 mb-8">
+            <TabsTrigger value="text">Text</TabsTrigger>
+            <TabsTrigger value="photo">Photo</TabsTrigger>
+            <TabsTrigger value="file">File</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="text">
+            <TextUpload onTextSaved={handleTextSaved} />
+          </TabsContent>
+
+          <TabsContent value="photo">
+            <PhotoUpload onPhotoSaved={handlePhotoSaved} />
+          </TabsContent>
+
+          <TabsContent value="file">
+            <FileUpload onFileSaved={handleFileSaved} />
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* Quick access floating button */}
+      <div className="fixed bottom-8 right-8">
+        <Button
+          size="lg"
+          variant="default"
+          className="rounded-full h-16 w-16 p-0 shadow-lg"
           onClick={handleUploadClick}
-          onKeyDown={(e) => e.key === "Enter" && handleUploadClick()}
-          className="w-20 h-20 rounded-full bg-black hover:bg-white dark:bg-white dark:hover:bg-black flex items-center justify-center cursor-pointer text-white hover:text-black dark:text-black dark:hover:text-white border-2 border-transparent hover:border-black dark:hover:border-white transition-all"
         >
           {isLoading ? (
-            <Loader2 size={72} className="animate-spin" />
+            <Loader2 size={32} className="animate-spin" />
           ) : (
-            <Plus size={72} />
+            <Plus size={32} />
           )}
-        </div>
-        <div className="mt-8 max-w-2xl mx-auto">
-          <TextUpload onTextSaved={handleTextSaved} />
-        </div>
-        <PhotoUpload
-          onPhotoSaved={(data) => {
-            console.log("Photo saved:", data);
-            // Handle the newly saved photo
-          }}
-        />
-        <FileUpload
-          onFileSaved={(data) => {
-            console.log("File saved:", data);
-            setMode("app");
-            router.push("/onboarding/profile");
-          }}
-        />
+        </Button>
       </div>
     </div>
   );
