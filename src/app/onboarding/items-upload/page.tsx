@@ -7,6 +7,7 @@ import { useInterface } from "@/contexts/interface-context";
 import { useRouter } from "next/navigation";
 import { useFileUpload } from "@/hooks/user-file-upload";
 import { TextUpload } from "@/components/text-upload";
+import { PhotoUpload } from "@/components/photo-upload";
 
 export default function ItemsUpload() {
   const router = useRouter();
@@ -74,6 +75,12 @@ export default function ItemsUpload() {
         <div className="mt-8 max-w-2xl mx-auto">
           <TextUpload onTextSaved={handleTextSaved} />
         </div>
+        <PhotoUpload
+          onPhotoSaved={(data) => {
+            console.log("Photo saved:", data);
+            // Handle the newly saved photo
+          }}
+        />
       </div>
     </div>
   );
