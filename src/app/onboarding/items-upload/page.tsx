@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useFileUpload } from "@/hooks/user-file-upload";
 import { TextUpload } from "@/components/text-upload";
 import { PhotoUpload } from "@/components/photo-upload";
+import { FileUpload } from "@/components/file-upload";
 
 export default function ItemsUpload() {
   const router = useRouter();
@@ -79,6 +80,13 @@ export default function ItemsUpload() {
           onPhotoSaved={(data) => {
             console.log("Photo saved:", data);
             // Handle the newly saved photo
+          }}
+        />
+        <FileUpload
+          onFileSaved={(data) => {
+            console.log("File saved:", data);
+            setMode("app");
+            router.push("/onboarding/profile");
           }}
         />
       </div>
