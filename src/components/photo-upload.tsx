@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Image as ImageIcon, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -10,7 +17,12 @@ import Image from "next/image";
 
 interface PhotoUploadProps {
   className?: string;
-  onPhotoSaved?: (data: { id: string; url: string; createdAt: string }) => void;
+  onPhotoSaved?: (data: {
+    id: string;
+    url: string;
+    filename: string;
+    createdAt: string;
+  }) => void;
 }
 
 export function PhotoUpload({ className, onPhotoSaved }: PhotoUploadProps) {
@@ -79,7 +91,9 @@ export function PhotoUpload({ className, onPhotoSaved }: PhotoUploadProps) {
       setPreview(null);
 
       // Clear the file input
-      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      const fileInput = document.querySelector(
+        'input[type="file"]'
+      ) as HTMLInputElement;
       if (fileInput) {
         fileInput.value = "";
       }
@@ -102,7 +116,9 @@ export function PhotoUpload({ className, onPhotoSaved }: PhotoUploadProps) {
           <ImageIcon className="w-5 h-5" />
           Upload a Photo
         </CardTitle>
-        <CardDescription>Share an image or photo from your device</CardDescription>
+        <CardDescription>
+          Share an image or photo from your device
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid w-full items-center gap-4">
@@ -114,20 +130,31 @@ export function PhotoUpload({ className, onPhotoSaved }: PhotoUploadProps) {
             id="photo-upload"
             disabled={isSubmitting}
           />
-          <label htmlFor="photo-upload" className="group relative block w-full cursor-pointer">
+          <label
+            htmlFor="photo-upload"
+            className="group relative block w-full cursor-pointer"
+          >
             <div
               className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 transition-colors hover:border-primary ${
                 preview ? "p-2" : "px-6 py-10"
               }`}
             >
               {preview ? (
-                <Image src={preview} alt="Photo preview" className="rounded-md max-h-[300px] w-auto object-contain" />
+                <Image
+                  src={preview}
+                  alt="Photo preview"
+                  className="rounded-md max-h-[300px] w-auto object-contain"
+                />
               ) : (
                 <>
                   <ImageIcon className="mx-auto h-10 w-10 text-muted-foreground/80" />
                   <div className="mt-4 flex flex-col items-center gap-1">
-                    <span className="font-medium">Drop your photo here or click to browse</span>
-                    <span className="text-xs text-muted-foreground">Supports JPG, PNG and GIF files</span>
+                    <span className="font-medium">
+                      Drop your photo here or click to browse
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      Supports JPG, PNG and GIF files
+                    </span>
                   </div>
                 </>
               )}
@@ -136,7 +163,11 @@ export function PhotoUpload({ className, onPhotoSaved }: PhotoUploadProps) {
         </div>
       </CardContent>
       <CardFooter className="flex justify-end">
-        <Button onClick={handleUpload} disabled={isSubmitting || !selectedFile} className="w-full sm:w-auto">
+        <Button
+          onClick={handleUpload}
+          disabled={isSubmitting || !selectedFile}
+          className="w-full sm:w-auto"
+        >
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
