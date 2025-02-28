@@ -15,11 +15,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Here you would typically:
-    // 1. Upload the file to your storage service (e.g., S3)
-    // 2. Get the URL of the uploaded file
-    // For this example, we'll use a placeholder URL
-    const fileUrl = "https://placeholder.com/file.pdf"; // Replace with actual upload logic
+    //TODO: Store the actual file,
+    // atm the DB is designed only to store "records" aka "entries"
+    const fileUrl = "https://placeholder.com/file.pdf";
 
     // Save the file record to the database
     const [newFile] = await db

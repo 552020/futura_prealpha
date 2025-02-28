@@ -2,13 +2,11 @@ import { NextResponse } from "next/server";
 import { db } from "@/db/db";
 import { texts } from "@/db/schema";
 
-// Define the POST method for this API route
 export async function POST(req: Request) {
   try {
-    const body = await req.json(); // Read the request body
+    const body = await req.json();
     const { userId, title, content } = body;
 
-    // Basic validation
     if (!userId || !title || !content) {
       return NextResponse.json(
         { error: "All fields are required." },
@@ -16,7 +14,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Insert into database
     await db.insert(texts).values({
       userId,
       title,

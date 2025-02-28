@@ -26,9 +26,9 @@ export function TextUpload({ className, onTextSaved }: TextUploadProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const session = useSession();
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTextInput(e.target.value);
-  };
+  // const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setTextInput(e.target.value);
+  // };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);

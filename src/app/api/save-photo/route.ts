@@ -15,13 +15,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Here you would typically:
-    // 1. Upload the photo to your storage service (e.g., S3, Cloudinary)
-    // 2. Get the URL of the uploaded photo
-    // For this example, we'll use a placeholder URL
-    const photoUrl = "https://placeholder.com/image.jpg"; // Replace with actual upload logic
+    //TODO: Store the actual file,
+    // atm the DB is designed only to store "records" aka "entries"
+    const photoUrl = "https://placeholder.com/image.jpg";
 
-    // Save the photo record to the database
     const [newPhoto] = await db
       .insert(photos)
       .values({
