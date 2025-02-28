@@ -3,7 +3,8 @@
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Image, File } from "lucide-react";
+import { FileText, Image as ImageIcon, File } from "lucide-react";
+import Image from "next/image";
 
 interface UserItem {
   id: string;
@@ -34,9 +35,7 @@ export function UserItems() {
       if (!session?.user?.id) return;
 
       try {
-        const response = await fetch(
-          `/api/user-items?userId=${session.user.id}`
-        );
+        const response = await fetch(`/api/user-items?userId=${session.user.id}`);
         if (!response.ok) throw new Error("Failed to fetch items");
         const data = await response.json();
         setItems(data);
@@ -72,9 +71,7 @@ export function UserItems() {
               {items.texts.map((text) => (
                 <li key={text.id} className="flex items-center gap-2">
                   <span>{text.title || "Untitled"}</span>
-                  <span className="text-sm text-muted-foreground">
-                    {new Date(text.createdAt).toLocaleDateString()}
-                  </span>
+                  <span className="text-sm text-muted-foreground">{new Date(text.createdAt).toLocaleDateString()}</span>
                 </li>
               ))}
             </ul>
@@ -86,7 +83,7 @@ export function UserItems() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Image className="w-5 h-5" />
+            <ImageIcon className="w-5 h-5" />
             <span>Your Photos</span>
           </CardTitle>
         </CardHeader>
@@ -97,10 +94,12 @@ export function UserItems() {
             <ul className="space-y-2">
               {items.photos.map((photo) => (
                 <li key={photo.id} className="flex items-center gap-2">
-                  <img
+                  <Image
                     src={photo.url}
-                    alt="Thumbnail"
-                    className="w-8 h-8 object-cover rounded"
+                    alt={photo.title || "Uploaded photo"}
+                    width={300}
+                    height={300}
+                    className="rounded-lg object-cover"
                   />
                   <span className="text-sm text-muted-foreground">
                     {new Date(photo.createdAt).toLocaleDateString()}
@@ -128,9 +127,7 @@ export function UserItems() {
               {items.files.map((file) => (
                 <li key={file.id} className="flex items-center gap-2">
                   <span>{file.filename}</span>
-                  <span className="text-sm text-muted-foreground">
-                    {new Date(file.createdAt).toLocaleDateString()}
-                  </span>
+                  <span className="text-sm text-muted-foreground">{new Date(file.createdAt).toLocaleDateString()}</span>
                 </li>
               ))}
             </ul>

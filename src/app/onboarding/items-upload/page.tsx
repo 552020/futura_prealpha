@@ -2,58 +2,52 @@
 
 import { useSession } from "next-auth/react";
 import { COPY_VARIATIONS } from "./_copy/variations";
-import { Plus, Loader2, FileText, Image, Upload } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useInterface } from "@/contexts/interface-context";
 import { useRouter } from "next/navigation";
 import { useFileUpload } from "@/hooks/user-file-upload";
 import { TextUpload } from "@/components/text-upload";
 import { PhotoUpload } from "@/components/photo-upload";
 import { FileUpload } from "@/components/file-upload";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ItemsUpload() {
   const router = useRouter();
   const { setMode } = useInterface();
-  const { isLoading, fileInputRef, handleUploadClick, handleFileChange } =
-    useFileUpload({
-      isOnboarding: true,
-      onSuccess: () => {
-        setMode("app");
-        router.push("/onboarding/profile");
-      },
-    });
+  const { isLoading, fileInputRef, handleUploadClick, handleFileChange } = useFileUpload({
+    isOnboarding: true,
+    onSuccess: () => {
+      setMode("app");
+      router.push("/onboarding/profile");
+    },
+  });
   const { data: session } = useSession();
   if (session) {
     console.log(session);
   }
   const copy = COPY_VARIATIONS.LEAVE_ONE_ITEM;
 
-  const handleTextSaved = (data: {
-    id: string;
-    title: string;
-    content: string;
-  }) => {
+  const handleTextSaved = (data: { id: string; title: string; content: string }) => {
     console.log("Text saved:", data);
     setMode("app");
     router.push("/onboarding/profile");
   };
 
-  const handlePhotoSaved = (data: any) => {
+  const handlePhotoSaved = (data: { id: string; url: string; filename: string; createdAt: string }) => {
     console.log("Photo saved:", data);
     setMode("app");
     router.push("/onboarding/profile");
   };
 
-  const handleFileSaved = (data: any) => {
+  const handleFileSaved = (data: {
+    id: string;
+    url: string;
+    filename: string;
+    mimeType: string;
+    size: string;
+    createdAt: string;
+  }) => {
     console.log("File saved:", data);
     setMode("app");
     router.push("/onboarding/profile");
@@ -63,22 +57,12 @@ export default function ItemsUpload() {
     <div className="w-full max-w-[95%] sm:max-w-[90%] lg:max-w-[85%] mx-auto px-4 py-8 flex flex-col gap-16">
       {/* Title and subtitle container */}
       <div className="max-w-4xl">
-        <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold mb-8 tracking-tight">
-          {copy.title}
-        </h1>
-        <p className="text-xl sm:text-2xl text-muted-foreground">
-          {copy.subtitle}
-        </p>
+        <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold mb-8 tracking-tight">{copy.title}</h1>
+        <p className="text-xl sm:text-2xl text-muted-foreground">{copy.subtitle}</p>
       </div>
 
       {/* Hidden file input */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        className="hidden"
-        multiple={false}
-      />
+      <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" multiple={false} />
 
       {/* Upload options with shadcn Tabs */}
       <div className="max-w-4xl mx-auto w-full">
@@ -111,11 +95,7 @@ export default function ItemsUpload() {
           className="rounded-full h-16 w-16 p-0 shadow-lg"
           onClick={handleUploadClick}
         >
-          {isLoading ? (
-            <Loader2 size={32} className="animate-spin" />
-          ) : (
-            <Plus size={32} />
-          )}
+          {isLoading ? <Loader2 size={32} className="animate-spin" /> : <Plus size={32} />}
         </Button>
       </div>
     </div>

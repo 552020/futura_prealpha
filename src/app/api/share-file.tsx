@@ -2,10 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/db/db";
 import { sharing } from "@/db/schema";
 
-export default async function shareFile(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function shareFile(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
     const { fileId, ownerId, sharedWithEmail, permissionLevel } = req.body;
 
@@ -28,9 +25,7 @@ export default async function shareFile(
       //   // Include a registration link if applicable
       // });
 
-      return res
-        .status(200)
-        .json({ message: "File shared successfully and invitation sent." });
+      return res.status(200).json({ message: "File shared successfully and invitation sent." });
     } catch (error) {
       console.error("Error sharing file:", error);
       return res.status(500).json({ error: "Failed to share file." });
