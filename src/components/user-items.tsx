@@ -35,7 +35,9 @@ export function UserItems() {
       if (!session?.user?.id) return;
 
       try {
-        const response = await fetch(`/api/user-items?userId=${session.user.id}`);
+        const response = await fetch(
+          `/api/user-items?userId=${session.user.id}`
+        );
         if (!response.ok) throw new Error("Failed to fetch items");
         const data = await response.json();
         setItems(data);
@@ -71,7 +73,9 @@ export function UserItems() {
               {items.texts.map((text) => (
                 <li key={text.id} className="flex items-center gap-2">
                   <span>{text.title || "Untitled"}</span>
-                  <span className="text-sm text-muted-foreground">{new Date(text.createdAt).toLocaleDateString()}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {new Date(text.createdAt).toLocaleDateString()}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -94,13 +98,15 @@ export function UserItems() {
             <ul className="space-y-2">
               {items.photos.map((photo) => (
                 <li key={photo.id} className="flex items-center gap-2">
-                  <Image
-                    src={photo.url}
-                    alt={photo.title || "Uploaded photo"}
-                    width={300}
-                    height={300}
-                    className="rounded-lg object-cover"
-                  />
+                  {photo.url && (
+                    <Image
+                      src={photo.url}
+                      alt={photo.title || "Uploaded photo"}
+                      width={300}
+                      height={300}
+                      className="rounded-lg object-cover"
+                    />
+                  )}
                   <span className="text-sm text-muted-foreground">
                     {new Date(photo.createdAt).toLocaleDateString()}
                   </span>
@@ -127,7 +133,9 @@ export function UserItems() {
               {items.files.map((file) => (
                 <li key={file.id} className="flex items-center gap-2">
                   <span>{file.filename}</span>
-                  <span className="text-sm text-muted-foreground">{new Date(file.createdAt).toLocaleDateString()}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {new Date(file.createdAt).toLocaleDateString()}
+                  </span>
                 </li>
               ))}
             </ul>
