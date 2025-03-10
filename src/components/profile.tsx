@@ -41,6 +41,9 @@ export function Profile({ isOnboarding = false }: ProfileProps) {
     return <File size={48} />;
   };
 
+  const resourceId = "some-resource-id"; // Replace with actual resource ID
+  const resourceType = "file"; // Replace with actual resource type
+
   return (
     <div className="w-full max-w-[95%] sm:max-w-[90%] lg:max-w-[85%] mx-auto px-4 py-8">
       {/* Header */}
@@ -136,7 +139,7 @@ export function Profile({ isOnboarding = false }: ProfileProps) {
           <p className="text-muted-foreground">
             Your digital vault has received its first treasure.
           </p>
-          <ShareFileForm />
+          <ShareFileForm resourceId={resourceId} resourceType={resourceType} />
         </Card>
       )}
     </div>
