@@ -1,24 +1,25 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@/db/db";
-import { sharing } from "@/db/schema";
-
+import { files } from "@/db/schema";
+// import { files, photos, texts } from "@/db/schema";
 export default async function shareFile(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const { fileId, ownerId, sharedWithEmail, permissionLevel } = req.body;
+    const { fileId, ownerId } = req.body;
+    // const { fileId, ownerId, sharedWithEmail, permissionLevel } = req.body;
 
     try {
-      // Insert the share record into the database
-      await db.insert(sharing).values({
-        id: crypto.randomUUID(), // Generate a unique ID for the record
-        resourceType: "file",
-        resourceId: fileId,
-        ownerId: ownerId,
-        sharedWithId: "placeholder-id", // You need to provide a value for this required field
-        recipientEmail: sharedWithEmail,
-        permissionLevel: permissionLevel,
+      // Determine the resource type based on the fileId or other logic
+      // const resourceType = "file"; // Adjust this logic as needed
+
+      await db.insert(files).values({
+        userId: ownerId as string,
+        url: `some-url/${fileId}`,
+        filename: `file-${fileId}`,
+        mimeType: "application/pdf",
+        size: "123456", // Convert the number to a string
       });
 
       // Placeholder for sending an email invitation to the second user
