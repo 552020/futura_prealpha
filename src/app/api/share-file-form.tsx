@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+//call with:     <ShareFileForm resourceId="123" resourceType="file" />
 // Define the schema for form validation
 const formSchema = z.object({
   sharedWithEmail: z
@@ -23,7 +25,16 @@ const formSchema = z.object({
     .nonempty("Email is required"),
 });
 
-export function ShareFileForm() {
+interface ShareFileFormProps {
+  resourceId: string;
+  resourceType: "file" | "photo" | "text";
+}
+
+export function ShareFileForm({
+  resourceId,
+  resourceType,
+}: ShareFileFormProps) {
+  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -32,32 +43,42 @@ export function ShareFileForm() {
   });
 
   const onSubmit = async (data: { sharedWithEmail: string }) => {
-    const ownerId = "placeholder-owner-id";
-    const fileId = "placeholder-file-id";
-    const permissionLevel = "view";
+    try {
+      const response = await fetch("/api/share-file", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          resourceType,
+          resourceId,
+          shareWith: {
+            email: data.sharedWithEmail,
+          },
+          expiresAt: null, // Optional: you can add an expiration date picker if needed
+        }),
+      });
 
-    const response = await fetch("/api/share-file", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        fileId,
-        ownerId,
-        sharedWithEmail: data.sharedWithEmail,
-        permissionLevel,
-      }),
-    });
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Error response:", errorText);
-      alert("An error occurred: " + errorText);
-      return;
+      // const responseData = await response.json();
+
+      toast({
+        title: "Shared successfully",
+        description: `Resource has been shared with ${data.sharedWithEmail}`,
+      });
+
+      form.reset();
+    } catch (error) {
+      console.error("Share error:", error);
+      toast({
+        variant: "destructive",
+        title: "Error sharing resource",
+        description: "Please try again later.",
+      });
     }
-
-    const responseData = await response.json();
-    alert(responseData.message);
   };
 
   return (
@@ -68,19 +89,19 @@ export function ShareFileForm() {
           name="sharedWithEmail"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Shared With Email</FormLabel>
+              <FormLabel>Share with email</FormLabel>
               <FormControl>
                 <Input
                   placeholder="example@example.com"
                   {...field}
-                  className="mx-auto  w-80"
+                  className="mx-auto w-80"
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Share File</Button>
+        <Button type="submit">Share</Button>
       </form>
     </Form>
   );
