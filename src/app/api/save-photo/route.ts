@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 
     //TODO: Store the actual file,
     // atm the DB is designed only to store "records" aka "entries"
-    const photoUrl = "https://placeholder.com/image.jpg";
+    const photoUrl = "https://placehold.co/600x400";
 
     const [newPhoto] = await db
       .insert(photos)

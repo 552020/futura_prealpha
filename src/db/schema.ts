@@ -90,7 +90,7 @@ export const photos = pgTable("photos", {
   url: text("url").notNull(),
   caption: text("caption"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  isPublic: boolean("is_public").default(true),
+  isPublic: boolean("is_public").default(false),
   metadata: json("metadata")
     .$type<{
       size?: number;
@@ -99,6 +99,12 @@ export const photos = pgTable("photos", {
         width: number;
         height: number;
       };
+      sharedWith?: Array<{
+        userId?: string;
+        email?: string;
+        sharedAt: string;
+        expiresAt?: string;
+      }>;
     }>()
     .default({}),
 });
@@ -123,6 +129,12 @@ export const texts = pgTable("texts", {
       dateOfMemory?: string;
       recipients?: string[];
       unlockDate?: string;
+      sharedWith?: Array<{
+        userId?: string;
+        email?: string;
+        sharedAt: string;
+        expiresAt?: string;
+      }>;
     }>()
     .default({}),
 });
@@ -145,25 +157,14 @@ export const files = pgTable("files", {
       originalName?: string;
       encoding?: string;
       description?: string;
+      sharedWith?: Array<{
+        userId?: string;
+        email?: string;
+        sharedAt: string;
+        expiresAt?: string;
+      }>;
     }>()
     .default({}),
-});
-
-export const sharing = pgTable("sharing", {
-  id: text("id").primaryKey(),
-  resourceType: text("resource_type").notNull(),
-  resourceId: text("resource_id").notNull(),
-  ownerId: text("owner_id")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
-  sharedWithId: text("shared_with_id")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
-  recipientEmail: text("recipient_email"), // Optional field for email if the resource is shared with someone not in the system
-  permissionLevel: text("permission_level").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  expiresAt: timestamp("expires_at"),
-  metadata: json("metadata").default({}),
 });
 
 // Type definitions for Auth.js
