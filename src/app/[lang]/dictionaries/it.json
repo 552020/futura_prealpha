@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "title": "Futura - Vivi per Sempre",
+    "description": "Il tuo archivio digitale per i ricordi che contano."
+  },
+  "home": {
+    "title": "Futura",
+    "subtitle": "Vivi per Sempre. Ora.",
+    "learnMore": "Scopri di Più",
+    "startHere": "Inizia Qui"
+  },
+  "onboarding": {
+    "upload": {
+      "title": "Lascia Un Elemento",
+      "subtitle": "Carica una foto, un documento o qualsiasi file che rappresenti un ricordo che desideri conservare."
+    },
+    "profile": {
+      "title": "Il Tuo Archivio Digitale",
+      "subtitle": "Ecco dove i tuoi ricordi vivono per sempre."
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "about": "Chi Siamo",
+    "profile": "Profilo",
+    "settings": "Impostazioni",
+    "getStarted": "Inizia"
+  },
+  "footer": {
+    "tagline": "Preserviamo il tuo patrimonio digitale per l'eternità.",
+    "links": "Link Rapidi",
+    "terms": "Termini di Servizio",
+    "privacy": "Politica sulla Privacy",
+    "contact": "Contattaci",
+    "about": "Chi è Futura",
+    "description": "Futura è un archivio digitale che garantisce che i tuoi ricordi e il tuo patrimonio vivano per sempre.",
+    "rights": "Tutti i diritti riservati."
+  }
+}

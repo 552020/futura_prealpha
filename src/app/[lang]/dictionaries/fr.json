@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "title": "Futura - Vivez pour Toujours",
+    "description": "Votre coffre-fort numérique pour les souvenirs qui comptent."
+  },
+  "home": {
+    "title": "Futura",
+    "subtitle": "Vivez pour Toujours. Maintenant.",
+    "learnMore": "En Savoir Plus",
+    "startHere": "Commencer Ici"
+  },
+  "onboarding": {
+    "upload": {
+      "title": "Laissez Un Élément Derrière Vous",
+      "subtitle": "Téléchargez une photo, un document ou tout fichier qui représente un souvenir que vous souhaitez préserver."
+    },
+    "profile": {
+      "title": "Votre Coffre-fort Numérique",
+      "subtitle": "Voici où vos souvenirs vivent pour toujours."
+    }
+  },
+  "nav": {
+    "home": "Accueil",
+    "about": "À Propos",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "getStarted": "Commencer"
+  },
+  "footer": {
+    "tagline": "Préserver votre héritage numérique pour l'éternité.",
+    "links": "Liens Rapides",
+    "terms": "Conditions d'Utilisation",
+    "privacy": "Politique de Confidentialité",
+    "contact": "Contactez-Nous",
+    "about": "À Propos de Futura",
+    "description": "Futura est un coffre-fort numérique qui garantit que vos souvenirs et votre héritage vivent pour toujours.",
+    "rights": "Tous droits réservés."
+  }
+}

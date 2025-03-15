@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "title": "Futura - Live Forever",
+    "description": "Your digital vault for memories that matter."
+  },
+  "home": {
+    "title": "Futura",
+    "subtitle": "Live Forever. Now.",
+    "learnMore": "Learn More",
+    "startHere": "Start Here"
+  },
+  "onboarding": {
+    "upload": {
+      "title": "Leave One Item Behind",
+      "subtitle": "Upload a photo, document, or any file that represents a memory you want to preserve."
+    },
+    "profile": {
+      "title": "Your Digital Vault",
+      "subtitle": "Here's where your memories live forever."
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "profile": "Profile",
+    "settings": "Settings",
+    "getStarted": "Get Started"
+  },
+  "footer": {
+    "tagline": "Preserving your digital legacy for eternity.",
+    "links": "Quick Links",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Us",
+    "about": "About Futura",
+    "description": "Futura is a digital vault that ensures your memories and legacy live on forever.",
+    "rights": "All rights reserved."
+  }
+}

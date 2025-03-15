@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "title": "Futura - Lebe für Immer",
+    "description": "Dein digitaler Tresor für Erinnerungen, die zählen."
+  },
+  "home": {
+    "title": "Futura",
+    "subtitle": "Lebe für Immer. Jetzt.",
+    "learnMore": "Mehr Erfahren",
+    "startHere": "Hier Beginnen"
+  },
+  "onboarding": {
+    "upload": {
+      "title": "Hinterlasse Ein Element",
+      "subtitle": "Lade ein Foto, Dokument oder eine beliebige Datei hoch, die eine Erinnerung darstellt, die du bewahren möchtest."
+    },
+    "profile": {
+      "title": "Dein Digitaler Tresor",
+      "subtitle": "Hier leben deine Erinnerungen für immer."
+    }
+  },
+  "nav": {
+    "home": "Startseite",
+    "about": "Über Uns",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "getStarted": "Loslegen"
+  },
+  "footer": {
+    "tagline": "Bewahre dein digitales Erbe für die Ewigkeit.",
+    "links": "Schnelllinks",
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutzrichtlinie",
+    "contact": "Kontaktiere Uns",
+    "about": "Über Futura",
+    "description": "Futura ist ein digitaler Tresor, der sicherstellt, dass deine Erinnerungen und dein Erbe für immer leben.",
+    "rights": "Alle Rechte vorbehalten."
+  }
+}
