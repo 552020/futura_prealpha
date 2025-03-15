@@ -9,7 +9,7 @@ import { InterfaceProvider } from "@/contexts/interface-context";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
 import { locales } from "@/middleware";
 import { notFound } from "next/navigation";
-import { getDictionary, Dictionary } from "@/app/[lang]/dictionaries";
+import { getDictionary, Dictionary } from "@/app/[lang]/dictionaries/dictionaries";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

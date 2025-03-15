@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 // import { SignIn } from "@/components/auth-components";
 import { signIn } from "next-auth/react";
 import { LanguageSwitcher } from "./language-switcher";
-import { Dictionary } from "@/app/[lang]/dictionaries";
+import { Dictionary } from "@/app/[lang]/dictionaries/dictionaries";
 
 export default function Header({ dict, lang }: { dict?: Dictionary; lang?: string }) {
   const { data: session, status } = useSession();

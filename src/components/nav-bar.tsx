@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Dictionary } from "@/app/[lang]/dictionaries";
+import { Dictionary } from "@/app/[lang]/dictionaries/dictionaries";
 
 export function NavBar({ mode, lang = "en", dict }: { mode: string; lang: string; dict?: Dictionary }) {
   // Check for missing translations and log warnings in development

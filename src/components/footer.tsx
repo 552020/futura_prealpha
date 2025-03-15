@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Dictionary } from "@/app/[lang]/dictionaries";
+import { Dictionary } from "@/app/[lang]/dictionaries/dictionaries";
 import { Share2, Twitter, Instagram, Facebook } from "lucide-react";
 // import { Button } from "./ui/button";
 

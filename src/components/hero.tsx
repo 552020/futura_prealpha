@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Dictionary } from "@/app/[lang]/dictionaries";
+import { Dictionary } from "@/app/[lang]/dictionaries/dictionaries";
 
 export default function Hero({ dict, lang }: { dict?: Dictionary; lang?: string }) {
   // Use the passed lang prop if available, otherwise default to "en"
