@@ -27,13 +27,14 @@
     "getStarted": "Loslegen"
   },
   "footer": {
-    "tagline": "Bewahre dein digitales Erbe für die Ewigkeit.",
+    "tagline": "Mit ❤️ zwischen Berlin, Marseille und Lissabon gemacht",
     "links": "Schnelllinks",
     "terms": "Nutzungsbedingungen",
     "privacy": "Datenschutzrichtlinie",
     "contact": "Kontaktiere Uns",
     "about": "Über Futura",
     "description": "Futura ist ein digitaler Tresor, der sicherstellt, dass deine Erinnerungen und dein Erbe für immer leben.",
-    "rights": "Alle Rechte vorbehalten."
+    "rights": "Alle Rechte vorbehalten.",
+    "social": "X"
   }
 }

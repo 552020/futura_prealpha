@@ -6,9 +6,7 @@ type NavBarDictionary = {
     about: string;
     profile: string;
     settings: string;
-    [key: string]: string;
   };
-  [key: string]: any;
 };
 
 export function NavBar({ mode, lang = "en", dict }: { mode: string; lang: string; dict?: NavBarDictionary }) {

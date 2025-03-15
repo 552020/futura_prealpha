@@ -13,9 +13,8 @@ import { useEffect } from "react";
 // import { SignIn } from "@/components/auth-components";
 import { signIn } from "next-auth/react";
 import { LanguageSwitcher } from "./language-switcher";
-import { useParams } from "next/navigation";
 
-// Define a proper type for the dictionary
+// Define a proper type for the dictionary - only what header needs
 type HeaderDictionary = {
   nav: {
     home: string;
@@ -23,16 +22,14 @@ type HeaderDictionary = {
     profile: string;
     settings: string;
     getStarted: string;
-    [key: string]: string;
   };
-  [key: string]: any;
 };
 
-export default function Header({ dict }: { dict?: HeaderDictionary }) {
+export default function Header({ dict, lang }: { dict?: HeaderDictionary; lang?: string }) {
   const { data: session, status } = useSession();
   const { mode } = useInterface();
-  const params = useParams();
-  const lang = (params.lang as string) || "en";
+  // Use the passed lang prop if available, otherwise get it from params
+  const currentLang = lang || "en";
 
   // Add detailed logging
   console.log("Session Status:", status); // "loading" | "authenticated" | "unauthenticated"
@@ -57,7 +54,7 @@ export default function Header({ dict }: { dict?: HeaderDictionary }) {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Left: Logo section */}
         <section className="logo-section flex items-center">
-          <Link href={`/${lang}`}>
+          <Link href={`/${currentLang}`}>
             <div className="w-10 h-10 rounded-full bg-black dark:bg-white flex items-center justify-center">
               <span className="text-xl sm:text-2xl font-bold text-white dark:text-black">F</span>
             </div>
@@ -66,7 +63,7 @@ export default function Header({ dict }: { dict?: HeaderDictionary }) {
 
         {/* Center: Navigation */}
         <nav className="navigation-section flex flex-1 justify-center gap-6 text-xs sm:text-sm">
-          <NavBar mode={mode} lang={lang} dict={dict} />
+          <NavBar mode={mode} lang={currentLang} dict={dict} />
         </nav>
 
         {/* Right User controls */}
@@ -80,7 +77,7 @@ export default function Header({ dict }: { dict?: HeaderDictionary }) {
             </div>
           ) : status === "authenticated" && session?.user?.id ? (
             <div className="border-l pl-2">
-              <Link href={`/${lang}/user/${session.user.id}/profile`}>
+              <Link href={`/${currentLang}/user/${session.user.id}/profile`}>
                 <Button variant="ghost" size="icon">
                   <UserCircle className="h-5 w-5" />
                 </Button>

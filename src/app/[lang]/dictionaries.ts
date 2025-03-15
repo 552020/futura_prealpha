@@ -1,8 +1,47 @@
 import "server-only";
 import { locales } from "@/middleware";
 
-type Locale = (typeof locales)[number];
-type Dictionary = Record<string, any>;
+// Define a proper type for the dictionary
+export type Dictionary = {
+  metadata: {
+    title: string;
+    description: string;
+  };
+  home: {
+    title: string;
+    subtitle: string;
+    learnMore: string;
+    startHere: string;
+  };
+  nav: {
+    home: string;
+    about: string;
+    profile: string;
+    settings: string;
+    getStarted: string;
+  };
+  footer: {
+    tagline: string;
+    links: string;
+    terms: string;
+    privacy: string;
+    contact: string;
+    about: string;
+    description: string;
+    rights: string;
+    social: string;
+  };
+  onboarding: {
+    upload: {
+      title: string;
+      subtitle: string;
+    };
+    profile: {
+      title: string;
+      subtitle: string;
+    };
+  };
+};
 
 const dictionaries: Record<string, () => Promise<Dictionary>> = {
   en: () => import("./dictionaries/en.json").then((module) => module.default),

@@ -27,13 +27,14 @@
     "getStarted": "Comenzar"
   },
   "footer": {
-    "tagline": "Preservando tu legado digital para la eternidad.",
+    "tagline": "Hecho con ❤️ entre Berlín, Marsella y Lisboa",
     "links": "Enlaces Rápidos",
     "terms": "Términos de Servicio",
     "privacy": "Política de Privacidad",
     "contact": "Contáctanos",
     "about": "Acerca de Futura",
     "description": "Futura es una bóveda digital que asegura que tus recuerdos y legado vivan para siempre.",
-    "rights": "Todos los derechos reservados."
+    "rights": "Todos los derechos reservados.",
+    "social": "X"
   }
 }

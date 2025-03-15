@@ -1,11 +1,11 @@
 {
   "metadata": {
-    "title": "Futura - 永生不朽",
-    "description": "您珍贵记忆的数字保险库。"
+    "title": "Futura - 永远活着",
+    "description": "您的数字保险库，存储重要的回忆。"
   },
   "home": {
     "title": "Futura",
-    "subtitle": "永生不朽。现在。",
+    "subtitle": "永远活着。现在。",
     "learnMore": "了解更多",
     "startHere": "从这里开始"
   },
@@ -27,13 +27,14 @@
     "getStarted": "开始使用"
   },
   "footer": {
-    "tagline": "为永恒保存您的数字遗产。",
+    "tagline": "在柏林、马赛和里斯本之间用❤️制作",
     "links": "快速链接",
     "terms": "服务条款",
     "privacy": "隐私政策",
     "contact": "联系我们",
     "about": "关于Futura",
     "description": "Futura是一个数字保险库，确保您的记忆和遗产永远存在。",
-    "rights": "版权所有。"
+    "rights": "版权所有。",
+    "social": "X"
   }
 }

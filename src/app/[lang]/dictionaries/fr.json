@@ -27,13 +27,14 @@
     "getStarted": "Commencer"
   },
   "footer": {
-    "tagline": "Préserver votre héritage numérique pour l'éternité.",
+    "tagline": "Fait avec ❤️ entre Berlin, Marseille et Lisbonne",
     "links": "Liens Rapides",
     "terms": "Conditions d'Utilisation",
     "privacy": "Politique de Confidentialité",
     "contact": "Contactez-Nous",
     "about": "À Propos de Futura",
     "description": "Futura est un coffre-fort numérique qui garantit que vos souvenirs et votre héritage vivent pour toujours.",
-    "rights": "Tous droits réservés."
+    "rights": "Tous droits réservés.",
+    "social": "X"
   }
 }

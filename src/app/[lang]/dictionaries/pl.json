@@ -27,13 +27,14 @@
     "getStarted": "Rozpocznij"
   },
   "footer": {
-    "tagline": "Zachowujemy twoje cyfrowe dziedzictwo na wieczność.",
+    "tagline": "Stworzone z ❤️ pomiędzy Berlinem, Marsylią i Lizboną",
     "links": "Szybkie Linki",
     "terms": "Warunki Korzystania",
     "privacy": "Polityka Prywatności",
     "contact": "Kontakt",
     "about": "O Futura",
     "description": "Futura to cyfrowy skarbiec, który zapewnia, że twoje wspomnienia i dziedzictwo żyją wiecznie.",
-    "rights": "Wszelkie prawa zastrzeżone."
+    "rights": "Wszelkie prawa zastrzeżone.",
+    "social": "X"
   }
 }

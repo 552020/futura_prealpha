@@ -9,7 +9,7 @@ import { InterfaceProvider } from "@/contexts/interface-context";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
 import { locales } from "@/middleware";
 import { notFound } from "next/navigation";
-import { getDictionary } from "./dictionaries";
+import { getDictionary, Dictionary } from "@/app/[lang]/dictionaries";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,14 +24,14 @@ const geistMono = Geist_Mono({
 // Dynamic metadata based on the current language
 export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
   // Get the dictionary for the current language
-  const dict = await getDictionary(params.lang);
+  const dict: Dictionary = await getDictionary(params.lang);
 
   return {
-    title: dict.metadata?.title || "Futura",
-    description: dict.metadata?.description || "Live forever. Now.",
+    title: dict.metadata.title || "Futura",
+    description: dict.metadata.description || "Live forever. Now.",
     openGraph: {
-      title: dict.metadata?.title || "Futura",
-      description: dict.metadata?.description || "Live forever. Now.",
+      title: dict.metadata.title || "Futura",
+      description: dict.metadata.description || "Live forever. Now.",
       locale: params.lang,
     },
   };

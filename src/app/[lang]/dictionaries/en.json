@@ -27,13 +27,14 @@
     "getStarted": "Get Started"
   },
   "footer": {
-    "tagline": "Preserving your digital legacy for eternity.",
+    "tagline": "Made with ❤️ between Berlin, Marseille and Lisbon",
     "links": "Quick Links",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "contact": "Contact Us",
     "about": "About Futura",
     "description": "Futura is a digital vault that ensures your memories and legacy live on forever.",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "social": "X"
   }
 }
