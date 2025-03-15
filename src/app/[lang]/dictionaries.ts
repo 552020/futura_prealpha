@@ -19,22 +19,46 @@ export type Dictionary = {
     title?: string;
     description?: string;
   };
-  header?: {
-    signIn?: string;
-  };
   home?: {
     title?: string;
     subtitle?: string;
     learnMore?: string;
     startHere?: string;
   };
+  valueJourney?: {
+    scene1?: {
+      title?: string;
+      description?: string;
+    };
+    scene2?: {
+      title?: string;
+      description?: string;
+    };
+    scene3?: {
+      title?: string;
+      description?: string;
+    };
+    scene4?: {
+      title?: string;
+      description?: string;
+    };
+    scene5?: {
+      title?: string;
+      description?: string;
+    };
+    conclusion?: string;
+  };
+  header?: {
+    signIn?: string;
+  };
   nav?: {
-    home?: string;
     about?: string;
     profile?: string;
     settings?: string;
     getStarted?: string;
     faq?: string;
+    vault?: string;
+    feed?: string;
   };
   footer?: {
     tagline?: string;
