@@ -66,7 +66,7 @@ export default async function RootLayout({
                 <OnboardingProvider>
                   <Header dict={dict} lang={params.lang} />
                   <main className="flex-1">{children}</main>
-                  <Footer dict={dict} />
+                  <Footer dict={dict} lang={params.lang} />
                 </OnboardingProvider>
               </InterfaceProvider>
             </div>
