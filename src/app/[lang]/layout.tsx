@@ -26,12 +26,26 @@ export async function generateMetadata({ params }: { params: { lang: string } })
   // Get the dictionary for the current language
   const dict: Dictionary = await getDictionary(params.lang);
 
+  // Check for missing translations and log warnings in development
+  if (process.env.NODE_ENV === "development") {
+    if (!dict?.metadata?.title) {
+      console.warn(
+        `[i18n] Missing translation for "metadata.title" in locale "${params.lang}". Using fallback: "Futura"`
+      );
+    }
+    if (!dict?.metadata?.description) {
+      console.warn(
+        `[i18n] Missing translation for "metadata.description" in locale "${params.lang}". Using fallback: "Live forever. Now."`
+      );
+    }
+  }
+
   return {
-    title: dict.metadata.title || "Futura",
-    description: dict.metadata.description || "Live forever. Now.",
+    title: dict?.metadata?.title || "Futura",
+    description: dict?.metadata?.description || "Live forever. Now.",
     openGraph: {
-      title: dict.metadata.title || "Futura",
-      description: dict.metadata.description || "Live forever. Now.",
+      title: dict?.metadata?.title || "Futura",
+      description: dict?.metadata?.description || "Live forever. Now.",
       locale: params.lang,
     },
   };

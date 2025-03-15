@@ -9,6 +9,25 @@
     "learnMore": "Learn More",
     "startHere": "Start Here"
   },
+  "header": {
+    "signIn": "Sign In"
+  },
+  "nav": {
+    "about": "About",
+    "profile": "Profile",
+    "settings": "Settings",
+    "getStarted": "Get Started",
+    "faq": "FAQ",
+    "vault": "Vault",
+    "feed": "Feed"
+  },
+  "footer": {
+    "tagline": "Made with ❤️ between Berlin, Marseille and Lisbon",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Us",
+    "share": "Share"
+  },
   "onboarding": {
     "upload": {
       "title": "Leave One Item Behind",
@@ -18,23 +37,5 @@
       "title": "Your Digital Vault",
       "subtitle": "Here's where your memories live forever."
     }
-  },
-  "nav": {
-    "home": "Home",
-    "about": "About",
-    "profile": "Profile",
-    "settings": "Settings",
-    "getStarted": "Get Started"
-  },
-  "footer": {
-    "tagline": "Made with ❤️ between Berlin, Marseille and Lisbon",
-    "links": "Quick Links",
-    "terms": "Terms of Service",
-    "privacy": "Privacy Policy",
-    "contact": "Contact Us",
-    "about": "About Futura",
-    "description": "Futura is a digital vault that ensures your memories and legacy live on forever.",
-    "rights": "All rights reserved.",
-    "social": "X"
   }
 }

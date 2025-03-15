@@ -1,52 +1,36 @@
 import Link from "next/link";
+import { Dictionary } from "@/app/[lang]/dictionaries";
 
-type NavBarDictionary = {
-  nav: {
-    home: string;
-    about: string;
-    profile: string;
-    settings: string;
-  };
-};
-
-export function NavBar({ mode, lang = "en", dict }: { mode: string; lang: string; dict?: NavBarDictionary }) {
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator
-        .share({
-          title: "Check this out!",
-          url: window.location.href,
-        })
-        .then(() => console.log("Share successful"))
-        .catch((error) => console.error("Error sharing:", error));
-    } else {
-      console.log("Web Share API is not supported in your browser.");
+export function NavBar({ mode, lang = "en", dict }: { mode: string; lang: string; dict?: Dictionary }) {
+  // Check for missing translations and log warnings in development
+  if (process.env.NODE_ENV === "development") {
+    if (!dict?.nav?.about) {
+      console.warn(`[i18n] Missing translation for "nav.about" in locale "${lang}". Using fallback: "About"`);
     }
-  };
+    if (!dict?.nav?.faq) {
+      console.warn(`[i18n] Missing translation for "nav.faq" in locale "${lang}". Using fallback: "FAQ"`);
+    }
+  }
 
   return mode === "marketing" ? (
-    // Marketing navigation items
     <>
-      <Link href={`/${lang}`} className="hover:text-primary">
-        {dict?.nav?.home || "Home"}
-      </Link>
       <Link href={`/${lang}/about`} className="hover:text-primary">
         {dict?.nav?.about || "About"}
       </Link>
-      <Link href="/pricing">Pricing</Link>
-      <button onClick={handleShare}>Share</button>
+      <Link href={`/${lang}/faq`} className="hover:text-primary">
+        {dict?.nav?.faq || "FAQ"}
+      </Link>
     </>
   ) : (
     // App navigation items
+    // TODO: add the about we removed from here in the footer
     <>
-      <Link href={`/${lang}`} className="hover:text-primary">
-        {dict?.nav?.home || "Home"}
+      <Link href={`/${lang}/vault`} className="hover:text-primary">
+        Vault
       </Link>
-      <Link href={`/${lang}/about`} className="hover:text-primary">
-        {dict?.nav?.about || "About"}
+      <Link href={`/${lang}/feed`} className="hover:text-primary">
+        Feed
       </Link>
-      <Link href="/vault">Vault</Link>
-      <Link href="/feed">Feed</Link>
     </>
   );
 }

@@ -19,6 +19,9 @@ export type Dictionary = {
     title?: string;
     description?: string;
   };
+  header?: {
+    signIn?: string;
+  };
   home?: {
     title?: string;
     subtitle?: string;
