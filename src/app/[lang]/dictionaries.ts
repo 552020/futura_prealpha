@@ -1,44 +1,53 @@
 import "server-only";
 import { locales } from "@/middleware";
 
-// Define a proper type for the dictionary
+/**
+ * Dictionary type definition for internationalization.
+ *
+ * NOTE: All fields are intentionally marked as optional to provide flexibility
+ * during development. This allows us to:
+ * 1. Add new UI elements without immediately updating all language dictionaries
+ * 2. Provide fallback values in components when translations are missing
+ * 3. Gradually translate content without breaking the application
+ *
+ * Once the application structure stabilizes, we may consider making critical
+ * fields required, but for now, this approach offers the best balance of
+ * development speed and reliability.
+ */
 export type Dictionary = {
-  metadata: {
-    title: string;
-    description: string;
+  metadata?: {
+    title?: string;
+    description?: string;
   };
-  home: {
-    title: string;
-    subtitle: string;
-    learnMore: string;
-    startHere: string;
+  home?: {
+    title?: string;
+    subtitle?: string;
+    learnMore?: string;
+    startHere?: string;
   };
-  nav: {
-    home: string;
-    about: string;
-    profile: string;
-    settings: string;
-    getStarted: string;
+  nav?: {
+    home?: string;
+    about?: string;
+    profile?: string;
+    settings?: string;
+    getStarted?: string;
+    faq?: string;
   };
-  footer: {
-    tagline: string;
-    links: string;
-    terms: string;
-    privacy: string;
-    contact: string;
-    about: string;
-    description: string;
-    rights: string;
-    social: string;
+  footer?: {
+    tagline?: string;
+    contact?: string;
+    terms?: string;
+    privacy?: string;
+    share?: string;
   };
-  onboarding: {
-    upload: {
-      title: string;
-      subtitle: string;
+  onboarding?: {
+    upload?: {
+      title?: string;
+      subtitle?: string;
     };
-    profile: {
-      title: string;
-      subtitle: string;
+    profile?: {
+      title?: string;
+      subtitle?: string;
     };
   };
 };
