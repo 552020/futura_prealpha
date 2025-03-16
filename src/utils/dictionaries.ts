@@ -101,8 +101,36 @@ export type ValueJourneyDictionary = {
   };
 };
 
-// Combined dictionary type that includes both base and value journey content
-export type Dictionary = BaseDictionary & ValueJourneyDictionary;
+// About page dictionary type
+export type AboutDictionary = {
+  about?: {
+    title?: string;
+    description?: string;
+    intro?: string;
+    missionTitle?: string;
+    missionText?: string;
+    visionTitle?: string;
+    visionText?: string;
+    teamTitle?: string;
+    teamText?: string;
+  };
+};
+
+// FAQ page dictionary type
+export type FAQDictionary = {
+  faq?: {
+    title?: string;
+    description?: string;
+    intro?: string;
+    items?: Array<{
+      question?: string;
+      answer?: string;
+    }>;
+  };
+};
+
+// Combined dictionary type that includes all content types
+export type Dictionary = BaseDictionary & ValueJourneyDictionary & AboutDictionary & FAQDictionary;
 
 const dictionaries: Record<string, () => Promise<BaseDictionary>> = {
   en: () => import("../app/[lang]/dictionaries/base/en.json").then((module) => module.default),
@@ -130,29 +158,43 @@ const segmentDictionaries: Record<string, Record<string, () => Promise<ValueJour
   // Add other segments as needed
 };
 
+// About page dictionaries
+const aboutDictionaries: Record<string, () => Promise<AboutDictionary>> = {
+  en: () => import("../app/[lang]/dictionaries/about/en.json").then((module) => module.default),
+  de: () => import("../app/[lang]/dictionaries/about/de.json").then((module) => module.default),
+  // Add other languages as needed
+};
+
+// FAQ page dictionaries
+const faqDictionaries: Record<string, () => Promise<FAQDictionary>> = {
+  en: () => import("../app/[lang]/dictionaries/faq/en.json").then((module) => module.default),
+  de: () => import("../app/[lang]/dictionaries/faq/de.json").then((module) => module.default),
+  // Add other languages as needed
+};
+
 /**
- * Loads dictionary content for internationalization based on locale and optional segment.
+ * Loads dictionary content for internationalization based on locale and optional parameters.
  *
- * This function serves two main purposes:
+ * This function serves multiple purposes:
  * 1. Provides base UI text (navigation, buttons, common elements) for all pages
  * 2. Optionally loads segment-specific content (like valueJourney) when needed
- *
- * The segment parameter is optional because:
- * - Not all pages need segment-specific content
- * - This allows for more efficient loading (only load what's needed)
- * - Some pages (like settings, profile) only need the base dictionary
- * - Content-heavy pages (home, landing pages) need both base and segment content
- *
- * Usage examples:
- * - getDictionary("en") -> Returns just the base dictionary
- * - getDictionary("fr", "family") -> Returns base + family segment content in French
- * - getDictionary("de", "black-mirror") -> Returns base + black-mirror segment in German
+ * 3. Optionally loads page-specific content (about, faq) when needed
  *
  * @param locale - The language code (e.g., "en", "fr", "de")
- * @param segment - Optional segment name (e.g., "family", "black-mirror")
+ * @param options - Optional parameters
+ * @param options.segment - Optional segment name (e.g., "family", "black-mirror")
+ * @param options.includeAbout - Whether to include About page content
+ * @param options.includeFAQ - Whether to include FAQ page content
  * @returns A Promise resolving to a Dictionary containing all requested content
  */
-export const getDictionary = async (locale: string, segment?: string): Promise<Dictionary> => {
+export const getDictionary = async (
+  locale: string,
+  options?: {
+    segment?: string;
+    includeAbout?: boolean;
+    includeFAQ?: boolean;
+  }
+): Promise<Dictionary> => {
   try {
     // Check if the locale is supported
     if (!locales.includes(locale)) {
@@ -162,32 +204,74 @@ export const getDictionary = async (locale: string, segment?: string): Promise<D
 
     // Load the main dictionary for the locale
     const baseDictionary = await dictionaries[locale]();
+    let result: Dictionary = { ...baseDictionary };
 
     // If a segment is specified, try to load and merge the segment-specific dictionary
-    if (segment) {
+    if (options?.segment) {
       try {
         // Check if we have a segment dictionary for this locale
-        if (segmentDictionaries[segment]?.[locale]) {
-          const segmentDict = await segmentDictionaries[segment][locale]();
-          // Merge the segment dictionary with the base dictionary
-          return { ...baseDictionary, ...segmentDict };
+        if (segmentDictionaries[options.segment]?.[locale]) {
+          const segmentDict = await segmentDictionaries[options.segment][locale]();
+          // Merge the segment dictionary with the result
+          result = { ...result, ...segmentDict };
         }
         // Fall back to English segment dictionary if available
-        else if (segmentDictionaries[segment]?.en) {
-          const segmentDict = await segmentDictionaries[segment].en();
-          // Merge the English segment dictionary with the base dictionary
-          return { ...baseDictionary, ...segmentDict };
+        else if (segmentDictionaries[options.segment]?.en) {
+          const segmentDict = await segmentDictionaries[options.segment].en();
+          // Merge the English segment dictionary with the result
+          result = { ...result, ...segmentDict };
         }
       } catch (error) {
-        console.error(`Error loading segment dictionary for ${segment}:`, error);
+        console.error(`Error loading segment dictionary for ${options.segment}:`, error);
         // Continue with just the base dictionary if there's an error
       }
     }
 
-    // Return the base dictionary if no segment is specified or if loading the segment dictionary failed
-    return baseDictionary;
+    // If about content is requested, load and merge the about dictionary
+    if (options?.includeAbout) {
+      try {
+        // Check if we have an about dictionary for this locale
+        if (aboutDictionaries[locale]) {
+          const aboutDict = await aboutDictionaries[locale]();
+          // Merge the about dictionary with the result
+          result = { ...result, ...aboutDict };
+        }
+        // Fall back to English about dictionary if available
+        else if (aboutDictionaries.en) {
+          const aboutDict = await aboutDictionaries.en();
+          // Merge the English about dictionary with the result
+          result = { ...result, ...aboutDict };
+        }
+      } catch (error) {
+        console.error(`Error loading about dictionary for ${locale}:`, error);
+        // Continue without about content if there's an error
+      }
+    }
+
+    // If FAQ content is requested, load and merge the FAQ dictionary
+    if (options?.includeFAQ) {
+      try {
+        // Check if we have a FAQ dictionary for this locale
+        if (faqDictionaries[locale]) {
+          const faqDict = await faqDictionaries[locale]();
+          // Merge the FAQ dictionary with the result
+          result = { ...result, ...faqDict };
+        }
+        // Fall back to English FAQ dictionary if available
+        else if (faqDictionaries.en) {
+          const faqDict = await faqDictionaries.en();
+          // Merge the English FAQ dictionary with the result
+          result = { ...result, ...faqDict };
+        }
+      } catch (error) {
+        console.error(`Error loading FAQ dictionary for ${locale}:`, error);
+        // Continue without FAQ content if there's an error
+      }
+    }
+
+    return result;
   } catch (error) {
-    console.error(`Error loading dictionary for locale: ${locale}${segment ? `, segment: ${segment}` : ""}`, error);
+    console.error(`Error loading dictionary for locale: ${locale}`, error);
     // Fallback to English if there's an error with the base dictionary
     return await dictionaries.en();
   }

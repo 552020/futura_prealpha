@@ -1,0 +1,27 @@
+{
+  "title": "Frequently Asked Questions",
+  "description": "Find answers to commonly asked questions about our platform.",
+  "intro": "Find answers to the most common questions about our platform and services.",
+  "items": [
+    {
+      "question": "What is this platform about?",
+      "answer": "This platform helps users create and manage their digital presence with powerful tools and features."
+    },
+    {
+      "question": "How do I create an account?",
+      "answer": "You can create an account by clicking the Sign In button and following the registration process."
+    },
+    {
+      "question": "Is this service free to use?",
+      "answer": "We offer both free and premium plans. The free plan includes basic features, while premium plans offer additional capabilities."
+    },
+    {
+      "question": "How can I contact support?",
+      "answer": "You can reach our support team through the contact form on our website or by emailing support@example.com."
+    },
+    {
+      "question": "Can I cancel my subscription?",
+      "answer": "Yes, you can cancel your subscription at any time from your account settings."
+    }
+  ]
+}
