@@ -1,0 +1,51 @@
+{
+  "valueJourney": {
+    "scene1": {
+      "image": "/images/segments/family/scene1.jpg",
+      "title": "Beginning",
+      "subtitle": "Lorem ipsum dolor sit amet",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    },
+    "scene2": {
+      "image": "/images/segments/family/scene2.jpg",
+      "title": "Middle",
+      "subtitle": "Consectetur adipiscing elit",
+      "description": "Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula."
+    },
+    "scene3": {
+      "image": "/images/segments/family/scene3.jpg",
+      "title": "End",
+      "subtitle": "Nullam in dui mauris",
+      "description": "Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor."
+    },
+    "conclusion": "Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor."
+  },
+  "variations": {
+    "valueJourney": {
+      "scene1": {
+        "titles": ["Beginning", "Lorem Ipsum", "Dolor Sit"],
+        "subtitles": ["Lorem ipsum dolor sit amet", "Consectetur adipiscing elit", "Nullam in dui mauris"],
+        "descriptions": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          "Vivamus hendrerit arcu sed erat molestie vehicula."
+        ]
+      },
+      "scene2": {
+        "titles": ["Middle", "Consectetur", "Adipiscing"],
+        "subtitles": ["Consectetur adipiscing elit", "Nullam in dui mauris", "Vivamus hendrerit arcu"],
+        "descriptions": [
+          "Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula.",
+          "Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor."
+        ]
+      },
+      "scene3": {
+        "titles": ["End", "Vivamus", "Hendrerit"],
+        "subtitles": ["Nullam in dui mauris", "Vivamus hendrerit arcu", "Sed auctor neque eu tellus"],
+        "descriptions": [
+          "Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.",
+          "Ut in nulla enim. Phasellus molestie magna non est bibendum."
+        ]
+      }
+    }
+  }
+}
