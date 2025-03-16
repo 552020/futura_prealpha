@@ -2,14 +2,15 @@ import { getDictionary } from "@/utils/dictionaries";
 import { Metadata } from "next";
 
 type AboutPageProps = {
-  params: {
+  params: Promise<{
     lang: string;
-  };
+  }>;
 };
 
 // Generate metadata for the page
 export async function generateMetadata({ params }: AboutPageProps): Promise<Metadata> {
-  const dict = await getDictionary(params.lang, { includeAbout: true });
+  const resolvedParams = await params;
+  const dict = await getDictionary(resolvedParams.lang, { includeAbout: true });
 
   return {
     title: dict.about?.title || "About Us",
@@ -18,7 +19,8 @@ export async function generateMetadata({ params }: AboutPageProps): Promise<Meta
 }
 
 export default async function AboutPage({ params }: AboutPageProps) {
-  const dict = await getDictionary(params.lang, { includeAbout: true });
+  const resolvedParams = await params;
+  const dict = await getDictionary(resolvedParams.lang, { includeAbout: true });
 
   return (
     <div className="container mx-auto px-4 py-12">

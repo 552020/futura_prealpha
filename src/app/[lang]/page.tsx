@@ -20,7 +20,7 @@ export default async function LangPage({ params }: PageProps) {
   const segment = cookieStore.get("segment")?.value || DEFAULT_SEGMENT;
 
   // Get dictionary for the language WITH the preferred segment
-  const dict = await getDictionary(resolvedParams.lang, segment);
+  const dict = await getDictionary(resolvedParams.lang, { segment });
 
   return (
     <main>

@@ -35,7 +35,7 @@ export default async function SegmentPage({ params }: PageProps) {
   });
 
   // Get dictionary with segment-specific content
-  const dict = await getDictionary(resolvedParams.lang, resolvedParams.segment);
+  const dict = await getDictionary(resolvedParams.lang, { segment: resolvedParams.segment });
 
   return (
     <main>

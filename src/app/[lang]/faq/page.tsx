@@ -3,14 +3,15 @@ import { Metadata } from "next";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 type FAQPageProps = {
-  params: {
+  params: Promise<{
     lang: string;
-  };
+  }>;
 };
 
 // Generate metadata for the page
 export async function generateMetadata({ params }: FAQPageProps): Promise<Metadata> {
-  const dict = await getDictionary(params.lang, { includeFAQ: true });
+  const resolvedParams = await params;
+  const dict = await getDictionary(resolvedParams.lang, { includeFAQ: true });
 
   return {
     title: dict.faq?.title || "Frequently Asked Questions",
@@ -19,7 +20,8 @@ export async function generateMetadata({ params }: FAQPageProps): Promise<Metada
 }
 
 export default async function FAQPage({ params }: FAQPageProps) {
-  const dict = await getDictionary(params.lang, { includeFAQ: true });
+  const resolvedParams = await params;
+  const dict = await getDictionary(resolvedParams.lang, { includeFAQ: true });
 
   // Fallback FAQ items if not provided in dictionary
   const faqItems = dict.faq?.items || [

@@ -160,15 +160,15 @@ const segmentDictionaries: Record<string, Record<string, () => Promise<ValueJour
 
 // About page dictionaries
 const aboutDictionaries: Record<string, () => Promise<AboutDictionary>> = {
-  en: () => import("../app/[lang]/dictionaries/about/en.json").then((module) => module.default),
-  de: () => import("../app/[lang]/dictionaries/about/de.json").then((module) => module.default),
+  en: () => import("../app/[lang]/dictionaries/about/en.json").then((module) => module.default as AboutDictionary),
+  de: () => import("../app/[lang]/dictionaries/about/de.json").then((module) => module.default as AboutDictionary),
   // Add other languages as needed
 };
 
 // FAQ page dictionaries
 const faqDictionaries: Record<string, () => Promise<FAQDictionary>> = {
-  en: () => import("../app/[lang]/dictionaries/faq/en.json").then((module) => module.default),
-  de: () => import("../app/[lang]/dictionaries/faq/de.json").then((module) => module.default),
+  en: () => import("../app/[lang]/dictionaries/faq/en.json").then((module) => module.default as FAQDictionary),
+  de: () => import("../app/[lang]/dictionaries/faq/de.json").then((module) => module.default as FAQDictionary),
   // Add other languages as needed
 };
 
