@@ -1,0 +1,40 @@
+{
+  "metadata": {
+    "title": "Futura - Vive para Siempre",
+    "description": "Tu bóveda digital para los recuerdos que importan."
+  },
+  "hero": {
+    "title": "Futura",
+    "subtitle": "Vive para Siempre. Ahora.",
+    "learnMore": "Saber Más",
+    "startHere": "Comienza Aquí"
+  },
+  "header": {
+    "signIn": "Iniciar Sesión"
+  },
+  "nav": {
+    "about": "Acerca de",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "faq": "FAQ",
+    "vault": "Bóveda",
+    "feed": "Feed"
+  },
+  "footer": {
+    "tagline": "Hecho con ❤️ entre Berlín, Marsella y Lisboa",
+    "terms": "Términos de Servicio",
+    "privacy": "Política de Privacidad",
+    "contact": "Contáctanos",
+    "share": "Compartir"
+  },
+  "onboarding": {
+    "upload": {
+      "title": "Deja Un Elemento Atrás",
+      "subtitle": "Sube una foto, documento o cualquier archivo que represente un recuerdo que quieras preservar."
+    },
+    "profile": {
+      "title": "Tu Bóveda Digital",
+      "subtitle": "Aquí es donde tus recuerdos viven para siempre."
+    }
+  }
+}
