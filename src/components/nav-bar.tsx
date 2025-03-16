@@ -1,23 +1,39 @@
 import Link from "next/link";
-import { Dictionary } from "@/app/[lang]/dictionaries/dictionaries";
+import { Dictionary } from "@/utils/dictionaries";
 
-export function NavBar({ mode, lang = "en", dict }: { mode: string; lang: string; dict?: Dictionary }) {
+type NavBarProps = {
+  mode?: string;
+  lang: string;
+  dict?: Dictionary;
+  className?: string;
+};
+
+export function NavBar({ mode, lang, dict, className }: NavBarProps) {
+  // Check if we're in a mobile context (passed via className)
+  const isMobile = className?.includes("mobile") || false;
+
   // Check for missing translations and log warnings in development
   if (process.env.NODE_ENV === "development") {
     if (!dict?.nav?.about) {
-      console.warn(`[i18n] Missing translation for "nav.about" in locale "${lang}". Using fallback: "About"`);
+      console.warn(`[i18n] Missing translation for "navigation.about" in locale "${lang}". Using fallback: "About"`);
     }
     if (!dict?.nav?.faq) {
-      console.warn(`[i18n] Missing translation for "nav.faq" in locale "${lang}". Using fallback: "FAQ"`);
+      console.warn(`[i18n] Missing translation for "navigation.faq" in locale "${lang}". Using fallback: "FAQ"`);
     }
   }
 
   return mode === "marketing" ? (
     <>
-      <Link href={`/${lang}/about`} className="hover:text-primary">
+      <Link
+        href={`/${lang}/about`}
+        className={`text-sm font-medium transition-colors hover:text-primary ${isMobile ? "py-2 text-base" : ""}`}
+      >
         {dict?.nav?.about || "About"}
       </Link>
-      <Link href={`/${lang}/faq`} className="hover:text-primary">
+      <Link
+        href={`/${lang}/faq`}
+        className={`text-sm font-medium transition-colors hover:text-primary ${isMobile ? "py-2 text-base" : ""}`}
+      >
         {dict?.nav?.faq || "FAQ"}
       </Link>
     </>

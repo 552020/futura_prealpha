@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Dictionary } from "@/app/[lang]/dictionaries/dictionaries";
+import { Dictionary } from "@/utils/dictionaries";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { useRef, useEffect, useState } from "react";

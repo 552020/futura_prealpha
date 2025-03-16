@@ -3,12 +3,11 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Dictionary } from "@/app/[lang]/dictionaries/dictionaries";
+import { Dictionary } from "@/utils/dictionaries";
 
 interface HeroProps {
   dict: Dictionary;
   lang: string;
-  segment: string;
 }
 
 const Hero: React.FC<HeroProps> = ({ dict, lang }) => {
