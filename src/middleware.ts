@@ -46,7 +46,8 @@ export function middleware(request: NextRequest) {
   if (
     pathname.startsWith("/_next") || // Skip Next.js system files
     pathname.includes("/api/") || // Skip API routes
-    pathname.match(/\.(png|jpg|jpeg|svg|ico|css|js)$/) // Skip static files
+    pathname.startsWith("/images/") || // Skip image files in the public directory
+    pathname.match(/\.(png|jpg|jpeg|svg|ico|css|js|webp)$/) // Skip static files by extension
   ) {
     return;
   }

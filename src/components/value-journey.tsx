@@ -43,8 +43,16 @@ const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "fami
 
       // Type guard to ensure scene is an object with the expected properties
       if (typeof scene === "object" && scene !== null) {
+        // Make sure image paths are absolute from the root, not relative to the current route
+        let imagePath = scene.image || `/images/segments/${journeyType}/scene_${sceneIndex}.webp`;
+
+        // Ensure the path starts with a slash and doesn't have the locale prefix
+        if (!imagePath.startsWith("/")) {
+          imagePath = `/${imagePath}`;
+        }
+
         scenes.push({
-          image: scene.image || `/images/segments/${journeyType}/${journeyType}_${Math.min(sceneIndex, 3)}.webp`,
+          image: imagePath,
           title: scene.title || `Scene ${sceneIndex}`,
           subtitle: scene.subtitle,
           description: scene.description || `Description for scene ${sceneIndex}`,
