@@ -6,108 +6,89 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
 
-type JourneyType = "personal" | "family" | "business";
+// Define valid journey types
+type JourneyType = "family" | "black-mirror" | "creatives" | "wedding";
 
-export default function ValueJourney({
-  dict,
-  lang,
-  journeyType = "personal",
-}: {
-  dict?: Dictionary;
-  lang?: string;
-  journeyType?: JourneyType;
-}) {
+interface ValueJourneyProps {
+  dict: Dictionary;
+  lang: string;
+  segment?: string; // Make segment optional with a default
+}
+
+const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "family" }) => {
+  // Validate that segment is a valid journey type, default to "family" if not
+  const journeyType = (segment as JourneyType) || "family";
+
   // Use the passed lang prop if available, otherwise default to "en"
   const currentLang = lang || "en";
 
   // Get the scenes for the selected journey type
   const getScenes = () => {
-    const journeyDict = dict?.valueJourneys?.[journeyType];
+    const journeyDict = dict?.valueJourney;
 
     if (!journeyDict) {
-      // Fallback to default scenes if the selected journey type is not available
-      return [
-        {
-          image: "/images/story/wedding.jpg",
-          title: "Creating Memories",
-          description: "Throughout life, we create precious memories with loved ones.",
-        },
-        {
-          image: "/images/story/generations.jpg",
-          title: "Generations Together",
-          description: "These memories connect generations and tell our family stories.",
-        },
-        {
-          image: "/images/story/hospital.jpg",
-          title: "Life's Transitions",
-          description: "When loved ones pass, their memories become even more precious.",
-        },
-        {
-          image: "/images/story/disaster.jpg",
-          title: "Unexpected Loss",
-          description: "Disasters and technology changes can erase our digital legacy.",
-        },
-        {
-          image: "/images/story/preserved.jpg",
-          title: "Preserved Forever",
-          description: "With Futura, your memories are safe and accessible for generations.",
-        },
-      ];
+      console.error(`Missing valueJourney content for segment: ${segment}`);
+      return []; // Return empty array, component will handle this gracefully
     }
 
-    return [
-      {
-        image: `/images/story/${journeyType}/scene1.jpg`,
-        title: journeyDict.scene1?.title || "Scene 1",
-        description: journeyDict.scene1?.description || "Description 1",
-      },
-      {
-        image: `/images/story/${journeyType}/scene2.jpg`,
-        title: journeyDict.scene2?.title || "Scene 2",
-        description: journeyDict.scene2?.description || "Description 2",
-      },
-      {
-        image: `/images/story/${journeyType}/scene3.jpg`,
-        title: journeyDict.scene3?.title || "Scene 3",
-        description: journeyDict.scene3?.description || "Description 3",
-      },
-      {
-        image: `/images/story/${journeyType}/scene4.jpg`,
-        title: journeyDict.scene4?.title || "Scene 4",
-        description: journeyDict.scene4?.description || "Description 4",
-      },
-      {
-        image: `/images/story/${journeyType}/scene5.jpg`,
-        title: journeyDict.scene5?.title || "Scene 5",
-        description: journeyDict.scene5?.description || "Description 5",
-      },
-    ];
+    const scenes = [];
+    let sceneIndex = 1;
+
+    // Keep adding scenes as long as they exist in the dictionary
+    while (true) {
+      const sceneKey = `scene${sceneIndex}` as keyof typeof journeyDict;
+      const scene = journeyDict[sceneKey];
+
+      if (!scene) break; // Exit the loop if the scene doesn't exist
+
+      // Type guard to ensure scene is an object with the expected properties
+      if (typeof scene === "object" && scene !== null) {
+        scenes.push({
+          image: scene.image || `/images/segments/${journeyType}/${journeyType}_${Math.min(sceneIndex, 3)}.webp`,
+          title: scene.title || `Scene ${sceneIndex}`,
+          subtitle: scene.subtitle,
+          description: scene.description || `Description for scene ${sceneIndex}`,
+        });
+      }
+
+      sceneIndex++;
+    }
+
+    return scenes;
   };
 
   const scenes = getScenes();
-  const conclusion =
-    dict?.valueJourneys?.[journeyType]?.conclusion ||
-    "Don't risk losing what matters most. Preserve your legacy with Futura.";
+  const conclusion = dict?.valueJourney?.conclusion || "";
 
   return (
     <section id="learn-more" className="py-20 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
-          {scenes.map((scene, index) => (
-            <SceneItem key={index} scene={scene} index={index} isLast={index === scenes.length - 1} />
-          ))}
+          {scenes.length > 0 ? (
+            <>
+              {scenes.map((scene, index) => (
+                <SceneItem key={index} scene={scene} index={index} isLast={index === scenes.length - 1} />
+              ))}
 
-          <div className="text-center mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-lg mb-6 max-w-2xl mx-auto">{conclusion}</p>
-            <Button asChild size="lg">
-              <Link href={`/${currentLang}/onboarding/items-upload`}>{dict?.hero?.startHere || "Start Here"}</Link>
-            </Button>
-          </div>
+              {conclusion && (
+                <div className="text-center mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+                  <p className="text-lg mb-6 max-w-2xl mx-auto">{conclusion}</p>
+                  <Button asChild size="lg">
+                    <Link href={`/${currentLang}/onboarding/items-upload`}>
+                      {dict?.hero?.startHere || "Start Here"}
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </>
+          ) : null}
         </div>
       </div>
     </section>
   );
-}
+};
+
+export default ValueJourney;
 
 // Scene item component without animation library
 function SceneItem({
@@ -115,7 +96,7 @@ function SceneItem({
   index,
   isLast,
 }: {
-  scene: { image: string; title: string; description: string };
+  scene: { image: string; title: string; description: string; subtitle?: string };
   index: number;
   isLast: boolean;
 }) {
@@ -168,15 +149,10 @@ function SceneItem({
       </div>
 
       <div className={`w-full md:w-1/2 ${isEven ? "md:pl-12" : "md:pr-12"}`}>
-        <h3 className="text-2xl font-bold mb-4">{scene.title}</h3>
-        <p className="text-lg text-gray-600 dark:text-gray-400">{scene.description}</p>
+        <h3 className="text-2xl font-bold mb-2">{scene.title}</h3>
+        {scene.subtitle && <h4 className="text-xl text-gray-600 dark:text-gray-400 mb-3">{scene.subtitle}</h4>}
+        <p className="text-gray-700 dark:text-gray-300">{scene.description}</p>
       </div>
-
-      {!isLast && (
-        <div className="absolute left-1/2 transform -translate-x-1/2 mt-8 hidden md:block">
-          <div className="h-16 w-0.5 bg-gray-300 dark:bg-gray-700"></div>
-        </div>
-      )}
     </div>
   );
 }

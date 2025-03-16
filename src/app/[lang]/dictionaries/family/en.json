@@ -1,19 +1,19 @@
 {
   "valueJourney": {
     "scene1": {
-      "image": "/images/segments/family/scene1.jpg",
+      "image": "/images/segments/family/family_1.webp",
       "title": "Beginning",
       "subtitle": "Lorem ipsum dolor sit amet",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     },
     "scene2": {
-      "image": "/images/segments/family/scene2.jpg",
+      "image": "/images/segments/family/family_2.webp",
       "title": "Middle",
       "subtitle": "Consectetur adipiscing elit",
       "description": "Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula."
     },
     "scene3": {
-      "image": "/images/segments/family/scene3.jpg",
+      "image": "/images/segments/family/family_3.webp",
       "title": "End",
       "subtitle": "Nullam in dui mauris",
       "description": "Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor."
