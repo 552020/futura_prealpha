@@ -1,0 +1,93 @@
+{
+  "valueJourney": {
+    "scene1": {
+      "image": "/images/segments/black-mirror/scene1.jpg",
+      "title": "Wedding Day",
+      "subtitle": "Some moments are meant to last forever",
+      "description": "A couple getting married, capturing a moment that should endure through time."
+    },
+    "scene2": {
+      "image": "/images/segments/black-mirror/scene2.jpg",
+      "title": "Photo Album Across Generations",
+      "subtitle": "Three generations, one photograph, a lifetime of stories",
+      "description": "The bride, now a grandmother, showing her wedding photo to her daughter and granddaughter."
+    },
+    "scene3": {
+      "image": "/images/segments/black-mirror/scene3.jpg",
+      "title": "Grandmother's Deathbed",
+      "subtitle": "Time passes, and we with it. Family remains",
+      "description": "The grandmother, surrounded by family in a hospital bed."
+    },
+    "scene4": {
+      "image": "/images/segments/black-mirror/scene4.jpg",
+      "title": "Grandmother's House Burning",
+      "subtitle": "Memories are fragile. Houses burn down. Ashes to ashes",
+      "description": "The house burning, with the wedding photo consumed by flames in the foreground, while the grandmother is dying."
+    },
+    "scene5": {
+      "image": "/images/segments/black-mirror/scene5.jpg",
+      "title": "AWS Shutdown and Storage Deletion",
+      "subtitle": "You trusted Jeff's cloud. Now it's vaporized",
+      "description": "A diptych: on one side, an email announcing 'Service Discontinuation' and 'Your stored memories have been deleted. We thank you for your loyalty over the years'; on the other side, Jeff Bezos himself shutting down the servers where these precious memories were supposedly safe."
+    },
+    "scene6": {
+      "image": "/images/segments/black-mirror/scene6.jpg",
+      "title": "Resolution through Futura",
+      "subtitle": "We are your happy end",
+      "description": "People looking at the wedding photo through Futura, perfectly preserved despite all previous disasters."
+    },
+    "conclusion": "With Futura, your memories survive fires, outlive tech giants, and defy time itself. Some things deserve to be truly immortal."
+  },
+  "variations": {
+    "valueJourney": {
+      "scene1": {
+        "titles": ["Wedding Day", "The Beginning", "A Moment in Time", "The First Memory"],
+        "subtitles": ["Some moments never fade", "Some moments never pass", "Some moments are meant to last forever"],
+        "descriptions": [
+          "A couple getting married, capturing a moment that should endure through time.",
+          "The beginning of a family story, captured in a photograph meant to last generations."
+        ]
+      },
+      "scene2": {
+        "titles": ["Photo Album Across Generations", "Family Legacy", "Generations Together"],
+        "subtitles": [
+          "Three generations, one photograph, a lifetime of stories",
+          "We collect these moments, cherish them, and pass them on—generation after generation",
+          "From mother to daughter to granddaughter—memories that connect us all"
+        ]
+      },
+      "scene3": {
+        "titles": ["Grandmother's Deathbed", "Life's Final Chapter", "The Circle Closes"],
+        "subtitles": [
+          "Time passes, and we with it. Family remains",
+          "We follow the passing time. Family remains",
+          "The greatest comfort at life's end: those we love, still beside us"
+        ]
+      },
+      "scene4": {
+        "titles": ["Grandmother's House Burning", "Physical Loss", "When Disaster Strikes"],
+        "subtitles": [
+          "Memories are fragile. Houses burn down. Ashes to ashes",
+          "Fire doesn't discriminate between walls and wedding photos",
+          "The flames don't care what's precious to you"
+        ]
+      },
+      "scene5": {
+        "titles": ["AWS Shutdown and Storage Deletion", "Digital Betrayal", "When the Cloud Evaporates"],
+        "subtitles": [
+          "You trusted Jeff's cloud. Now it's vaporized",
+          "The cloud: just someone else's computer that can be turned off",
+          "Digital doesn't mean permanent. It means someone else controls your memories"
+        ]
+      },
+      "scene6": {
+        "titles": ["Resolution through Futura", "The Solution", "After the Storm"],
+        "subtitles": [
+          "We are your happy end",
+          "After the fire. After the shutdown. Futura remains",
+          "When everything else fails, we don't"
+        ]
+      }
+    }
+  }
+}
