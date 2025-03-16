@@ -9,7 +9,7 @@ import { InterfaceProvider } from "@/contexts/interface-context";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
 import { locales } from "@/middleware";
 import { notFound } from "next/navigation";
-import { getDictionary, Dictionary } from "@/app/[lang]/dictionaries/dictionaries";
+import { getDictionary, Dictionary } from "@/utils/dictionaries";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,20 +22,23 @@ const geistMono = Geist_Mono({
 });
 
 // Dynamic metadata based on the current language
-export async function generateMetadata({ params }: { params: { lang: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  // Await the params Promise
+  const resolvedParams = await params;
+
   // Get the dictionary for the current language
-  const dict: Dictionary = await getDictionary(params.lang);
+  const dict: Dictionary = await getDictionary(resolvedParams.lang);
 
   // Check for missing translations and log warnings in development
   if (process.env.NODE_ENV === "development") {
     if (!dict?.metadata?.title) {
       console.warn(
-        `[i18n] Missing translation for "metadata.title" in locale "${params.lang}". Using fallback: "Futura"`
+        `[i18n] Missing translation for "metadata.title" in locale "${resolvedParams.lang}". Using fallback: "Futura"`
       );
     }
     if (!dict?.metadata?.description) {
       console.warn(
-        `[i18n] Missing translation for "metadata.description" in locale "${params.lang}". Using fallback: "Live forever. Now."`
+        `[i18n] Missing translation for "metadata.description" in locale "${resolvedParams.lang}". Using fallback: "Live forever. Now."`
       );
     }
   }
@@ -46,7 +49,7 @@ export async function generateMetadata({ params }: { params: { lang: string } })
     openGraph: {
       title: dict?.metadata?.title || "Futura",
       description: dict?.metadata?.description || "Live forever. Now.",
-      locale: params.lang,
+      locale: resolvedParams.lang,
     },
   };
 }
@@ -58,29 +61,33 @@ export function generateStaticParams() {
 export default async function RootLayout({
   children,
   params,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-  params: { lang: string };
-}>) {
+  params: Promise<{ lang: string }>;
+}) {
+  // Await the params Promise
+  const resolvedParams = await params;
+  const lang = resolvedParams.lang;
+
   // Check if the language is supported
-  if (!locales.includes(params.lang)) {
+  if (!locales.includes(lang)) {
     notFound();
   }
 
   // Load the dictionary for the current language
-  const dict = await getDictionary(params.lang);
+  const dict = await getDictionary(lang);
 
   return (
-    <html lang={params.lang} suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
         <SessionProvider basePath="/api/auth">
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <div className="relative min-h-screen flex flex-col">
               <InterfaceProvider>
                 <OnboardingProvider>
-                  <Header dict={dict} lang={params.lang} />
+                  <Header dict={dict} lang={lang} />
                   <main className="flex-1">{children}</main>
-                  <Footer dict={dict} lang={params.lang} />
+                  <Footer dict={dict} lang={lang} />
                 </OnboardingProvider>
               </InterfaceProvider>
             </div>
