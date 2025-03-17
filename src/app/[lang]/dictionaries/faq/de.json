@@ -1,27 +1,29 @@
 {
-  "title": "Häufig gestellte Fragen",
-  "description": "Finden Sie Antworten auf häufig gestellte Fragen zu unserer Plattform.",
-  "intro": "Hier finden Sie Antworten auf die häufigsten Fragen zu unserer Plattform und unseren Diensten.",
-  "items": [
-    {
-      "question": "Worum geht es bei dieser Plattform?",
-      "answer": "Diese Plattform hilft Benutzern, ihre digitale Präsenz mit leistungsstarken Tools und Funktionen zu erstellen und zu verwalten."
-    },
-    {
-      "question": "Wie erstelle ich ein Konto?",
-      "answer": "Sie können ein Konto erstellen, indem Sie auf die Schaltfläche 'Anmelden' klicken und dem Registrierungsprozess folgen."
-    },
-    {
-      "question": "Ist dieser Dienst kostenlos nutzbar?",
-      "answer": "Wir bieten sowohl kostenlose als auch Premium-Pläne an. Der kostenlose Plan umfasst grundlegende Funktionen, während Premium-Pläne zusätzliche Möglichkeiten bieten."
-    },
-    {
-      "question": "Wie kann ich den Support kontaktieren?",
-      "answer": "Sie können unser Support-Team über das Kontaktformular auf unserer Website erreichen oder eine E-Mail an support@example.com senden."
-    },
-    {
-      "question": "Kann ich mein Abonnement kündigen?",
-      "answer": "Ja, Sie können Ihr Abonnement jederzeit in Ihren Kontoeinstellungen kündigen."
-    }
-  ]
+  "faq": {
+    "title": "Häufig gestellte Fragen",
+    "description": "Finden Sie Antworten auf häufig gestellte Fragen zu unserer Plattform.",
+    "intro": "Hier finden Sie Antworten auf die häufigsten Fragen zu unserer Plattform und unseren Diensten.",
+    "items": [
+      {
+        "question": "Worum geht es bei dieser Plattform?",
+        "answer": "Diese Plattform hilft Benutzern, ihre digitale Präsenz mit leistungsstarken Tools und Funktionen zu erstellen und zu verwalten."
+      },
+      {
+        "question": "Wie erstelle ich ein Konto?",
+        "answer": "Sie können ein Konto erstellen, indem Sie auf die Schaltfläche 'Anmelden' klicken und dem Registrierungsprozess folgen."
+      },
+      {
+        "question": "Ist dieser Dienst kostenlos nutzbar?",
+        "answer": "Wir bieten sowohl kostenlose als auch Premium-Pläne an. Der kostenlose Plan umfasst grundlegende Funktionen, während Premium-Pläne zusätzliche Möglichkeiten bieten."
+      },
+      {
+        "question": "Wie kann ich den Support kontaktieren?",
+        "answer": "Sie können unser Support-Team über das Kontaktformular auf unserer Website erreichen oder eine E-Mail an support@example.com senden."
+      },
+      {
+        "question": "Kann ich mein Abonnement kündigen?",
+        "answer": "Ja, Sie können Ihr Abonnement jederzeit in Ihren Kontoeinstellungen kündigen."
+      }
+    ]
+  }
 }
