@@ -20,21 +20,31 @@ export default function Footer({ dict, lang }: { dict?: Dictionary; lang?: strin
   // Use the passed lang prop if available, otherwise default to "en"
   const currentLang = lang || "en";
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator
-        .share({
-          title: "Futura - Live Forever",
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "Futura",
+          text: "Check out Futura - Live Forever. Now.",
           url: window.location.href,
-        })
-        .then(() => console.log("Share successful"))
-        .catch((error) => console.error("Error sharing:", error));
-    } else {
-      // Fallback for browsers that don't support the Web Share API
-      navigator.clipboard
-        .writeText(window.location.href)
-        .then(() => alert("Link copied to clipboard!"))
-        .catch((error) => console.error("Error copying to clipboard:", error));
+        });
+        console.log("Content shared successfully");
+      } else {
+        // Fallback for browsers that don't support the Web Share API
+        console.log("Web Share API not supported");
+        // You could show a modal with share options or copy to clipboard here
+      }
+    } catch (error) {
+      // Check if it's an AbortError (user canceled)
+      if (error instanceof Error && error.name === "AbortError") {
+        console.log("Share was canceled by the user");
+        // This is not an error condition, just a user choice
+        return;
+      }
+
+      // Handle other errors
+      console.error("Error sharing content:", error);
+      // You might want to show a user-friendly error message here
     }
   };
 
