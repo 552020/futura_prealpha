@@ -3,7 +3,8 @@ import Hero from "@/components/hero";
 import ValueJourney from "@/components/value-journey";
 import { getDictionary } from "@/utils/dictionaries";
 import { notFound } from "next/navigation";
-import { setSegmentCookie } from "./actions";
+// Remove the import for the server action
+// import { setSegmentCookie } from "./actions";
 
 // Define valid segments
 const validSegments = ["family", "wedding", "creative", "black-mirror"];
@@ -25,8 +26,8 @@ export default async function SegmentPage({ params }: PageProps) {
     notFound(); // Return 404 for invalid segments
   }
 
-  // Set the segment cookie using the server action
-  await setSegmentCookie(resolvedParams.segment);
+  // Remove the cookie setting code for now
+  // await setSegmentCookie(resolvedParams.segment);
 
   // Get dictionary with segment-specific content
   const dict = await getDictionary(resolvedParams.lang, { segment: resolvedParams.segment });
