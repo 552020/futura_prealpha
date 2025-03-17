@@ -3,18 +3,6 @@
 import Link from "next/link";
 import { Dictionary } from "@/utils/dictionaries";
 import { Share2, Twitter, Instagram, Facebook } from "lucide-react";
-// import { Button } from "./ui/button";
-
-// Define a proper type for the footer dictionary
-// type FooterDictionary = {
-//   footer: {
-//     contact: string;
-//     terms: string;
-//     privacy: string;
-//     tagline: string;
-//     share: string;
-//   };
-// };
 
 export default function Footer({ dict, lang }: { dict?: Dictionary; lang?: string }) {
   // Use the passed lang prop if available, otherwise default to "en"
