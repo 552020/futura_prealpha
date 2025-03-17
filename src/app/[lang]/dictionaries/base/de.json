@@ -1,0 +1,40 @@
+{
+  "metadata": {
+    "title": "Futura - Lebe für Immer",
+    "description": "Dein digitaler Tresor für Erinnerungen, die zählen."
+  },
+  "hero": {
+    "title": "Futura",
+    "subtitle": "Lebe für Immer. Jetzt.",
+    "learnMore": "Mehr Erfahren",
+    "startHere": "Hier Beginnen"
+  },
+  "header": {
+    "signIn": "Anmelden"
+  },
+  "nav": {
+    "about": "Über Uns",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "faq": "FAQ",
+    "vault": "Tresor",
+    "feed": "Feed"
+  },
+  "footer": {
+    "tagline": "Mit ❤️ zwischen Berlin, Marseille und Lissabon gemacht",
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutzrichtlinie",
+    "contact": "Kontaktiere Uns",
+    "share": "Teilen"
+  },
+  "onboarding": {
+    "upload": {
+      "title": "Hinterlasse Ein Element",
+      "subtitle": "Lade ein Foto, Dokument oder eine beliebige Datei hoch, die eine Erinnerung darstellt, die du bewahren möchtest."
+    },
+    "profile": {
+      "title": "Dein Digitaler Tresor",
+      "subtitle": "Hier leben deine Erinnerungen für immer."
+    }
+  }
+}

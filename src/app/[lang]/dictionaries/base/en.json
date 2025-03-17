@@ -1,0 +1,40 @@
+{
+  "metadata": {
+    "title": "Futura - Live Forever",
+    "description": "Your digital vault for memories that matter."
+  },
+  "hero": {
+    "title": "Futura",
+    "subtitle": "Live Forever. Now.",
+    "learnMore": "Learn More",
+    "startHere": "Start Here"
+  },
+  "header": {
+    "signIn": "Sign In"
+  },
+  "nav": {
+    "about": "About",
+    "profile": "Profile",
+    "settings": "Settings",
+    "faq": "FAQ",
+    "vault": "Vault",
+    "feed": "Feed"
+  },
+  "footer": {
+    "tagline": "Made with ❤️ between Berlin, Marseille and Lisbon",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Us",
+    "share": "Share"
+  },
+  "onboarding": {
+    "upload": {
+      "title": "Leave One Item Behind",
+      "subtitle": "Upload a photo, document, or any file that represents a memory you want to preserve."
+    },
+    "profile": {
+      "title": "Your Digital Vault",
+      "subtitle": "Here's where your memories live forever."
+    }
+  }
+}
