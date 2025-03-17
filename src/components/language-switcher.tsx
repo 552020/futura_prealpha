@@ -34,15 +34,31 @@ export function LanguageSwitcher() {
 
   // Function to handle language change with a full page reload
   const handleLanguageChange = (locale: string) => {
-    if (locale === lang || isChanging) return;
+    // console.log("Language change requested:", locale);
+    // console.log("Current language:", lang);
+    // console.log("Current pathname:", pathname);
+
+    if (locale === lang || isChanging) {
+      //   console.log("Early return - same language or already changing");
+      return;
+    }
 
     setIsChanging(true);
+    // console.log("isChanging set to true");
 
     // Get the new path
     const newPath = getPathWithNewLocale(locale);
+    // console.log("New path constructed:", newPath);
+
+    // Log the current location before changing
+    // console.log("Current window.location.href:", window.location.href);
 
     // Use window.location for a full page reload instead of client-side navigation
+    // console.log("About to navigate to:", newPath);
     window.location.href = newPath;
+
+    // This might not execute if the page starts reloading immediately
+    // console.log("Navigation initiated");
   };
 
   return (
