@@ -42,11 +42,12 @@ export function middleware(request: NextRequest) {
   // Get the pathname from the URL
   const pathname = request.nextUrl.pathname;
 
-  // Skip middleware for static files (images, etc.)
+  // Skip middleware for static files and test pages
   if (
     pathname.startsWith("/_next") || // Skip Next.js system files
     pathname.includes("/api/") || // Skip API routes
     pathname.startsWith("/images/") || // Skip image files in the public directory
+    pathname.startsWith("/tests/") || // Skip test pages
     pathname.match(/\.(png|jpg|jpeg|svg|ico|css|js|webp)$/) // Skip static files by extension
   ) {
     return;

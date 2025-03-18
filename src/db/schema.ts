@@ -141,6 +141,23 @@ export const files = pgTable("files", {
     .default({}),
 });
 
+// Add this to your schema
+export const fileShares = pgTable("file_shares", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  fileId: text("file_id").notNull(),
+  fileType: text("file_type").notNull(), // "photo", "file", "text"
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  sharedByUserId: text("shared_by_user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  accessLevel: text("access_level").default("read").notNull(),
+});
+
 // Type definitions for Auth.js
 declare module "next-auth" {
   interface Session {

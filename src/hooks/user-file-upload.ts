@@ -58,10 +58,18 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
         });
       }
     } catch (error) {
+      let title = "Something went wrong";
+      let description = "Please try uploading again.";
+
+      if (error instanceof Error && error.message === "File too large") {
+        title = "File too large";
+        description = "Please upload a file smaller than 50MB.";
+      }
+
       toast({
         variant: "destructive",
-        title: "Something went wrong",
-        description: "Please try uploading again.",
+        title,
+        description,
       });
       console.error("Upload error:", error);
     } finally {
