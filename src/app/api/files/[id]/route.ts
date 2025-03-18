@@ -58,8 +58,6 @@ type TextUpdateData = {
   metadata?: TextMetadata;
 };
 
-// Define a type for the context parameter
-
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   // Await the params to resolve the Promise
   const { id } = await context.params;
