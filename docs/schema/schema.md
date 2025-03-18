@@ -1,3 +1,6 @@
+# schema.ts WIP
+
+```ts
 import { pgTable, text, timestamp, json, boolean, primaryKey, integer, pgEnum } from "drizzle-orm/pg-core";
 import type { DefaultSession } from "next-auth";
 // import type { AdapterAccount } from "@auth/core/adapters";
@@ -321,3 +324,4 @@ export type NewFile = typeof files.$inferInsert;
 
 export type Relationship = typeof relationships.$inferSelect;
 export type NewRelationship = typeof relationships.$inferInsert;
+```
