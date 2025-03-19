@@ -43,7 +43,6 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
 
       if (isOnboarding) {
         addOnboardingFile(fileData);
-        setCurrentStep("profile");
         toast({
           title: "File uploaded successfully!",
           description: "Your first memory has been saved.",
