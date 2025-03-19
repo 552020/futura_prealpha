@@ -12,7 +12,7 @@ interface UseFileUploadProps {
 export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUploadProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { addFile: addOnboardingFile, setCurrentStep } = useOnboarding();
+  const { addFile: addOnboardingFile } = useOnboarding();
 
   // const { addFile: addVaultFile } = useVault(); // Future implementation
 

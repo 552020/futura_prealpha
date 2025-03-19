@@ -100,7 +100,7 @@ export function Profile({ isOnboarding = false }: ProfileProps) {
       </div>
 
       {/* Celebration Layer */}
-      {isOnboarding && files.length > 0 && currentStep === "profile" && (
+      {isOnboarding && files.length > 0 && currentStep === "complete" && (
         <Card className="mt-8 p-6 text-center">
           <h3 className="text-xl font-semibold mb-4">First Memory Secured! 🔒</h3>
           <p className="text-muted-foreground">Your digital vault has received its first treasure.</p>

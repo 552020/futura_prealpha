@@ -17,7 +17,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useOnboarding } from "@/contexts/onboarding-context";
 import { Share2 } from "lucide-react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 // Define cleanup strategy type
 type CleanupStrategy = "none" | "last" | "all";
@@ -148,20 +147,20 @@ export function OnboardModal({
 
   // In the handleUncontrolledNameChange function
   // Triggered by the input field when it loses focus
-  const handleRefBasedNameChange = () => {
-    console.log("handleRefBasedNameChange called", {
-      inputValue: nameInputRef.current?.value,
-      currentLocalName: localName,
-      userData_name: userData.name,
-    });
+  //   const handleRefBasedNameChange = () => {
+  //     console.log("handleRefBasedNameChange called", {
+  //       inputValue: nameInputRef.current?.value,
+  //       currentLocalName: localName,
+  //       userData_name: userData.name,
+  //     });
 
-    if (nameInputRef.current) {
-      const newValue = nameInputRef.current.value;
-      setLocalName(newValue);
-      updateUserData({ name: newValue });
-      console.log("setLocalName called with:", newValue);
-    }
-  };
+  //     if (nameInputRef.current) {
+  //       const newValue = nameInputRef.current.value;
+  //       setLocalName(newValue);
+  //       updateUserData({ name: newValue });
+  //       console.log("setLocalName called with:", newValue);
+  //     }
+  //   };
 
   const handleRefBasedRecipientChange = () => {
     console.log("handleRefBasedRecipientChange called", {
@@ -306,7 +305,7 @@ export function OnboardModal({
           </div>
 
           <div className="pt-4">
-            <p className="text-sm">Let's share this memory with someone special</p>
+            <p className="text-sm">Let&apos;s share this memory with someone special</p>
           </div>
         </div>
       </div>
@@ -317,7 +316,7 @@ export function OnboardModal({
     <div className="space-y-4 py-4">
       <div className="text-center mb-4">
         <p className="text-sm text-muted-foreground">
-          Hi {userData.name}! Let's share this special memory with someone you care about.
+          Hi {userData.name}! Let&apos;s share this special memory with someone you care about.
         </p>
       </div>
 
@@ -582,13 +581,13 @@ export function OnboardModal({
         <DialogHeader>
           <DialogTitle className="text-center text-xl">{getStepTitle()}</DialogTitle>
           {currentStep === "user-info" && (
-            <DialogDescription className="text-center">Let's get started with your memory</DialogDescription>
+            <DialogDescription className="text-center">Let&apos;s get started with your memory</DialogDescription>
           )}
         </DialogHeader>
 
         {/* Progress indicator */}
         <div className="flex justify-center space-x-2 py-2">
-          {modalSteps.map((step, index) => (
+          {modalSteps.map((step) => (
             <div
               key={step}
               className={`h-2 w-2 rounded-full transition-colors ${step === currentStep ? "bg-primary" : "bg-muted"}`}
