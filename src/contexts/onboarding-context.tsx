@@ -8,20 +8,44 @@ interface TempFile {
   uploadedAt: Date;
 }
 
+// Improved step type with better semantic naming
+type OnboardingStep =
+  | "upload" // Initial upload page
+  | "user-info" // Modal: Collecting user's name (after successful upload)
+  | "share" // Modal: Sharing options
+  | "sign-in" // Modal: Authentication
+  | "complete"; // Onboarding complete (profile page)
+
 interface OnboardingContextType {
   files: TempFile[];
   addFile: (file: TempFile) => void;
   removeFile: (url: string) => void;
   clearFiles: () => void;
-  currentStep: "upload" | "profile" | "complete";
-  setCurrentStep: (step: "upload" | "profile" | "complete") => void;
+  currentStep: OnboardingStep;
+  setCurrentStep: (step: OnboardingStep) => void;
+  userData: {
+    name: string;
+    recipientName: string;
+    recipientEmail: string;
+    relationship: string;
+  };
 }
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined);
 
 export function OnboardingProvider({ children }: { children: React.ReactNode }) {
   const [files, setFiles] = useState<TempFile[]>([]);
-  const [currentStep, setCurrentStep] = useState<"upload" | "profile" | "complete">("upload");
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>("upload");
+  const [userData, setUserData] = useState({
+    name: "",
+    recipientName: "",
+    recipientEmail: "",
+    relationship: "",
+  });
+
+  const updateUserData = (newUserData: Partial<typeof userData>) => {
+    setUserData((prev) => ({ ...prev, ...newUserData }));
+  };
 
   // Add a new file
   const addFile = (file: TempFile) => {
@@ -47,6 +71,8 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         clearFiles,
         currentStep,
         setCurrentStep,
+        userData,
+        updateUserData,
       }}
     >
       {children}
