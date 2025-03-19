@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useOnboarding } from "@/contexts/onboarding-context";
 import { Share2 } from "lucide-react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 // Define cleanup strategy type
 type CleanupStrategy = "none" | "last" | "all";
@@ -47,10 +48,6 @@ export function OnboardModal({
   const [localRecipientName, setLocalRecipientName] = useState(userData.recipientName);
   const [localRecipientEmail, setLocalRecipientEmail] = useState(userData.recipientEmail);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
-  const [showEmailFields, setShowEmailFields] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   console.log("After localName initialization:", { localName, userData_name: userData.name });
 
   // Add refs to maintain focus
@@ -149,12 +146,6 @@ export function OnboardModal({
     });
   };
 
-  // Original handleChange for all other inputs
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    updateUserData({ [name]: value });
-  };
-
   // In the handleUncontrolledNameChange function
   // Triggered by the input field when it loses focus
   const handleRefBasedNameChange = () => {
@@ -225,20 +216,6 @@ export function OnboardModal({
       activeElement: document.activeElement?.id || "none",
     });
 
-    // If we're on the share step
-    //     if (currentStep === "share") {
-    //       // Check which field had focus before the update
-    //       const activeElementId = document.activeElement?.id;
-
-    //       if (activeElementId === "recipientName" && recipientNameRef.current) {
-    //         recipientNameRef.current.focus();
-    //         console.log("Recipient name input focused");
-    //       } else if (activeElementId === "recipientEmail" && recipientEmailRef.current) {
-    //         recipientEmailRef.current.focus();
-    //         console.log("Recipient email input focused");
-    //       }
-    //     }
-    //   }, [currentStep, localRecipientName, localRecipientEmail]);
     if (currentStep === "share" && lastFocusedField) {
       if (lastFocusedField === "recipientName" && recipientNameRef.current) {
         recipientNameRef.current.focus();
@@ -247,43 +224,6 @@ export function OnboardModal({
       }
     }
   }, [currentStep, localRecipientName, localRecipientEmail, lastFocusedField]);
-
-  const handleSocialSignIn = async (provider: "google" | "github") => {
-    setIsLoading(true);
-
-    try {
-      console.log(`Signing in with ${provider}`);
-      await signIn(provider);
-      setCurrentStep("complete");
-    } catch (error) {
-      console.error(`${provider} sign in failed:`, error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleEmailSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const result = await signIn("email", {
-        email,
-        password,
-        redirect: false, // Don't redirect automatically
-      });
-
-      if (result?.error) {
-        console.error("Sign in failed:", result.error);
-      } else {
-        setCurrentStep("complete");
-      }
-    } catch (error) {
-      console.error("Sign in failed:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   // Internal components for each step with variants
   const UserInfoWithImageStep = () => (
