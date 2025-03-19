@@ -3,7 +3,7 @@ import { db } from "@/db/db";
 import { eq } from "drizzle-orm";
 import { files, photos, texts } from "@/db/schema";
 import { notFound } from "next/navigation";
-import FileDetailEditor from "./file-detail-editor";
+import FileDetailEditor from "@/app/tests/files/[id]/file-detail-editor";
 
 // Server component to handle data fetching
 export default async function FileDetailPage({ params }: { params: Promise<{ id: string }> }) {
