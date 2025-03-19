@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useMemo } from "react";
 
 interface TempFile {
   url: string;
@@ -29,6 +29,7 @@ interface OnboardingContextType {
     recipientEmail: string;
     relationship: string;
   };
+  updateUserData: (data: Partial<OnboardingContextType["userData"]>) => void;
 }
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined);
@@ -43,25 +44,54 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
     relationship: "",
   });
 
-  const updateUserData = (newUserData: Partial<typeof userData>) => {
-    setUserData((prev) => ({ ...prev, ...newUserData }));
+  // Update user data - using functional update pattern
+  const updateUserData = (update: Partial<typeof userData> | ((prev: typeof userData) => Partial<typeof userData>)) => {
+    console.log("Updating userData:", typeof update === "function" ? "function" : update);
+    setUserData((prev) => ({
+      ...prev,
+      ...(typeof update === "function" ? update(prev) : update),
+    }));
   };
 
-  // Add a new file
+  //   const updateUserData = (newUserData: Partial<typeof userData>) => {
+  //     setUserData((prev) => ({ ...prev, ...newUserData }));
+  //   };
+
+  // Add a file
   const addFile = (file: TempFile) => {
     setFiles((prev) => [...prev, file]);
   };
 
   // Remove a file by URL
   const removeFile = (url: string) => {
+    // Revoke the object URL to prevent memory leaks
+    URL.revokeObjectURL(url);
     setFiles((prev) => prev.filter((f) => f.url !== url));
   };
 
   // Clear all files
   const clearFiles = () => {
+    // Revoke all object URLs
+    files.forEach((file) => URL.revokeObjectURL(file.url));
     setFiles([]);
   };
 
+  //   // Use useMemo to prevent unnecessary re-renders
+  //   const contextValue = useMemo(
+  //     () => ({
+  //       files,
+  //       addFile,
+  //       removeFile,
+  //       clearFiles,
+  //       currentStep,
+  //       setCurrentStep,
+  //       userData,
+  //       updateUserData,
+  //     }),
+  //     [files, currentStep, userData]
+  //   ); // Only re-create when these values change
+
+  //   return <OnboardingContext.Provider value={contextValue}>{children}</OnboardingContext.Provider>;
   return (
     <OnboardingContext.Provider
       value={{
