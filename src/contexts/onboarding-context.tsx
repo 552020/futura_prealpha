@@ -45,7 +45,7 @@ type OnboardingStep =
   | "upload" // Initial upload page
   | "user-info" // Modal: Collecting user's name (after successful upload)
   | "share" // Modal: Sharing options
-  | "sign-in" // Modal: Authentication
+  | "sign-up" // Modal: Authentication (renamed from sign-in)
   | "complete"; // Onboarding complete (profile page)
 
 interface OnboardingContextType {
