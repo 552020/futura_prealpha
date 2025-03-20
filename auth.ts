@@ -4,6 +4,8 @@ import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/db/db";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { compare } from "bcrypt"; // make sure bcrypt is installed
 
 declare module "next-auth" {
   interface Session {
@@ -29,25 +31,49 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
     }),
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        // Early return with type narrowing
+        if (
+          !credentials?.email ||
+          !credentials?.password ||
+          typeof credentials.email !== "string" ||
+          typeof credentials.password !== "string"
+        ) {
+          return null;
+        }
+
+        const email = credentials.email; // TypeScript now knows this is a string
+        const password = credentials.password; // TypeScript now knows this is a string
+
+        const user = await db.query.users.findFirst({
+          where: (users, { eq }) => eq(users.email, email),
+        });
+
+        if (!user || !user.password) return null;
+
+        // Compare passwords
+        const passwordMatch = await compare(password, user.password);
+        if (!passwordMatch) return null;
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        };
+      },
+    }),
   ],
   callbacks: {
     async redirect({ url, baseUrl }) {
       console.log("NextAuth redirect callback called with:", { url, baseUrl });
-
-      // Always redirect to the profile page after successful authentication
-      // This takes precedence over other redirect rules
       console.log(`Redirecting to profile: ${baseUrl}/user/profile`);
       return `${baseUrl}/user/profile`;
-
-      // The following code is now unreachable, but kept for reference
-      // if (url.startsWith("/")) {
-      //   console.log(`Returning: ${baseUrl}${url}`);
-      //   return `${baseUrl}${url}`;
-      // } else if (new URL(url).origin === baseUrl) {
-      //   console.log(`Returning URL as is: ${url}`);
-      //   return url;
-      // }
-      // return `${baseUrl}/user/profile`;
     },
 
     authorized({ request, auth }) {
@@ -87,6 +113,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
   },
-  //   debug: process.env.NODE_ENV !== "production",
   debug: true,
 });

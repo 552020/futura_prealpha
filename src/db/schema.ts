@@ -2,16 +2,17 @@ import { pgTable, text, timestamp, json, boolean, primaryKey, integer } from "dr
 import type { DefaultSession } from "next-auth";
 // import type { AdapterAccount } from "@auth/core/adapters";
 import type { AdapterAccount } from "next-auth/adapters";
-// Users table - Core user data
+// Users table - Core user data - required for auth.js
 export const users = pgTable("user", {
   id: text("id")
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  name: text("name"),
-  email: text("email").unique(),
-  emailVerified: timestamp("emailVerified", { mode: "date" }),
-  image: text("image"),
+    .$defaultFn(() => crypto.randomUUID()), // required for auth.js
+  name: text("name"), // required for auth.js
+  email: text("email").unique(), // required for auth.js
+  emailVerified: timestamp("emailVerified", { mode: "date" }), // required for auth.js
+  image: text("image"), // required for auth.js
   // Our additional fields
+  password: text("password"),
   username: text("username").unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -49,6 +50,7 @@ export const accounts = pgTable(
   })
 );
 
+// Auth.js required tables
 export const sessions = pgTable("session", {
   sessionToken: text("sessionToken").primaryKey(),
   userId: text("userId")
@@ -69,6 +71,30 @@ export const verificationTokens = pgTable(
       columns: [verificationToken.identifier, verificationToken.token],
     }),
   })
+);
+
+// required for webauthn by auth.js
+export const authenticators = pgTable(
+  "authenticator",
+  {
+    credentialID: text("credentialID").notNull().unique(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    providerAccountId: text("providerAccountId").notNull(),
+    credentialPublicKey: text("credentialPublicKey").notNull(),
+    counter: integer("counter").notNull(),
+    credentialDeviceType: text("credentialDeviceType").notNull(),
+    credentialBackedUp: boolean("credentialBackedUp").notNull(),
+    transports: text("transports"),
+  },
+  (authenticator) => [
+    {
+      compositePK: primaryKey({
+        columns: [authenticator.userId, authenticator.credentialID],
+      }),
+    },
+  ]
 );
 
 // Application tables
