@@ -8,6 +8,38 @@ interface TempFile {
   uploadedAt: Date;
 }
 
+// TODO: Convert relationship and familyRelationship to proper enums for type safety
+// Example:
+// enum Relationship {
+//   Family = "family",
+//   Friend = "friend",
+//   Partner = "partner",
+//   Colleague = "colleague",
+//   Acquaintance = "acquaintance",
+//   Other = "other"
+// }
+//
+// enum FamilyRelationship {
+//   Parent = "parent",
+//   Child = "child",
+//   Sibling = "sibling",
+//   Grandparent = "grandparent",
+//   Grandchild = "grandchild",
+//   AuntUncle = "aunt-uncle",
+//   NieceNephew = "niece-nephew",
+//   Cousin = "cousin",
+//   OtherFamily = "other-family"
+// }
+
+//
+// // Then create a more sophisticated type that binds FamilyRelationship to Relationship.Family:
+// type RelationshipData =
+//   | { type: Relationship.Family; familyRelationship: FamilyRelationship }
+//   | { type: Exclude<Relationship, Relationship.Family>; familyRelationship?: never }
+//
+// // This would ensure that familyRelationship is required when type is Family,
+// // and not allowed for other relationship types
+
 // Improved step type with better semantic naming
 type OnboardingStep =
   | "upload" // Initial upload page
@@ -28,6 +60,7 @@ interface OnboardingContextType {
     recipientName: string;
     recipientEmail: string;
     relationship: string;
+    familyRelationship: string;
   };
   updateUserData: (data: Partial<OnboardingContextType["userData"]>) => void;
 }
@@ -42,6 +75,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
     recipientName: "",
     recipientEmail: "",
     relationship: "",
+    familyRelationship: "",
   });
 
   // Update user data - using functional update pattern

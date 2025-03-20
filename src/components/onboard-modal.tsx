@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  DialogDescription,
+  //   DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -262,11 +262,11 @@ export function OnboardModal({
   );
 
   const UserInfoWithoutImageStep = () => {
-    console.log("UserInfoWithoutImageStep rendering", {
-      nameInputRef_current: nameInputRef.current ? "exists" : "null",
-      userData_name: userData.name,
-      localName,
-    });
+    // console.log("UserInfoWithoutImageStep rendering", {
+    //   nameInputRef_current: nameInputRef.current ? "exists" : "null",
+    //   userData_name: userData.name,
+    //   localName,
+    // });
 
     // In the useEffect that syncs ref with userData.name
     useEffect(() => {
@@ -287,8 +287,11 @@ export function OnboardModal({
     });
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 border-2 border-dotted border-red-500 rounded-md">
         <div className="space-y-4 py-4">
+          <div className="pt-4">
+            <p className="text-4xl font-bold">Let&apos;s now share this memory with someone special!</p>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="name">How should we call you?</Label>
             <Input
@@ -303,75 +306,109 @@ export function OnboardModal({
               placeholder="Enter your name"
             />
           </div>
-
-          <div className="pt-4">
-            <p className="text-sm">Let&apos;s share this memory with someone special</p>
-          </div>
         </div>
       </div>
     );
   };
 
-  const ShareStep = () => (
-    <div className="space-y-4 py-4">
-      <div className="text-center mb-4">
-        <p className="text-sm text-muted-foreground">
-          Hi {userData.name}! Let&apos;s share this special memory with someone you care about.
-        </p>
-      </div>
+  const ShareStep = () => {
+    // Get the current relationship value to conditionally render the family dropdown
+    const relationship = userData.relationship || "";
 
-      <div className="space-y-2">
-        <Label htmlFor="recipientName">Their Name</Label>
-        <Input
-          ref={recipientNameRef}
-          id="recipientName"
-          name="recipientName"
-          value={userData.recipientName}
-          onChange={handleRefBasedRecipientChange}
-          onFocus={() => {
-            console.log(" Recipient Name input focused");
-            setLastFocusedField("recipientName");
-          }}
-          //   onFocus={() => console.log("Input focused")}
-          onBlur={() => console.log("Input blurred")}
-          placeholder="Enter their name"
-        />
+    return (
+      <div className="space-y-4 py-4">
+        <div className="space-y-2">
+          <Label htmlFor="recipientName">Their Name</Label>
+          <Input
+            ref={recipientNameRef}
+            id="recipientName"
+            name="recipientName"
+            value={userData.recipientName}
+            onChange={handleRefBasedRecipientChange}
+            onFocus={() => {
+              console.log(" Recipient Name input focused");
+              setLastFocusedField("recipientName");
+            }}
+            onBlur={() => console.log("Input blurred")}
+            placeholder="Enter their name"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="recipientEmail">Their Email</Label>
+          <Input
+            ref={recipientEmailRef}
+            id="recipientEmail"
+            name="recipientEmail"
+            value={userData.recipientEmail}
+            onChange={handleRefBasedRecipientChange}
+            onFocus={() => {
+              console.log(" Recipient Email input focused");
+              setLastFocusedField("recipientEmail");
+            }}
+            onBlur={() => console.log("Input blurred")}
+            placeholder="Enter their email"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="relationship">Your Relationship</Label>
+          <Select
+            value={relationship}
+            onValueChange={(value) => {
+              // If changing away from family, clear the family relationship
+              if (value !== "family" && userData.familyRelationship) {
+                updateUserData({
+                  relationship: value,
+                  familyRelationship: undefined,
+                });
+              } else {
+                updateUserData({ relationship: value });
+              }
+            }}
+          >
+            <SelectTrigger id="relationship">
+              <SelectValue placeholder="How do you know this person?" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="family">Family</SelectItem>
+              <SelectItem value="friend">Friend</SelectItem>
+              <SelectItem value="partner">Partner</SelectItem>
+              <SelectItem value="colleague">Colleague</SelectItem>
+              <SelectItem value="acquaintance">Acquaintance</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Conditional family relationship selector */}
+        {relationship === "family" && (
+          <div className="space-y-2 animate-in fade-in slide-in-from-top duration-300">
+            <Label htmlFor="familyRelationship">Family Relationship</Label>
+            <Select
+              value={userData.familyRelationship || ""}
+              onValueChange={(value) => updateUserData({ familyRelationship: value })}
+            >
+              <SelectTrigger id="familyRelationship">
+                <SelectValue placeholder="What is your family relationship?" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="parent">Parent</SelectItem>
+                <SelectItem value="child">Child</SelectItem>
+                <SelectItem value="sibling">Sibling</SelectItem>
+                <SelectItem value="grandparent">Grandparent</SelectItem>
+                <SelectItem value="grandchild">Grandchild</SelectItem>
+                <SelectItem value="aunt-uncle">Aunt/Uncle</SelectItem>
+                <SelectItem value="niece-nephew">Niece/Nephew</SelectItem>
+                <SelectItem value="cousin">Cousin</SelectItem>
+                <SelectItem value="other-family">Other Family Member</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="recipientEmail">Their Email</Label>
-        <Input
-          ref={recipientEmailRef}
-          id="recipientEmail"
-          name="recipientEmail"
-          value={userData.recipientEmail}
-          onChange={handleRefBasedRecipientChange}
-          onFocus={() => {
-            console.log(" Recipient Email input focused");
-            setLastFocusedField("recipientEmail");
-          }}
-          //   onFocus={() => console.log("Input focused")}
-          onBlur={() => console.log("Input blurred")}
-          placeholder="Enter their email"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="relationship">Your Relationship</Label>
-        <Select value={userData.relationship} onValueChange={(value) => updateUserData({ relationship: value })}>
-          <SelectTrigger id="relationship">
-            <SelectValue placeholder="How do you know this person?" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="family">Family</SelectItem>
-            <SelectItem value="friend">Friend</SelectItem>
-            <SelectItem value="partner">Partner</SelectItem>
-            <SelectItem value="colleague">Colleague</SelectItem>
-            <SelectItem value="acquaintance">Acquaintance</SelectItem>
-            <SelectItem value="other">Other</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
-  );
+    );
+  };
 
   const SignInStep = () => {
     const [showEmailFields, setShowEmailFields] = useState(false);
@@ -553,9 +590,10 @@ export function OnboardModal({
   const getStepTitle = () => {
     switch (currentStep) {
       case "user-info":
-        return "Memory successfully uploaded!";
+        return "Memory successfully uploaded! 🥳";
       case "share":
-        return userData.name ? `${userData.name}, share this memory` : "Share this memory";
+        // return userData.name ? `${userData.name}, share this memory` : "Share this memory";
+        return "With whom would you like to share this memory?";
       case "sign-in":
         return "Create your account";
       default:
@@ -579,21 +617,25 @@ export function OnboardModal({
     <Dialog open={showModal} onOpenChange={(open) => !open && handleModalClose()}>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-center text-xl">{getStepTitle()}</DialogTitle>
-          {currentStep === "user-info" && (
+          <DialogTitle className="text-center text-2xl border-2 border-dotted border-black rounded-md mt-6">
+            {getStepTitle()}
+          </DialogTitle>
+          {/* {currentStep === "user-info" && (
             <DialogDescription className="text-center">Let&apos;s get started with your memory</DialogDescription>
-          )}
+          )} */}
         </DialogHeader>
 
-        {/* Progress indicator */}
-        <div className="flex justify-center space-x-2 py-2">
+        {/* <div className="flex justify-center space-x-2 py-2"> */}
+        {/* <div className="flex justify-center space-x-2 border-2 border-dotted border-pink-500 rounded-md">
           {modalSteps.map((step) => (
             <div
               key={step}
-              className={`h-2 w-2 rounded-full transition-colors ${step === currentStep ? "bg-primary" : "bg-muted"}`}
+              className={`h-2 w-2 rounded-full border-2  transition-colors ${
+                step === currentStep ? "bg-primary" : "bg-muted"
+              }`}
             />
           ))}
-        </div>
+        </div> */}
 
         {/* Dynamic step content */}
         {renderStepContent()}
