@@ -478,7 +478,8 @@ export function OnboardModal({
     const handleSocialAuth = async (provider: "google" | "github") => {
       setIsLoading(true);
       try {
-        await signIn(provider, { callbackUrl: "/dashboard" });
+        await signIn(provider, { callbackUrl: "/onboarding/profile", redirect: true });
+        setCurrentStep("complete");
       } catch (error) {
         console.error("Social authentication error:", error);
       } finally {
