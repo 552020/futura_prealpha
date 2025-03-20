@@ -10,6 +10,7 @@ import { OnboardingProvider } from "@/contexts/onboarding-context";
 import { locales } from "@/middleware";
 import { notFound } from "next/navigation";
 import { getDictionary, Dictionary } from "@/utils/dictionaries";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -88,6 +89,7 @@ export default async function RootLayout({
                   <Header dict={dict} lang={lang} />
                   <main className="flex-1">{children}</main>
                   <Footer dict={dict} lang={lang} />
+                  <Toaster />
                 </OnboardingProvider>
               </InterfaceProvider>
             </div>

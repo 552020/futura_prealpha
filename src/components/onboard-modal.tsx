@@ -18,6 +18,7 @@ import { useOnboarding } from "@/contexts/onboarding-context";
 import { Share2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 // Define cleanup strategy type
 type CleanupStrategy = "none" | "last" | "all";
@@ -42,6 +43,7 @@ export function OnboardModal({
   });
 
   const { files, currentStep, setCurrentStep, userData, updateUserData, removeFile, clearFiles } = useOnboarding();
+  const { toast } = useToast();
 
   // After the localName state is defined (line 47)
   const [localName, setLocalName] = useState(userData.name);
@@ -411,19 +413,27 @@ export function OnboardModal({
           const result = await signIn("credentials", {
             email,
             password,
-            redirect: false, // Don't redirect automatically
+            redirect: false,
           });
 
           if (result?.error) {
             console.error("Sign in failed:", result.error);
-            toast.error("Sign in failed. Please check your credentials and try again.");
+            toast({
+              variant: "destructive",
+              title: "Sign in failed",
+              description: "Please check your credentials and try again.",
+            });
           } else {
             setCurrentStep("complete");
           }
         } else {
           // Sign up logic
           if (password !== confirmPassword) {
-            toast.error("Passwords don't match");
+            toast({
+              variant: "destructive",
+              title: "Passwords don't match",
+              description: "Please make sure your passwords match.",
+            });
             setIsLoading(false);
             return;
           }
@@ -455,7 +465,11 @@ export function OnboardModal({
         }
       } catch (error) {
         console.error("Authentication failed:", error);
-        toast.error("Authentication failed. Please try again.");
+        toast({
+          variant: "destructive",
+          title: "Authentication failed",
+          description: "Please try again later.",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -626,7 +640,7 @@ export function OnboardModal({
           <p className="text-sm text-muted-foreground">
             {isSigningIn ? (
               <>
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <button type="button" className="text-primary hover:underline font-medium" onClick={toggleAuthMode}>
                   Sign up
                 </button>
