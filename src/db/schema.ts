@@ -98,7 +98,7 @@ export const authenticators = pgTable(
 );
 
 // Application tables
-export const photos = pgTable("photos", {
+export const images = pgTable("image", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -108,7 +108,7 @@ export const photos = pgTable("photos", {
   url: text("url").notNull(),
   caption: text("caption"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  isPublic: boolean("is_public").default(true),
+  isPublic: boolean("is_public").default(false),
   metadata: json("metadata")
     .$type<{
       size?: number;
@@ -121,7 +121,7 @@ export const photos = pgTable("photos", {
     .default({}),
 });
 
-export const texts = pgTable("texts", {
+export const notes = pgTable("note", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -132,7 +132,7 @@ export const texts = pgTable("texts", {
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  isPublic: boolean("is_public").default(true),
+  isPublic: boolean("is_public").default(false),
   metadata: json("metadata")
     .$type<{
       tags?: string[];
@@ -145,7 +145,7 @@ export const texts = pgTable("texts", {
     .default({}),
 });
 
-export const files = pgTable("files", {
+export const documents = pgTable("document", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -157,7 +157,7 @@ export const files = pgTable("files", {
   mimeType: text("mime_type").notNull(),
   size: text("size").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  isPublic: boolean("is_public").default(true),
+  isPublic: boolean("is_public").default(false),
   metadata: json("metadata")
     .$type<{
       originalName?: string;
@@ -167,22 +167,70 @@ export const files = pgTable("files", {
     .default({}),
 });
 
-// Add this to your schema
-export const fileShares = pgTable("file_shares", {
+// export const fileShares = pgTable("file_share", {
+//   id: text("id")
+//     .primaryKey()
+//     .$defaultFn(() => crypto.randomUUID()),
+//   fileId: text("file_id").notNull(),
+//   fileType: text("file_type").notNull(),
+//   userId: text("user_id")
+//     .notNull()
+//     .references(() => users.id, { onDelete: "cascade" }),
+//   sharedByUserId: text("shared_by_user_id")
+//     .notNull()
+//     .references(() => users.id, { onDelete: "cascade" }),
+//   createdAt: timestamp("created_at").defaultNow().notNull(),
+//   accessLevel: text("access_level").default("read").notNull(),
+// });
+
+export const memoryShares = pgTable("memory_share", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  fileId: text("file_id").notNull(),
-  fileType: text("file_type").notNull(), // "photo", "file", "text"
-  userId: text("user_id")
+  memoryId: text("memory_id").notNull(), // The ID of the memory (e.g., image, note, document)
+  memoryType: text("memory_type").notNull(), // Type of memory (e.g., "image", "note", "document")
+  ownerId: text("owner_id") // The user who originally created (or owns) the memory
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  sharedByUserId: text("shared_by_user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+  sharedWithType: text("shared_with_type").notNull(), // "user" or "group"
+  sharedWithId: text("shared_with_id").notNull(), // ID of the user or group the memory is shared with
   createdAt: timestamp("created_at").defaultNow().notNull(),
   accessLevel: text("access_level").default("read").notNull(),
 });
+
+export const group = pgTable("group", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text("name").notNull(),
+  ownerId: text("owner_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(), // Added this
+  metadata: json("metadata")
+    .$type<{
+      description?: string;
+      type?: "family" | "friends" | "work" | "custom";
+    }>()
+    .default({}),
+});
+
+export const groupMember = pgTable(
+  "group_member",
+  {
+    groupId: text("group_id")
+      .notNull()
+      .references(() => group.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+  },
+  (groupMember) => ({
+    compositePk: primaryKey({
+      columns: [groupMember.groupId, groupMember.userId],
+    }),
+  })
+);
 
 // Type definitions for Auth.js
 declare module "next-auth" {
@@ -194,20 +242,29 @@ declare module "next-auth" {
 }
 
 // Type inference helpers
-export type User = typeof users.$inferSelect;
-export type NewUser = typeof users.$inferInsert;
+export type DBUser = typeof users.$inferSelect;
+export type NewDBUser = typeof users.$inferInsert;
 
-export type Account = typeof accounts.$inferSelect;
-export type NewAccount = typeof accounts.$inferInsert;
+export type DBAccount = typeof accounts.$inferSelect;
+export type NewDBAccount = typeof accounts.$inferInsert;
 
-export type Session = typeof sessions.$inferSelect;
-export type NewSession = typeof sessions.$inferInsert;
+export type DBSession = typeof sessions.$inferSelect;
+export type NewDBSession = typeof sessions.$inferInsert;
 
-export type Photo = typeof photos.$inferSelect;
-export type NewPhoto = typeof photos.$inferInsert;
+export type DBImage = typeof images.$inferSelect;
+export type NewDBImage = typeof images.$inferInsert;
 
-export type Text = typeof texts.$inferSelect;
-export type NewText = typeof texts.$inferInsert;
+export type DBDocument = typeof documents.$inferSelect;
+export type NewDBDocument = typeof documents.$inferInsert;
 
-export type File = typeof files.$inferSelect;
-export type NewFile = typeof files.$inferInsert;
+export type DBNote = typeof notes.$inferSelect;
+export type NewDBNote = typeof notes.$inferInsert;
+
+export type DBMemoryShare = typeof memoryShares.$inferSelect;
+export type NewDBMemoryShare = typeof memoryShares.$inferInsert;
+
+export type DBGroup = typeof group.$inferSelect;
+export type NewDBGroup = typeof group.$inferInsert;
+
+export type DBGroupMember = typeof groupMember.$inferSelect;
+export type NewDBGroupMember = typeof groupMember.$inferInsert;

@@ -1,5 +1,5 @@
 {
-  "id": "38673a9d-1eba-4c3b-9b89-264feb9b8817",
+  "id": "363a97fc-0b72-4f5f-90d6-deb271cbb99a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -272,8 +272,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.files": {
-      "name": "files",
+    "public.documents": {
+      "name": "documents",
       "schema": "",
       "columns": {
         "id": {
@@ -336,9 +336,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "files_userId_user_id_fk": {
-          "name": "files_userId_user_id_fk",
-          "tableFrom": "files",
+        "documents_userId_user_id_fk": {
+          "name": "documents_userId_user_id_fk",
+          "tableFrom": "documents",
           "tableTo": "user",
           "columnsFrom": [
             "userId"
@@ -356,8 +356,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.photos": {
-      "name": "photos",
+    "public.images": {
+      "name": "images",
       "schema": "",
       "columns": {
         "id": {
@@ -408,9 +408,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "photos_userId_user_id_fk": {
-          "name": "photos_userId_user_id_fk",
-          "tableFrom": "photos",
+        "images_userId_user_id_fk": {
+          "name": "images_userId_user_id_fk",
+          "tableFrom": "images",
           "tableTo": "user",
           "columnsFrom": [
             "userId"
@@ -473,8 +473,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.texts": {
-      "name": "texts",
+    "public.notes": {
+      "name": "notes",
       "schema": "",
       "columns": {
         "id": {
@@ -532,9 +532,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "texts_userId_user_id_fk": {
-          "name": "texts_userId_user_id_fk",
-          "tableFrom": "texts",
+        "notes_userId_user_id_fk": {
+          "name": "notes_userId_user_id_fk",
+          "tableFrom": "notes",
           "tableTo": "user",
           "columnsFrom": [
             "userId"

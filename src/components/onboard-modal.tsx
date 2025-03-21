@@ -424,6 +424,8 @@ export function OnboardModal({
               description: "Please check your credentials and try again.",
             });
           } else {
+            // Success! Now save the memory and send email
+            await handleSuccessfulAuth();
             setCurrentStep("complete");
           }
         } else {
@@ -438,19 +440,6 @@ export function OnboardModal({
             return;
           }
 
-          // Call your sign-up API
-          // For example:
-          // const response = await fetch("/api/auth/signup", {
-          //   method: "POST",
-          //   headers: { "Content-Type": "application/json" },
-          //   body: JSON.stringify({ email, password, name: userData.name }),
-          // });
-
-          // if (!response.ok) {
-          //   throw new Error("Sign up failed");
-          // }
-
-          // After successful sign-up, sign in the user
           const result = await signIn("credentials", {
             email,
             password,
@@ -460,6 +449,7 @@ export function OnboardModal({
           if (result?.error) {
             console.error("Auto sign-in after sign-up failed:", result.error);
           } else {
+            await handleSuccessfulAuth();
             setCurrentStep("complete");
           }
         }
@@ -475,11 +465,49 @@ export function OnboardModal({
       }
     };
 
+    const handleSuccessfulAuth = async () => {
+      try {
+        // Save memory to blob and send email
+        const response = await fetch("/api/memories/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fileUrl: files[0]?.url, // from useOnboarding context
+            recipientEmail: userData.recipientEmail,
+            recipientName: userData.recipientName,
+            relationship: userData.relationship,
+            familyRelationship: userData.familyRelationship,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to save memory");
+        }
+      } catch (error) {
+        console.error("Error saving memory:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to save your memory. Please try again.",
+        });
+      }
+    };
+
     const handleSocialAuth = async (provider: "google" | "github") => {
       setIsLoading(true);
       try {
-        await signIn(provider, { callbackUrl: "/onboarding/profile", redirect: true });
-        setCurrentStep("complete");
+        const result = await signIn(provider, { callbackUrl: "/onboarding/profile", redirect: true });
+        if (result?.error) {
+          toast({
+            variant: "destructive",
+            title: "Authentication failed",
+            description: result.error,
+          });
+        } else {
+          // Auth successful! Now save the memory and share
+          await handleSuccessfulAuth();
+          setCurrentStep("complete");
+        }
       } catch (error) {
         console.error("Social authentication error:", error);
       } finally {
