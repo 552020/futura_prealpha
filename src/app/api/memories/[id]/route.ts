@@ -3,10 +3,6 @@ import { auth } from "@/auth";
 import { db } from "@/db/db";
 import { eq } from "drizzle-orm";
 import { documents, images, notes } from "@/db/schema";
-import fs from "fs/promises";
-import path from "path";
-import { put } from "@vercel/blob";
-import { v4 as uuidv4 } from "uuid";
 import type { DBImage, DBDocument, DBNote, MemoryType } from "@/db/schema";
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
@@ -25,7 +21,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
   }
 
   try {
-    let memory = await findMemory(id);
+    const memory = await findMemory(id);
     if (!memory) {
       return NextResponse.json({ error: "Memory not found" }, { status: 404 });
     }
@@ -126,16 +122,16 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
   }
 }
 
-async function checkMemoryAccess(memory: DBDocument | DBImage | DBNote, userId: string): Promise<boolean> {
-  // Direct ownership
-  if (memory.userId === userId) return true;
+// async function checkMemoryAccess(memory: DBDocument | DBImage | DBNote, userId: string): Promise<boolean> {
+//   // Direct ownership
+//   if (memory.userId === userId) return true;
 
-  // Check shared access (if implemented)
-  // const hasSharedAccess = await checkSharedAccess(memory.id, userId);
-  // return hasSharedAccess;
+//   // Check shared access (if implemented)
+//   // const hasSharedAccess = await checkSharedAccess(memory.id, userId);
+//   // return hasSharedAccess;
 
-  return false;
-}
+//   return false;
+// }
 
 // PATCH handler for updating files
 export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
