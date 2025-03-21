@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db/db";
 import { eq, desc } from "drizzle-orm";
-import { files, photos, texts, Photo, File, Text } from "@/db/schema";
+// import { files, photos, texts, Photo, File, Text } from "@/db/schema";
+import { images, documents, notes } from "@/db/schema";
+import { DBImage, DBDocument, DBNote } from "@/db/schema";
 
 export async function GET(request: NextRequest) {
   // Check authentication
@@ -17,41 +19,41 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get("limit") || "50");
 
   try {
-    let userPhotos: Photo[] = [];
-    let userFiles: File[] = [];
-    let userTexts: Text[] = [];
+    let userImages: DBImage[] = [];
+    let userDocuments: DBDocument[] = [];
+    let userNotes: DBNote[] = [];
 
     // If no specific type is requested or photos are requested
     if (!fileType || fileType === "photo") {
-      userPhotos = await db.query.photos.findMany({
-        where: eq(photos.userId, session.user.id),
-        orderBy: desc(photos.createdAt), // Simple recent-first sorting
+      userImages = await db.query.images.findMany({
+        where: eq(images.userId, session.user.id),
+        orderBy: desc(images.createdAt), // Simple recent-first sorting
         limit: limit,
       });
     }
 
     // If no specific type is requested or files are requested
     if (!fileType || fileType === "file") {
-      userFiles = await db.query.files.findMany({
-        where: eq(files.userId, session.user.id),
-        orderBy: desc(files.createdAt), // Simple recent-first sorting
+      userDocuments = await db.query.documents.findMany({
+        where: eq(documents.userId, session.user.id),
+        orderBy: desc(documents.createdAt), // Simple recent-first sorting
         limit: limit,
       });
     }
 
     // If no specific type is requested or texts are requested
     if (!fileType || fileType === "text") {
-      userTexts = await db.query.texts.findMany({
-        where: eq(texts.userId, session.user.id),
-        orderBy: desc(texts.createdAt), // Simple recent-first sorting
+      userNotes = await db.query.notes.findMany({
+        where: eq(notes.userId, session.user.id),
+        orderBy: desc(notes.createdAt), // Simple recent-first sorting
         limit: limit,
       });
     }
 
     return NextResponse.json({
-      photos: userPhotos,
-      files: userFiles,
-      texts: userTexts,
+      images: userImages,
+      documents: userDocuments,
+      notes: userNotes,
     });
   } catch (error) {
     console.error("Error listing files:", error);

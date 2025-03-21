@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { db } from "@/db/db";
 import { eq } from "drizzle-orm";
-import { files, photos, texts } from "@/db/schema";
+import { documents, images, notes } from "@/db/schema";
 import { notFound } from "next/navigation";
 import FileDetailEditor from "@/app/tests/files/[id]/file-detail-editor";
 
@@ -23,8 +23,8 @@ export default async function FileDetailPage({ params }: { params: Promise<{ id:
   const { id } = resolvedParams;
 
   // Try to find in photos
-  const photo = await db.query.photos.findFirst({
-    where: eq(photos.id, id),
+  const photo = await db.query.images.findFirst({
+    where: eq(images.id, id),
   });
 
   if (photo) {
@@ -38,12 +38,12 @@ export default async function FileDetailPage({ params }: { params: Promise<{ id:
       );
     }
 
-    return <FileDetailEditor fileDetails={{ type: "photo", data: photo }} />;
+    return <FileDetailEditor fileDetails={{ type: "image", data: photo }} />;
   }
 
   // Try to find in files
-  const file = await db.query.files.findFirst({
-    where: eq(files.id, id),
+  const file = await db.query.documents.findFirst({
+    where: eq(documents.id, id),
   });
 
   if (file) {
@@ -57,12 +57,12 @@ export default async function FileDetailPage({ params }: { params: Promise<{ id:
       );
     }
 
-    return <FileDetailEditor fileDetails={{ type: "file", data: file }} />;
+    return <FileDetailEditor fileDetails={{ type: "document", data: file }} />;
   }
 
   // Try to find in texts
-  const text = await db.query.texts.findFirst({
-    where: eq(texts.id, id),
+  const text = await db.query.notes.findFirst({
+    where: eq(notes.id, id),
   });
 
   if (text) {
@@ -76,7 +76,7 @@ export default async function FileDetailPage({ params }: { params: Promise<{ id:
       );
     }
 
-    return <FileDetailEditor fileDetails={{ type: "text", data: text }} />;
+    return <FileDetailEditor fileDetails={{ type: "note", data: text }} />;
   }
 
   // If we get here, the file doesn't exist

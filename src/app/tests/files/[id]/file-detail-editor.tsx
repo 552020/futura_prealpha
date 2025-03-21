@@ -10,59 +10,60 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, ArrowLeft, Save } from "lucide-react";
 import Image from "next/image";
+import { DBImage, DBDocument, DBNote } from "@/db/schema";
 
 // Define proper types for the file details
-interface PhotoData {
-  id: string;
-  url: string;
-  caption: string | null;
-  isPublic: boolean | null;
-  createdAt: string | Date;
-  updatedAt?: string | Date;
-  userId: string;
-  metadata?: {
-    size?: number;
-    format?: string;
-    dimensions?: { width: number; height: number };
-  } | null;
-}
+// interface PhotoData {
+//   id: string;
+//   url: string;
+//   caption: string | null;
+//   isPublic: boolean | null;
+//   createdAt: string | Date;
+//   updatedAt?: string | Date;
+//   userId: string;
+//   metadata?: {
+//     size?: number;
+//     format?: string;
+//     dimensions?: { width: number; height: number };
+//   } | null;
+// }
 
-interface FileData {
-  id: string;
-  url: string;
-  filename: string;
-  mimeType: string;
-  size: number | string;
-  isPublic: boolean | null;
-  createdAt: string | Date;
-  updatedAt?: string | Date;
-  userId: string;
-  metadata?: Record<string, unknown> | null;
-}
+// interface FileData {
+//   id: string;
+//   url: string;
+//   filename: string;
+//   mimeType: string;
+//   size: number | string;
+//   isPublic: boolean | null;
+//   createdAt: string | Date;
+//   updatedAt?: string | Date;
+//   userId: string;
+//   metadata?: Record<string, unknown> | null;
+// }
 
-interface TextData {
-  id: string;
-  title: string;
-  content: string;
-  isPublic: boolean | null;
-  createdAt: string | Date;
-  updatedAt?: string | Date;
-  userId: string;
-  metadata?: Record<string, unknown> | null;
-}
+// interface TextData {
+//   id: string;
+//   title: string;
+//   content: string;
+//   isPublic: boolean | null;
+//   createdAt: string | Date;
+//   updatedAt?: string | Date;
+//   userId: string;
+//   metadata?: Record<string, unknown> | null;
+// }
 
 type FileDetailsType =
   | {
-      type: "photo";
-      data: PhotoData;
+      type: "image";
+      data: DBImage;
     }
   | {
-      type: "file";
-      data: FileData;
+      type: "document";
+      data: DBDocument;
     }
   | {
-      type: "text";
-      data: TextData;
+      type: "note";
+      data: DBNote;
     };
 
 export default function FileDetailEditor({ fileDetails }: { fileDetails: FileDetailsType }) {
@@ -73,11 +74,11 @@ export default function FileDetailEditor({ fileDetails }: { fileDetails: FileDet
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form fields
-  const [caption, setCaption] = useState(fileDetails.type === "photo" ? fileDetails.data.caption || "" : "");
-  const [filename, setFilename] = useState(fileDetails.type === "file" ? fileDetails.data.filename || "" : "");
+  const [caption, setCaption] = useState(fileDetails.type === "image" ? fileDetails.data.caption || "" : "");
+  const [filename, setFilename] = useState(fileDetails.type === "document" ? fileDetails.data.title || "" : "");
   const [isPublic, setIsPublic] = useState(fileDetails.data.isPublic === true);
-  const [title, setTitle] = useState(fileDetails.type === "text" ? fileDetails.data.title || "" : "");
-  const [content, setContent] = useState(fileDetails.type === "text" ? fileDetails.data.content || "" : "");
+  const [title, setTitle] = useState(fileDetails.type === "note" ? fileDetails.data.title || "" : "");
+  const [content, setContent] = useState(fileDetails.type === "note" ? fileDetails.data.content || "" : "");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,10 +107,10 @@ export default function FileDetailEditor({ fileDetails }: { fileDetails: FileDet
         const formData = new FormData();
         formData.append("file", selectedFile);
 
-        if (fileDetails.type === "photo") {
+        if (fileDetails.type === "image") {
           formData.append("caption", caption);
           formData.append("isPublic", String(isPublic));
-        } else if (fileDetails.type === "file") {
+        } else if (fileDetails.type === "document") {
           formData.append("filename", filename);
           formData.append("isPublic", String(isPublic));
         }
@@ -120,17 +121,17 @@ export default function FileDetailEditor({ fileDetails }: { fileDetails: FileDet
         };
       } else {
         // Regular metadata update without file
-        if (fileDetails.type === "photo") {
+        if (fileDetails.type === "image") {
           updateData = {
             caption,
             isPublic,
           };
-        } else if (fileDetails.type === "file") {
+        } else if (fileDetails.type === "document") {
           updateData = {
             filename,
             isPublic,
           };
-        } else if (fileDetails.type === "text") {
+        } else if (fileDetails.type === "note") {
           updateData = {
             title,
             content,
@@ -183,7 +184,7 @@ export default function FileDetailEditor({ fileDetails }: { fileDetails: FileDet
         <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Preview panel */}
-            {fileDetails.type === "photo" && (
+            {fileDetails.type === "image" && (
               <div className="border rounded-lg p-4 bg-white">
                 <h2 className="font-medium mb-4">Preview</h2>
                 <div className="w-full max-w-[200px] h-[180px] bg-gray-50 flex items-center justify-center rounded overflow-hidden border mx-auto">
@@ -201,13 +202,13 @@ export default function FileDetailEditor({ fileDetails }: { fileDetails: FileDet
             <Tabs defaultValue="metadata" className="w-full">
               <TabsList className="mb-4">
                 <TabsTrigger value="metadata">Metadata</TabsTrigger>
-                {(fileDetails.type === "photo" || fileDetails.type === "file") && (
+                {(fileDetails.type === "image" || fileDetails.type === "document") && (
                   <TabsTrigger value="replace">Replace File</TabsTrigger>
                 )}
               </TabsList>
 
               <TabsContent value="metadata" className="space-y-4">
-                {fileDetails.type === "photo" && (
+                {fileDetails.type === "image" && (
                   <div className="space-y-2">
                     <Label htmlFor="caption">Caption</Label>
                     <Input
@@ -219,7 +220,7 @@ export default function FileDetailEditor({ fileDetails }: { fileDetails: FileDet
                   </div>
                 )}
 
-                {fileDetails.type === "file" && (
+                {fileDetails.type === "document" && (
                   <div className="space-y-2">
                     <Label htmlFor="filename">Filename</Label>
                     <Input
@@ -231,7 +232,7 @@ export default function FileDetailEditor({ fileDetails }: { fileDetails: FileDet
                   </div>
                 )}
 
-                {fileDetails.type === "text" && (
+                {fileDetails.type === "note" && (
                   <>
                     <div className="space-y-2">
                       <Label htmlFor="title">Title</Label>
@@ -258,7 +259,7 @@ export default function FileDetailEditor({ fileDetails }: { fileDetails: FileDet
               </TabsContent>
 
               <TabsContent value="replace" className="space-y-4">
-                {(fileDetails.type === "photo" || fileDetails.type === "file") && (
+                {(fileDetails.type === "image" || fileDetails.type === "document") && (
                   <div className="space-y-2">
                     <Label htmlFor="file">Upload new file</Label>
                     <Input
@@ -276,7 +277,7 @@ export default function FileDetailEditor({ fileDetails }: { fileDetails: FileDet
                   </div>
                 )}
 
-                {fileDetails.type === "text" && (
+                {fileDetails.type === "note" && (
                   <p className="text-sm text-gray-500 italic">
                     Text content cannot be replaced with a file. Use the metadata tab to update content.
                   </p>
@@ -325,13 +326,15 @@ export default function FileDetailEditor({ fileDetails }: { fileDetails: FileDet
                 <span className="font-medium">Created:</span>
                 <span className="col-span-2">{new Date(fileDetails.data.createdAt).toLocaleString()}</span>
               </div>
-              {fileDetails.data.updatedAt && (
+              {fileDetails.data.metadata?.dateOfMemory && (
                 <div className="grid grid-cols-3">
                   <span className="font-medium">Updated:</span>
-                  <span className="col-span-2">{new Date(fileDetails.data.updatedAt).toLocaleString()}</span>
+                  <span className="col-span-2">
+                    {new Date(fileDetails.data.metadata.dateOfMemory).toLocaleString()}
+                  </span>
                 </div>
               )}
-              {fileDetails.type === "photo" && (
+              {fileDetails.type === "image" && (
                 <>
                   <div className="grid grid-cols-3">
                     <span className="font-medium">URL:</span>
@@ -351,7 +354,7 @@ export default function FileDetailEditor({ fileDetails }: { fileDetails: FileDet
                   )}
                 </>
               )}
-              {fileDetails.type === "file" && (
+              {fileDetails.type === "document" && (
                 <>
                   <div className="grid grid-cols-3">
                     <span className="font-medium">URL:</span>

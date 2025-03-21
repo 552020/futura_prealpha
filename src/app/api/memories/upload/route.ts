@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db/db";
-import { files, photos, texts } from "@/db/schema";
+import { documents, images, notes } from "@/db/schema";
 import { put } from "@vercel/blob";
 // import { type Photo, type Text, type File } from "@/db/schema";
 import { type DBImage, type DBDocument, type DBNote } from "@/db/schema";
@@ -113,7 +113,8 @@ export async function POST(request: NextRequest) {
         data: {
           userId: session.user.id,
           url: uploadedFileUrl,
-          filename: uploadedFile.name,
+          title: uploadedFile.name.split(".")[0],
+          description: null,
           mimeType: mimeType,
           size: uploadedFile.size.toString(),
           isPublic: false,
@@ -127,7 +128,7 @@ export async function POST(request: NextRequest) {
     try {
       const result = await db.transaction(async (tx) => {
         if (record.type === "image") {
-          const photoResult = await tx.insert(photos).values(record.data).returning();
+          const photoResult = await tx.insert(images).values(record.data).returning();
           return { type: "image", data: photoResult[0] };
         } else if (record.type === "document") {
           const documentResult = await tx.insert(documents).values(record.data).returning();
@@ -184,14 +185,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid file format" }, { status: 400 });
     }
 
-    if (error.code === "LIMIT_FILE_SIZE") {
+    if (error && typeof error === "object" && "code" in error && error.code === "LIMIT_FILE_SIZE") {
       return NextResponse.json({ error: "File too large" }, { status: 400 });
     }
 
     return NextResponse.json(
       {
         error: "Failed to upload file",
-        details: error.message,
+        details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );

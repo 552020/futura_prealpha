@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db/db";
 import { eq } from "drizzle-orm";
-import { files, photos, texts } from "@/db/schema";
+import { documents, images, notes } from "@/db/schema";
 import fs from "fs/promises";
 import path from "path";
 
@@ -21,34 +21,34 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
 
   try {
     // First check if it's a photo
-    const photo = await db.query.photos.findFirst({
-      where: eq(photos.id, id),
+    const image = await db.query.images.findFirst({
+      where: eq(images.id, id),
     });
 
-    if (photo) {
+    if (image) {
       // Verify this photo belongs to the user or is publicly accessible
-      if (photo.userId !== session.user.id && !photo.isPublic) {
+      if (image.userId !== session.user.id && !image.isPublic) {
         return NextResponse.json({ error: "Access denied" }, { status: 403 });
       }
 
-      console.log(`Found photo with URL: ${photo.url}`);
+      console.log(`Found photo with URL: ${image.url}`);
 
       // Handle remote URLs (starting with http or https)
-      if (photo.url.startsWith("http")) {
+      if (image.url.startsWith("http")) {
         try {
-          const response = await fetch(photo.url);
-          if (!response.ok) throw new Error(`Failed to fetch ${photo.url}`);
+          const response = await fetch(image.url);
+          if (!response.ok) throw new Error(`Failed to fetch ${image.url}`);
 
           const buffer = Buffer.from(await response.arrayBuffer());
           const fileResponse = new NextResponse(buffer);
 
           // Set the content type based on the URL extension or a default
-          const ext = path.extname(photo.url).toLowerCase();
+          const ext = path.extname(image.url).toLowerCase();
           const contentType =
             ext === ".png" ? "image/png" : ext === ".gif" ? "image/gif" : ext === ".webp" ? "image/webp" : "image/jpeg";
 
           fileResponse.headers.set("Content-Type", contentType);
-          fileResponse.headers.set("Content-Disposition", `attachment; filename="${path.basename(photo.url)}"`);
+          fileResponse.headers.set("Content-Disposition", `attachment; filename="${path.basename(image.url)}"`);
 
           return fileResponse;
         } catch (fetchError) {
@@ -60,15 +60,15 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
       // For local files, try multiple possible paths
       const possiblePaths = [
         // If URL starts with /, it's relative to public directory
-        photo.url.startsWith("/") ? path.join(process.cwd(), "public", photo.url.substring(1)) : null,
+        image.url.startsWith("/") ? path.join(process.cwd(), "public", image.url.substring(1)) : null,
         // Direct path (as stored)
-        path.join(process.cwd(), "uploads", path.basename(photo.url)),
+        path.join(process.cwd(), "uploads", path.basename(image.url)),
         // Path in public directory
-        path.join(process.cwd(), "public", photo.url),
+        path.join(process.cwd(), "public", image.url),
         // Path in public/images directory
-        path.join(process.cwd(), "public/images", path.basename(photo.url)),
+        path.join(process.cwd(), "public/images", path.basename(image.url)),
         // Absolute path as is
-        photo.url,
+        image.url,
       ].filter(Boolean) as string[];
 
       // Try each path
@@ -102,29 +102,29 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
     }
 
     // Check if it's a regular file - similar approach as photos
-    const file = await db.query.files.findFirst({
-      where: eq(files.id, id),
+    const document = await db.query.documents.findFirst({
+      where: eq(documents.id, id),
     });
 
-    if (file) {
+    if (document) {
       // Verify ownership
-      if (file.userId !== session.user.id) {
+      if (document.userId !== session.user.id) {
         return NextResponse.json({ error: "Access denied" }, { status: 403 });
       }
 
-      console.log(`Found file: ${file.filename}, URL: ${file.url}`);
+      console.log(`Found file: ${document.title}, URL: ${document.url}`);
 
       // Handle remote URLs
-      if (file.url.startsWith("http")) {
+      if (document.url.startsWith("http")) {
         try {
-          const response = await fetch(file.url);
-          if (!response.ok) throw new Error(`Failed to fetch ${file.url}`);
+          const response = await fetch(document.url);
+          if (!response.ok) throw new Error(`Failed to fetch ${document.url}`);
 
           const buffer = Buffer.from(await response.arrayBuffer());
           const fileResponse = new NextResponse(buffer);
 
-          fileResponse.headers.set("Content-Type", file.mimeType || "application/octet-stream");
-          fileResponse.headers.set("Content-Disposition", `attachment; filename="${file.filename}"`);
+          fileResponse.headers.set("Content-Type", document.mimeType || "application/octet-stream");
+          fileResponse.headers.set("Content-Disposition", `attachment; filename="${document.title}"`);
 
           return fileResponse;
         } catch (fetchError) {
@@ -135,11 +135,11 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
 
       // For local files, try multiple possible paths
       const possiblePaths = [
-        file.url.startsWith("/") ? path.join(process.cwd(), "public", file.url.substring(1)) : null,
-        path.join(process.cwd(), "uploads", path.basename(file.url)),
-        path.join(process.cwd(), "public", file.url),
-        path.join(process.cwd(), "public/files", path.basename(file.url)),
-        file.url,
+        document.url.startsWith("/") ? path.join(process.cwd(), "public", document.url.substring(1)) : null,
+        path.join(process.cwd(), "uploads", path.basename(document.url)),
+        path.join(process.cwd(), "public", document.url),
+        path.join(process.cwd(), "public/files", path.basename(document.url)),
+        document.url,
       ].filter(Boolean) as string[];
 
       // Try each path
@@ -152,8 +152,8 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
           const fileBuffer = await fs.readFile(filePath);
 
           const response = new NextResponse(fileBuffer);
-          response.headers.set("Content-Type", file.mimeType || "application/octet-stream");
-          response.headers.set("Content-Disposition", `attachment; filename="${file.filename}"`);
+          response.headers.set("Content-Type", document.mimeType || "application/octet-stream");
+          response.headers.set("Content-Disposition", `attachment; filename="${document.title}"`);
 
           return response;
         } catch {
@@ -168,23 +168,23 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
     }
 
     // Handle text - this should work without file path issues
-    const text = await db.query.texts.findFirst({
-      where: eq(texts.id, id),
+    const note = await db.query.notes.findFirst({
+      where: eq(notes.id, id),
     });
 
-    if (text) {
+    if (note) {
       // Verify this text belongs to the user
-      if (text.userId !== session.user.id) {
+      if (note.userId !== session.user.id) {
         return new Response("Access denied", { status: 403 });
       }
 
       // Return text data as a file download
-      const textContent = text.content;
-      const response = new NextResponse(textContent);
+      const noteContent = note.content;
+      const response = new NextResponse(noteContent);
       response.headers.set("Content-Type", "text/plain");
       response.headers.set(
         "Content-Disposition",
-        `attachment; filename="${encodeURIComponent(text.title || "text.txt")}"`
+        `attachment; filename="${encodeURIComponent(note.title || "note.txt")}"`
       );
 
       return response;
