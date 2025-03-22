@@ -30,7 +30,7 @@ declare module "next-auth/jwt" {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
-  session: { strategy: "jwt" },
+  session: { strategy: "database" },
   providers: [
     GitHub({
       clientId: process.env.AUTH_GITHUB_ID!,
