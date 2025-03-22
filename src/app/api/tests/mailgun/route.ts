@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import FormData from "form-data";
 import Mailgun from "mailgun.js";
-impot []
+
 const mailgun = new Mailgun(FormData);
 const mg = mailgun.client({
   username: "api",
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
   // Check if user is admin or dev
   //   if (!session?.user?.role || !["admin", "developer", "superadmin"].includes(session.user.role)) {
-  if (!session?.user.role|| !["admin", "developer", "superadmin"].includes(session.user.role)) {
+  if (!session?.user.role || !["admin", "developer", "superadmin"].includes(session.user.role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

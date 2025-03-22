@@ -49,6 +49,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
       profile(profile) {
+        console.log("Google profile:", profile);
         return {
           role: profile.role ?? "user", // Default role if not provided
           ...profile,

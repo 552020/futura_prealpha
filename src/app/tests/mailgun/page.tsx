@@ -43,7 +43,12 @@ export default function MailgunTest() {
   };
 
   // Show unauthorized message if not admin/dev
-  if (status === "authenticated" && session.user?.role !== "admin" && session.user?.role !== "dev") {
+  if (
+    status === "authenticated" &&
+    session.user?.role !== "admin" &&
+    session.user?.role !== "developer" &&
+    session.user?.role !== "superadmin"
+  ) {
     return (
       <div className="p-8 max-w-xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">Mailgun Test</h1>
