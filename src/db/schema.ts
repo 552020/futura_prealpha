@@ -433,3 +433,6 @@ export type MemoryType = (typeof MEMORY_TYPES)[number];
 export type AccessLevel = (typeof ACCESS_LEVELS)[number];
 export type GroupType = (typeof GROUP_TYPES)[number];
 export type MemberRole = (typeof MEMBER_ROLES)[number];
+
+export type DBRelationship = typeof relationship.$inferSelect;
+export type DBFamilyRelationship = typeof familyRelationship.$inferSelect;
