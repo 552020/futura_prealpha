@@ -9,53 +9,6 @@ import { db } from "@/db/db";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt"; // make sure bcrypt is installed
 
-// declare module "next-auth" {
-//   interface Session {
-//     accessToken?: string;
-//   }
-// }
-
-// declare module "next-auth" {
-//   interface Session {
-//     accessToken?: string;
-//     user: {
-//       id: string;
-//       role?: string;
-//     } & DefaultSession["user"];
-//   }
-// }
-
-// declare module "next-auth/jwt" {
-//   interface JWT {
-//     accessToken?: string;
-//   }
-// }
-
-// declare module "next-auth" {
-//   interface Session {
-//     accessToken?: string;
-//     user: {
-//       role: string;
-//     } & DefaultSession["user"];
-//   }
-// }
-
-// declare module "next-auth/jwt" {
-//   interface JWT {
-//     accessToken?: string;
-//     role?: string;
-//   }
-// }
-
-// declare module "next-auth" {
-//   interface Session {
-//     user: {
-//       /** Add role to the user property */
-//       role: string;
-//     } & DefaultSession["user"]; // This preserves the default user properties
-//   }
-// }
-
 declare module "next-auth" {
   interface User {
     role?: string;
@@ -84,11 +37,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.AUTH_GITHUB_SECRET!,
       profile(profile) {
         return {
-          id: profile.id.toString(), // Convert ID to string
-          name: profile.name ?? profile.login,
+          id: profile.id.toString(),
           email: profile.email,
+          name: profile.name,
           image: profile.avatar_url,
-          role: profile.role ?? "user",
+          role: "user" as string,
         };
       },
     }),
@@ -136,6 +89,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           id: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
         };
       },
     }),
@@ -151,12 +105,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const { pathname } = request.nextUrl;
       console.log("NextAuth authorized callback called with pathname:", pathname);
 
-      const protectedPatterns = ["/admin", "/user/"];
-      const isProtectedPath = protectedPatterns.some((pattern) => pathname.startsWith(pattern));
+      // Tests route check
+      if (pathname.startsWith("/tests")) {
+        return ["admin", "superadmin", "developer"].includes(auth?.user?.role ?? "");
+      }
 
-      console.log("Is protected path:", isProtectedPath, "Auth exists:", !!auth);
+      // Admin routes check
+      if (pathname.startsWith("/admin")) {
+        return ["admin", "superadmin"].includes(auth?.user?.role ?? "");
+      }
 
-      if (isProtectedPath) return !!auth;
+      // Other protected routes
+      if (pathname.startsWith("/user/")) {
+        return !!auth;
+      }
+
       return true;
     },
 
@@ -177,36 +140,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     session({ session, token }) {
       console.log("NextAuth session callback called with session:", session);
 
-      if (session.user && token.sub) {
-        session.user.id = token.sub;
-        console.log("Added user ID to session:", token.sub);
+      if (session.user) {
+        session.user.role = token.role as string;
+        session.user.id = token.sub as string;
       }
       if (token.accessToken) {
-        session.accessToken = token.accessToken;
-        console.log("Added access token to session");
+        session.accessToken = token.accessToken as string;
       }
       return session;
     },
   },
   debug: true,
 });
-
-// callbacks: {
-//     // Add role handling to your existing callbacks
-//     jwt({ token, user }) {
-//       if(user) token.role = user.role
-//       return token
-//     },
-//     session({ session, token }) {
-//       if (session.user) {
-//         session.user.role = token.role
-//         session.user.id = token.sub
-//       }
-//       if (token.accessToken) {
-//         session.accessToken = token.accessToken
-//       }
-//       return session
-//     },
-//     // Your other existing callbacks stay the same
-//   }
-// })

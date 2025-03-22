@@ -39,6 +39,23 @@ export const users = pgTable(
       .default("pending")
       .notNull(), // Tracks signup progress
 
+    // Access control
+    role: text("role", {
+      enum: ["user", "moderator", "admin", "developer", "superadmin"],
+    })
+      .default("user")
+      .notNull(),
+
+    // Payment-related
+    plan: text("plan", {
+      enum: ["free", "premium"],
+    })
+      .default("free")
+      .notNull(),
+
+    premiumExpiresAt: timestamp("premium_expires_at", { mode: "date" }),
+
+    // Timestamp fields
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     metadata: json("metadata")
