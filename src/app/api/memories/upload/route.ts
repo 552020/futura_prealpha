@@ -77,12 +77,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "File too large" }, { status: 400 });
     }
 
-    // Validate MIME type
-    // const mimeType = uploadedFile.type;
-    // if (!ACCEPTED_MIME_TYPES.images.includes(mimeType) && !ACCEPTED_MIME_TYPES.documents.includes(mimeType)) {
-    //   return NextResponse.json({ error: "Unsupported file type" }, { status: 400 });
-    // }
-
     // Get actual file type
     const buffer = await uploadedFile.arrayBuffer();
     const fileType = await fileTypeFromBuffer(Buffer.from(buffer));
@@ -91,18 +85,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unsupported file type" }, { status: 400 });
     }
 
-    // // Determine and validate file type
-    // let fileType: "image" | "document";
-    // if (ACCEPTED_MIME_TYPES.images.includes(mimeType)) {
-    //   fileType = "image";
-    // } else if (ACCEPTED_MIME_TYPES.documents.includes(mimeType)) {
-    //   fileType = "document";
-    // } else {
-    //   return NextResponse.json({ error: "Unsupported file type" }, { status: 400 });
-    // }
-
     // Upload file to storage
-
     const uploadedUrl = await uploadToStorage(uploadedFile);
 
     // Build common metadata
@@ -113,39 +96,6 @@ export async function POST(request: NextRequest) {
       mimeType: fileType.mime,
     };
 
-    // Construct the appropriate record based on file type
-    // let record;
-    // if (fileType === "image") {
-    //   record = {
-    //     type: "image" as const,
-    //     data: {
-    //       userId: session.user.id,
-    //       url: uploadedFileUrl,
-    //       isPublic: false,
-    //       metadata: {
-    //         ...commonMetadata,
-    //         format: mimeType.split("/")[1],
-    //       },
-    //     },
-    //   };
-    // } else {
-    //   record = {
-    //     type: "document" as const,
-    //     data: {
-    //       userId: session.user.id,
-    //       url: uploadedFileUrl,
-    //       title: uploadedFile.name.split(".")[0],
-    //       description: null,
-    //       mimeType: mimeType,
-    //       size: uploadedFile.size.toString(),
-    //       isPublic: false,
-    //       metadata: {
-    //         ...commonMetadata,
-    //       },
-    //     },
-    //   };
-    // }
-
     // Store in database based on file type
     const result = await storeInDatabase({
       type: getMemoryType(fileType.mime as AcceptedMimeType),
@@ -154,18 +104,6 @@ export async function POST(request: NextRequest) {
       file: uploadedFile,
       metadata: commonMetadata as MemoryMetadata,
     });
-
-    // Isert the record in a transaction
-
-    // const result = await db.transaction(async (tx) => {
-    //   if (record.type === "image") {
-    //     const imageResult = await tx.insert(images).values(record.data).returning();
-    //     return { type: "image", data: imageResult[0] };
-    //   } else {
-    //     const documentResult = await tx.insert(documents).values(record.data).returning();
-    //     return { type: "document", data: documentResult[0] };
-    //   }
-    // });
 
     return NextResponse.json(result);
   } catch (error) {
