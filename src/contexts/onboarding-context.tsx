@@ -8,38 +8,6 @@ interface TempFile {
   uploadedAt: Date;
 }
 
-// TODO: Convert relationship and familyRelationship to proper enums for type safety
-// Example:
-// enum Relationship {
-//   Family = "family",
-//   Friend = "friend",
-//   Partner = "partner",
-//   Colleague = "colleague",
-//   Acquaintance = "acquaintance",
-//   Other = "other"
-// }
-//
-// enum FamilyRelationship {
-//   Parent = "parent",
-//   Child = "child",
-//   Sibling = "sibling",
-//   Grandparent = "grandparent",
-//   Grandchild = "grandchild",
-//   AuntUncle = "aunt-uncle",
-//   NieceNephew = "niece-nephew",
-//   Cousin = "cousin",
-//   OtherFamily = "other-family"
-// }
-
-//
-// // Then create a more sophisticated type that binds FamilyRelationship to Relationship.Family:
-// type RelationshipData =
-//   | { type: Relationship.Family; familyRelationship: FamilyRelationship }
-//   | { type: Exclude<Relationship, Relationship.Family>; familyRelationship?: never }
-//
-// // This would ensure that familyRelationship is required when type is Family,
-// // and not allowed for other relationship types
-
 // Improved step type with better semantic naming
 type OnboardingStep =
   | "upload" // Initial upload page
@@ -87,10 +55,6 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
     }));
   };
 
-  //   const updateUserData = (newUserData: Partial<typeof userData>) => {
-  //     setUserData((prev) => ({ ...prev, ...newUserData }));
-  //   };
-
   // Add a file
   const addFile = (file: TempFile) => {
     setFiles((prev) => [...prev, file]);
@@ -110,22 +74,6 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
     setFiles([]);
   };
 
-  //   // Use useMemo to prevent unnecessary re-renders
-  //   const contextValue = useMemo(
-  //     () => ({
-  //       files,
-  //       addFile,
-  //       removeFile,
-  //       clearFiles,
-  //       currentStep,
-  //       setCurrentStep,
-  //       userData,
-  //       updateUserData,
-  //     }),
-  //     [files, currentStep, userData]
-  //   ); // Only re-create when these values change
-
-  //   return <OnboardingContext.Provider value={contextValue}>{children}</OnboardingContext.Provider>;
   return (
     <OnboardingContext.Provider
       value={{
