@@ -1,4 +1,6 @@
-import NextAuth from "next-auth";
+// import NextAuth, { DefaultSession } from "next-auth";
+
+import NextAuth, { type DefaultSession } from "next-auth";
 import "next-auth/jwt";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
@@ -7,15 +9,69 @@ import { db } from "@/db/db";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt"; // make sure bcrypt is installed
 
+// declare module "next-auth" {
+//   interface Session {
+//     accessToken?: string;
+//   }
+// }
+
+// declare module "next-auth" {
+//   interface Session {
+//     accessToken?: string;
+//     user: {
+//       id: string;
+//       role?: string;
+//     } & DefaultSession["user"];
+//   }
+// }
+
+// declare module "next-auth/jwt" {
+//   interface JWT {
+//     accessToken?: string;
+//   }
+// }
+
+// declare module "next-auth" {
+//   interface Session {
+//     accessToken?: string;
+//     user: {
+//       role: string;
+//     } & DefaultSession["user"];
+//   }
+// }
+
+// declare module "next-auth/jwt" {
+//   interface JWT {
+//     accessToken?: string;
+//     role?: string;
+//   }
+// }
+
+// declare module "next-auth" {
+//   interface Session {
+//     user: {
+//       /** Add role to the user property */
+//       role: string;
+//     } & DefaultSession["user"]; // This preserves the default user properties
+//   }
+// }
+
 declare module "next-auth" {
+  interface User {
+    role?: string;
+  }
   interface Session {
     accessToken?: string;
+    user: User & {
+      id: string;
+    } & DefaultSession["user"];
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    accessToken?: string;
+    /** Add role to JWT */
+    role?: string;
   }
 }
 
@@ -26,10 +82,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     GitHub({
       clientId: process.env.AUTH_GITHUB_ID!,
       clientSecret: process.env.AUTH_GITHUB_SECRET!,
+      profile(profile) {
+        return {
+          id: profile.id.toString(), // Convert ID to string
+          name: profile.name ?? profile.login,
+          email: profile.email,
+          image: profile.avatar_url,
+          role: profile.role ?? "user",
+        };
+      },
     }),
     Google({
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+      profile(profile) {
+        return {
+          role: profile.role ?? "user", // Default role if not provided
+          ...profile,
+        };
+      },
     }),
     CredentialsProvider({
       name: "credentials",
@@ -89,12 +160,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
 
-    jwt({ token, account }) {
+    jwt({ token, account, user }) {
       console.log("NextAuth JWT callback called with token:", token);
 
       if (account?.access_token) {
         token.accessToken = account.access_token;
         console.log("Added access token to JWT");
+      }
+      if (user) {
+        token.role = user.role;
+        console.log("Added role to JWT:", token.role);
       }
       return token;
     },
@@ -115,3 +190,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   debug: true,
 });
+
+// callbacks: {
+//     // Add role handling to your existing callbacks
+//     jwt({ token, user }) {
+//       if(user) token.role = user.role
+//       return token
+//     },
+//     session({ session, token }) {
+//       if (session.user) {
+//         session.user.role = token.role
+//         session.user.id = token.sub
+//       }
+//       if (token.accessToken) {
+//         session.accessToken = token.accessToken
+//       }
+//       return session
+//     },
+//     // Your other existing callbacks stay the same
+//   }
+// })
