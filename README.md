@@ -1,10 +1,4 @@
-# FUTURA Landing
-
-TODO
-
-- [x] get client IDs and secrets for Google and GitHub for authentication
-- [ ] add a Blog (eventually)
-- [ ] add a local Postgres for development
+# FUTURA Pre-alpha
 
 ## Stack
 
@@ -14,8 +8,10 @@ TODO
 - Tailwind
 - Schadcn
 - Postgres
-- [Neon[(https://neon.tech/)
+- [Neon](https://neon.tech/)
+- [Vercel Blob](https://vercel.com/docs/vercel-blob)
 - Drizzle
+- Mailgun
 
 ## Next.js Docs
 
