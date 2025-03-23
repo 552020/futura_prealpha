@@ -149,22 +149,48 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
 
-    jwt({ token, account, user }) {
+    async jwt({ token, account, user }) {
+      console.log("--------------------------------");
       console.log("NextAuth JWT callback called with token:", token);
+      console.log("NextAuth JWT callback called with account:", account);
+      console.log("NextAuth JWT callback called with user:", user);
+      console.log("--------------------------------");
 
       if (account?.access_token) {
         token.accessToken = account.access_token;
         console.log("Added access token to JWT");
       }
-      if (user) {
+      // On first sign-in
+      if (user?.role) {
         token.role = user.role;
-        console.log("Added role to JWT:", token.role);
+        console.log("Added role to JWT from user object:", token.role);
+      }
+      //   if (user) {
+      //     token.role = user.role;
+      //     console.log("Added role to JWT:", token.role);
+      //   }
+      // On subsequent requests
+      if (!token.role && token.sub) {
+        const dbUser = await db.query.users.findFirst({
+          where: (users, { eq }) => eq(users.id, token.sub),
+        });
+
+        if (dbUser) {
+          token.role = dbUser.role;
+          console.log("Fetched role from DB and added to JWT:", token.role);
+        } else {
+          token.role = "user";
+          console.log("Fallback role set to 'user'");
+        }
       }
       return token;
     },
 
     session({ session, token }) {
+      console.log("--------------------------------");
       console.log("NextAuth session callback called with session:", session);
+      console.log("NextAuth session callback called with token:", token);
+      console.log("--------------------------------");
 
       if (session.user) {
         session.user.role = token.role as string;
