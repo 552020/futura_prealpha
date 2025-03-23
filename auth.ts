@@ -9,6 +9,11 @@ import { db } from "@/db/db";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt"; // make sure bcrypt is installed
 
+console.log("--------------------------------");
+console.log("auth.ts");
+console.log("--------------------------------");
+console.log("NODE_ENV:", process.env.NODE_ENV);
+
 declare module "next-auth" {
   interface User {
     role?: string;
@@ -30,7 +35,7 @@ declare module "next-auth/jwt" {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
-  session: { strategy: "database" },
+  session: { strategy: "jwt" },
   providers: [
     GitHub({
       clientId: process.env.AUTH_GITHUB_ID!,
@@ -48,11 +53,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+
       profile(profile) {
+        console.log("--------------------------------");
         console.log("Google profile:", profile);
+        console.log("--------------------------------");
         return {
-          role: profile.role ?? "user", // Default role if not provided
-          ...profile,
+          id: profile.sub, // ✅ crucial line!
+          email: profile.email,
+          name: profile.name,
+          image: profile.picture,
+          role: "user",
         };
       },
     }),
@@ -96,10 +107,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      console.log("NextAuth redirect callback called with:", { url, baseUrl });
-      console.log(`Redirecting to profile: ${baseUrl}/user/profile`);
-      return `${baseUrl}/user/profile`;
+    // async redirect({ url, baseUrl }) {
+    //   if (process.env.NODE_ENV === "development") {
+    //     console.log("NextAuth redirect callback called with:", { url, baseUrl });
+    //     console.log(`Redirecting to profile: ${baseUrl}/user/profile`);
+    //   }
+    //   return `${baseUrl}/user/profile`;
+    // },
+    redirect({ url, baseUrl }) {
+      const isLoginFlow = url.includes("/api/auth/signin") || url.includes("/api/auth/callback");
+
+      if (isLoginFlow) {
+        const redirectTo = `${baseUrl}/user/profile`;
+        console.log("[NextAuth] Redirecting after login:", redirectTo);
+        return redirectTo;
+      }
+
+      // Otherwise just return the same URL (no redirect)
+      return url;
     },
 
     authorized({ request, auth }) {
@@ -152,4 +177,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   debug: true,
+  events: {
+    async createUser(user) {
+      console.log("[Auth] ✅ User created:", user);
+    },
+    async linkAccount(account) {
+      console.log("[Auth] 🔗 Account linked:", account);
+    },
+    async signIn({ user, account, profile }) {
+      console.log("[Auth] 👋 User signed in:", { user, account, profile });
+    },
+    async signOut(message) {
+      if ("session" in message) {
+        console.log("[Auth] User signed out, session object:", message.session);
+      } else if ("token" in message) {
+        console.log("[Auth] User signed out, JWT token:", message.token);
+      }
+    },
+  },
 });
