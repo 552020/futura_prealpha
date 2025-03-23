@@ -150,11 +150,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     async jwt({ token, account, user }) {
-      console.log("--------------------------------");
-      console.log("NextAuth JWT callback called with token:", token);
-      console.log("NextAuth JWT callback called with account:", account);
-      console.log("NextAuth JWT callback called with user:", user);
-      console.log("--------------------------------");
+      //   console.log("--------------------------------");
+      //   console.log("NextAuth JWT callback called with token:", token);
+      //   console.log("NextAuth JWT callback called with account:", account);
+      //   console.log("NextAuth JWT callback called with user:", user);
+      //   console.log("--------------------------------");
 
       if (account?.access_token) {
         token.accessToken = account.access_token;
@@ -172,7 +172,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // On subsequent requests
       if (!token.role && token.sub) {
         const dbUser = await db.query.users.findFirst({
-          where: (users, { eq }) => eq(users.id, token.sub),
+          where: (users, { eq }) => eq(users.id, token.sub as string),
         });
 
         if (dbUser) {
@@ -187,10 +187,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     session({ session, token }) {
-      console.log("--------------------------------");
-      console.log("NextAuth session callback called with session:", session);
-      console.log("NextAuth session callback called with token:", token);
-      console.log("--------------------------------");
+      //   console.log("--------------------------------");
+      //   console.log("NextAuth session callback called with session:", session);
+      //   console.log("NextAuth session callback called with token:", token);
+      //   console.log("--------------------------------");
 
       if (session.user) {
         session.user.role = token.role as string;
