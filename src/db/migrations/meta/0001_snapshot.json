@@ -1,6 +1,6 @@
 {
-  "id": "93f2a9ee-f1d1-48e8-bec2-272e35ed0f47",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "308fd8f9-d066-4925-a5a8-e6cdad28986b",
+  "prevId": "93f2a9ee-f1d1-48e8-bec2-272e35ed0f47",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1065,6 +1065,26 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'pending'"
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'user'"
+        },
+        "plan": {
+          "name": "plan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'free'"
+        },
+        "premium_expires_at": {
+          "name": "premium_expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",

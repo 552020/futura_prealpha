@@ -8,33 +8,69 @@ interface TempFile {
   uploadedAt: Date;
 }
 
+// Improved step type with better semantic naming
+type OnboardingStep =
+  | "upload" // Initial upload page
+  | "user-info" // Modal: Collecting user's name (after successful upload)
+  | "share" // Modal: Sharing options
+  | "sign-up" // Modal: Authentication (renamed from sign-in)
+  | "complete"; // Onboarding complete (profile page)
+
 interface OnboardingContextType {
   files: TempFile[];
   addFile: (file: TempFile) => void;
   removeFile: (url: string) => void;
   clearFiles: () => void;
-  currentStep: "upload" | "profile" | "complete";
-  setCurrentStep: (step: "upload" | "profile" | "complete") => void;
+  currentStep: OnboardingStep;
+  setCurrentStep: (step: OnboardingStep) => void;
+  userData: {
+    name: string;
+    recipientName: string;
+    recipientEmail: string;
+    relationship: string;
+    familyRelationship: string;
+  };
+  updateUserData: (data: Partial<OnboardingContextType["userData"]>) => void;
 }
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined);
 
 export function OnboardingProvider({ children }: { children: React.ReactNode }) {
   const [files, setFiles] = useState<TempFile[]>([]);
-  const [currentStep, setCurrentStep] = useState<"upload" | "profile" | "complete">("upload");
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>("upload");
+  const [userData, setUserData] = useState({
+    name: "",
+    recipientName: "",
+    recipientEmail: "",
+    relationship: "",
+    familyRelationship: "",
+  });
 
-  // Add a new file
+  // Update user data - using functional update pattern
+  const updateUserData = (update: Partial<typeof userData> | ((prev: typeof userData) => Partial<typeof userData>)) => {
+    console.log("Updating userData:", typeof update === "function" ? "function" : update);
+    setUserData((prev) => ({
+      ...prev,
+      ...(typeof update === "function" ? update(prev) : update),
+    }));
+  };
+
+  // Add a file
   const addFile = (file: TempFile) => {
     setFiles((prev) => [...prev, file]);
   };
 
   // Remove a file by URL
   const removeFile = (url: string) => {
+    // Revoke the object URL to prevent memory leaks
+    URL.revokeObjectURL(url);
     setFiles((prev) => prev.filter((f) => f.url !== url));
   };
 
   // Clear all files
   const clearFiles = () => {
+    // Revoke all object URLs
+    files.forEach((file) => URL.revokeObjectURL(file.url));
     setFiles([]);
   };
 
@@ -47,6 +83,8 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         clearFiles,
         currentStep,
         setCurrentStep,
+        userData,
+        updateUserData,
       }}
     >
       {children}

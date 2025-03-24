@@ -45,7 +45,18 @@ export function SignIn({ provider, ...props }: { provider?: string } & React.Com
 
 export function SignOut(props: React.ComponentPropsWithRef<typeof Button>) {
   return (
-    <Button variant="ghost" className="w-full p-0" {...props} onClick={() => signOut()}>
+    <Button
+      variant="ghost"
+      className="w-full p-0"
+      {...props}
+      onClick={async () => {
+        // Clear any client-side state/cache first
+        await signOut({
+          callbackUrl: "/",
+          redirect: true,
+        });
+      }}
+    >
       Sign Out
     </Button>
   );

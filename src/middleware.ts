@@ -1,7 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
-import { NextRequest } from "next/server";
 
 // Define the locales you support
 export const locales = ["en", "fr", "es", "pt", "it", "de", "pl", "zh"];
@@ -17,22 +16,22 @@ export const defaultLocale = "en";
  */
 // Get the preferred locale using negotiator and intl-localematcher
 function getLocale(request: NextRequest) {
-  console.log("getLocale called");
+  //   console.log("getLocale called");
 
   // Define negotiatorHeaders with proper index signature
   const negotiatorHeaders: Record<string, string> = {};
 
   request.headers.forEach((value, key) => {
     negotiatorHeaders[key] = value;
-    console.log(`Header: ${key} = ${value}`);
+    // console.log(`Header: ${key} = ${value}`);
   });
 
   // Use negotiator and intl-localematcher to get the best locale
   const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
-  console.log("Negotiator languages:", languages);
+  //   console.log("Negotiator languages:", languages);
 
   const locale = match(languages, locales, defaultLocale);
-  console.log("Matched locale:", locale);
+  //   console.log("Matched locale:", locale);
 
   return locale;
 }
@@ -42,11 +41,12 @@ export function middleware(request: NextRequest) {
   // Get the pathname from the URL
   const pathname = request.nextUrl.pathname;
 
-  // Skip middleware for static files (images, etc.)
+  // Skip middleware for static files and test pages
   if (
     pathname.startsWith("/_next") || // Skip Next.js system files
     pathname.includes("/api/") || // Skip API routes
     pathname.startsWith("/images/") || // Skip image files in the public directory
+    pathname.startsWith("/tests/") || // Skip test pages
     pathname.match(/\.(png|jpg|jpeg|svg|ico|css|js|webp)$/) // Skip static files by extension
   ) {
     return;
@@ -54,26 +54,26 @@ export function middleware(request: NextRequest) {
 
   // Check if there is any supported locale in the pathname
   // Extracts the pathname from the URL (e.g., "/about" from "https://example.com/about")
-  console.log("Pathname:", pathname);
+  //   console.log("Pathname:", pathname);
   // Check if the pathname does NOT start with any of the supported locales
   // returns true for "/about" but false for "/en/about"
   const pathnameIsMissingLocale = locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   );
 
-  console.log("pathnameIsMissingLocale:", pathnameIsMissingLocale);
+  //   console.log("pathnameIsMissingLocale:", pathnameIsMissingLocale);
 
   if (pathnameIsMissingLocale) {
     const locale = getLocale(request);
-    console.log("Detected locale:", locale);
+    // console.log("Detected locale:", locale);
 
     // Update URL
     const newUrl = new URL(`/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`, request.url);
-    console.log("Redirecting to:", newUrl.toString());
+    // console.log("Redirecting to:", newUrl.toString());
 
     return NextResponse.redirect(newUrl);
   } else {
-    console.log("Pathname already has locale, no redirect needed");
+    // console.log("Pathname already has locale, no redirect needed");
   }
 
   // Redirect if there is no locale

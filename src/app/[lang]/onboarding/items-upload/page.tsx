@@ -1,22 +1,37 @@
 "use client";
 
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { COPY_VARIATIONS } from "./_copy/variations";
 import { Plus, Loader2 } from "lucide-react";
 import { useInterface } from "@/contexts/interface-context";
 import { useRouter } from "next/navigation";
 import { useFileUpload } from "@/hooks/user-file-upload";
+import { OnboardModal } from "@/components/onboard-modal";
 
 export default function ItemsUpload() {
   const router = useRouter();
   const { setMode } = useInterface();
+  const [showOnboardModal, setShowOnboardModal] = useState(false);
   const { isLoading, fileInputRef, handleUploadClick, handleFileChange } = useFileUpload({
     isOnboarding: true,
     onSuccess: () => {
-      setMode("app");
-      router.push("/onboarding/profile");
+      //   setMode("app");
+      //   router.push("/onboarding/profile");
+      setShowOnboardModal(true);
     },
   });
+
+  const handleModalClose = () => {
+    setShowOnboardModal(false);
+  };
+
+  const handleOnboardingComplete = () => {
+    setShowOnboardModal(false);
+    setMode("app");
+    router.push("/onboarding/profile");
+  };
+
   const { data: session } = useSession();
   if (session) {
     console.log(session);
@@ -46,6 +61,9 @@ export default function ItemsUpload() {
           {isLoading ? <Loader2 size={72} className="animate-spin" /> : <Plus size={72} />}
         </div>
       </div>
+
+      {/* Onboarding Modal */}
+      <OnboardModal isOpen={showOnboardModal} onClose={handleModalClose} onComplete={handleOnboardingComplete} />
     </div>
   );
 }

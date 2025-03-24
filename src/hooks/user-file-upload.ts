@@ -12,7 +12,7 @@ interface UseFileUploadProps {
 export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUploadProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { addFile: addOnboardingFile, setCurrentStep } = useOnboarding();
+  const { addFile: addOnboardingFile } = useOnboarding();
 
   // const { addFile: addVaultFile } = useVault(); // Future implementation
 
@@ -43,7 +43,6 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
 
       if (isOnboarding) {
         addOnboardingFile(fileData);
-        setCurrentStep("profile");
         toast({
           title: "File uploaded successfully!",
           description: "Your first memory has been saved.",
@@ -58,10 +57,18 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
         });
       }
     } catch (error) {
+      let title = "Something went wrong";
+      let description = "Please try uploading again.";
+
+      if (error instanceof Error && error.message === "File too large") {
+        title = "File too large";
+        description = "Please upload a file smaller than 50MB.";
+      }
+
       toast({
         variant: "destructive",
-        title: "Something went wrong",
-        description: "Please try uploading again.",
+        title,
+        description,
       });
       console.error("Upload error:", error);
     } finally {
