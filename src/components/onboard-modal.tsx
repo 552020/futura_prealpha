@@ -3,14 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  //   DialogDescription,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -20,7 +13,7 @@ import { signIn } from "next-auth/react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// Define cleanup strategy type
+// Define cleanup strategy type for when we close the modal
 type CleanupStrategy = "none" | "last" | "all";
 
 interface OnboardModalProps {
@@ -45,14 +38,13 @@ export function OnboardModal({
   const { files, currentStep, setCurrentStep, userData, updateUserData, removeFile, clearFiles } = useOnboarding();
   const { toast } = useToast();
 
-  // After the localName state is defined (line 47)
   const [localName, setLocalName] = useState(userData.name);
   const [localRecipientName, setLocalRecipientName] = useState(userData.recipientName);
   const [localRecipientEmail, setLocalRecipientEmail] = useState(userData.recipientEmail);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
   console.log("After localName initialization:", { localName, userData_name: userData.name });
 
-  // Add refs to maintain focus
+  // Add refs to maintain focus while typing
   const nameInputRef = useRef<HTMLInputElement>(null);
   const recipientNameRef = useRef<HTMLInputElement>(null);
   const recipientEmailRef = useRef<HTMLInputElement>(null);
@@ -92,8 +84,10 @@ export function OnboardModal({
         setCurrentStep("sign-up");
         break;
       case "sign-up":
-        setCurrentStep("complete");
-        onComplete();
+        // We are handling this already in the handleSuccessfulOnboardingAuth function
+        // setCurrentStep("complete");
+        // onComplete moved into handleSuccessfulOnboardingAuth
+        // onComplete();
         break;
     }
   };
@@ -403,55 +397,52 @@ export function OnboardModal({
     const [isLoading, setIsLoading] = useState(false);
     const [isSigningIn, setIsSigningIn] = useState(false); // Track if user is signing in vs signing up
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    // This function handles the signup and signin trough credentials (email and password, not social providers handled by handleSocialAuth)
+    const handleCredentilsAuthHelper = async (
+      email: string,
+      password: string,
+      isSigningIn: boolean
+    ): Promise<boolean> => {
+      // Authentication logic
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        console.error(`${isSigningIn ? "Sign in" : "Sign up"} failed:`, result.error);
+        toast({
+          variant: "destructive",
+          title: `${isSigningIn ? "Sign in" : "Sign up"} failed`,
+          description: "Please check your credentials and try again.",
+        });
+        return false;
+      }
+      await handleSuccessfulOnboardingAuth();
+      setCurrentStep("complete");
+      return true;
+    };
+
+    // This function handles the signup and signin trough credentials (email and password, not social providers handled by handleSocialAuth)
+    const handleCredentialAuth = async (e: React.FormEvent) => {
       e.preventDefault();
       setIsLoading(true);
 
       try {
         if (isSigningIn) {
-          // Sign in logic
-          const result = await signIn("credentials", {
-            email,
-            password,
-            redirect: false,
-          });
-
-          if (result?.error) {
-            console.error("Sign in failed:", result.error);
-            toast({
-              variant: "destructive",
-              title: "Sign in failed",
-              description: "Please check your credentials and try again.",
-            });
-          } else {
-            // Success! Now save the memory and send email
-            await handleSuccessfulAuth();
-            setCurrentStep("complete");
-          }
+          await handleCredentilsAuthHelper(email, password, isSigningIn);
         } else {
-          // Sign up logic
           if (password !== confirmPassword) {
             toast({
               variant: "destructive",
-              title: "Passwords don't match",
-              description: "Please make sure your passwords match.",
+              title: "Password mismatch",
+              description: "Please check your password and try again.",
             });
             setIsLoading(false);
             return;
           }
-
-          const result = await signIn("credentials", {
-            email,
-            password,
-            redirect: false,
-          });
-
-          if (result?.error) {
-            console.error("Auto sign-in after sign-up failed:", result.error);
-          } else {
-            await handleSuccessfulAuth();
-            setCurrentStep("complete");
-          }
+          await handleCredentilsAuthHelper(email, password, isSigningIn);
         }
       } catch (error) {
         console.error("Authentication failed:", error);
@@ -465,26 +456,88 @@ export function OnboardModal({
       }
     };
 
-    const handleSuccessfulAuth = async () => {
+    const handleSuccessfulOnboardingAuth = async () => {
       try {
-        // Save memory to blob and send email
-        const response = await fetch("/api/memories/save", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            fileUrl: files[0]?.url, // from useOnboarding context
-            recipientEmail: userData.recipientEmail,
-            recipientName: userData.recipientName,
-            relationship: userData.relationship,
-            familyRelationship: userData.familyRelationship,
-          }),
+        console.log("Starting memory upload and sharing process...");
+
+        // 1. Upload the memory
+        const formData = new FormData();
+        formData.append("file", files[0].file);
+
+        console.log("Uploading memory...", {
+          fileName: files[0].file.name,
+          fileSize: files[0].file.size,
+          fileType: files[0].file.type,
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to save memory");
+        const responseMemoryUpload = await fetch("/api/memories/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!responseMemoryUpload.ok) {
+          console.error("Memory upload failed:", {
+            status: responseMemoryUpload.status,
+            statusText: responseMemoryUpload.statusText,
+          });
+          throw new Error("Failed to upload memory");
         }
+
+        const memoryUploadResult = await responseMemoryUpload.json();
+        console.log("Memory upload successful:", memoryUploadResult);
+
+        // Extract memory ID from the response
+        const memoryId = memoryUploadResult.data.id;
+
+        // 2. Share the memory
+        const shareRequest = {
+          target: {
+            type: "user",
+          },
+          method: {
+            type: "email",
+            email: userData.recipientEmail,
+            name: userData.recipientName,
+          },
+          relationship: {
+            type: userData.relationship,
+            familyRole: userData.relationship === "family" ? userData.familyRelationship : undefined,
+          },
+        };
+
+        console.log("Sharing memory...", {
+          memoryId,
+          shareRequest,
+        });
+
+        const responseMemoryShare = await fetch(`/api/memories/${memoryId}/share`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(shareRequest),
+        });
+
+        if (!responseMemoryShare.ok) {
+          console.error("Memory share failed:", {
+            status: responseMemoryShare.status,
+            statusText: responseMemoryShare.statusText,
+          });
+          throw new Error("Failed to share memory");
+        }
+
+        const shareResult = await responseMemoryShare.json();
+        console.log("Memory share successful:", shareResult);
+
+        // 3. Complete onboarding
+        console.log("Completing onboarding process...");
+        setCurrentStep("complete");
+        onComplete();
+
+        // 4. Redirect to profile page
+        // Handled by onComplete prop
+        // console.log("Redirecting to profile page...");
+        // router.push("/profile");
       } catch (error) {
-        console.error("Error saving memory:", error);
+        console.error("Error in handleSuccessfulOnboardingAuth:", error);
         toast({
           variant: "destructive",
           title: "Error",
@@ -505,7 +558,7 @@ export function OnboardModal({
           });
         } else {
           // Auth successful! Now save the memory and share
-          await handleSuccessfulAuth();
+          await handleSuccessfulOnboardingAuth();
           setCurrentStep("complete");
         }
       } catch (error) {
@@ -516,7 +569,7 @@ export function OnboardModal({
     };
 
     // Toggle between sign up and sign in modes
-    const toggleAuthMode = () => {
+    const toggleSingInSignInMode = () => {
       setIsSigningIn(!isSigningIn);
       // Reset form fields
       setPassword("");
@@ -614,7 +667,7 @@ export function OnboardModal({
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleCredentialAuth} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -670,14 +723,22 @@ export function OnboardModal({
             {isSigningIn ? (
               <>
                 Don&apos;t have an account?{" "}
-                <button type="button" className="text-primary hover:underline font-medium" onClick={toggleAuthMode}>
+                <button
+                  type="button"
+                  className="text-primary hover:underline font-medium"
+                  onClick={toggleSingInSignInMode}
+                >
                   Sign up
                 </button>
               </>
             ) : (
               <>
                 Already have an account?{" "}
-                <button type="button" className="text-primary hover:underline font-medium" onClick={toggleAuthMode}>
+                <button
+                  type="button"
+                  className="text-primary hover:underline font-medium"
+                  onClick={toggleSingInSignInMode}
+                >
                   Sign in
                 </button>
               </>
@@ -736,31 +797,19 @@ export function OnboardModal({
           <DialogTitle className="text-center text-2xl border-2 border-dotted border-black rounded-md mt-6">
             {getStepTitle()}
           </DialogTitle>
-          {/* {currentStep === "user-info" && (
-            <DialogDescription className="text-center">Let&apos;s get started with your memory</DialogDescription>
-          )} */}
         </DialogHeader>
-
-        {/* <div className="flex justify-center space-x-2 py-2"> */}
-        {/* <div className="flex justify-center space-x-2 border-2 border-dotted border-pink-500 rounded-md">
-          {modalSteps.map((step) => (
-            <div
-              key={step}
-              className={`h-2 w-2 rounded-full border-2  transition-colors ${
-                step === currentStep ? "bg-primary" : "bg-muted"
-              }`}
-            />
-          ))}
-        </div> */}
 
         {/* Dynamic step content */}
         {renderStepContent()}
 
-        <DialogFooter className="flex sm:justify-end">
-          <Button onClick={handleNext} className="w-full sm:w-auto" disabled={isContinueDisabled()}>
-            Continue
-          </Button>
-        </DialogFooter>
+        {/* Only show footer with Continue button for non-signup steps */}
+        {currentStep !== "sign-up" && (
+          <DialogFooter className="flex sm:justify-end">
+            <Button onClick={handleNext} className="w-full sm:w-auto" disabled={isContinueDisabled()}>
+              Continue
+            </Button>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );

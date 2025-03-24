@@ -55,18 +55,21 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     // Handle sharing based on method
     switch (shareRequest.method.type) {
       case "direct":
+        // Direct means that the user is already in our database
         if (!shareRequest.target.id) {
           return NextResponse.json({ error: "Target ID is required for direct sharing" }, { status: 400 });
         }
         return await handleDirectShare(memory, shareRequest, session.user.id);
 
       case "email":
+        // Email means that the user is not in our database yet
         if (!shareRequest.method.email) {
           return NextResponse.json({ error: "Email is required for email sharing" }, { status: 400 });
         }
         return await handleEmailShare(memory, shareRequest, session.user.id);
 
       case "link":
+        // Link means that the user is not in our database yet and we want just to generate a link that can be sent to the user via messenger for example
         return await handleLinkShare(memory, shareRequest, session.user.id);
 
       default:
@@ -79,7 +82,6 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
 }
 
 async function handleDirectShare(memory: MemoryWithType, request: ShareRequest, ownerId: string) {
-  // Check if target exists
   if (request.target.type === "user") {
     const user = await db.query.users.findFirst({
       where: eq(users.id, request.target.id!),
@@ -115,10 +117,25 @@ async function handleDirectShare(memory: MemoryWithType, request: ShareRequest, 
 
   if (request.target.type === "group") {
     // TODO: Implement group sharing
+    return NextResponse.json({ error: "Group sharing not implemented" }, { status: 501 });
   }
 }
 
 async function createRelationship(userId: string, relatedUserId: string, relationshipInfo: RelationshipInfo) {
+  // Check for existing relationship
+  const existing = await db.query.relationship.findFirst({
+    where: (rel, { and, eq, or }) =>
+      or(
+        and(eq(rel.userId, userId), eq(rel.relatedUserId, relatedUserId)),
+        and(eq(rel.userId, relatedUserId), eq(rel.relatedUserId, userId))
+      ),
+  });
+
+  if (existing) {
+    console.log("Relationship exists, skipping creation:", existing.id);
+    return existing;
+  }
+
   // First create the base relationship
   const [baseRelationship] = await db
     .insert(relationship)
@@ -148,7 +165,7 @@ async function createRelationship(userId: string, relatedUserId: string, relatio
 
 async function notifyMemoryShared(email: string, memory: MemoryWithType, sharedById: string) {
   console.log("notifyMemoryShared", email, memory, sharedById);
-  // Send notification email to existing user about shared memory
+  // TODO: Send notification email to existing user about shared memory
   // Different from invitation email
 }
 

@@ -39,10 +39,13 @@ const ACCEPTED_MIME_TYPES = {
   ],
 } as const;
 
-type UploadResponse = {
-  type: "image" | "document";
-  data: DBImage | DBDocument;
-};
+type UploadResponse =
+  | { error: string; status?: number }
+  | {
+      type: "image" | "document";
+      data: DBImage | DBDocument;
+      status?: number;
+    };
 
 type AcceptedMimeType = (typeof ACCEPTED_MIME_TYPES.images)[number] | (typeof ACCEPTED_MIME_TYPES.documents)[number];
 
@@ -57,11 +60,11 @@ type MemoryMetadata = {
   mimeType: AcceptedMimeType;
 };
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse<UploadResponse>> {
   // Check authentication
   const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 } as UploadResponse);
   }
 
   try {
@@ -69,12 +72,12 @@ export async function POST(request: NextRequest) {
     const uploadedFile = formData.get("file");
     if (!(uploadedFile instanceof File)) {
       // Browser's File interface check
-      return NextResponse.json({ error: "Invalid file upload" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid file upload" }, { status: 400 } as UploadResponse);
     }
 
     // Validate file size
     if (uploadedFile.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: "File too large" }, { status: 400 });
+      return NextResponse.json({ error: "File too large" }, { status: 400 } as UploadResponse);
     }
 
     // Get actual file type
@@ -82,7 +85,7 @@ export async function POST(request: NextRequest) {
     const fileType = await fileTypeFromBuffer(Buffer.from(buffer));
 
     if (!fileType || !isAcceptedMimeType(fileType.mime)) {
-      return NextResponse.json({ error: "Unsupported file type" }, { status: 400 });
+      return NextResponse.json({ error: "Unsupported file type" }, { status: 400 } as UploadResponse);
     }
 
     // Upload file to storage
@@ -97,7 +100,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Store in database based on file type
-    const result = await storeInDatabase({
+    const result: UploadResponse = await storeInDatabase({
       type: getMemoryType(fileType.mime as AcceptedMimeType),
       userId: session.user.id,
       url: uploadedUrl,
@@ -105,7 +108,7 @@ export async function POST(request: NextRequest) {
       metadata: commonMetadata as MemoryMetadata,
     });
 
-    return NextResponse.json(result);
+    return NextResponse.json(result, { status: result.status });
   } catch (error) {
     console.error("Upload error:", error);
     return NextResponse.json(
@@ -113,7 +116,7 @@ export async function POST(request: NextRequest) {
         error: "Failed to upload file",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 } as UploadResponse
     );
   }
 }
