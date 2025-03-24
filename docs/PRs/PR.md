@@ -1,24 +1,20 @@
 # ✅ Onboarding Flow Refactor — PR TODO List
 
-#### 🧠 Temporary Memory & Unified User Handling
+#### 🧠 Unified User Handling
 
-- [ ] Add `isTemporary` field to:
-  - [ ] `images` table
-  - [ ] `documents` table
-  - [ ] `notes` table
-- [ ] Replace `userId` in memory tables with:
-  - [ ] `ownerId` referencing `all_users.id` (new unified user table)
-- [ ] Create `temporary_users` table with:
-  - [ ] `id`, `email`, `name`
-  - [ ] `secureCode` (for login-less retrieval)
-  - [ ] `role`: `"inviter"` | `"invitee"`
-  - [ ] Optional `invitedById` referencing `all_users.id`
-  - [ ] `createdAt` timestamp
-- [ ] Create `all_users` table:
-  - [ ] `id`, `type`: `"user"` | `"temporary_user"`
-  - [ ] `userId` (nullable)
-  - [ ] `temporaryUserId` (nullable)
-  - [ ] Unique constraint: exactly one of the two IDs must be non-null
+- [x] Create `temporary_users` table with:
+  - [x] `id`, `email`, `name`
+  - [x] `secureCode` (for login-less retrieval)
+  - [x] `role`: `"inviter"` | `"invitee"`
+  - [x] Optional `invitedById` referencing `all_users.id`
+  - [x] `createdAt` timestamp
+- [x] Create `all_users` table:
+  - [x] `id`, `type`: `"user"` | `"temporary_user"`
+  - [x] `userId` (nullable)
+  - [x] `temporaryUserId` (nullable)
+  - [x] Unique constraint: exactly one of the two IDs must be non-null
+- [x] Replace `userId` in memory tables with:
+  - [x] `ownerId` referencing `all_users.id` (new unified user table)
 
 #### 🕓 Memory Cleanup
 
@@ -39,12 +35,12 @@
   - [ ] Create a new `temporary_user` with role `invitee`
   - [ ] Create corresponding `all_user` entry
   - [ ] Link to inviter via `invitedById`
-- [ ] Fourth screen: Auth (optional)
-  - [ ] If user signs up with Google, detect matching `temporary_user` by email
-  - [ ] In `createUser` event (in `auth.ts`):
-    - [ ] Migrate ownership of memories from `temporary_user` → new user
-    - [ ] Remove `temporary_user` record
-    - [ ] Update `all_users` references
+- [x] Fourth screen: Auth (optional)
+  - [x] If user signs up with Google, detect matching `temporary_user` by email
+  - [x] In `createUser` event (in `auth.ts`):
+    - [x] Migrate ownership of memories from `temporary_user` → new user
+    - [x] Remove `temporary_user` record
+    - [x] Update `all_users` references
     - [ ] Send share email
 
 #### 📨 Fallback Email Logic
@@ -54,7 +50,34 @@
     - [ ] Invitee (with access link)
     - [ ] Inviter (for retrieving memory)
 
-Great question — and you’re thinking in the right direction. You **don’t need to store an array of invited users**. Here's a breakdown:
+---
+
+### ✅ Implementation Notes
+
+#### User Status Management
+
+Instead of adding `isTemporary` fields to individual memory tables, we're using the `all_users` table's `type` field to determine if a user is temporary or permanent. This approach:
+
+- Centralizes user status in one place
+- Maintains referential integrity through the `all_users` table
+- Simplifies queries (no need to check multiple tables for temporary status)
+
+#### Database Relationships
+
+- All memory tables (images, documents, notes) now reference `all_users.id` via `ownerId`
+- The `all_users` table maintains the relationship between permanent and temporary users
+- The unique constraint ensures a user can't be both permanent and temporary simultaneously
+
+#### User Promotion Flow
+
+The `createUser` event in `auth.ts` handles the promotion of temporary users to permanent users by:
+
+1. Finding a matching temporary user by email
+2. Locating the corresponding `all_users` entry
+3. Updating the `all_users` entry to point to the new permanent user
+4. Removing the temporary user record
+
+Great question — and you're thinking in the right direction. You **don't need to store an array of invited users**. Here's a breakdown:
 
 ---
 
@@ -95,7 +118,7 @@ Great question — and you’re thinking in the right direction. You **don’t n
 
 ---
 
-### ❌ Don’t store arrays
+### ❌ Don't store arrays
 
 - Storing an array like `invitedUserIds: text("invited_user_ids").array()` leads to:
   - Redundant data
@@ -111,4 +134,4 @@ Great question — and you’re thinking in the right direction. You **don’t n
 - **Add an index** if you expect frequent lookups
 - **Derive invitees via a query**
 
-It’s relational DB best practice and keeps your data clean and scalable.
+It's relational DB best practice and keeps your data clean and scalable.

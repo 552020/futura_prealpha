@@ -8,6 +8,8 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/db/db";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt"; // make sure bcrypt is installed
+import { allUsers, temporaryUsers } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 console.log("--------------------------------");
 console.log("auth.ts");
@@ -204,8 +206,49 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   debug: true,
   events: {
-    async createUser(user) {
+    async createUser({ user }) {
       console.log("[Auth] ✅ User created:", user);
+
+      // Check if there's a temporary user with the same email
+      const temporaryUser = await db.query.temporaryUsers.findFirst({
+        where: (temporaryUsers, { eq }) => eq(temporaryUsers.email, user.email!),
+      });
+
+      // Find the corresponding allUsers entry if temporary user exists
+      const allUserEntry = temporaryUser
+        ? await db.query.allUsers.findFirst({
+            where: (allUsers, { eq }) => eq(allUsers.temporaryUserId, temporaryUser.id),
+          })
+        : null;
+
+      if (temporaryUser && allUserEntry) {
+        console.log("[Auth] 🚀 Promoting temporary user to permanent user:", {
+          temporaryUserId: temporaryUser.id,
+          newUserId: user.id,
+          allUserId: allUserEntry.id,
+          email: user.email,
+        });
+
+        // Update the allUsers entry to point to the new permanent user
+        await db
+          .update(allUsers)
+          .set({
+            type: "user",
+            userId: user.id,
+            temporaryUserId: null,
+          })
+          .where(eq(allUsers.id, allUserEntry.id));
+
+        // Delete the temporary user since we've migrated their data
+        await db.delete(temporaryUsers).where(eq(temporaryUsers.id, temporaryUser.id));
+
+        console.log("[Auth] ✅ Successfully promoted user");
+      } else if (temporaryUser) {
+        console.log("[Auth] ⚠️ Found temporary user but no corresponding allUsers entry:", {
+          temporaryUserId: temporaryUser.id,
+          email: user.email,
+        });
+      }
     },
     async linkAccount(account) {
       console.log("[Auth] 🔗 Account linked:", account);
