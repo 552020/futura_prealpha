@@ -42,7 +42,7 @@ export function OnboardModal({
   const [localRecipientName, setLocalRecipientName] = useState(userData.recipientName);
   const [localRecipientEmail, setLocalRecipientEmail] = useState(userData.recipientEmail);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
-  console.log("After localName initialization:", { localName, userData_name: userData.name });
+  //   console.log("After localName initialization:", { localName, userData_name: userData.name });
 
   // Add refs to maintain focus while typing
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -84,6 +84,8 @@ export function OnboardModal({
         setCurrentStep("sign-up");
         break;
       case "sign-up":
+        console.log("sign-up step");
+        // setCurrentStep("complete");
         // We are handling this already in the handleSuccessfulOnboardingAuth function
         // setCurrentStep("complete");
         // onComplete moved into handleSuccessfulOnboardingAuth
@@ -125,11 +127,11 @@ export function OnboardModal({
     const newValue = e.target.value;
     setLocalName(e.target.value);
     updateUserData({ name: newValue });
-    console.log("handleEventBasedNameChange called", {
-      newValue,
-      oldValue: localName,
-      activeElement: document.activeElement?.id || "none",
-    });
+    // console.log("handleEventBasedNameChange called", {
+    //   newValue,
+    //   oldValue: localName,
+    //   activeElement: document.activeElement?.id || "none",
+    // });
   };
 
   // In the handleUncontrolledNameChange function
@@ -186,14 +188,14 @@ export function OnboardModal({
 
   // Add this useEffect to maintain focus for recipient fields
   useEffect(() => {
-    console.log("Recipient focus effect triggered", {
-      currentStep,
-      hasNameRef: recipientNameRef.current ? true : false,
-      hasEmailRef: recipientEmailRef.current ? true : false,
-      localRecipientName,
-      localRecipientEmail,
-      activeElement: document.activeElement?.id || "none",
-    });
+    // console.log("Recipient focus effect triggered", {
+    //   currentStep,
+    //   hasNameRef: recipientNameRef.current ? true : false,
+    //   hasEmailRef: recipientEmailRef.current ? true : false,
+    //   localRecipientName,
+    //   localRecipientEmail,
+    //   activeElement: document.activeElement?.id || "none",
+    // });
 
     if (currentStep === "share" && lastFocusedField) {
       if (lastFocusedField === "recipientName" && recipientNameRef.current) {
@@ -250,21 +252,21 @@ export function OnboardModal({
 
     // In the useEffect that syncs ref with userData.name
     useEffect(() => {
-      console.log("UserInfoWithoutImageStep useEffect triggered", {
-        userData_name: userData.name,
-        inputValue: nameInputRef.current?.value || "empty",
-        localName,
-      });
+      //   console.log("UserInfoWithoutImageStep useEffect triggered", {
+      //     userData_name: userData.name,
+      //     inputValue: nameInputRef.current?.value || "empty",
+      //     localName,
+      //   });
 
       if (nameInputRef.current && userData.name && !nameInputRef.current.value) {
-        console.log("Updating input value to match userData.name");
+        // console.log("Updating input value to match userData.name");
         nameInputRef.current.value = userData.name;
       }
     }, [userData.name]);
 
-    console.log("UserInfoWithoutImageStep before return", {
-      defaultValue: userData.name,
-    });
+    // console.log("UserInfoWithoutImageStep before return", {
+    //   defaultValue: userData.name,
+    // });
 
     return (
       <div className="space-y-6 border-2 border-dotted border-red-500 rounded-md">
@@ -281,8 +283,8 @@ export function OnboardModal({
               defaultValue={userData.name}
               //   onChange={handleRefBasedNameChange}
               onChange={handleEventBasedNameChange}
-              onFocus={() => console.log("Input focused")}
-              onBlur={() => console.log("Input blurred")}
+              //   onFocus={() => console.log("Input focused")}
+              //   onBlur={() => console.log("Input blurred")}
               placeholder="Enter your name"
             />
           </div>
@@ -306,10 +308,10 @@ export function OnboardModal({
             value={userData.recipientName}
             onChange={handleRefBasedRecipientChange}
             onFocus={() => {
-              console.log(" Recipient Name input focused");
+              //   console.log(" Recipient Name input focused");
               setLastFocusedField("recipientName");
             }}
-            onBlur={() => console.log("Input blurred")}
+            // onBlur={() => console.log("Input blurred")}
             placeholder="Enter their name"
           />
         </div>
@@ -323,10 +325,10 @@ export function OnboardModal({
             value={userData.recipientEmail}
             onChange={handleRefBasedRecipientChange}
             onFocus={() => {
-              console.log(" Recipient Email input focused");
+              //   console.log(" Recipient Email input focused");
               setLastFocusedField("recipientEmail");
             }}
-            onBlur={() => console.log("Input blurred")}
+            // onBlur={() => console.log("Input blurred")}
             placeholder="Enter their email"
           />
         </div>
@@ -549,7 +551,8 @@ export function OnboardModal({
     const handleSocialAuth = async (provider: "google" | "github") => {
       setIsLoading(true);
       try {
-        const result = await signIn(provider, { callbackUrl: "/onboarding/profile", redirect: true });
+        // const result = await signIn(provider, { callbackUrl: "/onboarding/profile", redirect: true });
+        const result = await signIn(provider, { redirect: false });
         if (result?.error) {
           toast({
             variant: "destructive",
@@ -623,7 +626,9 @@ export function OnboardModal({
           <Button
             variant="outline"
             className="w-full flex items-center justify-center gap-2"
-            onClick={() => handleSocialAuth("google")}
+            onClick={() => {
+              handleSocialAuth("google");
+            }}
             disabled={isLoading}
           >
             <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
@@ -650,7 +655,10 @@ export function OnboardModal({
           <Button
             variant="outline"
             className="w-full flex items-center justify-center gap-2"
-            onClick={() => handleSocialAuth("github")}
+            onClick={() => {
+              console.log("GitHub button clicked");
+              handleSocialAuth("github");
+            }}
             disabled={isLoading}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -659,9 +667,9 @@ export function OnboardModal({
             {isSigningIn ? "Sign in with GitHub" : "Sign up with GitHub"}
           </Button>
 
-          <div className="absolute inset-0 flex items-center">
+          {/* <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
-          </div>
+          </div> */}
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
           </div>
