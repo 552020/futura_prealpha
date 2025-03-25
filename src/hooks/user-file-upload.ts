@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useOnboarding } from "@/contexts/onboarding-context";
+import { useSession } from "next-auth/react";
 // We'll need to create this context for post-onboarding state
 // import { useVault } from '@/contexts/vault-context';
 
@@ -13,6 +14,7 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { addFile: addOnboardingFile } = useOnboarding();
+  const { data: session } = useSession();
 
   // const { addFile: addVaultFile } = useVault(); // Future implementation
 
@@ -33,28 +35,29 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
         throw new Error("File too large");
       }
 
+      // Create a temporary URL for preview
+      const url = URL.createObjectURL(file);
+
+      // Determine which endpoint to use based on session status
+      const endpoint = session ? "/api/memories/upload" : "/api/memories/upload/onboarding";
+
+      // Upload file
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Upload failed");
+      }
+
+      // Add to onboarding context for preview if in onboarding mode
       if (isOnboarding) {
-        // Create a temporary URL for preview
-        const url = URL.createObjectURL(file);
-
-        // Upload to onboarding endpoint
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const response = await fetch("/api/memories/upload/onboarding", {
-          method: "POST",
-          body: formData,
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "Upload failed");
-        }
-
-        // Add to onboarding context for preview
-        // Note: We store the file in memory for preview purposes only
-        // The actual file data is already uploaded and stored in the database
         addOnboardingFile({
           url,
           file,
@@ -64,20 +67,13 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
           temporaryUserId: data.temporaryUserId,
           fileType: file.type,
         });
-
-        toast({
-          title: "Memory uploaded!",
-          description: "Your memory was successfully saved.",
-        });
-        onSuccess?.();
-      } else {
-        // Regular upload flow (to be implemented)
-        // await addVaultFile(fileData);
-        toast({
-          title: "File uploaded successfully!",
-          description: "Your memory has been added to your vault.",
-        });
       }
+
+      toast({
+        title: "Memory uploaded!",
+        description: "Your memory was successfully saved.",
+      });
+      onSuccess?.();
     } catch (error) {
       let title = "Something went wrong";
       let description = "Please try uploading again.";
