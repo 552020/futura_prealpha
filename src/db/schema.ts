@@ -94,39 +94,23 @@ export const allUsers = pgTable(
     temporaryUserId: text("temporary_user_id"), // FK defined below
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
-  },
-  //   (table) => [
-  //     // ✅ Optional FK to permanent users
-  //     foreignKey({
-  //       columns: [table.userId],
-  //       foreignColumns: [users.id],
-  //       name: "all_users_user_fk",
-  //     }),
-  //     // ✅ Optional FK to temporary users
-  //     foreignKey({
-  //       columns: [table.temporaryUserId],
-  //       foreignColumns: [temporaryUsers.id],
-  //       name: "all_users_temporary_user_fk",
-  //     }),
-  //     // ✅ Ensure a user can't be both permanent and temporary
-  //     uniqueIndex("one_user_type_check").on(table.userId, table.temporaryUserId),
+  }
+  //   (table): (ReturnType<typeof foreignKey> | IndexBuilder)[] => [
+  // ✅ Optional FK to permanent users - fixed to reference users table
+  // foreignKey({
+  //   columns: [table.userId],
+  //   foreignColumns: [users.id],
+  //   name: "all_users_user_fk",
+  // }),
+  // ✅ Optional FK to temporary users
+  // foreignKey({
+  //   columns: [table.temporaryUserId],
+  //   foreignColumns: [temporaryUsers.id],
+  //   name: "all_users_temporary_user_fk",
+  // }),
+  // ✅ Ensure a user can't be both permanent and temporary
+  // uniqueIndex("one_user_type_check").on(table.userId, table.temporaryUserId),
   //   ]
-  (table): (ReturnType<typeof foreignKey> | IndexBuilder)[] => [
-    // ✅ Optional FK to permanent users
-    foreignKey({
-      columns: [table.userId],
-      foreignColumns: [allUsers.id],
-      name: "all_users_user_fk",
-    }),
-    // ✅ Optional FK to temporary users
-    foreignKey({
-      columns: [table.temporaryUserId],
-      foreignColumns: [temporaryUsers.id],
-      name: "all_users_temporary_user_fk",
-    }),
-    // ✅ Ensure a user can't be both permanent and temporary
-    uniqueIndex("one_user_type_check").on(table.userId, table.temporaryUserId),
-  ]
 );
 
 export const temporaryUsers = pgTable(
