@@ -13,36 +13,72 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file
-    const validationResult = await validateFile(file);
-    if (!validationResult.isValid) {
-      return NextResponse.json({ error: validationResult.error }, { status: 400 });
+    let validationResult;
+    try {
+      console.log("Validating file...");
+      validationResult = await validateFile(file);
+      if (!validationResult.isValid) {
+        console.error("File validation failed:", validationResult.error);
+        return NextResponse.json({ error: validationResult.error }, { status: 400 });
+      }
+      console.log("File validation successful");
+    } catch (validationError) {
+      console.error("Validation error:", validationError);
+      return NextResponse.json(
+        {
+          error: "File validation failed",
+          step: "validation",
+          details: validationError instanceof Error ? validationError.message : String(validationError),
+        },
+        { status: 500 }
+      );
     }
 
     // Upload file to storage
-    const url = await uploadFileToStorage(file);
+    let url;
+    try {
+      console.log("Uploading file to storage...");
+      url = await uploadFileToStorage(file, validationResult.buffer);
+      console.log("File uploaded successfully to:", url);
+    } catch (uploadError) {
+      console.error("Upload error:", uploadError);
+      return NextResponse.json(
+        {
+          error: "File upload failed",
+          step: "upload",
+          details: uploadError instanceof Error ? uploadError.message : String(uploadError),
+        },
+        { status: 500 }
+      );
+    }
 
-    // Create temporary user and store memory in a transaction
-    const result = await db.transaction(async (tx) => {
-      // 1. Create temporary user with minimal required fields
-      const [temporaryUser] = await tx
+    // Database operations
+    try {
+      console.log("Creating temporary user...");
+      // 1. Create temporary user
+      const [temporaryUser] = await db
         .insert(temporaryUsers)
         .values({
-          secureCode: crypto.randomUUID(), // This will be replaced with a proper secure code
-          secureCodeExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+          secureCode: crypto.randomUUID(),
+          secureCodeExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
           role: "inviter",
           registrationStatus: "pending",
         })
         .returning();
+      console.log("Temporary user created:", temporaryUser.id);
 
+      console.log("Creating all_users entry...");
       // 2. Create all_users entry
-      const [user] = await tx
+      const [user] = await db
         .insert(allUsers)
         .values({
           type: "temporary" as const,
           temporaryUserId: temporaryUser.id,
         })
         .returning();
+      console.log("All users entry created:", user.id);
 
+      console.log("Storing memory in database...");
       // 3. Store memory
       const memoryResult = await storeInDatabase({
         type: validationResult.fileType!.mime.includes("image/") ? "image" : "document",
@@ -51,16 +87,32 @@ export async function POST(request: NextRequest) {
         file,
         metadata: validationResult.metadata!,
       });
+      console.log("Memory stored successfully");
 
-      return {
+      return NextResponse.json({
         ...memoryResult,
         temporaryUserId: temporaryUser.id,
-      };
-    });
-
-    return NextResponse.json(result);
+      });
+    } catch (dbError) {
+      console.error("Database error:", dbError);
+      return NextResponse.json(
+        {
+          error: "Database operation failed",
+          step: "database",
+          details: dbError instanceof Error ? dbError.message : String(dbError),
+        },
+        { status: 500 }
+      );
+    }
   } catch (error) {
-    console.error("Error uploading file during onboarding:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error("Unexpected error:", error);
+    return NextResponse.json(
+      {
+        error: "Internal server error",
+        step: "unknown",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
   }
 }

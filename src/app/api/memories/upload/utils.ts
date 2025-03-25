@@ -49,9 +49,8 @@ export function getMemoryType(mime: AcceptedMimeType): "document" | "image" {
   return ACCEPTED_MIME_TYPES.image.includes(mime as (typeof ACCEPTED_MIME_TYPES.image)[number]) ? "image" : "document";
 }
 
-export async function uploadFileToStorage(file: File): Promise<string> {
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+export async function uploadFileToStorage(file: File, existingBuffer?: Buffer): Promise<string> {
+  const buffer = existingBuffer || Buffer.from(await file.arrayBuffer());
   const safeFileName = file.name.replace(/[^a-zA-Z0-9-_\.]/g, "_");
 
   const { url } = await put(`uploads/${Date.now()}-${safeFileName}`, buffer, {
@@ -76,35 +75,33 @@ export async function storeInDatabase(params: {
 }) {
   const { type, ownerId, url, file, metadata } = params;
 
-  return await db.transaction(async (tx) => {
-    if (type === "image") {
-      const [image] = await tx
-        .insert(images)
-        .values({
-          ownerId,
-          url,
-          title: file.name.split(".")[0],
-          isPublic: false,
-          metadata,
-        })
-        .returning();
-      return { type: "image", data: image };
-    } else {
-      const [document] = await tx
-        .insert(documents)
-        .values({
-          ownerId,
-          url,
-          title: file.name.split(".")[0],
-          mimeType: metadata.mimeType,
-          size: metadata.size.toString(),
-          isPublic: false,
-          metadata,
-        })
-        .returning();
-      return { type: "document", data: document };
-    }
-  });
+  if (type === "image") {
+    const [image] = await db
+      .insert(images)
+      .values({
+        ownerId,
+        url,
+        title: file.name.split(".")[0],
+        isPublic: false,
+        metadata,
+      })
+      .returning();
+    return { type: "image", data: image };
+  } else {
+    const [document] = await db
+      .insert(documents)
+      .values({
+        ownerId,
+        url,
+        title: file.name.split(".")[0],
+        mimeType: metadata.mimeType,
+        size: metadata.size.toString(),
+        isPublic: false,
+        metadata,
+      })
+      .returning();
+    return { type: "document", data: document };
+  }
 }
 
 export type FileValidationResult = {
@@ -117,6 +114,7 @@ export type FileValidationResult = {
     size: number;
     mimeType: AcceptedMimeType;
   };
+  buffer?: Buffer;
 };
 
 export async function validateFile(file: File): Promise<FileValidationResult> {
@@ -131,8 +129,9 @@ export async function validateFile(file: File): Promise<FileValidationResult> {
   }
 
   // Get actual file type
-  const buffer = await file.arrayBuffer();
-  const fileType = await fileTypeFromBuffer(Buffer.from(buffer));
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  const fileType = await fileTypeFromBuffer(buffer);
 
   if (!fileType || !isAcceptedMimeType(fileType.mime)) {
     return { isValid: false, error: "Unsupported file type" };
@@ -150,5 +149,6 @@ export async function validateFile(file: File): Promise<FileValidationResult> {
     isValid: true,
     fileType: { mime: fileType.mime as AcceptedMimeType },
     metadata,
+    buffer,
   };
 }

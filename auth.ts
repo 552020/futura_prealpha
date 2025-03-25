@@ -248,6 +248,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           temporaryUserId: temporaryUser.id,
           email: user.email,
         });
+      } else {
+        // No temporary user found, create a new allUsers entry
+        console.log("[Auth] 🆕 Creating new allUsers entry for:", {
+          userId: user.id,
+          email: user.email,
+        });
+
+        await db.insert(allUsers).values({
+          type: "user",
+          userId: user.id,
+        });
+
+        console.log("[Auth] ✅ Successfully created allUsers entry");
       }
     },
     async linkAccount(account) {
