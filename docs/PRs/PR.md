@@ -15,6 +15,10 @@
   - [x] Unique constraint: exactly one of the two IDs must be non-null
 - [x] Replace `userId` in memory tables with:
   - [x] `ownerId` referencing `all_users.id` (new unified user table)
+- [x] Fix foreign key constraints in `all_users` table:
+  - [x] Comment out foreign key constraints to handle race conditions
+  - [x] Implement retry logic in `createUser` event
+  - [x] Add exponential backoff for user verification
 
 #### 🕓 Memory Cleanup
 
@@ -24,24 +28,29 @@
 
 #### 🧩 Onboarding Flow Implementation
 
-- [ ] First screen: Upload memory
-  - [ ] Store memory in DB as `isTemporary`
-  - [ ] Create a `temporary_user` with role `inviter` and a `secureCode`
-  - [ ] Link memory to `all_users` via a new `all_user` record
-- [ ] Second screen: Collect name + email
-  - [ ] Update the `temporary_user` record with name and email
-  - [ ] Allow optional signup/auth
-- [ ] Third screen: Share memory
-  - [ ] Create a new `temporary_user` with role `invitee`
-  - [ ] Create corresponding `all_user` entry
-  - [ ] Link to inviter via `invitedById`
-- [x] Fourth screen: Auth (optional)
-  - [x] If user signs up with Google, detect matching `temporary_user` by email
-  - [x] In `createUser` event (in `auth.ts`):
-    - [x] Migrate ownership of memories from `temporary_user` → new user
-    - [x] Remove `temporary_user` record
-    - [x] Update `all_users` references
-    - [ ] Send share email
+- [x] Items Upload Page (`/items-upload`):
+
+  - [x] File upload interface
+  - [x] Store memory in DB as `isTemporary`
+  - [x] Create a `temporary_user` with role `inviter` and a `secureCode`
+  - [x] Link memory to `all_users` via a new `all_user` record
+  - [x] Trigger modal flow after successful upload
+
+- [ ] Modal Flow:
+  - [ ] First Screen: Collect name + email
+    - [ ] Update the `temporary_user` record with name and email
+    - [ ] Allow optional signup/auth
+  - [ ] Second Screen: Share memory
+    - [ ] Create a new `temporary_user` with role `invitee`
+    - [ ] Create corresponding `all_user` entry
+    - [ ] Link to inviter via `invitedById`
+  - [x] Third Screen: Auth (optional)
+    - [x] If user signs up with Google, detect matching `temporary_user` by email
+    - [x] In `createUser` event (in `auth.ts`):
+      - [x] Migrate ownership of memories from `temporary_user` → new user
+      - [x] Remove `temporary_user` record
+      - [x] Update `all_users` references
+      - [ ] Send share email
 
 #### 📨 Fallback Email Logic
 
@@ -49,6 +58,16 @@
   - [ ] After X minutes, trigger fallback email to:
     - [ ] Invitee (with access link)
     - [ ] Inviter (for retrieving memory)
+
+#### 🔄 File Upload Flow
+
+- [x] Implement unified file upload hook:
+  - [x] Use session status to determine endpoint
+  - [x] Keep onboarding context for preview
+  - [x] Handle both signed-in and non-signed-in users
+- [ ] Add proper error handling for upload failures
+- [ ] Implement file type validation
+- [ ] Add upload progress indicator
 
 ---
 
@@ -77,61 +96,24 @@ The `createUser` event in `auth.ts` handles the promotion of temporary users to 
 3. Updating the `all_users` entry to point to the new permanent user
 4. Removing the temporary user record
 
-Great question — and you're thinking in the right direction. You **don't need to store an array of invited users**. Here's a breakdown:
+#### File Upload Flow
+
+The `useFileUpload` hook now handles both signed-in and non-signed-in users:
+
+1. Uses session status to determine the endpoint:
+   - Signed in → `/api/memories/upload`
+   - Not signed in → `/api/memories/upload/onboarding`
+2. Maintains onboarding context for preview when needed
+3. Handles file validation and error states
 
 ---
 
-### ✅ Recommended Approach
+### Next Steps
 
-- You **already have**:
-
-  ```ts
-  invitedById: text("invited_by_id").references(() => allUsers.id);
-  ```
-
-- If you ever need to find **all users invited by a specific inviter**, you can just query:
-  ```sql
-  SELECT * FROM temporary_users WHERE invited_by_id = 'some_user_id';
-  ```
-  Or in Drizzle:
-  ```ts
-  db.query.temporaryUsers.findMany({
-    where: (tempUser, { eq }) => eq(tempUser.invitedById, inviterId),
-  });
-  ```
-
----
-
-### 🧠 Optional Optimization
-
-- If you're going to query this frequently (e.g. for analytics or user dashboards), you can:
-
-  - Add a **DB index** on `invited_by_id` for performance.
-
-    For example in Drizzle:
-
-    ```ts
-    invitedById: text("invited_by_id").references(() => allUsers.id),
-    ...
-    indexes: [index("invited_by_idx").on("invited_by_id")]
-    ```
-
----
-
-### ❌ Don't store arrays
-
-- Storing an array like `invitedUserIds: text("invited_user_ids").array()` leads to:
-  - Redundant data
-  - Harder updates
-  - Limited relational integrity (you can't use foreign keys in arrays)
-  - No efficient querying or filtering
-
----
-
-### ✅ TL;DR
-
-- **Keep only `invitedById`**
-- **Add an index** if you expect frequent lookups
-- **Derive invitees via a query**
-
-It's relational DB best practice and keeps your data clean and scalable.
+1. Implement the modal's first screen (name + email collection)
+2. Add the share memory screen to the modal
+3. Set up the email fallback system
+4. Add the cleanup cron job
+5. Add proper error handling and validation to the file upload flow
+6. Consider adding upload progress indicators
+7. Add proper file type validation

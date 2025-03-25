@@ -69,20 +69,20 @@ export async function POST(request: NextRequest) {
 
       console.log("Creating all_users entry...");
       // 2. Create all_users entry
-      const [user] = await db
+      const [allUser] = await db
         .insert(allUsers)
         .values({
           type: "temporary" as const,
           temporaryUserId: temporaryUser.id,
         })
         .returning();
-      console.log("All users entry created:", user.id);
+      console.log("All users entry created:", allUser.id);
 
       console.log("Storing memory in database...");
       // 3. Store memory
       const memoryResult = await storeInDatabase({
         type: validationResult.fileType!.mime.includes("image/") ? "image" : "document",
-        ownerId: user.id,
+        ownerId: allUser.id,
         url,
         file,
         metadata: validationResult.metadata!,

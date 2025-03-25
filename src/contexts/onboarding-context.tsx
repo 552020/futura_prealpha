@@ -7,18 +7,10 @@ interface TempFile {
   file: File;
   uploadedAt: Date;
   memoryId?: string;
-  ownerId?: string; // ID of the temporary user who owns this file
-  temporaryUserId?: string; // ID of the temporary user record
   fileType?: string; // MIME type of the file
 }
 
-// Improved step type with better semantic naming
-type OnboardingStep =
-  | "upload" // Initial upload page
-  | "user-info" // Modal: Collecting user's name (after successful upload)
-  | "share" // Modal: Sharing options
-  | "sign-up" // Modal: Authentication (renamed from sign-in)
-  | "complete"; // Onboarding complete (profile page)
+export type OnboardingStep = "upload" | "user-info" | "share" | "sign-up" | "complete";
 
 interface OnboardingContextType {
   files: TempFile[];
@@ -29,10 +21,13 @@ interface OnboardingContextType {
   setCurrentStep: (step: OnboardingStep) => void;
   userData: {
     name: string;
+    email: string;
     recipientName: string;
     recipientEmail: string;
     relationship: string;
     familyRelationship: string;
+    allUserId?: string; // ID from the allUsers table
+    isTemporary: boolean; // Whether the current user is temporary
   };
   updateUserData: (data: Partial<OnboardingContextType["userData"]>) => void;
 }
@@ -44,10 +39,13 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("upload");
   const [userData, setUserData] = useState({
     name: "",
+    email: "",
     recipientName: "",
     recipientEmail: "",
     relationship: "",
     familyRelationship: "",
+    isTemporary: true, // Default to true since most onboarding users start as temporary
+    allUserId: undefined as string | undefined,
   });
 
   // Update user data - using functional update pattern

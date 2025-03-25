@@ -13,7 +13,7 @@ interface UseFileUploadProps {
 export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUploadProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { addFile: addOnboardingFile } = useOnboarding();
+  const { addFile: addOnboardingFile, updateUserData } = useOnboarding();
   const { data: session } = useSession();
 
   // const { addFile: addVaultFile } = useVault(); // Future implementation
@@ -56,15 +56,19 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
         throw new Error(data.error || "Upload failed");
       }
 
-      // Add to onboarding context for preview if in onboarding mode
+      // Update user data with IDs
       if (isOnboarding) {
+        updateUserData({
+          allUserId: data.data.ownerId,
+          isTemporary: !session,
+        });
+
+        // Add file to context without user data
         addOnboardingFile({
           url,
           file,
           uploadedAt: new Date(),
-          memoryId: data.memoryId,
-          ownerId: data.ownerId,
-          temporaryUserId: data.temporaryUserId,
+          memoryId: data.data.id,
           fileType: file.type,
         });
       }

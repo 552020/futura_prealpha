@@ -8,7 +8,7 @@ import {
   integer,
   uniqueIndex,
   foreignKey,
-  IndexBuilder,
+  //   IndexBuilder,
 } from "drizzle-orm/pg-core";
 import type { DefaultSession } from "next-auth";
 // import type { AdapterAccount } from "@auth/core/adapters";
