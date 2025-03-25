@@ -36,7 +36,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
 
 async function handleMemoryAccess(memory: DBDocument | DBImage | DBNote, userId: string): Promise<NextResponse> {
   // Check if user has permission
-  if (memory.userId !== userId && !memory.isPublic) {
+  if (memory.ownerId !== userId && !memory.isPublic) {
     const hasAccess = await checkUserHasAccess(memory.id, userId);
     if (!hasAccess) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
@@ -73,7 +73,7 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
     }
 
     // Check ownership only
-    if (memory.data.userId !== session.user.id) {
+    if (memory.data.ownerId !== session.user.id) {
       return NextResponse.json({ error: "Only the owner can delete this memory" }, { status: 403 });
     }
 
@@ -126,7 +126,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
     }
 
     // Check ownership
-    if (memory.data.userId !== session.user.id) {
+    if (memory.data.ownerId !== session.user.id) {
       return NextResponse.json({ error: "Only the owner can modify this memory" }, { status: 403 });
     }
 

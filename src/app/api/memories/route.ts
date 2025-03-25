@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     // If no specific type is requested or photos are requested
     if (!fileType || fileType === "photo") {
       userImages = await db.query.images.findMany({
-        where: eq(images.userId, session.user.id),
+        where: eq(images.ownerId, session.user.id),
         orderBy: desc(images.createdAt), // Simple recent-first sorting
         limit: limit,
       });
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     // If no specific type is requested or files are requested
     if (!fileType || fileType === "file") {
       userDocuments = await db.query.documents.findMany({
-        where: eq(documents.userId, session.user.id),
+        where: eq(documents.ownerId, session.user.id),
         orderBy: desc(documents.createdAt), // Simple recent-first sorting
         limit: limit,
       });
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     // If no specific type is requested or texts are requested
     if (!fileType || fileType === "text") {
       userNotes = await db.query.notes.findMany({
-        where: eq(notes.userId, session.user.id),
+        where: eq(notes.ownerId, session.user.id),
         orderBy: desc(notes.createdAt), // Simple recent-first sorting
         limit: limit,
       });

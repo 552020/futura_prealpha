@@ -46,7 +46,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
       return NextResponse.json({ error: "Memory not found" }, { status: 404 });
     }
     // Check ownership
-    if (memory.data.userId !== session.user.id) {
+    if (memory.data.ownerId !== session.user.id) {
       return NextResponse.json({ error: "Only the owner can share this memory" }, { status: 403 });
     }
 
@@ -185,7 +185,7 @@ async function handleEmailShare(memory: MemoryWithType, request: ShareRequest, o
         email,
         name: request.method.name || email.split("@")[0],
         registrationStatus: "pending",
-        invitedBy: ownerId,
+        invitedByAllUserId: ownerId,
         invitedAt: new Date(),
       })
       .returning();

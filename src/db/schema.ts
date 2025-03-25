@@ -251,6 +251,7 @@ export type CommonFileMetadata = {
   uploadedAt: string;
   dateOfMemory?: string;
   peopleInMemory?: string[];
+  format?: string; // File format (e.g., "JPEG", "PNG", "PDF")
 };
 
 export type ImageMetadata = CommonFileMetadata & {

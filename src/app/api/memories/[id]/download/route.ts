@@ -27,7 +27,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
 
     if (image) {
       // Verify this photo belongs to the user or is publicly accessible
-      if (image.userId !== session.user.id && !image.isPublic) {
+      if (image.ownerId !== session.user.id && !image.isPublic) {
         return NextResponse.json({ error: "Access denied" }, { status: 403 });
       }
 
@@ -107,8 +107,8 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
     });
 
     if (document) {
-      // Verify ownership
-      if (document.userId !== session.user.id) {
+      // Verify this document belongs to the user or is publicly accessible
+      if (document.ownerId !== session.user.id && !document.isPublic) {
         return NextResponse.json({ error: "Access denied" }, { status: 403 });
       }
 
@@ -173,9 +173,9 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
     });
 
     if (note) {
-      // Verify this text belongs to the user
-      if (note.userId !== session.user.id) {
-        return new Response("Access denied", { status: 403 });
+      // Verify this note belongs to the user or is publicly accessible
+      if (note.ownerId !== session.user.id && !note.isPublic) {
+        return NextResponse.json({ error: "Access denied" }, { status: 403 });
       }
 
       // Return text data as a file download
