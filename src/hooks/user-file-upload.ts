@@ -33,19 +33,41 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
         throw new Error("File too large");
       }
 
-      const url = URL.createObjectURL(file);
-
-      const fileData = {
-        url,
-        file,
-        uploadedAt: new Date(),
-      };
-
       if (isOnboarding) {
-        addOnboardingFile(fileData);
+        // Create a temporary URL for preview
+        const url = URL.createObjectURL(file);
+
+        // Upload to onboarding endpoint
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch("/api/memories/upload/onboarding", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Upload failed");
+        }
+
+        // Add to onboarding context for preview
+        // Note: We store the file in memory for preview purposes only
+        // The actual file data is already uploaded and stored in the database
+        addOnboardingFile({
+          url,
+          file,
+          uploadedAt: new Date(),
+          memoryId: data.memoryId,
+          ownerId: data.ownerId,
+          temporaryUserId: data.temporaryUserId,
+          fileType: file.type,
+        });
+
         toast({
-          title: "File uploaded successfully!",
-          description: "Your first memory has been saved.",
+          title: "Memory uploaded!",
+          description: "Your memory was successfully saved.",
         });
         onSuccess?.();
       } else {

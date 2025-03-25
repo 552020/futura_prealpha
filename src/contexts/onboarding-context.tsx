@@ -6,6 +6,10 @@ interface TempFile {
   url: string;
   file: File;
   uploadedAt: Date;
+  memoryId?: string;
+  ownerId?: string; // ID of the temporary user who owns this file
+  temporaryUserId?: string; // ID of the temporary user record
+  fileType?: string; // MIME type of the file
 }
 
 // Improved step type with better semantic naming
