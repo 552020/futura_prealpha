@@ -136,8 +136,8 @@ export const temporaryUsers = pgTable(
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
 
-    name: text("name").notNull(),
-    email: text("email").notNull(),
+    name: text("name"),
+    email: text("email"),
     secureCode: text("secure_code").notNull(),
     secureCodeExpiresAt: timestamp("secure_code_expires_at", { mode: "date" }).notNull(),
 
