@@ -460,38 +460,15 @@ export function OnboardModal({
 
     const handleSuccessfulOnboardingAuth = async () => {
       try {
-        console.log("Starting memory upload and sharing process...");
+        console.log("Starting memory sharing process...");
 
-        // 1. Upload the memory
-        const formData = new FormData();
-        formData.append("file", files[0].file);
-
-        console.log("Uploading memory...", {
-          fileName: files[0].file.name,
-          fileSize: files[0].file.size,
-          fileType: files[0].file.type,
-        });
-
-        const responseMemoryUpload = await fetch("/api/memories/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!responseMemoryUpload.ok) {
-          console.error("Memory upload failed:", {
-            status: responseMemoryUpload.status,
-            statusText: responseMemoryUpload.statusText,
-          });
-          throw new Error("Failed to upload memory");
+        // Get the memory ID from the onboarding context
+        const memoryId = files[0].memoryId;
+        if (!memoryId) {
+          throw new Error("Memory ID not found");
         }
 
-        const memoryUploadResult = await responseMemoryUpload.json();
-        console.log("Memory upload successful:", memoryUploadResult);
-
-        // Extract memory ID from the response
-        const memoryId = memoryUploadResult.data.id;
-
-        // 2. Share the memory
+        // Share the memory
         const shareRequest = {
           target: {
             type: "user",
@@ -529,21 +506,16 @@ export function OnboardModal({
         const shareResult = await responseMemoryShare.json();
         console.log("Memory share successful:", shareResult);
 
-        // 3. Complete onboarding
+        // Complete onboarding
         console.log("Completing onboarding process...");
         setCurrentStep("complete");
         onComplete();
-
-        // 4. Redirect to profile page
-        // Handled by onComplete prop
-        // console.log("Redirecting to profile page...");
-        // router.push("/profile");
       } catch (error) {
         console.error("Error in handleSuccessfulOnboardingAuth:", error);
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Failed to save your memory. Please try again.",
+          description: "Failed to share your memory. Please try again.",
         });
       }
     };
