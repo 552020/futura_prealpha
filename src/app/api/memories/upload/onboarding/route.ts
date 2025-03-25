@@ -2,15 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/db";
 import { allUsers, temporaryUsers } from "@/db/schema";
 import { storeInDatabase, uploadFileToStorage, validateFile } from "../utils";
-import { auth } from "@/auth";
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
