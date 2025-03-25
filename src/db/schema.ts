@@ -243,6 +243,20 @@ export const authenticators = pgTable(
   ]
 );
 
+// Shared types for file metadata
+export type CommonFileMetadata = {
+  size: number;
+  mimeType: string;
+  originalName: string;
+  uploadedAt: string;
+  dateOfMemory?: string;
+  peopleInMemory?: string[];
+};
+
+export type ImageMetadata = CommonFileMetadata & {
+  dimensions?: { width: number; height: number };
+};
+
 // Application tables
 export const images = pgTable("image", {
   id: text("id")
@@ -257,15 +271,12 @@ export const images = pgTable("image", {
   isPublic: boolean("is_public").default(false),
   title: text("title"),
   description: text("description"),
-  metadata: json("metadata")
-    .$type<{
-      size?: number;
-      format?: string;
-      dimensions?: { width: number; height: number };
-      dateOfMemory?: string;
-      peopleInImage?: string[];
-    }>()
-    .default({}),
+  metadata: json("metadata").$type<ImageMetadata>().default({
+    size: 0,
+    mimeType: "",
+    originalName: "",
+    uploadedAt: new Date().toISOString(),
+  }),
 });
 
 export const notes = pgTable("note", {
@@ -306,30 +317,13 @@ export const documents = pgTable("document", {
   size: text("size").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   isPublic: boolean("is_public").default(false),
-  metadata: json("metadata")
-    .$type<{
-      size?: number;
-      format?: string;
-      dateOfMemory?: string;
-    }>()
-    .default({}),
+  metadata: json("metadata").$type<CommonFileMetadata>().default({
+    size: 0,
+    mimeType: "",
+    originalName: "",
+    uploadedAt: new Date().toISOString(),
+  }),
 });
-
-// export const fileShares = pgTable("file_share", {
-//   id: text("id")
-//     .primaryKey()
-//     .$defaultFn(() => crypto.randomUUID()),
-//   fileId: text("file_id").notNull(),
-//   fileType: text("file_type").notNull(),
-//   userId: text("user_id")
-//     .notNull()
-//     .references(() => users.id, { onDelete: "cascade" }),
-//   sharedByUserId: text("shared_by_user_id")
-//     .notNull()
-//     .references(() => users.id, { onDelete: "cascade" }),
-//   createdAt: timestamp("created_at").defaultNow().notNull(),
-//   accessLevel: text("access_level").default("read").notNull(),
-// });
 
 export const MEMORY_TYPES = ["image", "document", "note"] as const;
 export const ACCESS_LEVELS = ["read", "write"] as const;
