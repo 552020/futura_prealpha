@@ -8,6 +8,7 @@ import {
   integer,
   uniqueIndex,
   foreignKey,
+  //   IndexBuilder,
 } from "drizzle-orm/pg-core";
 import type { DefaultSession } from "next-auth";
 // import type { AdapterAccount } from "@auth/core/adapters";
@@ -29,9 +30,7 @@ export const users = pgTable(
     parentId: text("parent_id"), // This links a child to their parent (can be NULL for root nodes)
 
     // New invitation-related fields:
-    //   invitedBy: text("invited_by").references(() => users.id, { onDelete: "set null" }), // Who invited this user
-    // https://orm.drizzle.team/docs/indexes-constraints#foreign-key
-    invitedBy: text("invited_by"), // No `.references()` here!
+    invitedByAllUserId: text("invited_by_all_user_id"), // No `.references()` here!
     invitedAt: timestamp("invited_at"), // When the invitation was sent
     registrationStatus: text("registration_status", {
       enum: ["pending", "visited", "initiated", "completed", "declined", "expired"],
@@ -69,7 +68,7 @@ export const users = pgTable(
   (table) => [
     // Define the self-referencing foreign key separately
     foreignKey({
-      columns: [table.invitedBy],
+      columns: [table.invitedByAllUserId],
       foreignColumns: [table.id],
       name: "user_invited_by_fk",
     }),
@@ -78,6 +77,80 @@ export const users = pgTable(
       columns: [table.parentId],
       foreignColumns: [table.id],
       name: "user_parent_fk",
+    }),
+  ]
+);
+
+export const allUsers = pgTable(
+  "all_user",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+
+    type: text("type", { enum: ["user", "temporary"] }).notNull(),
+
+    userId: text("user_id"), // FK defined below
+    temporaryUserId: text("temporary_user_id"), // FK defined below
+
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  }
+  //   (table): (ReturnType<typeof foreignKey> | IndexBuilder)[] => [
+  // ✅ Optional FK to permanent users - fixed to reference users table
+  // foreignKey({
+  //   columns: [table.userId],
+  //   foreignColumns: [users.id],
+  //   name: "all_users_user_fk",
+  // }),
+  // ✅ Optional FK to temporary users
+  // foreignKey({
+  //   columns: [table.temporaryUserId],
+  //   foreignColumns: [temporaryUsers.id],
+  //   name: "all_users_temporary_user_fk",
+  // }),
+  // ✅ Ensure a user can't be both permanent and temporary
+  // uniqueIndex("one_user_type_check").on(table.userId, table.temporaryUserId),
+  //   ]
+);
+
+export const temporaryUsers = pgTable(
+  "temporary_user",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+
+    name: text("name"),
+    email: text("email"),
+    secureCode: text("secure_code").notNull(),
+    secureCodeExpiresAt: timestamp("secure_code_expires_at", { mode: "date" }).notNull(),
+
+    role: text("role", { enum: ["inviter", "invitee"] }).notNull(),
+
+    invitedByAllUserId: text("invited_by_all_user_id"), // FK declared later
+
+    registrationStatus: text("registration_status", {
+      enum: ["pending", "visited", "initiated", "completed", "declined", "expired"],
+    })
+      .default("pending")
+      .notNull(),
+
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+
+    metadata: json("metadata")
+      .$type<{
+        notes?: string;
+        location?: string;
+        campaign?: string;
+      }>()
+      .default({}),
+  },
+  (table): [ReturnType<typeof foreignKey>] => [
+    foreignKey({
+      columns: [table.invitedByAllUserId],
+      foreignColumns: [allUsers.id],
+      name: "temporary_user_invited_by_fk",
     }),
   ]
 );
@@ -100,11 +173,11 @@ export const accounts = pgTable(
     id_token: text("id_token"),
     session_state: text("session_state"),
   },
-  (account) => ({
-    compoundKey: primaryKey({
+  (account) => [
+    primaryKey({
       columns: [account.provider, account.providerAccountId],
     }),
-  })
+  ]
 );
 
 // Auth.js required tables
@@ -154,43 +227,57 @@ export const authenticators = pgTable(
   ]
 );
 
+// Shared types for file metadata
+export type CommonFileMetadata = {
+  size: number;
+  mimeType: string;
+  originalName: string;
+  uploadedAt: string;
+  dateOfMemory?: string;
+  peopleInMemory?: string[];
+  format?: string; // File format (e.g., "JPEG", "PNG", "PDF")
+};
+
+export type ImageMetadata = CommonFileMetadata & {
+  dimensions?: { width: number; height: number };
+};
+
 // Application tables
 export const images = pgTable("image", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  userId: text("userId")
+  ownerId: text("owner_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => allUsers.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
   caption: text("caption"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   isPublic: boolean("is_public").default(false),
   title: text("title"),
   description: text("description"),
-  metadata: json("metadata")
-    .$type<{
-      size?: number;
-      format?: string;
-      dimensions?: { width: number; height: number };
-      dateOfMemory?: string;
-      peopleInImage?: string[];
-    }>()
-    .default({}),
+  ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
+  metadata: json("metadata").$type<ImageMetadata>().default({
+    size: 0,
+    mimeType: "",
+    originalName: "",
+    uploadedAt: new Date().toISOString(),
+  }),
 });
 
 export const notes = pgTable("note", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  userId: text("userId")
+  ownerId: text("owner_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => allUsers.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   isPublic: boolean("is_public").default(false),
+  ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
   metadata: json("metadata")
     .$type<{
       tags?: string[];
@@ -207,9 +294,9 @@ export const documents = pgTable("document", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  userId: text("userId")
+  ownerId: text("owner_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => allUsers.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
   title: text("title"),
   description: text("description"),
@@ -217,30 +304,14 @@ export const documents = pgTable("document", {
   size: text("size").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   isPublic: boolean("is_public").default(false),
-  metadata: json("metadata")
-    .$type<{
-      size?: number;
-      format?: string;
-      dateOfMemory?: string;
-    }>()
-    .default({}),
+  ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
+  metadata: json("metadata").$type<CommonFileMetadata>().default({
+    size: 0,
+    mimeType: "",
+    originalName: "",
+    uploadedAt: new Date().toISOString(),
+  }),
 });
-
-// export const fileShares = pgTable("file_share", {
-//   id: text("id")
-//     .primaryKey()
-//     .$defaultFn(() => crypto.randomUUID()),
-//   fileId: text("file_id").notNull(),
-//   fileType: text("file_type").notNull(),
-//   userId: text("user_id")
-//     .notNull()
-//     .references(() => users.id, { onDelete: "cascade" }),
-//   sharedByUserId: text("shared_by_user_id")
-//     .notNull()
-//     .references(() => users.id, { onDelete: "cascade" }),
-//   createdAt: timestamp("created_at").defaultNow().notNull(),
-//   accessLevel: text("access_level").default("read").notNull(),
-// });
 
 export const MEMORY_TYPES = ["image", "document", "note"] as const;
 export const ACCESS_LEVELS = ["read", "write"] as const;
@@ -276,11 +347,15 @@ export const memoryShares = pgTable("memory_share", {
   memoryType: text("memory_type", { enum: MEMORY_TYPES }).notNull(), // Type of memory (e.g., "image", "note", "document")
   ownerId: text("owner_id") // The user who originally created (or owns) the memory
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => allUsers.id, { onDelete: "cascade" }),
   sharedWithType: text("shared_with_type").notNull(), // "user" or "group"
-  sharedWithId: text("shared_with_id").notNull(), // ID of the user or group the memory is shared with
+  sharedWithId: text("shared_with_id") // ID of the user or group the memory is shared with
+    .notNull()
+    .references(() => allUsers.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   accessLevel: text("access_level", { enum: ACCESS_LEVELS }).default("read").notNull(),
+  inviteeSecureCode: text("invitee_secure_code").notNull(), // For invitee to access the memory
+  inviteeSecureCodeCreatedAt: timestamp("secure_code_created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const group = pgTable("group", {
@@ -311,11 +386,11 @@ export const groupMember = pgTable(
       .references(() => users.id, { onDelete: "cascade" }),
     role: text("role", { enum: MEMBER_ROLES }).default("member").notNull(),
   },
-  (groupMember) => ({
-    compositePk: primaryKey({
+  (groupMember) => [
+    primaryKey({
       columns: [groupMember.groupId, groupMember.userId],
     }),
-  })
+  ]
 );
 
 export const relationship = pgTable(
@@ -326,18 +401,16 @@ export const relationship = pgTable(
       .$defaultFn(() => crypto.randomUUID()),
     userId: text("user_id")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+      .references(() => allUsers.id, { onDelete: "cascade" }),
     relatedUserId: text("related_user_id")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+      .references(() => allUsers.id, { onDelete: "cascade" }),
     type: text("type", { enum: RELATIONSHIP_TYPES }).notNull(),
     status: text("status", { enum: RELATIONSHIP_STATUS }).default("pending").notNull(),
-    note: text("note"), // Optional custom label or note
+    note: text("note"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table) => ({
-    uniqueRelation: uniqueIndex("unique_relation_idx").on(table.userId, table.relatedUserId),
-  })
+  (t) => [uniqueIndex("unique_relation_idx").on(t.userId, t.relatedUserId)]
 );
 
 export const familyRelationship = pgTable("family_relationship", {
@@ -355,7 +428,7 @@ export const familyRelationship = pgTable("family_relationship", {
     .default("fuzzy")
     .notNull(),
   // New: Store the common ancestor if known
-  sharedAncestorId: text("shared_ancestor_id").references(() => users.id, { onDelete: "set null" }),
+  sharedAncestorId: text("shared_ancestor_id").references(() => allUsers.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -373,10 +446,10 @@ export const familyMember = pgTable(
     // The owner of the family tree (the user who created the record)
     ownerId: text("owner_id")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
+      .references(() => allUsers.id, { onDelete: "cascade" }),
 
     // If this family member is a registered user, link them here (optional)
-    userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+    userId: text("user_id").references(() => allUsers.id, { onDelete: "set null" }),
 
     // Basic information
     fullName: text("full_name").notNull(),
@@ -402,7 +475,7 @@ export const familyMember = pgTable(
     // Optional foreign key constraints (if needed) for userId can be defined here.
     foreignKey({
       columns: [table.userId],
-      foreignColumns: [users.id],
+      foreignColumns: [allUsers.id],
       name: "family_member_user_fk",
     }),
   ]
@@ -420,6 +493,12 @@ declare module "next-auth" {
 // Type inference helpers
 export type DBUser = typeof users.$inferSelect;
 export type NewDBUser = typeof users.$inferInsert;
+
+export type DBAllUser = typeof allUsers.$inferSelect;
+export type NewDBAllUser = typeof allUsers.$inferInsert;
+
+export type DBTemporaryUser = typeof temporaryUsers.$inferSelect;
+export type NewDBTemporaryUser = typeof temporaryUsers.$inferInsert;
 
 export type DBAccount = typeof accounts.$inferSelect;
 export type NewDBAccount = typeof accounts.$inferInsert;

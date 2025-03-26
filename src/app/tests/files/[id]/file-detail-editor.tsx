@@ -328,7 +328,7 @@ export default function FileDetailEditor({ fileDetails }: { fileDetails: FileDet
               </div>
               {fileDetails.data.metadata?.dateOfMemory && (
                 <div className="grid grid-cols-3">
-                  <span className="font-medium">Updated:</span>
+                  <span className="font-medium">Date of Memory:</span>
                   <span className="col-span-2">
                     {new Date(fileDetails.data.metadata.dateOfMemory).toLocaleString()}
                   </span>

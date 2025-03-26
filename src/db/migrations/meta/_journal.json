@@ -15,6 +15,48 @@
       "when": 1742675746774,
       "tag": "0001_wet_sally_floyd",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1742894997399,
+      "tag": "0002_mute_thor_girl",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1742895178612,
+      "tag": "0003_brave_the_fury",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1742898550856,
+      "tag": "0004_sad_microchip",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1742904192086,
+      "tag": "0005_familiar_logan",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1742911704924,
+      "tag": "0006_last_the_phantom",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1742991845753,
+      "tag": "0007_ordinary_joseph",
+      "breakpoints": true
     }
   ]
 }

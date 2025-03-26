@@ -29,7 +29,7 @@ export default async function FileDetailPage({ params }: { params: Promise<{ id:
 
   if (photo) {
     // Verify access
-    if (photo.userId !== session.user.id && !photo.isPublic) {
+    if (photo.ownerId !== session.user.id && !photo.isPublic) {
       return (
         <div className="p-8 max-w-xl mx-auto">
           <h1 className="text-2xl font-bold mb-6">Access Denied</h1>
@@ -48,7 +48,7 @@ export default async function FileDetailPage({ params }: { params: Promise<{ id:
 
   if (file) {
     // Verify access
-    if (file.userId !== session.user.id) {
+    if (file.ownerId !== session.user.id) {
       return (
         <div className="p-8 max-w-xl mx-auto">
           <h1 className="text-2xl font-bold mb-6">Access Denied</h1>
@@ -67,7 +67,7 @@ export default async function FileDetailPage({ params }: { params: Promise<{ id:
 
   if (text) {
     // Verify access
-    if (text.userId !== session.user.id) {
+    if (text.ownerId !== session.user.id) {
       return (
         <div className="p-8 max-w-xl mx-auto">
           <h1 className="text-2xl font-bold mb-6">Access Denied</h1>

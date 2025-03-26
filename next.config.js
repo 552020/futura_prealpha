@@ -12,6 +12,10 @@ const nextConfig = {
       },
     ],
   },
+  // Reduce development logging
+  logging: {
+    level: "error", // Only show error messages
+  },
 };
 
 module.exports = nextConfig;

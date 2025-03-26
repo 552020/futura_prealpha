@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useOnboarding } from "@/contexts/onboarding-context";
+import { useOnboarding, type OnboardingStep } from "@/contexts/onboarding-context";
 import { Share2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { Loader2 } from "lucide-react";
@@ -24,10 +24,34 @@ interface OnboardModalProps {
   showUploadedImage?: boolean;
 }
 
+interface UserInfoStepProps {
+  withImage?: boolean;
+  collectEmail?: boolean;
+}
+
+// Add these constants at the top of the file
+const ONBOARDING_STATE_KEY = "onboarding_state";
+const ONBOARDING_STEP_KEY = "onboarding_step";
+
+interface OnboardingState {
+  isOnboarding: boolean;
+  currentStep: OnboardingStep;
+  userData: {
+    name: string;
+    email: string;
+    recipientName?: string;
+    recipientEmail?: string;
+    relationship?: string;
+    familyRelationship?: string;
+    allUserId?: string;
+    isTemporary?: boolean;
+  };
+}
+
 export function OnboardModal({
   isOpen,
   onClose,
-  onComplete,
+  //   onComplete,
   cleanupOnClose = "all",
   showUploadedImage = false,
 }: OnboardModalProps) {
@@ -41,6 +65,7 @@ export function OnboardModal({
   const [localName, setLocalName] = useState(userData.name);
   const [localRecipientName, setLocalRecipientName] = useState(userData.recipientName);
   const [localRecipientEmail, setLocalRecipientEmail] = useState(userData.recipientEmail);
+  const [localEmail, setLocalEmail] = useState(userData.email);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
   //   console.log("After localName initialization:", { localName, userData_name: userData.name });
 
@@ -48,13 +73,15 @@ export function OnboardModal({
   const nameInputRef = useRef<HTMLInputElement>(null);
   const recipientNameRef = useRef<HTMLInputElement>(null);
   const recipientEmailRef = useRef<HTMLInputElement>(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
 
   // Sync local state with context when userData changes
   useEffect(() => {
     if (currentStep === "user-info") {
       setLocalName(userData.name);
+      setLocalEmail(userData.email);
     }
-  }, [currentStep, userData.name]);
+  }, [currentStep, userData.name, userData.email]);
 
   // Reset step when modal opens
   useEffect(() => {
@@ -66,53 +93,54 @@ export function OnboardModal({
   // Get the most recently uploaded file to display in the modal
   const lastUploadedFile = files.length > 0 ? files[files.length - 1] : null;
 
-  // Handle advancing to the next step
-  const handleNext = () => {
-    // Update the context with local state before proceeding
-    if (currentStep === "user-info") {
-      updateUserData({ name: localName });
-    }
+  // Load onboarding state from localStorage on mount
+  useEffect(() => {
+    const savedState = localStorage.getItem(ONBOARDING_STATE_KEY);
+    const savedStep = localStorage.getItem(ONBOARDING_STEP_KEY);
 
-    switch (currentStep) {
-      case "user-info":
-        // Only proceed if name is provided
-        if (localName.trim()) {
-          setCurrentStep("share");
-        }
-        break;
-      case "share":
-        setCurrentStep("sign-up");
-        break;
-      case "sign-up":
-        console.log("sign-up step");
-        // setCurrentStep("complete");
-        // We are handling this already in the handleSuccessfulOnboardingAuth function
-        // setCurrentStep("complete");
-        // onComplete moved into handleSuccessfulOnboardingAuth
-        // onComplete();
-        break;
+    if (savedState && savedStep) {
+      const state: OnboardingState = JSON.parse(savedState);
+      if (state.isOnboarding) {
+        setCurrentStep(state.currentStep);
+        updateUserData(state.userData);
+      }
     }
+  }, [setCurrentStep, updateUserData]);
+
+  // Save onboarding state to localStorage when it changes
+  useEffect(() => {
+    const state: OnboardingState = {
+      isOnboarding: true,
+      currentStep,
+      userData,
+    };
+    localStorage.setItem(ONBOARDING_STATE_KEY, JSON.stringify(state));
+    localStorage.setItem(ONBOARDING_STEP_KEY, currentStep);
+  }, [currentStep, userData]);
+
+  // Clear onboarding state when complete
+  const clearOnboardingState = () => {
+    localStorage.removeItem(ONBOARDING_STATE_KEY);
+    localStorage.removeItem(ONBOARDING_STEP_KEY);
   };
 
-  // Enhanced modal close with configurable cleanup strategies
+  // Modify handleModalClose to clear state
   const handleModalClose = () => {
     // Reset to first modal step when closing
     setCurrentStep("user-info");
+    clearOnboardingState();
 
     if (files.length > 0) {
       switch (cleanupOnClose) {
         case "last":
-          // Remove only the last uploaded file
           const lastFile = files[files.length - 1];
           if (lastFile) {
             removeFile(lastFile.url);
           }
           break;
-
         case "all":
           clearFiles();
           break;
-
         case "none":
         default:
           break;
@@ -120,6 +148,53 @@ export function OnboardModal({
     }
 
     onClose();
+  };
+
+  // Modify handleNext to handle completion
+  const handleNext = async () => {
+    if (currentStep === "user-info") {
+      try {
+        // Get the allUserId from userData
+        if (!userData.allUserId) {
+          throw new Error("User ID not found");
+        }
+
+        // Make a PATCH request to update the user information
+        const response = await fetch(`/api/users/${userData.allUserId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: localName,
+            email: localEmail,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to update user information");
+        }
+
+        // If successful, proceed to the next step
+        setCurrentStep("share");
+      } catch (error) {
+        console.error("Error updating user information:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to update your information. Please try again.",
+        });
+      }
+    } else {
+      switch (currentStep) {
+        case "share":
+          setCurrentStep("sign-up");
+          break;
+        case "sign-up":
+          // This will be handled by the sign-in success callback
+          break;
+      }
+    }
   };
 
   // Update form data - using local state for name input
@@ -132,6 +207,12 @@ export function OnboardModal({
     //   oldValue: localName,
     //   activeElement: document.activeElement?.id || "none",
     // });
+  };
+
+  const handleEventBasedEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setLocalEmail(newValue);
+    updateUserData({ email: newValue });
   };
 
   // In the handleUncontrolledNameChange function
@@ -186,6 +267,13 @@ export function OnboardModal({
     }
   }, [currentStep, localName]);
 
+  // Add focus effect for email field
+  useEffect(() => {
+    if (currentStep === "user-info" && emailInputRef.current) {
+      emailInputRef.current.focus();
+    }
+  }, [currentStep, localEmail]);
+
   // Add this useEffect to maintain focus for recipient fields
   useEffect(() => {
     // console.log("Recipient focus effect triggered", {
@@ -207,73 +295,41 @@ export function OnboardModal({
   }, [currentStep, localRecipientName, localRecipientEmail, lastFocusedField]);
 
   // Internal components for each step with variants
-  const UserInfoWithImageStep = () => (
-    <div className="space-y-6">
-      {lastUploadedFile && (
-        <div className="relative w-full aspect-square max-w-xs mx-auto overflow-hidden rounded-md">
-          <Image
-            src={lastUploadedFile.url}
-            alt="Uploaded memory"
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 400px"
-            priority
-          />
-        </div>
-      )}
+  const UserInfoStep = ({ withImage = false, collectEmail = true }: UserInfoStepProps) => {
+    // Remove the local email state
+    // const [email, setEmail] = useState("");
 
-      <div className="space-y-4 py-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">How should we call you?</Label>
-          <Input
-            ref={nameInputRef}
-            id="name"
-            name="name"
-            value={localName}
-            onChange={handleEventBasedNameChange}
-            placeholder="Enter your name"
-          />
-        </div>
-
-        <div className="flex items-center space-x-2 pt-4">
-          <Share2 size={18} />
-          <p className="text-sm">Would you like to share this memory with someone?</p>
-        </div>
-      </div>
-    </div>
-  );
-
-  const UserInfoWithoutImageStep = () => {
-    // console.log("UserInfoWithoutImageStep rendering", {
-    //   nameInputRef_current: nameInputRef.current ? "exists" : "null",
-    //   userData_name: userData.name,
-    //   localName,
-    // });
-
-    // In the useEffect that syncs ref with userData.name
+    // Sync local state with context when userData changes
     useEffect(() => {
-      //   console.log("UserInfoWithoutImageStep useEffect triggered", {
-      //     userData_name: userData.name,
-      //     inputValue: nameInputRef.current?.value || "empty",
-      //     localName,
-      //   });
-
       if (nameInputRef.current && userData.name && !nameInputRef.current.value) {
-        // console.log("Updating input value to match userData.name");
         nameInputRef.current.value = userData.name;
       }
-    }, [userData.name]);
-
-    // console.log("UserInfoWithoutImageStep before return", {
-    //   defaultValue: userData.name,
-    // });
+      if (emailInputRef.current && userData.email && !emailInputRef.current.value) {
+        emailInputRef.current.value = userData.email;
+      }
+    }, [userData.name, userData.email]);
 
     return (
-      <div className="space-y-6 border-2 border-dotted border-red-500 rounded-md">
-        <div className="space-y-4 py-4">
-          <div className="pt-4">
-            <p className="text-4xl font-bold">Let&apos;s now share this memory with someone special!</p>
+      <div className="space-y-6">
+        {withImage && lastUploadedFile && (
+          <div className="relative w-full aspect-square max-w-xs mx-auto overflow-hidden rounded-md">
+            <Image
+              src={lastUploadedFile.url}
+              alt="Uploaded memory"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 400px"
+              priority
+            />
           </div>
+        )}
+
+        <div className="space-y-4 py-4">
+          {!withImage && (
+            <div className="pt-4">
+              <p className="text-4xl font-bold">Let&apos;s now share this memory with someone special!</p>
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="name">How should we call you?</Label>
             <Input
@@ -281,13 +337,32 @@ export function OnboardModal({
               id="name"
               name="name"
               defaultValue={userData.name}
-              //   onChange={handleRefBasedNameChange}
               onChange={handleEventBasedNameChange}
-              //   onFocus={() => console.log("Input focused")}
-              //   onBlur={() => console.log("Input blurred")}
               placeholder="Enter your name"
             />
           </div>
+
+          {collectEmail && (
+            <div className="space-y-2">
+              <Label htmlFor="email">Your Email</Label>
+              <Input
+                ref={emailInputRef}
+                id="email"
+                name="email"
+                type="email"
+                defaultValue={userData.email}
+                onChange={handleEventBasedEmailChange}
+                placeholder="Enter your email"
+              />
+            </div>
+          )}
+
+          {withImage && (
+            <div className="flex items-center space-x-2 pt-4">
+              <Share2 size={18} />
+              <p className="text-sm">Would you like to share this memory with someone?</p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -399,13 +474,24 @@ export function OnboardModal({
     const [isLoading, setIsLoading] = useState(false);
     const [isSigningIn, setIsSigningIn] = useState(false); // Track if user is signing in vs signing up
 
-    // This function handles the signup and signin trough credentials (email and password, not social providers handled by handleSocialAuth)
+    const handleSuccessfulSignIn = async () => {
+      // This function will be called after successful sign-in
+      // It should:
+      // 1. Update the user's data in the database
+      // 2. Move to the share step
+      // 3. Clear the onboarding state from localStorage
+      // 4. Call onComplete
+
+      // For now, we'll just log the intention
+      console.log("Sign in successful, proceeding to share step");
+      setCurrentStep("share");
+    };
+
     const handleCredentilsAuthHelper = async (
       email: string,
       password: string,
       isSigningIn: boolean
     ): Promise<boolean> => {
-      // Authentication logic
       const result = await signIn("credentials", {
         email,
         password,
@@ -421,8 +507,8 @@ export function OnboardModal({
         });
         return false;
       }
-      await handleSuccessfulOnboardingAuth();
-      setCurrentStep("complete");
+
+      await handleSuccessfulSignIn();
       return true;
     };
 
@@ -458,119 +544,6 @@ export function OnboardModal({
       }
     };
 
-    const handleSuccessfulOnboardingAuth = async () => {
-      try {
-        console.log("Starting memory upload and sharing process...");
-
-        // 1. Upload the memory
-        const formData = new FormData();
-        formData.append("file", files[0].file);
-
-        console.log("Uploading memory...", {
-          fileName: files[0].file.name,
-          fileSize: files[0].file.size,
-          fileType: files[0].file.type,
-        });
-
-        const responseMemoryUpload = await fetch("/api/memories/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!responseMemoryUpload.ok) {
-          console.error("Memory upload failed:", {
-            status: responseMemoryUpload.status,
-            statusText: responseMemoryUpload.statusText,
-          });
-          throw new Error("Failed to upload memory");
-        }
-
-        const memoryUploadResult = await responseMemoryUpload.json();
-        console.log("Memory upload successful:", memoryUploadResult);
-
-        // Extract memory ID from the response
-        const memoryId = memoryUploadResult.data.id;
-
-        // 2. Share the memory
-        const shareRequest = {
-          target: {
-            type: "user",
-          },
-          method: {
-            type: "email",
-            email: userData.recipientEmail,
-            name: userData.recipientName,
-          },
-          relationship: {
-            type: userData.relationship,
-            familyRole: userData.relationship === "family" ? userData.familyRelationship : undefined,
-          },
-        };
-
-        console.log("Sharing memory...", {
-          memoryId,
-          shareRequest,
-        });
-
-        const responseMemoryShare = await fetch(`/api/memories/${memoryId}/share`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(shareRequest),
-        });
-
-        if (!responseMemoryShare.ok) {
-          console.error("Memory share failed:", {
-            status: responseMemoryShare.status,
-            statusText: responseMemoryShare.statusText,
-          });
-          throw new Error("Failed to share memory");
-        }
-
-        const shareResult = await responseMemoryShare.json();
-        console.log("Memory share successful:", shareResult);
-
-        // 3. Complete onboarding
-        console.log("Completing onboarding process...");
-        setCurrentStep("complete");
-        onComplete();
-
-        // 4. Redirect to profile page
-        // Handled by onComplete prop
-        // console.log("Redirecting to profile page...");
-        // router.push("/profile");
-      } catch (error) {
-        console.error("Error in handleSuccessfulOnboardingAuth:", error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to save your memory. Please try again.",
-        });
-      }
-    };
-
-    const handleSocialAuth = async (provider: "google" | "github") => {
-      setIsLoading(true);
-      try {
-        // const result = await signIn(provider, { callbackUrl: "/onboarding/profile", redirect: true });
-        const result = await signIn(provider, { redirect: false });
-        if (result?.error) {
-          toast({
-            variant: "destructive",
-            title: "Authentication failed",
-            description: result.error,
-          });
-        } else {
-          // Auth successful! Now save the memory and share
-          await handleSuccessfulOnboardingAuth();
-          setCurrentStep("complete");
-        }
-      } catch (error) {
-        console.error("Social authentication error:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     // Toggle between sign up and sign in modes
     const toggleSingInSignInMode = () => {
       setIsSigningIn(!isSigningIn);
@@ -579,38 +552,25 @@ export function OnboardModal({
       setConfirmPassword("");
     };
 
-    // const handleSignInWithEmail = () => {
-    //   setShowEmailFields(true);
-    // };
-
-    // const handleEmailSignIn = async (e: React.FormEvent) => {
-    //   e.preventDefault();
-    //   setIsLoading(true);
-
-    //   try {
-    //     const result = await signIn("email", {
-    //       email,
-    //       password,
-    //       redirect: false, // Don't redirect automatically
-    //     });
-
-    //     if (result?.error) {
-    //       console.error("Sign in failed:", result.error);
-    //     } else {
-    //       setCurrentStep("complete");
-    //     }
-    //   } catch (error) {
-    //     console.error("Sign in failed:", error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // };
-
-    // const handleSocialSignIn = (provider: "google" | "github") => {
-    //   // For social providers, we typically don't need to handle the result
-    //   // as next-auth will handle the redirect flow
-    //   signIn(provider);
-    // };
+    const handleSocialAuth = async (provider: "google" | "github") => {
+      setIsLoading(true);
+      try {
+        const result = await signIn(provider, { redirect: false });
+        if (result?.error) {
+          toast({
+            variant: "destructive",
+            title: "Authentication failed",
+            description: result.error,
+          });
+        } else {
+          await handleSuccessfulSignIn();
+        }
+      } catch (error) {
+        console.error("Social authentication error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
     return (
       <div className="space-y-6 py-4">
@@ -761,7 +721,7 @@ export function OnboardModal({
   const renderStepContent = () => {
     switch (currentStep) {
       case "user-info":
-        return showUploadedImage ? <UserInfoWithImageStep /> : <UserInfoWithoutImageStep />;
+        return <UserInfoStep withImage={showUploadedImage} collectEmail={true} />;
       case "share":
         return <ShareStep />;
       case "sign-up":
