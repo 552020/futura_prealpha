@@ -105,7 +105,7 @@ export function OnboardModal({
         updateUserData(state.userData);
       }
     }
-  }, []);
+  }, [setCurrentStep, updateUserData]);
 
   // Save onboarding state to localStorage when it changes
   useEffect(() => {

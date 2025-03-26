@@ -7,27 +7,29 @@ import { Plus, Loader2 } from "lucide-react";
 import { useInterface } from "@/contexts/interface-context";
 import { useRouter } from "next/navigation";
 import { useFileUpload } from "@/hooks/user-file-upload";
-import { OnboardModal } from "@/components/onboard-modal";
-
+import { OnboardModal as OnboardModalOld } from "@/components/onboard-modal";
+import { OnboardModal } from "@/components/onboarding/onboard-modal";
 export default function ItemsUpload() {
   const router = useRouter();
   const { setMode } = useInterface();
   const [showOnboardModal, setShowOnboardModal] = useState(false);
+  const [showOldOnboardModal, setShowOldOnboardModal] = useState(false);
   const { isLoading, fileInputRef, handleUploadClick, handleFileChange } = useFileUpload({
     isOnboarding: true,
     onSuccess: () => {
-      //   setMode("app");
-      //   router.push("/onboarding/profile");
+      console.log("📤 File upload success - opening modal");
       setShowOnboardModal(true);
     },
   });
 
   const handleModalClose = () => {
+    console.log("🚪 Modal closing");
     setShowOnboardModal(false);
   };
 
   const handleOnboardingComplete = () => {
     setShowOnboardModal(false);
+    setShowOldOnboardModal(false);
     setMode("app");
     router.push("/onboarding/profile");
   };
@@ -63,6 +65,13 @@ export default function ItemsUpload() {
       </div>
 
       {/* Onboarding Modal */}
+      {false && (
+        <OnboardModalOld
+          isOpen={showOldOnboardModal}
+          onClose={handleModalClose}
+          onComplete={handleOnboardingComplete}
+        />
+      )}
       <OnboardModal isOpen={showOnboardModal} onClose={handleModalClose} onComplete={handleOnboardingComplete} />
     </div>
   );

@@ -6,8 +6,42 @@ import type { MemoryType } from "@/db/schema";
 import FormData from "form-data";
 import Mailgun from "mailgun.js";
 
+// Constants
+const DOMAIN = process.env.MAILGUN_DOMAIN || "";
+const API_KEY = process.env.MAILGUN_API_KEY || "";
+const FROM_EMAIL = process.env.MAILGUN_FROM_EMAIL || "noreply@futura.com";
+
+// Initialize Mailgun
+const mg = new Mailgun(FormData).client({
+  username: "api",
+  key: API_KEY,
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+interface EmailOptions {
+  to: string;
+  subject: string;
+  text?: string;
+  html?: string;
+  template?: string;
+  "h:X-Mailgun-Variables"?: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function sendEmail(options: EmailOptions): Promise<any> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const messageData: any = {
+    from: FROM_EMAIL,
+    ...options,
+  };
+
+  const response = await mg.messages.create(DOMAIN, messageData);
+  console.log("Email sent successfully:", response.id);
+  return response;
+}
+
 export type MemoryWithType = {
-  type: MemoryType; // Using the existing MemoryType from schema
+  type: MemoryType;
   data: DBDocument | DBImage | DBNote;
 };
 
@@ -29,15 +63,6 @@ export async function findMemory(id: string): Promise<MemoryWithType | null> {
 
   return null;
 }
-
-const mailgun = new Mailgun(FormData);
-const mg = mailgun.client({
-  username: "api",
-  key: process.env.MAILGUN_API_KEY || "", // your Mailgun API key
-});
-
-const DOMAIN = process.env.MAILGUN_DOMAIN || "";
-const FROM_EMAIL = process.env.FROM_EMAIL || `hello@${DOMAIN}`;
 
 /**
  * Builds email content based on the memory type.
@@ -186,7 +211,6 @@ export async function sendInvitationEmail(
       // Use Mailgun template
       const templateVars = getTemplateVariables(memory, inviterName || "Someone");
       messageData = {
-        from: FROM_EMAIL,
         to: email,
         subject: "You've been invited to view a memory!",
         template: "memory-invitation", // Ensure this template exists in your Mailgun dashboard
@@ -197,7 +221,6 @@ export async function sendInvitationEmail(
       // Use hardcoded message
       const { text, html } = getEmailContent(memory, inviterName || "Someone", relationship, options.useHTML ?? false);
       messageData = {
-        from: FROM_EMAIL,
         to: email,
         subject: "You've been invited to view a memory!",
         text: text,
@@ -205,9 +228,12 @@ export async function sendInvitationEmail(
       };
     }
 
-    const response = await mg.messages.create(DOMAIN, messageData);
-    console.log("Email sent successfully:", response.id);
-    return true;
+    const response = await sendEmail(messageData);
+    if (response.statusCode === 200) {
+      return true;
+    } else {
+      return false;
+    }
   } catch (error) {
     console.error("Error sending email:", error);
     throw new Error(
@@ -237,7 +263,6 @@ export async function sendSharedMemoryEmail(
     const relationship = await getRelationship(sharedById, memory.data.id);
 
     const messageData = {
-      from: FROM_EMAIL,
       to: email,
       subject: "A memory has been shared with you on Futura",
       text: `${inviterName}${
@@ -256,9 +281,12 @@ export async function sendSharedMemoryEmail(
         : undefined,
     };
 
-    const response = await mg.messages.create(DOMAIN, messageData);
-    console.log("Email sent successfully:", response.id);
-    return true;
+    const response = await sendEmail(messageData);
+    if (response.statusCode === 200) {
+      return true;
+    } else {
+      return false;
+    }
   } catch (error) {
     console.error("Error sending email:", error);
     throw new Error(

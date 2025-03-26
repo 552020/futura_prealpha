@@ -1,29 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db/db";
-import { allUsers, temporaryUsers } from "@/db/schema";
 import { storeInDatabase, uploadFileToStorage, validateFile } from "../utils";
+import { createTemporaryUserBase } from "../../../utils";
 
 export async function POST(request: NextRequest) {
+  console.log("🚀 Starting onboarding file upload process...");
   try {
+    console.log("📦 Parsing form data...");
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
     if (!file) {
+      console.error("❌ No file found in form data");
       return NextResponse.json({ error: "Missing file" }, { status: 400 });
     }
+
+    console.log("📄 File details:", {
+      name: file.name,
+      type: file.type,
+      size: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
+    });
 
     // Validate file
     let validationResult;
     try {
-      console.log("Validating file...");
+      console.log("🔍 Starting file validation...");
       validationResult = await validateFile(file);
       if (!validationResult.isValid) {
-        console.error("File validation failed:", validationResult.error);
+        console.error("❌ File validation failed:", validationResult.error);
         return NextResponse.json({ error: validationResult.error }, { status: 400 });
       }
-      console.log("File validation successful");
+      console.log("✅ File validation successful:", {
+        type: validationResult.fileType?.mime,
+        metadata: validationResult.metadata,
+      });
     } catch (validationError) {
-      console.error("Validation error:", validationError);
+      console.error("❌ Validation error:", validationError);
       return NextResponse.json(
         {
           error: "File validation failed",
@@ -37,11 +48,11 @@ export async function POST(request: NextRequest) {
     // Upload file to storage
     let url;
     try {
-      console.log("Uploading file to storage...");
+      console.log("📤 Starting file upload to storage...");
       url = await uploadFileToStorage(file, validationResult.buffer);
-      console.log("File uploaded successfully to:", url);
+      console.log("✅ File uploaded successfully to:", url);
     } catch (uploadError) {
-      console.error("Upload error:", uploadError);
+      console.error("❌ Upload error:", uploadError);
       return NextResponse.json(
         {
           error: "File upload failed",
@@ -52,52 +63,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Database operations
+    // Create temporary user
+    console.log("👤 Creating temporary user...");
+    const { allUser } = await createTemporaryUserBase("inviter");
+    console.log("✅ Temporary user created:", { userId: allUser.id });
+
+    // Store in database
     try {
-      console.log("Creating temporary user...");
-      // 1. Create temporary user
-      const [temporaryUser] = await db
-        .insert(temporaryUsers)
-        .values({
-          secureCode: crypto.randomUUID(),
-          secureCodeExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-          role: "inviter",
-          registrationStatus: "pending",
-        })
-        .returning();
-      console.log("Temporary user created:", temporaryUser.id);
-
-      console.log("Creating all_users entry...");
-      // 2. Create all_users entry
-      const [allUser] = await db
-        .insert(allUsers)
-        .values({
-          type: "temporary" as const,
-          temporaryUserId: temporaryUser.id,
-        })
-        .returning();
-      console.log("All users entry created:", allUser.id);
-
-      console.log("Storing memory in database...");
-      // 3. Store memory
-      const memoryResult = await storeInDatabase({
-        type: validationResult.fileType!.mime.includes("image/") ? "image" : "document",
+      console.log("💾 Storing file metadata in database...");
+      const result = await storeInDatabase({
+        type: validationResult.fileType!.mime.startsWith("image/") ? "image" : "document",
         ownerId: allUser.id,
         url,
         file,
         metadata: validationResult.metadata!,
       });
-      console.log("Memory stored successfully");
+      console.log("✅ File metadata stored successfully");
 
       return NextResponse.json({
-        ...memoryResult,
-        temporaryUserId: temporaryUser.id,
+        ...result,
+        ownerId: allUser.id,
       });
     } catch (dbError) {
-      console.error("Database error:", dbError);
+      console.error("❌ Database error:", dbError);
       return NextResponse.json(
         {
-          error: "Database operation failed",
+          error: "Failed to store file metadata",
           step: "database",
           details: dbError instanceof Error ? dbError.message : String(dbError),
         },
@@ -105,11 +96,10 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error) {
-    console.error("Unexpected error:", error);
+    console.error("❌ Unexpected error:", error);
     return NextResponse.json(
       {
-        error: "Internal server error",
-        step: "unknown",
+        error: "Unexpected error occurred",
         details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }

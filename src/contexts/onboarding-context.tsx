@@ -1,8 +1,14 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
-interface TempFile {
+// Add these constants at the top of the file
+const ONBOARDING_STATE_KEY = "onboarding_state";
+const ONBOARDING_STEP_KEY = "onboarding_step";
+
+export type OnboardingStatus = "not_started" | "in_progress" | "completed";
+
+export interface TempFile {
   url: string;
   file: File;
   uploadedAt: Date;
@@ -19,6 +25,8 @@ interface OnboardingContextType {
   clearFiles: () => void;
   currentStep: OnboardingStep;
   setCurrentStep: (step: OnboardingStep) => void;
+  onboardingStatus: OnboardingStatus;
+  setOnboardingStatus: (status: OnboardingStatus) => void;
   userData: {
     name: string;
     email: string;
@@ -26,10 +34,12 @@ interface OnboardingContextType {
     recipientEmail: string;
     relationship: string;
     familyRelationship: string;
-    allUserId?: string; // ID from the allUsers table
-    isTemporary: boolean; // Whether the current user is temporary
+    allUserId?: string;
+    isTemporary: boolean;
+    memoryId?: string;
   };
   updateUserData: (data: Partial<OnboardingContextType["userData"]>) => void;
+  clearOnboardingState: () => void;
 }
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined);
@@ -37,6 +47,7 @@ const OnboardingContext = createContext<OnboardingContextType | undefined>(undef
 export function OnboardingProvider({ children }: { children: React.ReactNode }) {
   const [files, setFiles] = useState<TempFile[]>([]);
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("upload");
+  const [onboardingStatus, setOnboardingStatus] = useState<OnboardingStatus>("not_started");
   const [userData, setUserData] = useState({
     name: "",
     email: "",
@@ -44,9 +55,49 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
     recipientEmail: "",
     relationship: "",
     familyRelationship: "",
-    isTemporary: true, // Default to true since most onboarding users start as temporary
+    isTemporary: true,
     allUserId: undefined as string | undefined,
+    memoryId: undefined as string | undefined,
   });
+
+  // Load state from localStorage on mount
+  useEffect(() => {
+    const savedState = localStorage.getItem(ONBOARDING_STATE_KEY);
+    const savedStep = localStorage.getItem(ONBOARDING_STEP_KEY);
+
+    if (savedState && savedStep) {
+      try {
+        const state = JSON.parse(savedState);
+        if (state.userData) {
+          setUserData(state.userData);
+        }
+        if (state.onboardingStatus) {
+          setOnboardingStatus(state.onboardingStatus);
+        }
+        if (savedStep as OnboardingStep) {
+          setCurrentStep(savedStep as OnboardingStep);
+        }
+      } catch (error) {
+        console.error("Error loading onboarding state:", error);
+      }
+    }
+  }, []);
+
+  // Save state to localStorage when it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        ONBOARDING_STATE_KEY,
+        JSON.stringify({
+          userData,
+          onboardingStatus,
+        })
+      );
+      localStorage.setItem(ONBOARDING_STEP_KEY, currentStep);
+    } catch (error) {
+      console.error("Error saving onboarding state:", error);
+    }
+  }, [currentStep, userData, onboardingStatus]);
 
   // Update user data - using functional update pattern
   const updateUserData = (update: Partial<typeof userData> | ((prev: typeof userData) => Partial<typeof userData>)) => {
@@ -76,6 +127,12 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
     setFiles([]);
   };
 
+  // Clear onboarding state
+  const clearOnboardingState = () => {
+    localStorage.removeItem(ONBOARDING_STATE_KEY);
+    localStorage.removeItem(ONBOARDING_STEP_KEY);
+  };
+
   return (
     <OnboardingContext.Provider
       value={{
@@ -85,8 +142,11 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         clearFiles,
         currentStep,
         setCurrentStep,
+        onboardingStatus,
+        setOnboardingStatus,
         userData,
         updateUserData,
+        clearOnboardingState,
       }}
     >
       {children}

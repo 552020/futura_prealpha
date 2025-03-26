@@ -2,6 +2,7 @@ import { db } from "@/db/db";
 import { DBDocument, DBImage, documents, images } from "@/db/schema";
 import { put } from "@vercel/blob";
 import { fileTypeFromBuffer } from "file-type";
+import crypto from "crypto";
 
 // Constants
 export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -75,6 +76,9 @@ export async function storeInDatabase(params: {
 }) {
   const { type, ownerId, url, file, metadata } = params;
 
+  // Generate a secure code for the owner
+  const ownerSecureCode = crypto.randomUUID();
+
   if (type === "image") {
     const [image] = await db
       .insert(images)
@@ -84,6 +88,7 @@ export async function storeInDatabase(params: {
         title: file.name.split(".")[0],
         isPublic: false,
         metadata,
+        ownerSecureCode,
       })
       .returning();
     return { type: "image", data: image };
@@ -98,6 +103,7 @@ export async function storeInDatabase(params: {
         size: metadata.size.toString(),
         isPublic: false,
         metadata,
+        ownerSecureCode,
       })
       .returning();
     return { type: "document", data: document };

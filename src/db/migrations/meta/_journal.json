@@ -50,6 +50,13 @@
       "when": 1742911704924,
       "tag": "0006_last_the_phantom",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1742991845753,
+      "tag": "0007_ordinary_joseph",
+      "breakpoints": true
     }
   ]
 }

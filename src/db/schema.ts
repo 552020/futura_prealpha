@@ -256,6 +256,7 @@ export const images = pgTable("image", {
   isPublic: boolean("is_public").default(false),
   title: text("title"),
   description: text("description"),
+  ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
   metadata: json("metadata").$type<ImageMetadata>().default({
     size: 0,
     mimeType: "",
@@ -276,6 +277,7 @@ export const notes = pgTable("note", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   isPublic: boolean("is_public").default(false),
+  ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
   metadata: json("metadata")
     .$type<{
       tags?: string[];
@@ -302,6 +304,7 @@ export const documents = pgTable("document", {
   size: text("size").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   isPublic: boolean("is_public").default(false),
+  ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
   metadata: json("metadata").$type<CommonFileMetadata>().default({
     size: 0,
     mimeType: "",
@@ -351,6 +354,8 @@ export const memoryShares = pgTable("memory_share", {
     .references(() => allUsers.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   accessLevel: text("access_level", { enum: ACCESS_LEVELS }).default("read").notNull(),
+  inviteeSecureCode: text("invitee_secure_code").notNull(), // For invitee to access the memory
+  inviteeSecureCodeCreatedAt: timestamp("secure_code_created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
 export const group = pgTable("group", {
