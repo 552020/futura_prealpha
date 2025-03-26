@@ -77,25 +77,26 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
       // Update user data with IDs
       if (isOnboarding) {
         console.log("👤 Updating user data with:", {
-          allUserId: data.ownerId,
-          memoryId: data.id,
+          allUserId: data.data.ownerId,
+          memoryId: data.data.id,
         });
 
         updateUserData({
-          allUserId: data.ownerId,
+          allUserId: data.data.ownerId,
           isTemporary: !session,
-          memoryId: data.id,
+          memoryId: data.data.id,
         });
 
         // Add file to context without user data
-        console.log("📝 Adding file to onboarding context");
-        addOnboardingFile({
+        const fileToAdd = {
           url,
           file,
           uploadedAt: new Date(),
-          memoryId: data.id,
+          memoryId: data.data.id,
           fileType: file.type,
-        });
+        };
+        console.log("📝 Adding file to onboarding context:", fileToAdd);
+        addOnboardingFile(fileToAdd);
 
         // Set the current step to user-info after successful upload
         console.log("🔄 Setting current step to user-info");

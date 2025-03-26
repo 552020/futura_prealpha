@@ -30,57 +30,67 @@ type ShareRequest = {
   relationship?: RelationshipInfo;
   sendEmail?: boolean;
   isInviteeNew?: boolean;
+  isOnboarding?: boolean;
+  ownerAllUserId?: string;
 };
 
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id: memoryId } = await context.params;
 
-  const session = await auth();
-  const isOnboarding = !session?.user?.id;
-
   try {
+    const body = (await request.json()) as ShareRequest;
+    console.log("📨 Share request body:", body);
+
+    const {
+      target,
+      relationship: relationshipInfo,
+      sendEmail = false,
+      isInviteeNew = false,
+      isOnboarding = false,
+      ownerAllUserId,
+    } = body;
+
     // Find the memory first
     const memory = await findMemory(memoryId);
+    console.log("🔍 Found memory:", { exists: !!memory, id: memoryId });
     if (!memory) {
       return NextResponse.json({ error: "Memory not found" }, { status: 404 });
     }
 
-    const body = (await request.json()) as ShareRequest;
-    const { target, relationship: relationshipInfo, sendEmail = false, isInviteeNew = false } = body;
-
-    if (target.type === "group") {
-      // TODO: Implement group sharing
-      return NextResponse.json({ error: "Group sharing not implemented" }, { status: 501 });
-    }
-
-    // For onboarding users, we need to check if they exist in allUsers and are temporary
+    // Handle authentication differently for onboarding vs regular flow
+    let authenticatedUserId: string | undefined;
     if (isOnboarding) {
-      const user = await db.query.allUsers.findFirst({
-        where: eq(allUsers.id, target.allUserId!),
+      console.log("👤 Onboarding flow - checking owner:", ownerAllUserId);
+      if (!ownerAllUserId) {
+        return NextResponse.json({ error: "Owner ID required for onboarding" }, { status: 400 });
+      }
+      // For onboarding, verify the owner exists in allUsers
+      const owner = await db.query.allUsers.findFirst({
+        where: eq(allUsers.id, ownerAllUserId),
       });
-
-      if (!user || user.type !== "temporary") {
+      console.log("👤 Found owner:", { exists: !!owner, type: owner?.type });
+      if (!owner || owner.type !== "temporary") {
         return NextResponse.json({ error: "Invalid onboarding user" }, { status: 401 });
       }
-    }
-
-    // Get the owner's allUserId
-    let ownerAllUserId: string;
-    if (isOnboarding) {
-      ownerAllUserId = target.allUserId!;
+      authenticatedUserId = ownerAllUserId;
     } else {
+      // Regular flow - require authentication
+      const session = await auth();
+      if (!session?.user?.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
       const owner = await db.query.allUsers.findFirst({
         where: eq(allUsers.userId, session.user.id),
       });
       if (!owner) {
         return NextResponse.json({ error: "Owner not found" }, { status: 404 });
       }
-      ownerAllUserId = owner.id;
+      authenticatedUserId = owner.id;
     }
 
-    // Check ownership
-    if (memory.data.ownerId !== ownerAllUserId) {
-      return NextResponse.json({ error: "Only the owner can share this memory" }, { status: 403 });
+    if (target.type === "group") {
+      // TODO: Implement group sharing
+      return NextResponse.json({ error: "Group sharing not implemented" }, { status: 501 });
     }
 
     // Check if target user exists in allUsers
@@ -92,6 +102,11 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
       return NextResponse.json({ error: "Target user not found" }, { status: 404 });
     }
 
+    // Check ownership
+    if (memory.data.ownerId !== authenticatedUserId) {
+      return NextResponse.json({ error: "Only the owner can share this memory" }, { status: 403 });
+    }
+
     // Get user's email based on type
     let userEmail: string | undefined;
     if (targetUser.type === "user" && targetUser.userId) {
@@ -99,16 +114,28 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
         where: eq(users.id, targetUser.userId),
       });
       userEmail = permanentUser?.email ?? undefined;
+      console.log("📧 Found permanent user email:", { email: userEmail, userId: targetUser.userId });
     } else if (targetUser.type === "temporary" && targetUser.temporaryUserId) {
       const temporaryUser = await db.query.temporaryUsers.findFirst({
         where: eq(temporaryUsers.id, targetUser.temporaryUserId),
       });
       userEmail = temporaryUser?.email ?? undefined;
+      console.log("📧 Found temporary user email:", {
+        email: userEmail,
+        temporaryUserId: targetUser.temporaryUserId,
+        temporaryUser: {
+          id: temporaryUser?.id,
+          email: temporaryUser?.email,
+          name: temporaryUser?.name,
+        },
+      });
     }
 
     if (!userEmail) {
+      console.error("❌ User email not found:", { targetUser });
       return NextResponse.json({ error: "User email not found" }, { status: 404 });
     }
+    console.log("📧 Will send email to:", { userEmail, isInviteeNew });
 
     // Create share record
     const [share] = await db
@@ -135,9 +162,9 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     // Send email if requested
     if (sendEmail && target.type === "user") {
       if (isInviteeNew) {
-        await sendInvitationEmail(userEmail, memory, memory.data.ownerId, { useTemplate: true });
+        await sendInvitationEmail(userEmail, memory, memory.data.ownerId, { useTemplate: false });
       } else {
-        await sendSharedMemoryEmail(userEmail, memory, memory.data.ownerId, inviteeMagicLink, { useTemplate: true });
+        await sendSharedMemoryEmail(userEmail, memory, memory.data.ownerId, inviteeMagicLink, { useTemplate: false });
       }
     }
 
@@ -147,8 +174,18 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
       inviteeMagicLink,
     });
   } catch (error) {
-    console.error("Error sharing memory:", error);
-    return NextResponse.json({ error: "Failed to share memory" }, { status: 500 });
+    console.error("🔴 Error sharing memory:", {
+      error,
+      stack: error instanceof Error ? error.stack : undefined,
+      message: error instanceof Error ? error.message : String(error),
+    });
+    return NextResponse.json(
+      {
+        error: "Failed to share memory",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -186,7 +223,6 @@ async function createRelationship(
       familyRole: relationshipInfo.familyRole,
       relationshipClarity: "fuzzy", // Default to fuzzy as per schema
       createdAt: new Date(),
-      // sharedAncestorId: null, // Can be updated later when resolved
     });
   }
 

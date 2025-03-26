@@ -110,18 +110,37 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
   // Add a file
   const addFile = (file: TempFile) => {
-    setFiles((prev) => [...prev, file]);
+    console.log("📥 Adding file to context:", {
+      file,
+      currentFiles: files,
+    });
+    setFiles((prev) => {
+      const newFiles = [...prev, file];
+      console.log("📦 Updated files in context:", newFiles);
+      return newFiles;
+    });
   };
 
   // Remove a file by URL
   const removeFile = (url: string) => {
+    console.log("🗑️ Removing file from context:", {
+      url,
+      currentFiles: files,
+    });
     // Revoke the object URL to prevent memory leaks
     URL.revokeObjectURL(url);
-    setFiles((prev) => prev.filter((f) => f.url !== url));
+    setFiles((prev) => {
+      const newFiles = prev.filter((f) => f.url !== url);
+      console.log("📦 Updated files in context after removal:", newFiles);
+      return newFiles;
+    });
   };
 
   // Clear all files
   const clearFiles = () => {
+    console.log("🧹 Clearing all files from context:", {
+      currentFiles: files,
+    });
     // Revoke all object URLs
     files.forEach((file) => URL.revokeObjectURL(file.url));
     setFiles([]);

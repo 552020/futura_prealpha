@@ -62,8 +62,24 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
 
       case "share":
         try {
+          // Add debug logs
+          console.log("🔍 Files in share step:", {
+            filesLength: files.length,
+            files: files.map((f) => ({
+              url: f.url,
+              memoryId: f.memoryId,
+              type: f.fileType,
+            })),
+          });
+
           // Get the last uploaded file's memoryId
           const lastUploadedFile = files[files.length - 1];
+          console.log("📄 Last uploaded file:", {
+            exists: !!lastUploadedFile,
+            memoryId: lastUploadedFile?.memoryId,
+            type: lastUploadedFile?.fileType,
+          });
+
           if (!lastUploadedFile?.memoryId) {
             throw new Error("Memory ID not found");
           }
@@ -103,30 +119,39 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
             body: JSON.stringify({
               target: {
                 type: "user",
-                id: recipientAllUser.id,
-              },
-              method: {
-                type: "email",
-                email: userData.recipientEmail,
-                name: userData.recipientName,
+                allUserId: recipientAllUser.id,
               },
               relationship: {
                 type: userData.relationship,
                 ...(userData.relationship === "family" && {
                   familyRole: userData.familyRelationship,
                 }),
+                note: "Invited during onboarding",
               },
+              sendEmail: true,
+              isInviteeNew: true,
+              isOnboarding: true,
+              ownerAllUserId: userData.allUserId,
             }),
           });
 
           if (!shareResponse.ok) {
-            const error = await shareResponse.json();
-            throw new Error(error.error || "Failed to share memory");
+            const errorData = await shareResponse.json();
+            console.error("Share response error:", {
+              status: shareResponse.status,
+              statusText: shareResponse.statusText,
+              errorData,
+            });
+            throw new Error(errorData.error || errorData.details || "Failed to share memory");
           }
 
           setCurrentStep("sign-up");
         } catch (error) {
-          console.error("Error in share step:", error);
+          console.error("Error in share step:", {
+            error,
+            message: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+          });
           toast({
             variant: "destructive",
             title: "Error",
