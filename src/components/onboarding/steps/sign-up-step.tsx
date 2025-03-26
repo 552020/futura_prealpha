@@ -25,10 +25,11 @@ export function SignUpStep({ onBack }: SignUpStepProps) {
   };
 
   return (
-    <StepContainer
-      title="Create your account"
-      description="Choose your preferred way to sign up and access your memories"
-    >
+    // <StepContainer
+    //   title="Create your account"
+    //   description="Choose your preferred way to sign up and access your memories"
+    // >
+    <StepContainer>
       <div className="grid gap-4">
         <Button variant="outline" className="gap-2" onClick={handleGithubSignIn}>
           <Github className="h-4 w-4" />

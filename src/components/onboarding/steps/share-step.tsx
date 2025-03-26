@@ -45,7 +45,8 @@ export function ShareStep({ onNext, onBack }: ShareStepProps) {
   };
 
   return (
-    <StepContainer title="Share your memory" description="Choose who you want to share this memory with">
+    // <StepContainer title="Share your memory" description="Choose who you want to share this memory with">
+    <StepContainer>
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="recipientName">Their Name</Label>
