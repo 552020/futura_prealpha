@@ -36,21 +36,47 @@
   - [x] Link memory to `all_users` via a new `all_user` record
   - [x] Trigger modal flow after successful upload
 
+- [x] Component Refactoring:
+
+  - [x] Split monolithic onboard-modal into smaller components:
+    - [x] Create `steps/` directory for step components
+    - [x] Extract `UserInfoStep` component
+    - [x] Extract `ShareStep` component
+    - [x] Extract `SignUpStep` component
+  - [x] Improve component organization:
+    - [x] Move step-specific logic into respective components
+    - [x] Implement proper prop typing for each component
+    - [x] Add proper state management within steps
+    - [x] Maintain focus handling in form inputs
+
 - [ ] Modal Flow:
-  - [ ] First Screen: Collect name + email
-    - [ ] Update the `temporary_user` record with name and email
-    - [ ] Allow optional signup/auth
-  - [ ] Second Screen: Share memory
-    - [ ] Create a new `temporary_user` with role `invitee`
-    - [ ] Create corresponding `all_user` entry
-    - [ ] Link to inviter via `invitedById`
+  - [x] First Screen: Collect name + email
+    - [x] Update the `temporary_user` record with name and email
+    - [x] Allow optional signup/auth
+  - [x] Second Screen: Share memory
+    - [x] Create a new `temporary_user` with role `invitee`
+    - [x] Create corresponding `all_user` entry
+    - [x] Link to inviter via `invitedById`
+    - [x] Send share email without using templates
   - [x] Third Screen: Auth (optional)
     - [x] If user signs up with Google, detect matching `temporary_user` by email
     - [x] In `createUser` event (in `auth.ts`):
       - [x] Migrate ownership of memories from `temporary_user` → new user
       - [x] Remove `temporary_user` record
       - [x] Update `all_users` references
-      - [ ] Send share email
+      - [x] Send share email
+
+#### 📨 Email Sending Implementation
+
+- [x] Implement basic email sending with Mailgun
+  - [x] Set up Mailgun configuration
+  - [x] Add proper error handling and logging
+  - [x] Use simple text/HTML format instead of templates
+  - [x] Verify email delivery to different providers (posteo.de, gmail.com)
+- [ ] Future improvements:
+  - [ ] Set up proper DNS records for better Gmail deliverability
+  - [ ] Create and test Mailgun templates
+  - [ ] Add email tracking and bounce handling
 
 #### 📨 Fallback Email Logic
 
