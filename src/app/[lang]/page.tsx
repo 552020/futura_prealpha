@@ -23,7 +23,7 @@ export default async function LangPage({ params }: PageProps) {
   const dict = await getDictionary(resolvedParams.lang, { segment });
 
   return (
-    <main>
+    <main className="bg-white dark:bg-[#0A0A0B]">
       <Hero dict={dict} lang={resolvedParams.lang} />
       <ValueJourney dict={dict} lang={resolvedParams.lang} segment={segment} />
     </main>
