@@ -130,7 +130,12 @@ export type FAQDictionary = {
 };
 
 // Combined dictionary type that includes all content types
-export type Dictionary = BaseDictionary & ValueJourneyDictionary & AboutDictionary & FAQDictionary;
+export type Dictionary = BaseDictionary &
+  ValueJourneyDictionary &
+  AboutDictionary &
+  FAQDictionary & {
+    [key: string]: any;
+  };
 
 const dictionaries: Record<string, () => Promise<BaseDictionary>> = {
   en: () => import("../app/[lang]/dictionaries/base/en.json").then((module) => module.default),
