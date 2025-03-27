@@ -26,12 +26,17 @@ export type BaseDictionary = {
     subtitle?: string;
     learnMore?: string;
     startHere?: string;
+    now?: string;
+    startNow?: string;
+    arrowSymbol?: string;
   };
   header?: {
     signIn?: string;
   };
   nav?: {
     about?: string;
+    blog?: string;
+    merch?: string;
     profile?: string;
     settings?: string;
     getStarted?: string;

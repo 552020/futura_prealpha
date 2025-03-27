@@ -26,7 +26,7 @@ function Hero({ dict, lang }: HeroProps) {
         >
           <h1
             className="text-center font-black font-bold leading-none text-neutral-900 dark:text-white"
-            style={{ fontSize: `calc(147vw / ${"Futura".length})` }}
+            style={{ fontSize: `calc(147vw / ${(dict?.hero?.title || "Futura").length})` }}
           >
             {dict?.hero?.title || "Futura"}
           </h1>
@@ -39,9 +39,9 @@ function Hero({ dict, lang }: HeroProps) {
         >
           <p
             className="text-center font-normal text-neutral-900 dark:text-white"
-            style={{ fontSize: `calc(160vw / ${"Live Forever. Now!".length})` }}
+            style={{ fontSize: `calc(160vw / ${(dict?.hero?.subtitle || "Live Forever. Now!").length})` }}
           >
-            Live Forever. Now!
+            {dict?.hero?.subtitle || "Live Forever. Now!"}
           </p>
         </div>
 
@@ -70,7 +70,7 @@ function Hero({ dict, lang }: HeroProps) {
                 href={`/${currentLang}/onboarding/items-upload`}
                 className="relative w-24 h-24 rounded-full bg-black hover:bg-white dark:bg-white dark:hover:bg-black flex items-center justify-center cursor-pointer text-white hover:text-black dark:text-black dark:hover:text-white border-2 border-transparent hover:border-black dark:hover:border-white transition-all text-xl font-bold"
               >
-                Now
+                {dict?.hero?.now || "Now"}
               </Link>
             </div>
           </div>
@@ -83,8 +83,9 @@ function Hero({ dict, lang }: HeroProps) {
             <Link
               href={`/${currentLang}/onboarding/items-upload`}
               className="relative w-24 h-24 rounded-full bg-neutral-900 hover:bg-white dark:bg-white dark:hover:bg-neutral-900 flex items-center justify-center cursor-pointer text-white hover:text-neutral-900 dark:text-neutral-900 dark:hover:text-white border-2 border-transparent hover:border-neutral-900 dark:hover:border-white transition-all text-4xl font-bold"
+              aria-label={dict?.hero?.startNow || "Start Now"}
             >
-              →
+              {dict?.hero?.arrowSymbol || "→"}
             </Link>
           </div>
         </div>
@@ -97,7 +98,7 @@ function Hero({ dict, lang }: HeroProps) {
                 href={`/${currentLang}/onboarding/items-upload`}
                 className="relative w-20 h-20 rounded-full bg-black hover:bg-white dark:bg-white dark:hover:bg-black flex items-center justify-center cursor-pointer text-white hover:text-black dark:text-black dark:hover:text-white border-2 border-transparent hover:border-black dark:hover:border-white transition-all"
               >
-                Now
+                {dict?.hero?.now || "Now"}
               </Link>
             </div>
           </div>

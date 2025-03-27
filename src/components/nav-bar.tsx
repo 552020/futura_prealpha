@@ -1,52 +1,67 @@
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Dictionary } from "@/utils/dictionaries";
+import { validateTranslations } from "@/components/utils/translation-validation";
+import { cn } from "@/lib/utils";
 
 type NavBarProps = {
-  mode?: string;
+  mode: "marketing" | "app";
   lang: string;
-  dict?: Dictionary;
+  dict: Dictionary;
   className?: string;
 };
 
-export function NavBar({ mode, lang, dict, className }: NavBarProps) {
-  // Check if we're in a mobile context (passed via className)
-  const isMobile = className?.includes("mobile") || false;
+export default function NavBar({ mode, lang, dict, className }: NavBarProps) {
+  const pathname = usePathname();
 
-  // Check for missing translations and log warnings in development
-  if (process.env.NODE_ENV === "development") {
-    if (!dict?.nav?.about) {
-      console.warn(`[i18n] Missing translation for "navigation.about" in locale "${lang}". Using fallback: "About"`);
-    }
-    if (!dict?.nav?.faq) {
-      console.warn(`[i18n] Missing translation for "navigation.faq" in locale "${lang}". Using fallback: "FAQ"`);
-    }
+  // Validate translations
+  if (mode === "marketing") {
+    validateTranslations(dict, lang, "nav");
   }
 
   return mode === "marketing" ? (
     <>
-      <Link
-        href={`/${lang}/about`}
-        className={`text-sm font-medium transition-colors hover:text-primary ${isMobile ? "py-2 text-base" : ""}`}
-      >
-        {dict?.nav?.about || "About"}
-      </Link>
-      <Link
-        href={`/${lang}/faq`}
-        className={`text-sm font-medium transition-colors hover:text-primary ${isMobile ? "py-2 text-base" : ""}`}
-      >
-        {dict?.nav?.faq || "FAQ"}
-      </Link>
+      {[
+        { href: "/about", label: dict[lang]?.nav?.about || "About" },
+        { href: "/journal", label: dict[lang]?.nav?.journal || "Journal" },
+        { href: "/merch", label: dict[lang]?.nav?.merch || "Merch" },
+        { href: "/faq", label: dict[lang]?.nav?.faq || "FAQ" },
+      ].map((item) => (
+        <Link
+          key={item.href}
+          href={`/${lang}${item.href}`}
+          className={cn(
+            "transition-all duration-200 ease-in-out px-2 py-2",
+            "hover:text-primary hover:bg-muted rounded-md",
+            "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+            className === "mobile" ? "text-lg w-full flex items-center" : "text-sm",
+            pathname === `/${lang}${item.href}` ? "font-semibold text-primary bg-muted" : "text-muted-foreground"
+          )}
+        >
+          {item.label}
+        </Link>
+      ))}
     </>
   ) : (
-    // App navigation items
-    // TODO: add the about we removed from here in the footer
     <>
-      <Link href={`/${lang}/vault`} className="hover:text-primary">
-        Vault
-      </Link>
-      <Link href={`/${lang}/feed`} className="hover:text-primary">
-        Feed
-      </Link>
+      {[
+        { href: "/dashboard", label: dict[lang]?.nav?.dashboard || "Dashboard" },
+        { href: "/settings", label: dict[lang]?.nav?.settings || "Settings" },
+      ].map((item) => (
+        <Link
+          key={item.href}
+          href={`/${lang}${item.href}`}
+          className={cn(
+            "transition-all duration-200 ease-in-out px-2 py-2",
+            "hover:text-primary hover:bg-muted rounded-md",
+            "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+            className === "mobile" ? "text-lg w-full flex items-center" : "text-sm",
+            pathname === `/${lang}${item.href}` ? "font-semibold text-primary bg-muted" : "text-muted-foreground"
+          )}
+        >
+          {item.label}
+        </Link>
+      ))}
     </>
   );
 }
