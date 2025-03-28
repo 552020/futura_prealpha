@@ -315,7 +315,6 @@ export const documents = pgTable("document", {
 
 export const MEMORY_TYPES = ["image", "document", "note"] as const;
 export const ACCESS_LEVELS = ["read", "write"] as const;
-export const GROUP_TYPES = ["family", "friends", "work", "custom"] as const;
 export const MEMBER_ROLES = ["admin", "member"] as const;
 
 export const RELATIONSHIP_TYPES = ["friend", "colleague", "acquaintance", "family", "other"] as const;
@@ -358,6 +357,10 @@ export const memoryShares = pgTable("memory_share", {
   inviteeSecureCodeCreatedAt: timestamp("secure_code_created_at", { mode: "date" }).notNull().defaultNow(),
 });
 
+// This table is for shared groups where all members see the same group composition
+// (e.g., book clubs, work teams, shared family groups).
+// For personal 'groups' like friend lists, use the relationship table instead,
+// querying with type='friend' and status='accepted' to get a user's friends.
 export const group = pgTable("group", {
   id: text("id")
     .primaryKey()
@@ -366,11 +369,10 @@ export const group = pgTable("group", {
   ownerId: text("owner_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  createdAt: timestamp("created_at").defaultNow().notNull(), // Added this
+  createdAt: timestamp("created_at").defaultNow().notNull(),
   metadata: json("metadata")
     .$type<{
       description?: string;
-      type?: (typeof GROUP_TYPES)[number];
     }>()
     .default({}),
 });
@@ -527,7 +529,6 @@ export type NewDBGroupMember = typeof groupMember.$inferInsert;
 // Type helpers for the enums
 export type MemoryType = (typeof MEMORY_TYPES)[number];
 export type AccessLevel = (typeof ACCESS_LEVELS)[number];
-export type GroupType = (typeof GROUP_TYPES)[number];
 export type MemberRole = (typeof MEMBER_ROLES)[number];
 
 export type DBRelationship = typeof relationship.$inferSelect;
