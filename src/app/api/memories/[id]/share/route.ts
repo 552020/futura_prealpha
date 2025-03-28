@@ -5,7 +5,7 @@ import { memoryShares, relationship, familyRelationship, allUsers, users, tempor
 import { findMemory } from "../../utils";
 import { eq, and } from "drizzle-orm";
 import { sendInvitationEmail, sendSharedMemoryEmail } from "@/app/api/memories/utils";
-import type { RelationshipType, FamilyRelationshipRole } from "@/db/schema";
+import type { RelationshipType, FamilyRelationshipType } from "@/db/schema";
 import crypto from "crypto";
 
 // Dummy function for generating secure code
@@ -21,7 +21,7 @@ type ShareTarget = {
 
 type RelationshipInfo = {
   type: RelationshipType;
-  familyRole?: FamilyRelationshipRole; // Only if type is "family"
+  familyRole?: FamilyRelationshipType; // Only if type is "family"
   note?: string;
 };
 

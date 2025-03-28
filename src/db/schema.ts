@@ -242,6 +242,11 @@ export type ImageMetadata = CommonFileMetadata & {
   dimensions?: { width: number; height: number };
 };
 
+// Type for flexible user-defined metadata
+export type CustomMetadata = {
+  [key: string]: string | number | boolean | null;
+};
+
 // Application tables
 export const images = pgTable("image", {
   id: text("id")
@@ -257,12 +262,18 @@ export const images = pgTable("image", {
   title: text("title"),
   description: text("description"),
   ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
-  metadata: json("metadata").$type<ImageMetadata>().default({
-    size: 0,
-    mimeType: "",
-    originalName: "",
-    uploadedAt: new Date().toISOString(),
-  }),
+  metadata: json("metadata")
+    .$type<
+      ImageMetadata & {
+        custom?: CustomMetadata; // For flexible user-defined annotations
+      }
+    >()
+    .default({
+      size: 0,
+      mimeType: "",
+      originalName: "",
+      uploadedAt: new Date().toISOString(),
+    }),
 });
 
 export const notes = pgTable("note", {
@@ -286,6 +297,7 @@ export const notes = pgTable("note", {
       dateOfMemory?: string;
       recipients?: string[];
       unlockDate?: string;
+      custom?: CustomMetadata; // For flexible user-defined annotations
     }>()
     .default({}),
 });
@@ -305,25 +317,44 @@ export const documents = pgTable("document", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   isPublic: boolean("is_public").default(false),
   ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
-  metadata: json("metadata").$type<CommonFileMetadata>().default({
-    size: 0,
-    mimeType: "",
-    originalName: "",
-    uploadedAt: new Date().toISOString(),
-  }),
+  metadata: json("metadata")
+    .$type<
+      CommonFileMetadata & {
+        custom?: CustomMetadata; // For flexible user-defined annotations
+      }
+    >()
+    .default({
+      size: 0,
+      mimeType: "",
+      originalName: "",
+      uploadedAt: new Date().toISOString(),
+    }),
 });
 
 export const MEMORY_TYPES = ["image", "document", "note"] as const;
 export const ACCESS_LEVELS = ["read", "write"] as const;
 export const MEMBER_ROLES = ["admin", "member"] as const;
 
+// Types of relationships between users (e.g., brother, aunt, friend)
 export const RELATIONSHIP_TYPES = ["friend", "colleague", "acquaintance", "family", "other"] as const;
 export type RelationshipType = (typeof RELATIONSHIP_TYPES)[number];
+
+// Types of sharing relationships (based on trust/proximity)
+export const SHARING_RELATIONSHIP_TYPES = [
+  "close_family", // e.g., parents, siblings
+  "family", // extended family
+  "partner", // romantic partner
+  "close_friend", // trusted friends
+  "friend", // regular friends
+  "colleague", // work relationships
+  "acquaintance", // casual relationships
+] as const;
+export type SharingRelationshipType = (typeof SHARING_RELATIONSHIP_TYPES)[number];
 
 export const RELATIONSHIP_STATUS = ["pending", "accepted", "declined"] as const;
 export type RelationshipStatus = (typeof RELATIONSHIP_STATUS)[number];
 
-export const FAMILY_RELATIONSHIP_ROLES = [
+export const FAMILY_RELATIONSHIP_TYPES = [
   "parent",
   "child",
   "sibling",
@@ -336,8 +367,16 @@ export const FAMILY_RELATIONSHIP_ROLES = [
   "extended_family",
   "other",
 ] as const;
-export type FamilyRelationshipRole = (typeof FAMILY_RELATIONSHIP_ROLES)[number];
+export type FamilyRelationshipType = (typeof FAMILY_RELATIONSHIP_TYPES)[number];
 
+// This table supports three types of sharing:
+// 1. Direct user sharing (sharedWithId)
+// 2. Group sharing (groupId)
+// 3. Relationship-based sharing (sharedRelationshipType)
+// Only one of these sharing methods should be used per record.
+// Relationship-based sharing is dynamic - access is determined by current relationships
+// rather than static lists, making it more maintainable and accurate.
+// Note: Application logic must enforce that exactly one of sharedWithId, groupId, or sharedRelationshipType is set.
 export const memoryShares = pgTable("memory_share", {
   id: text("id")
     .primaryKey()
@@ -347,14 +386,24 @@ export const memoryShares = pgTable("memory_share", {
   ownerId: text("owner_id") // The user who originally created (or owns) the memory
     .notNull()
     .references(() => allUsers.id, { onDelete: "cascade" }),
-  sharedWithType: text("shared_with_type").notNull(), // "user" or "group"
-  sharedWithId: text("shared_with_id") // ID of the user or group the memory is shared with
-    .notNull()
+
+  sharedWithType: text("shared_with_type", {
+    enum: ["user", "group", "relationship"],
+  }).notNull(),
+
+  sharedWithId: text("shared_with_id") // For direct user sharing
     .references(() => allUsers.id, { onDelete: "cascade" }),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  groupId: text("group_id") // For group sharing
+    .references(() => group.id, { onDelete: "cascade" }),
+  sharedRelationshipType: text("shared_relationship_type", {
+    // For relationship-based sharing
+    enum: SHARING_RELATIONSHIP_TYPES,
+  }),
+
   accessLevel: text("access_level", { enum: ACCESS_LEVELS }).default("read").notNull(),
   inviteeSecureCode: text("invitee_secure_code").notNull(), // For invitee to access the memory
   inviteeSecureCodeCreatedAt: timestamp("secure_code_created_at", { mode: "date" }).notNull().defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // This table is for shared groups where all members see the same group composition
@@ -422,7 +471,7 @@ export const familyRelationship = pgTable("family_relationship", {
   relationshipId: text("relationship_id")
     .notNull()
     .references(() => relationship.id, { onDelete: "cascade" }),
-  familyRole: text("family_role", { enum: FAMILY_RELATIONSHIP_ROLES }).notNull(),
+  familyRole: text("family_role", { enum: FAMILY_RELATIONSHIP_TYPES }).notNull(),
   // New: Fuzziness Indicator
   relationshipClarity: text("relationship_clarity", {
     enum: ["resolved", "fuzzy"],
@@ -461,7 +510,7 @@ export const familyMember = pgTable(
 
     // Fuzzy relationships: an array of strings (e.g. ["grandfather"])
     // Requires Postgres array support via pgArray.
-    fuzzyRelationships: text("fuzzy_relationships", { enum: FAMILY_RELATIONSHIP_ROLES }).array().notNull().default([]),
+    fuzzyRelationships: text("fuzzy_relationships", { enum: FAMILY_RELATIONSHIP_TYPES }).array().notNull().default([]),
 
     // Additional details for the family member
     birthDate: timestamp("birth_date", { mode: "date" }),
