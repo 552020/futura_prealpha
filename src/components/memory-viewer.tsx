@@ -1,6 +1,6 @@
 "use client";
 
-import { type MemoryWithType } from "@/app/api/memories/utils";
+import { type MemoryWithType } from "@/app/api/memories/utils/memory";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { Download, Edit, Trash } from "lucide-react";

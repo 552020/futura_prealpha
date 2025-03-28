@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db/db";
 import { memoryShares, relationship, familyRelationship, allUsers, users, temporaryUsers } from "@/db/schema";
-import { findMemory } from "../../utils";
+import { findMemory } from "@/app/api/memories/utils/memory";
 import { eq, and } from "drizzle-orm";
-import { sendInvitationEmail, sendSharedMemoryEmail } from "@/app/api/memories/utils";
+import { sendInvitationEmail, sendSharedMemoryEmail } from "@/app/api/memories/utils/email";
 import type { RelationshipType, FamilyRelationshipType } from "@/db/schema";
 import crypto from "crypto";
 

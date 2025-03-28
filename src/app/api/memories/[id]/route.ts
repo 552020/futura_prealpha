@@ -4,7 +4,7 @@ import { db } from "@/db/db";
 import { eq } from "drizzle-orm";
 import { documents, images, notes } from "@/db/schema";
 import type { DBImage, DBDocument, DBNote } from "@/db/schema";
-import { findMemory } from "@/app/api/memories/utils";
+import { findMemory } from "@/app/api/memories/utils/memory";
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
