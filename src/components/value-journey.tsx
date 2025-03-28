@@ -9,6 +9,13 @@ import { useRef, useEffect, useState } from "react";
 // Define valid journey types
 type JourneyType = "family" | "black-mirror" | "creatives" | "wedding";
 
+type Scene = {
+  image?: string;
+  title?: string;
+  subtitle?: string;
+  description?: string;
+};
+
 interface ValueJourneyProps {
   dict: Dictionary;
   lang: string;
@@ -42,7 +49,7 @@ const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "fami
       if (!scene) break; // Exit the loop if the scene doesn't exist
 
       // Type guard to ensure scene is an object with the expected properties
-      if (typeof scene === "object" && scene !== null) {
+      if (typeof scene === "object" && scene !== null && isScene(scene)) {
         // Make sure image paths are absolute from the root, not relative to the current route
         let imagePath = scene.image || `/images/segments/${journeyType}/scene_${sceneIndex}.webp`;
 
@@ -163,4 +170,9 @@ function SceneItem({
       </div>
     </div>
   );
+}
+
+// Add type guard function at the end of file
+function isScene(obj: unknown): obj is Scene {
+  return typeof obj === "object" && obj !== null;
 }

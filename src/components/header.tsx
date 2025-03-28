@@ -2,34 +2,21 @@
 
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { UserCircle, Menu, Globe } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { Menu } from "lucide-react";
+// import { useSession } from "next-auth/react";
 import { ModeToggle } from "./mode-toggle";
-// import { NavBar } from "./nav-bar";
 import NavBar from "./nav-bar";
 import UserButtonClient from "./user-button-client";
 import { useInterface } from "@/contexts/interface-context";
-import { signIn } from "next-auth/react";
 import { LanguageSwitcher } from "./language-switcher";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "./ui/sheet";
+import { Dictionary } from "@/utils/dictionaries";
 
 // Define a proper type for the dictionary with optional fields
-type HeaderDictionary = {
-  nav?: {
-    home?: string;
-    about?: string;
-    blog?: string;
-    merch?: string;
-    profile?: string;
-    settings?: string;
-    getStarted?: string;
-    faq?: string;
-    signIn?: string;
-  };
-};
+type HeaderDictionary = Dictionary;
 
-export default function Header({ dict, lang }: { dict?: HeaderDictionary; lang?: string }) {
-  const { data: session, status } = useSession();
+export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: string }) {
+  //   const { data: session, status } = useSession();
   const { mode } = useInterface();
   // Use the passed lang prop if available, otherwise get it from params
   const currentLang = lang || "en";

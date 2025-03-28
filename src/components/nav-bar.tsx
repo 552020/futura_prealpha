@@ -11,6 +11,11 @@ type NavBarProps = {
   className?: string;
 };
 
+type NavItem = {
+  href: string;
+  label: string;
+};
+
 export default function NavBar({ mode, lang, dict, className }: NavBarProps) {
   const pathname = usePathname();
 
@@ -21,12 +26,14 @@ export default function NavBar({ mode, lang, dict, className }: NavBarProps) {
 
   return mode === "marketing" ? (
     <>
-      {[
-        { href: "/about", label: dict[lang]?.nav?.about || "About" },
-        { href: "/journal", label: dict[lang]?.nav?.journal || "Journal" },
-        { href: "/merch", label: dict[lang]?.nav?.merch || "Merch" },
-        { href: "/faq", label: dict[lang]?.nav?.faq || "FAQ" },
-      ].map((item) => (
+      {(
+        [
+          { href: "/about", label: dict.nav?.about || "About" },
+          { href: "/journal", label: dict.nav?.journal || "Journal" },
+          { href: "/merch", label: dict.nav?.merch || "Merch" },
+          { href: "/faq", label: dict.nav?.faq || "FAQ" },
+        ] as NavItem[]
+      ).map((item) => (
         <Link
           key={item.href}
           href={`/${lang}${item.href}`}
@@ -44,10 +51,12 @@ export default function NavBar({ mode, lang, dict, className }: NavBarProps) {
     </>
   ) : (
     <>
-      {[
-        { href: "/dashboard", label: dict[lang]?.nav?.dashboard || "Dashboard" },
-        { href: "/settings", label: dict[lang]?.nav?.settings || "Settings" },
-      ].map((item) => (
+      {(
+        [
+          { href: "/dashboard", label: dict.nav?.dashboard || "Dashboard" },
+          { href: "/settings", label: dict.nav?.settings || "Settings" },
+        ] as NavItem[]
+      ).map((item) => (
         <Link
           key={item.href}
           href={`/${lang}${item.href}`}

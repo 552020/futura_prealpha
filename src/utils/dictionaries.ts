@@ -139,7 +139,17 @@ export type Dictionary = BaseDictionary &
   ValueJourneyDictionary &
   AboutDictionary &
   FAQDictionary & {
-    [key: string]: any;
+    [K in
+      | "metadata"
+      | "hero"
+      | "header"
+      | "nav"
+      | "footer"
+      | "onboarding"
+      | "valueJourney"
+      | "about"
+      | "faq"
+      | "variations"]?: Record<string, unknown>;
   };
 
 const dictionaries: Record<string, () => Promise<BaseDictionary>> = {

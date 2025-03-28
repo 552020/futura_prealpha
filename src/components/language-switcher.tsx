@@ -8,16 +8,16 @@ import { Globe } from "lucide-react";
 import { useState } from "react";
 
 // Language display names and flags
-const languageInfo: Record<string, { name: string; flag: string }> = {
-  en: { name: "English", flag: "🇬🇧" },
-  fr: { name: "Français", flag: "🇫🇷" },
-  es: { name: "Español", flag: "🇪🇸" },
-  pt: { name: "Português", flag: "🇵🇹" },
-  it: { name: "Italiano", flag: "🇮🇹" },
-  de: { name: "Deutsch", flag: "🇩🇪" },
-  pl: { name: "Polski", flag: "🇵🇱" },
-  zh: { name: "中文", flag: "🇨🇳" },
-};
+// const languageInfo: Record<string, { name: string; flag: string }> = {
+//   en: { name: "English", flag: "🇬🇧" },
+//   fr: { name: "Français", flag: "🇫🇷" },
+//   es: { name: "Español", flag: "🇪🇸" },
+//   pt: { name: "Português", flag: "🇵🇹" },
+//   it: { name: "Italiano", flag: "🇮🇹" },
+//   de: { name: "Deutsch", flag: "🇩🇪" },
+//   pl: { name: "Polski", flag: "🇵🇱" },
+//   zh: { name: "中文", flag: "🇨🇳" },
+// };
 
 export function LanguageSwitcher() {
   const pathname = usePathname();
