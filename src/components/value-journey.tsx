@@ -91,7 +91,7 @@ const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "fami
                   </p>
                   <div className="flex justify-center">
                     <div className="relative">
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[204px] md:w-[404px] 2xl:w-[504px] h-[204px] md:h-[404px] 2xl:h-[504px] rounded-full bg-neutral-900 dark:bg-white animate-pulse-scale-large" />
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 md:w-96 2xl:w-[480px] h-48 md:h-96 2xl:h-[480px] rounded-full bg-neutral-900 dark:bg-white animate-pulse-scale-large" />
                       <Link
                         href={`/${currentLang}/onboarding/items-upload`}
                         className="relative w-48 md:w-96 2xl:w-[480px] h-48 md:h-96 2xl:h-[480px] rounded-full bg-neutral-900 hover:bg-white dark:bg-white dark:hover:bg-neutral-900 flex items-center justify-center cursor-pointer text-white hover:text-neutral-900 dark:text-neutral-900 dark:hover:text-white border-2 border-transparent hover:border-neutral-900 dark:hover:border-white transition-all text-7xl md:text-9xl font-bold"
