@@ -9,6 +9,14 @@
       "destination": "https://eu.i.posthog.com/ingest/:path*"
     },
     {
+      "source": "/decide/:path*",
+      "destination": "https://eu.i.posthog.com/decide/:path*"
+    },
+    {
+      "source": "/:lang/decide/:path*",
+      "destination": "https://eu.i.posthog.com/decide/:path*"
+    },
+    {
       "source": "/static/:path*",
       "destination": "https://eu-assets.i.posthog.com/static/:path*"
     },

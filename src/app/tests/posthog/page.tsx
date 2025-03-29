@@ -5,6 +5,15 @@ import { Card } from "@/components/ui/card";
 import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 
+type PostHogEventProperties = {
+  property?: string;
+  button_type?: string;
+  location?: string;
+  action_type?: string;
+  timestamp?: string;
+  [key: string]: string | number | boolean | undefined;
+};
+
 export default function PostHogTestPage() {
   const [lastEvent, setLastEvent] = useState<string | null>(null);
   const [isPosthogReady, setIsPosthogReady] = useState(false);
@@ -31,9 +40,9 @@ export default function PostHogTestPage() {
     },
   ];
 
-  const handleTestEvent = (eventName: string, properties: Record<string, any>) => {
+  const handleTestEvent = (eventName: string, properties: PostHogEventProperties) => {
     posthog.capture(eventName, properties);
-    setLastEvent(`Event "${eventName}" sent at ${new Date().toLocaleTimeString()}`);
+    setLastEvent(`Event &ldquo;${eventName}&rdquo; sent at ${new Date().toLocaleTimeString()}`);
     console.log("PostHog event sent:", { eventName, properties });
   };
 
@@ -64,7 +73,7 @@ export default function PostHogTestPage() {
           <div className="grid gap-3">
             {testEvents.map((event) => (
               <Button key={event.name} onClick={() => handleTestEvent(event.name, event.properties)} variant="outline">
-                Send "{event.name}"
+                Send &ldquo;{event.name}&rdquo;
               </Button>
             ))}
           </div>
@@ -73,7 +82,7 @@ export default function PostHogTestPage() {
         {lastEvent && (
           <div className="mt-6 p-4 bg-muted rounded-md">
             <h2 className="text-sm font-semibold mb-2">Last Event Sent</h2>
-            <p className="text-sm">{lastEvent}</p>
+            <p className="text-sm" dangerouslySetInnerHTML={{ __html: lastEvent }} />
           </div>
         )}
 
