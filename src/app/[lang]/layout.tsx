@@ -11,6 +11,7 @@ import { locales } from "@/middleware";
 import { notFound } from "next/navigation";
 import { getDictionary, Dictionary } from "@/utils/dictionaries";
 import { Toaster } from "@/components/ui/toaster";
+import { PostHogProvider } from "@/components/posthog-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -82,18 +83,20 @@ export default async function RootLayout({
     <html lang={lang} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
         <SessionProvider basePath="/api/auth">
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <div className="relative min-h-screen flex flex-col">
-              <InterfaceProvider>
-                <OnboardingProvider>
-                  <Header dict={dict} lang={lang} />
-                  <main className="flex-1">{children}</main>
-                  <Footer dict={dict} lang={lang} />
-                  <Toaster />
-                </OnboardingProvider>
-              </InterfaceProvider>
-            </div>
-          </ThemeProvider>
+          <PostHogProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+              <div className="relative min-h-screen flex flex-col">
+                <InterfaceProvider>
+                  <OnboardingProvider>
+                    <Header dict={dict} lang={lang} />
+                    <main className="flex-1">{children}</main>
+                    <Footer dict={dict} lang={lang} />
+                    <Toaster />
+                  </OnboardingProvider>
+                </InterfaceProvider>
+              </div>
+            </ThemeProvider>
+          </PostHogProvider>
         </SessionProvider>
       </body>
     </html>
