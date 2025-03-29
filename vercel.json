@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/ingest/:path*",
-      "destination": "https://eu.i.posthog.com/:path*"
+      "destination": "https://eu.i.posthog.com/ingest/:path*"
     },
     {
       "source": "/:lang/ingest/:path*",
-      "destination": "https://eu.i.posthog.com/:path*"
+      "destination": "https://eu.i.posthog.com/ingest/:path*"
     },
     {
       "source": "/static/:path*",
