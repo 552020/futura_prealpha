@@ -2,50 +2,78 @@
 
 ## Narrative Concept
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.
+Futura helps families preserve and share their most cherished memories, ensuring they remain secure and accessible forever. It emphasizes the emotional and timeless nature of memories that shape identities and relationships.
 
 ### Target Audience
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula.
+Families and individuals seeking to store and share their most significant moments securely, intuitively, and permanently. Users are those who deeply value personal memories and legacy.
 
 ## Scene Breakdown & Suggested Text Options
 
-### Scene 1: Beginning
+### Scene 1: Moments That Stand Apart
 
-**Visual:** Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+**Visual:** A highlighted moment—distinct, vibrant, and meaningful, surrounded by ordinary moments.
 
-**Intention:** Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+**Intention:** Convey that some moments are uniquely impactful.
 
 **Possible Text:**
 
-- "Lorem ipsum dolor sit amet."
-- "Consectetur adipiscing elit."
-- "Nullam in dui mauris."
+- "Some moments stand apart."
+- "They shape who we become."
+- "They define our story."
 
 ---
 
-### Scene 2: Middle
+### Scene 2: Moments Become Memories
 
-**Visual:** Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+**Visual:** Transition of a vivid moment becoming a lasting memory.
 
-**Intention:** Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+**Intention:** Show how meaningful experiences transform into lasting memories.
 
 **Possible Text:**
 
-- "Lorem ipsum dolor sit amet."
-- "Consectetur adipiscing elit."
-- "Nullam in dui mauris."
+- "Moments turn into memories."
+- "Held closely in our hearts."
+- "Treasured forever."
 
 ---
 
-### Scene 3: End
+### Scene 3: A Special Place for Special Memories
 
-**Visual:** Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+**Visual:** Secure and permanent place symbolizing protection and timelessness—a vault, a capsule, or an elegant safe space.
 
-**Intention:** Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+**Intention:** Highlight the value of giving special memories a dedicated place to remain safe forever.
 
 **Possible Text:**
 
-- "Lorem ipsum dolor sit amet."
-- "Consectetur adipiscing elit."
-- "Nullam in dui mauris."
+- "Every special memory deserves a special place."
+- "Safe, secure, forever."
+- "Protected for all time."
+
+---
+
+### Scene 4: Sharing
+
+**Visual:** Gentle visuals of memories being passed or shared among family and loved ones.
+
+**Intention:** Illustrate the importance and beauty of sharing memories.
+
+**Possible Text:**
+
+- "Memories are meant to be shared."
+- "Shared today, cherished tomorrow."
+- "Pass your memories forward."
+
+---
+
+### Scene 5: Futura
+
+**Visual:** Minimalistic, clear representation of the product, perhaps showing the app interface or the logo.
+
+**Intention:** Introduce Futura clearly as the solution for preserving and sharing memories.
+
+**Possible Text:**
+
+- "Futura, your place for memories."
+- "Preserve and share forever."
+- "Because memories matter."
