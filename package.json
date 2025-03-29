@@ -78,6 +78,9 @@
       "bcrypt",
       "esbuild",
       "sharp"
-    ]
+    ],
+    "overrides": {
+      "esbuild": "^0.25.0"
+    }
   }
 }
