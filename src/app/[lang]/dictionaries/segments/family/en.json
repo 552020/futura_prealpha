@@ -1,50 +1,80 @@
 {
   "valueJourney": {
     "scene1": {
-      "image": "/images/segments/family/family_1.webp",
-      "title": "Beginning",
-      "subtitle": "Lorem ipsum dolor sit amet",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+      "image": "/images/segments/family/diana_charles.jpg",
+      "title": "Some moments stand apart",
+      "subtitle": "They define who you are",
+      "description": "Eventually we could have 'who we are', 'they define who we are', 'some moments stand apart'"
     },
     "scene2": {
-      "image": "/images/segments/family/family_2.webp",
-      "title": "Middle",
-      "subtitle": "Consectetur adipiscing elit",
-      "description": "Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula."
+      "image": "/images/segments/family/family_2.png",
+      "title": "Moments turn into memories",
+      "subtitle": "Held closely in our hearts, passed down through generations",
+      "description": "Treasured forever"
     },
     "scene3": {
-      "image": "/images/segments/family/family_3.webp",
-      "title": "End",
-      "subtitle": "Nullam in dui mauris",
-      "description": "Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor."
+      "image": "/images/segments/family/bezos.png",
+      "title": "Every special memory deserves a special place",
+      "subtitle": "Safe, secure, forever. Is it AWS?",
+      "description": "Protected for all time"
     },
-    "conclusion": "Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor."
+    "scene4": {
+      "image": "/images/segments/family/bezos_family_album.png",
+      "title": "And yes! Memories are meant to be shared ...",
+      "subtitle": "with the people you love. But also with him?",
+      "description": "Pass your memories forward"
+    },
+    "scene5": {
+      "image": "/images/segments/family/white_room.png",
+      "title": "Futura, a safer place for your memories",
+      "subtitle": "Live in the hearth of the people you love. Forever.",
+      "description": "Because memories matter"
+    },
+    "conclusion": "Jump into eternity. Now!",
+    "arrowSymbol": "→"
   },
   "variations": {
     "valueJourney": {
       "scene1": {
-        "titles": ["Beginning", "Lorem Ipsum", "Dolor Sit"],
-        "subtitles": ["Lorem ipsum dolor sit amet", "Consectetur adipiscing elit", "Nullam in dui mauris"],
-        "descriptions": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-          "Vivamus hendrerit arcu sed erat molestie vehicula."
-        ]
+        "titles": ["Some moments stand apart", "They shape who we become", "They define our story"],
+        "subtitles": ["They shape who we become", "They define our story", "Some moments stand apart"],
+        "descriptions": ["They define our story", "Some moments stand apart", "They shape who we become"]
       },
       "scene2": {
-        "titles": ["Middle", "Consectetur", "Adipiscing"],
-        "subtitles": ["Consectetur adipiscing elit", "Nullam in dui mauris", "Vivamus hendrerit arcu"],
-        "descriptions": [
-          "Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula.",
-          "Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor."
-        ]
+        "titles": ["Moments turn into memories", "Held closely in our hearts", "Treasured forever"],
+        "subtitles": ["Held closely in our hearts", "Treasured forever", "Moments turn into memories"],
+        "descriptions": ["Treasured forever", "Moments turn into memories", "Held closely in our hearts"]
       },
       "scene3": {
-        "titles": ["End", "Vivamus", "Hendrerit"],
-        "subtitles": ["Nullam in dui mauris", "Vivamus hendrerit arcu", "Sed auctor neque eu tellus"],
+        "titles": ["Every special memory deserves a special place", "Safe, secure, forever", "Protected for all time"],
+        "subtitles": [
+          "Safe, secure, forever",
+          "Protected for all time",
+          "Every special memory deserves a special place"
+        ],
         "descriptions": [
-          "Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor.",
-          "Ut in nulla enim. Phasellus molestie magna non est bibendum."
+          "Protected for all time",
+          "Every special memory deserves a special place",
+          "Safe, secure, forever"
         ]
+      },
+      "scene4": {
+        "titles": ["Memories are meant to be shared", "Shared today, cherished tomorrow", "Pass your memories forward"],
+        "subtitles": [
+          "Shared today, cherished tomorrow",
+          "Pass your memories forward",
+          "Memories are meant to be shared"
+        ],
+        "descriptions": [
+          "Pass your memories forward",
+          "Memories are meant to be shared",
+          "Shared today, cherished tomorrow"
+        ]
+      },
+      "scene5": {
+        "titles": ["Futura, your place for memories", "Preserve and share forever", "Because memories matter"],
+        "subtitles": ["Preserve and share forever", "Because memories matter", "Futura, your place for memories"],
+        "descriptions": ["Because memories matter", "Futura, your place for memories", "Preserve and share forever"]
       }
     }
   }

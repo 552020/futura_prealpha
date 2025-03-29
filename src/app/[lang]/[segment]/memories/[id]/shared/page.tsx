@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/db/db";
 import { memoryShares } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-import { findMemory } from "@/app/api/memories/utils";
+import { findMemory } from "@/app/api/memories/utils/memory";
 import { MemoryViewer } from "@/components/memory-viewer";
 import { Card } from "@/components/ui/card";
 

@@ -26,12 +26,17 @@ export type BaseDictionary = {
     subtitle?: string;
     learnMore?: string;
     startHere?: string;
+    now?: string;
+    startNow?: string;
+    arrowSymbol?: string;
   };
   header?: {
     signIn?: string;
   };
   nav?: {
     about?: string;
+    blog?: string;
+    merch?: string;
     profile?: string;
     settings?: string;
     getStarted?: string;
@@ -130,7 +135,22 @@ export type FAQDictionary = {
 };
 
 // Combined dictionary type that includes all content types
-export type Dictionary = BaseDictionary & ValueJourneyDictionary & AboutDictionary & FAQDictionary;
+export type Dictionary = BaseDictionary &
+  ValueJourneyDictionary &
+  AboutDictionary &
+  FAQDictionary & {
+    [K in
+      | "metadata"
+      | "hero"
+      | "header"
+      | "nav"
+      | "footer"
+      | "onboarding"
+      | "valueJourney"
+      | "about"
+      | "faq"
+      | "variations"]?: Record<string, unknown>;
+  };
 
 const dictionaries: Record<string, () => Promise<BaseDictionary>> = {
   en: () => import("../app/[lang]/dictionaries/base/en.json").then((module) => module.default),

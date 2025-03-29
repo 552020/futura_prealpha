@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/db";
 import { memoryShares } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-import { findMemory } from "../../utils";
+import { findMemory } from "@/app/api/memories/utils/memory";
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;

@@ -11,8 +11,10 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { SignOut } from "./auth-components";
+import Link from "next/link";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-export default function UserButtonClient() {
+export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
@@ -33,10 +35,22 @@ export default function UserButtonClient() {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="hidden text-sm sm:inline-flex">{session.user.email}</span>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="hidden text-sm sm:inline-flex cursor-help">{session.user.name}</span>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{session.user.email}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <Button
+            variant="ghost"
+            className="relative h-8 w-8 rounded-full hover:bg-muted dark:hover:bg-muted dark:hover:text-white"
+          >
             <Avatar className="h-8 w-8">
               <AvatarImage
                 src={
@@ -51,15 +65,25 @@ export default function UserButtonClient() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
-          <DropdownMenuLabel className="font-normal">
+          <DropdownMenuLabel className="font-normal border-b pb-3">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">{session.user.name}</p>
               <p className="text-muted-foreground text-xs leading-none">{session.user.email}</p>
             </div>
           </DropdownMenuLabel>
-          <DropdownMenuItem>
-            <SignOut />
-          </DropdownMenuItem>
+          <div className="p-2">
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/${lang}/user/${session.user.id}/profile`}
+                className="w-full flex items-center justify-center py-2 cursor-pointer hover:bg-muted focus:bg-muted"
+              >
+                Profile
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer hover:bg-muted focus:bg-muted py-2 text-red-600 dark:text-red-400">
+              <SignOut />
+            </DropdownMenuItem>
+          </div>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

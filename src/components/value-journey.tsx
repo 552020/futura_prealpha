@@ -2,12 +2,18 @@
 
 import Image from "next/image";
 import { Dictionary } from "@/utils/dictionaries";
-import { Button } from "./ui/button";
 import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
 
 // Define valid journey types
 type JourneyType = "family" | "black-mirror" | "creatives" | "wedding";
+
+type Scene = {
+  image?: string;
+  title?: string;
+  subtitle?: string;
+  description?: string;
+};
 
 interface ValueJourneyProps {
   dict: Dictionary;
@@ -42,7 +48,7 @@ const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "fami
       if (!scene) break; // Exit the loop if the scene doesn't exist
 
       // Type guard to ensure scene is an object with the expected properties
-      if (typeof scene === "object" && scene !== null) {
+      if (typeof scene === "object" && scene !== null && isScene(scene)) {
         // Make sure image paths are absolute from the root, not relative to the current route
         let imagePath = scene.image || `/images/segments/${journeyType}/scene_${sceneIndex}.webp`;
 
@@ -69,9 +75,9 @@ const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "fami
   const conclusion = dict?.valueJourney?.conclusion || "";
 
   return (
-    <section id="learn-more" className="py-20 bg-white dark:bg-gray-900">
+    <section id="learn-more" className="py-20 bg-white dark:bg-[#0A0A0B]">
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-[90%] 2xl:max-w-[1800px] mx-auto">
           {scenes.length > 0 ? (
             <>
               {scenes.map((scene, index) => (
@@ -80,12 +86,21 @@ const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "fami
 
               {conclusion && (
                 <div className="text-center mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
-                  <p className="text-lg mb-6 max-w-2xl mx-auto">{conclusion}</p>
-                  <Button asChild size="lg">
-                    <Link href={`/${currentLang}/onboarding/items-upload`}>
-                      {dict?.hero?.startHere || "Start Here"}
-                    </Link>
-                  </Button>
+                  <p className="text-3xl md:text-5xl 2xl:text-8xl font-bold mb-20 max-w-[90%] mx-auto text-neutral-900 dark:text-white leading-tight">
+                    {conclusion}
+                  </p>
+                  <div className="flex justify-center">
+                    <div className="relative">
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 md:w-96 2xl:w-[480px] h-48 md:h-96 2xl:h-[480px] rounded-full bg-neutral-900 dark:bg-white animate-pulse-scale-large" />
+                      <Link
+                        href={`/${currentLang}/onboarding/items-upload`}
+                        className="relative w-48 md:w-96 2xl:w-[480px] h-48 md:h-96 2xl:h-[480px] rounded-full bg-neutral-900 hover:bg-white dark:bg-white dark:hover:bg-neutral-900 flex items-center justify-center cursor-pointer text-white hover:text-neutral-900 dark:text-neutral-900 dark:hover:text-white border-2 border-transparent hover:border-neutral-900 dark:hover:border-white transition-all text-7xl md:text-9xl font-bold"
+                        aria-label={dict?.hero?.startNow || "Start Now"}
+                      >
+                        {dict?.hero?.arrowSymbol || "→"}
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               )}
             </>
@@ -104,7 +119,7 @@ function SceneItem({
   index,
   isLast,
 }: {
-  scene: { image: string; title: string; description: string; subtitle?: string };
+  scene: { image: string; title: string; subtitle?: string };
   index: number;
   isLast: boolean;
 }) {
@@ -143,24 +158,33 @@ function SceneItem({
         ${isEven ? "" : "md:flex-row-reverse"}
         transition-opacity duration-700 ease-in-out
         ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
+        w-full
       `}
     >
-      <div className="w-full md:w-1/2 mb-6 md:mb-0">
-        <div className="relative h-64 md:h-80 overflow-hidden rounded-lg">
+      <div className="w-full md:flex-1 mb-8 md:mb-0">
+        <div className="relative w-full aspect-square">
           <Image
             src={scene.image}
             alt={scene.title}
             fill
-            className="object-cover transition-transform duration-500 hover:scale-105"
+            className="object-cover rounded-lg transition-transform duration-500 hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 90vw"
+            priority={index === 0}
           />
         </div>
       </div>
 
-      <div className={`w-full md:w-1/2 ${isEven ? "md:pl-12" : "md:pr-12"}`}>
-        <h3 className="text-2xl font-bold mb-2">{scene.title}</h3>
-        {scene.subtitle && <h4 className="text-xl text-gray-600 dark:text-gray-400 mb-3">{scene.subtitle}</h4>}
-        <p className="text-gray-700 dark:text-gray-300">{scene.description}</p>
+      <div className={`w-full md:flex-1 ${isEven ? "md:pl-12 lg:pl-24" : "md:pr-12 lg:pr-24"}`}>
+        <h3 className="text-3xl md:text-4xl 2xl:text-6xl font-bold mb-4">{scene.title}</h3>
+        {scene.subtitle && (
+          <h4 className="text-xl md:text-2xl 2xl:text-4xl text-gray-600 dark:text-gray-400">{scene.subtitle}</h4>
+        )}
       </div>
     </div>
   );
+}
+
+// Add type guard function at the end of file
+function isScene(obj: unknown): obj is Scene {
+  return typeof obj === "object" && obj !== null;
 }

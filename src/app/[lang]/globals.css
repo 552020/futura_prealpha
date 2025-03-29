@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 /*
   ---break---
 */
@@ -13,6 +13,22 @@
   --color-foreground: var(--foreground);
 }
 
+/* Define the scale animation */
+@keyframes pulse-scale {
+  0% {
+    transform: scale(0.95);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(0.95);
+  }
+}
+
+.animate-pulse-scale {
+  animation: pulse-scale 5s ease-in-out infinite;
+}
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
