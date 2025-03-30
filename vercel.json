@@ -14,7 +14,7 @@
     },
     {
       "source": "/ingest",
-      "destination": "https://eu.i.posthog.com/ingest"
+      "destination": "https://eu.i.posthog.com/ingest/"
     },
     {
       "source": "/decide/:path*",
@@ -22,7 +22,7 @@
     },
     {
       "source": "/decide",
-      "destination": "https://eu.i.posthog.com/decide"
+      "destination": "https://eu.i.posthog.com/decide/"
     },
     {
       "source": "/e/:path*",
@@ -30,7 +30,7 @@
     },
     {
       "source": "/e",
-      "destination": "https://eu.i.posthog.com/e"
+      "destination": "https://eu.i.posthog.com/e/"
     },
     {
       "source": "/static/:path*",
