@@ -30,17 +30,6 @@ export function middleware(request: NextRequest) {
     console.log(" → Pathname:", pathname);
   }
 
-  // Update isPosthogPath logic
-  const posthogPrefixes = [
-    "/ingest",
-    "/ingest/decide",
-    "/ingest/e",
-    "/ingest/s",
-    "/ingest/array",
-    "/ingest/i",
-    "/ingest/static",
-  ];
-
   // Handle PostHog paths
   const isPosthogPath =
     pathname === "/ingest" ||
