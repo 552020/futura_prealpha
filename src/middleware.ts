@@ -5,7 +5,7 @@ import Negotiator from "negotiator";
 export const locales = ["en", "fr", "es", "pt", "it", "de", "pl", "zh"];
 export const defaultLocale = "en";
 
-const allowedOrigins = ["https://www.futura.now", "https://futura.now"];
+const allowedOrigins = ["https://www.futura.now", "https://futura.now", "https://peek.futura.now"];
 
 function getLocale(request: NextRequest): string | undefined {
   const negotiatorHeaders: Record<string, string> = {};
