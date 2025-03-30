@@ -13,6 +13,11 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
     console.log("  Key:", process.env.NEXT_PUBLIC_POSTHOG_KEY);
     console.log("  Host:", apiHost);
 
+    if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+      console.warn("❌ No PostHog key found. Skipping init.");
+      return;
+    }
+
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
       api_host: apiHost,
       person_profiles: "identified_only",
@@ -41,6 +46,8 @@ function PostHogPageView() {
       if (search) {
         url += "?" + search;
       }
+      console.log("📡 Capturing pageview:", url);
+
       posthog.capture("$pageview", { $current_url: url });
     }
   }, [pathname, searchParams, posthog]);
