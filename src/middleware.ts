@@ -21,6 +21,22 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const origin = request.headers.get("origin");
 
+  // Minimal logging for all PostHog paths
+  const shouldLog =
+    pathname.includes("/decide") ||
+    pathname.includes("/e") ||
+    pathname.includes("/ingest") ||
+    pathname.includes("/array") ||
+    pathname.includes("/i") ||
+    pathname.includes("/s");
+
+  if (shouldLog) {
+    console.log("🔥 PostHog route hit:");
+    console.log("  → Method:", request.method);
+    console.log("  → Origin:", origin);
+    console.log("  → Pathname:", pathname);
+  }
+
   // Handle PostHog paths
   const isPosthogPath =
     pathname === "/ingest" ||
@@ -45,7 +61,7 @@ export function middleware(request: NextRequest) {
       if (origin && allowedOrigins.includes(origin)) {
         response.headers.set("Access-Control-Allow-Origin", origin);
         response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        response.headers.set("Access-Control-Allow-Headers", "*");
+        response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
         response.headers.set("Access-Control-Allow-Credentials", "true");
         response.headers.set("Access-Control-Max-Age", "86400");
       }
@@ -57,7 +73,7 @@ export function middleware(request: NextRequest) {
     if (origin && allowedOrigins.includes(origin)) {
       response.headers.set("Access-Control-Allow-Origin", origin);
       response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-      response.headers.set("Access-Control-Allow-Headers", "*");
+      response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
       response.headers.set("Access-Control-Allow-Credentials", "true");
       response.headers.set("Access-Control-Expose-Headers", "*");
     }
