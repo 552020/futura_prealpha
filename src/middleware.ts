@@ -95,7 +95,13 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|images|assets|favicon.ico|sw.js).*)"],
+  matcher: [
+    // Match PostHog endpoints to apply CORS
+    "/(ingest|decide|static|e)(.*)",
+
+    // Match all pages, but skip static/system/test/api/etc.
+    "/((?!api|_next|images|assets|favicon.ico|sw.js|tests|.*\\.(png|jpg|jpeg|svg|ico|css|js|webp)).*)",
+  ],
 };
 
 /*
