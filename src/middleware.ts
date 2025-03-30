@@ -47,6 +47,9 @@ export function middleware(request: NextRequest) {
     pathname.includes("/api/") || // Skip API routes
     pathname.startsWith("/images/") || // Skip image files in the public directory
     pathname.startsWith("/tests/") || // Skip test pages
+    pathname.startsWith("/ingest/") || // Skip PostHog
+    pathname.startsWith("/decide/") || // Skip PostHog
+    pathname.startsWith("/static/") || // Skip PostHog
     pathname.match(/\.(png|jpg|jpeg|svg|ico|css|js|webp)$/) // Skip static files by extension
   ) {
     return;
