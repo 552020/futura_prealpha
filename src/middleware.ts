@@ -5,7 +5,7 @@ import Negotiator from "negotiator";
 export const locales = ["en", "fr", "es", "pt", "it", "de", "pl", "zh"];
 export const defaultLocale = "en";
 
-const allowedOrigins = ["https://www.futura.now", "https://futura.now"];
+// const allowedOrigins = ["https://www.futura.now", "https://futura.now"];
 
 function getLocale(request: NextRequest): string | undefined {
   const negotiatorHeaders: Record<string, string> = {};
@@ -20,7 +20,7 @@ function getLocale(request: NextRequest): string | undefined {
 export function middleware(request: NextRequest) {
   //   console.log("⛔ Middleware triggered at:", request.nextUrl.href);
   const pathname = request.nextUrl.pathname;
-  const origin = request.headers.get("origin");
+  //   const origin = request.headers.get("origin");
 
   // Handle PostHog CORS
 
