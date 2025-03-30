@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/ingest/array/:path*",
+      "destination": "https://eu.i.posthog.com/array/:path*"
+    },
+    {
+      "source": "/ingest/e/:path*",
+      "destination": "https://eu.i.posthog.com/e/:path*"
+    },
+    {
       "source": "/ingest/:path*",
       "destination": "https://eu.i.posthog.com/ingest/:path*"
     },

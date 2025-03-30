@@ -24,14 +24,14 @@ export function middleware(request: NextRequest) {
 
   // Handle PostHog CORS
 
-  const isPosthogPath =
-    pathname === "/ingest" ||
-    pathname === "/decide" ||
-    pathname === "/e" ||
-    pathname.startsWith("/ingest/") ||
-    pathname.startsWith("/decide/") ||
-    pathname.startsWith("/static/") ||
-    pathname.startsWith("/e/");
+  //   const isPosthogPath =
+  //     pathname === "/ingest" ||
+  //     pathname === "/decide" ||
+  //     pathname === "/e" ||
+  //     pathname.startsWith("/ingest/") ||
+  //     pathname.startsWith("/decide/") ||
+  //     pathname.startsWith("/static/") ||
+  //     pathname.startsWith("/e/");
 
   //   if (isPosthogPath) {
   //     // Handle preflight
@@ -71,9 +71,9 @@ export function middleware(request: NextRequest) {
     return;
   }
 
-  if (isPosthogPath) {
-    return NextResponse.next();
-  }
+  //   if (isPosthogPath) {
+  //     return NextResponse.next();
+  //   }
 
   const missingLocale = locales.every((locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`);
 
