@@ -31,7 +31,9 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/ingest/") ||
     pathname.startsWith("/decide/") ||
     pathname.startsWith("/static/") ||
-    pathname.startsWith("/e/");
+    pathname.startsWith("/e/") ||
+    pathname.startsWith("/array/") ||
+    pathname.startsWith("/i/");
 
   // ✅ Skip PostHog proxy endpoints completely
   if (isPosthogPath) {
