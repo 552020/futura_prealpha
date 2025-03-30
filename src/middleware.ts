@@ -83,6 +83,12 @@ export function middleware(request: NextRequest) {
       response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
       response.headers.set("Access-Control-Allow-Credentials", "true");
       response.headers.set("Access-Control-Expose-Headers", "*");
+
+      // Log the response headers
+      console.log("🧾 Response Headers being sent:");
+      response.headers.forEach((value, key) => {
+        console.log(`   - ${key}: ${value}`);
+      });
     } else {
       console.warn("❌ No CORS headers set — origin not allowed:", origin);
     }
