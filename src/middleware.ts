@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { match } from "@formatjs/intl-localematcher";
+import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 
 // Define the locales you support
 export const locales = ["en", "fr", "es", "pt", "it", "de", "pl", "zh"];
 export const defaultLocale = "en";
+
+const allowedOrigins = ["https://www.futura.now", "https://futura.now"];
 
 /*
  * The getLocale function:
@@ -15,7 +17,7 @@ export const defaultLocale = "en";
  * 5. Includes logging to help debug the language detection process
  */
 // Get the preferred locale using negotiator and intl-localematcher
-function getLocale(request: NextRequest) {
+function getLocale(request: NextRequest): string | undefined {
   //   console.log("getLocale called");
 
   // Define negotiatorHeaders with proper index signature
@@ -30,7 +32,7 @@ function getLocale(request: NextRequest) {
   const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
   //   console.log("Negotiator languages:", languages);
 
-  const locale = match(languages, locales, defaultLocale);
+  const locale = matchLocale(languages, locales, defaultLocale);
   //   console.log("Matched locale:", locale);
 
   return locale;
@@ -38,8 +40,26 @@ function getLocale(request: NextRequest) {
 
 // middleware function is a special function and a reserved word in next.js
 export function middleware(request: NextRequest) {
-  // Get the pathname from the URL
   const pathname = request.nextUrl.pathname;
+
+  // Handle CORS for PostHog endpoints
+  if (pathname.startsWith("/ingest/") || pathname.startsWith("/decide/") || pathname.startsWith("/static/")) {
+    const origin = request.headers.get("origin");
+
+    if (origin && allowedOrigins.includes(origin)) {
+      const response = NextResponse.next();
+
+      response.headers.set("Access-Control-Allow-Origin", origin);
+      response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+      response.headers.set("Access-Control-Allow-Credentials", "true");
+
+      return response;
+    }
+
+    // If origin not allowed, still respond (but without CORS headers)
+    return NextResponse.next();
+  }
 
   // Skip middleware for static files and test pages
   if (
@@ -47,9 +67,6 @@ export function middleware(request: NextRequest) {
     pathname.includes("/api/") || // Skip API routes
     pathname.startsWith("/images/") || // Skip image files in the public directory
     pathname.startsWith("/tests/") || // Skip test pages
-    pathname.startsWith("/ingest/") || // Skip PostHog
-    pathname.startsWith("/decide/") || // Skip PostHog
-    pathname.startsWith("/static/") || // Skip PostHog
     pathname.match(/\.(png|jpg|jpeg|svg|ico|css|js|webp)$/) // Skip static files by extension
   ) {
     return;
@@ -88,12 +105,14 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Match all request paths except for the ones starting with:
-  // - api (API routes)
-  // - _next/static (static files)
-  // - _next/image (image optimization files)
-  // - favicon.ico (favicon file)
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    // PostHog endpoints
+    "/ingest/:path*",
+    "/decide/:path*",
+    "/static/:path*",
+    // i18n routes
+    "/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)",
+  ],
 };
 
 /*
