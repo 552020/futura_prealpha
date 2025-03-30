@@ -35,6 +35,14 @@
     {
       "source": "/static/:path*",
       "destination": "https://eu-assets.i.posthog.com/static/:path*"
+    },
+    {
+      "source": "/array/:path*",
+      "destination": "https://eu.i.posthog.com/array/:path*"
+    },
+    {
+      "source": "/i/:path*",
+      "destination": "https://eu.i.posthog.com/i/:path*"
     }
   ]
 }
