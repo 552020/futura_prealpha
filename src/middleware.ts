@@ -21,37 +21,40 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const origin = request.headers.get("origin");
 
-  // Minimal logging for all PostHog paths
-  const shouldLog =
-    pathname.includes("/decide") ||
-    pathname.includes("/e") ||
-    pathname.includes("/ingest") ||
-    pathname.includes("/array") ||
-    pathname.includes("/i") ||
-    pathname.includes("/s");
-
-  if (shouldLog) {
-    console.log("🔥 PostHog route hit:");
-    console.log("  → Method:", request.method);
-    console.log("  → Origin:", origin);
-    console.log("  → Pathname:", pathname);
+  // Log for /decide paths
+  if (pathname.includes("decide")) {
+    console.log("🔥 DECIDE HIT");
+    console.log(" → Host:", request.headers.get("host"));
+    console.log(" → Origin:", origin);
+    console.log(" → Method:", request.method);
+    console.log(" → Pathname:", pathname);
   }
+
+  // Update isPosthogPath logic
+  const posthogPrefixes = [
+    "/ingest",
+    "/ingest/decide",
+    "/ingest/e",
+    "/ingest/s",
+    "/ingest/array",
+    "/ingest/i",
+    "/ingest/static",
+  ];
 
   // Handle PostHog paths
   const isPosthogPath =
     pathname === "/ingest" ||
-    pathname === "/decide" ||
-    pathname === "/e" ||
-    pathname === "/s" ||
-    pathname === "/array" ||
-    pathname === "/i" ||
-    pathname.startsWith("/ingest/") ||
-    pathname.startsWith("/decide/") ||
-    pathname.startsWith("/static/") ||
-    pathname.startsWith("/e/") ||
-    pathname.startsWith("/array/") ||
-    pathname.startsWith("/i/") ||
-    pathname.startsWith("/s/");
+    pathname === "/ingest/decide" ||
+    pathname === "/ingest/e" ||
+    pathname === "/ingest/s" ||
+    pathname === "/ingest/array" ||
+    pathname === "/ingest/i" ||
+    pathname.startsWith("/ingest/decide") ||
+    pathname.startsWith("/ingest/static") ||
+    pathname.startsWith("/ingest/e") ||
+    pathname.startsWith("/ingest/array") ||
+    pathname.startsWith("/ingest/i") ||
+    pathname.startsWith("/ingest/s");
 
   // Handle PostHog requests with CORS
   if (isPosthogPath) {
