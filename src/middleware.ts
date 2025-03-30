@@ -40,6 +40,7 @@ function getLocale(request: NextRequest): string | undefined {
 
 // middleware function is a special function and a reserved word in next.js
 export function middleware(request: NextRequest) {
+  console.log("⛔ Middleware triggered at:", request.nextUrl.href);
   const pathname = request.nextUrl.pathname;
 
   // Handle CORS for PostHog endpoints
