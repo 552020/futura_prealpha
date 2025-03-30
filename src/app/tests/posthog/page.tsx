@@ -34,7 +34,7 @@ export default function PostHogTestPage() {
 
   useEffect(() => {
     // expose to window
-    // @ts-ignore
+    // @ts-expect-error: This is a temporary workaround for type incompatibility
     window.posthog = posthog;
   }, []);
 
