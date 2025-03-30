@@ -1,52 +1,36 @@
 {
   "rewrites": [
     {
-      "source": "/ingest/array/:path*",
-      "destination": "https://eu.i.posthog.com/array/:path*"
+      "source": "/ingest/decide/:path*",
+      "destination": "https://eu.i.posthog.com/decide/:path*"
+    },
+    {
+      "source": "/ingest/decide",
+      "destination": "https://eu.i.posthog.com/decide/"
     },
     {
       "source": "/ingest/e/:path*",
       "destination": "https://eu.i.posthog.com/e/:path*"
     },
     {
-      "source": "/ingest/:path*",
-      "destination": "https://eu.i.posthog.com/ingest/:path*"
-    },
-    {
-      "source": "/ingest",
-      "destination": "https://eu.i.posthog.com/ingest/"
-    },
-    {
-      "source": "/decide/:path*",
-      "destination": "https://eu.i.posthog.com/decide/:path*"
-    },
-    {
-      "source": "/decide",
-      "destination": "https://eu.i.posthog.com/decide/"
-    },
-    {
-      "source": "/e/:path*",
-      "destination": "https://eu.i.posthog.com/e/:path*"
-    },
-    {
-      "source": "/e",
+      "source": "/ingest/e",
       "destination": "https://eu.i.posthog.com/e/"
     },
     {
-      "source": "/static/:path*",
-      "destination": "https://eu-assets.i.posthog.com/static/:path*"
-    },
-    {
-      "source": "/array/:path*",
+      "source": "/ingest/array/:path*",
       "destination": "https://eu.i.posthog.com/array/:path*"
     },
     {
-      "source": "/i/:path*",
+      "source": "/ingest/i/:path*",
       "destination": "https://eu.i.posthog.com/i/:path*"
     },
     {
-      "source": "/s/:path*",
+      "source": "/ingest/s/:path*",
       "destination": "https://eu.i.posthog.com/s/:path*"
+    },
+    {
+      "source": "/ingest/static/:path*",
+      "destination": "https://eu-assets.i.posthog.com/static/:path*"
     }
   ]
 }
