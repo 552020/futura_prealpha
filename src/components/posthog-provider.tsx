@@ -6,9 +6,15 @@ import { Suspense, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
+  const apiHost = process.env.NEXT_PUBLIC_POSTHOG_INGEST;
+
   useEffect(() => {
+    console.log("Initializing PostHog with:");
+    console.log("  Key:", process.env.NEXT_PUBLIC_POSTHOG_KEY);
+    console.log("  Host:", apiHost);
+
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host: "/ingest",
+      api_host: apiHost,
       person_profiles: "identified_only",
       capture_pageview: false,
       capture_pageleave: true,

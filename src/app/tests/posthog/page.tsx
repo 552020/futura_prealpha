@@ -17,6 +17,13 @@ type PostHogEventProperties = {
 export default function PostHogTestPage() {
   const [lastEvent, setLastEvent] = useState<string | null>(null);
   const [isPosthogReady, setIsPosthogReady] = useState(false);
+  const [configDump, setConfigDump] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (posthog.config) {
+      setConfigDump(JSON.stringify(posthog.config, null, 2));
+    }
+  }, []);
 
   useEffect(() => {
     // Check if PostHog is properly initialized
@@ -45,15 +52,6 @@ export default function PostHogTestPage() {
     setLastEvent(`Event &ldquo;${eventName}&rdquo; sent at ${new Date().toLocaleTimeString()}`);
     console.log("PostHog event sent:", { eventName, properties });
   };
-
-  if (process.env.NODE_ENV !== "development") {
-    return (
-      <div className="container mx-auto p-8">
-        <h1 className="text-2xl font-bold mb-4">PostHog Test Page</h1>
-        <p>This page is only available in development mode.</p>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto p-8">
@@ -86,10 +84,12 @@ export default function PostHogTestPage() {
           </div>
         )}
 
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-2">Debug Information</h2>
-          <pre className="text-xs bg-muted p-4 rounded-md overflow-auto">{JSON.stringify(posthog.config, null, 2)}</pre>
-        </div>
+        {configDump && (
+          <div className="mt-6">
+            <h2 className="text-lg font-semibold mb-2">Debug Information</h2>
+            <pre className="text-xs bg-muted p-4 rounded-md overflow-auto">{configDump}</pre>
+          </div>
+        )}
       </Card>
     </div>
   );
