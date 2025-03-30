@@ -13,6 +13,34 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/ingest/:path*",
+        destination: "https://eu.i.posthog.com/ingest/:path*",
+      },
+      {
+        source: "/:lang/ingest/:path*",
+        destination: "https://eu.i.posthog.com/ingest/:path*",
+      },
+      {
+        source: "/decide/:path*",
+        destination: "https://eu.i.posthog.com/decide/:path*",
+      },
+      {
+        source: "/:lang/decide/:path*",
+        destination: "https://eu.i.posthog.com/decide/:path*",
+      },
+      {
+        source: "/static/:path*",
+        destination: "https://eu-assets.i.posthog.com/static/:path*",
+      },
+      {
+        source: "/:lang/static/:path*",
+        destination: "https://eu-assets.i.posthog.com/static/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

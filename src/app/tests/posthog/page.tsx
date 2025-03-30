@@ -46,15 +46,6 @@ export default function PostHogTestPage() {
     console.log("PostHog event sent:", { eventName, properties });
   };
 
-  if (process.env.NODE_ENV !== "development") {
-    return (
-      <div className="container mx-auto p-8">
-        <h1 className="text-2xl font-bold mb-4">PostHog Test Page</h1>
-        <p>This page is only available in development mode.</p>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto p-8">
       <Card className="p-6">
