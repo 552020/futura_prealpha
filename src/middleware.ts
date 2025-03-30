@@ -58,24 +58,33 @@ export function middleware(request: NextRequest) {
     // Handle preflight
     if (request.method === "OPTIONS") {
       const response = new NextResponse(null, { status: 204 });
+
       if (origin && allowedOrigins.includes(origin)) {
+        console.log("🟢 Handling preflight from allowed origin:", origin);
         response.headers.set("Access-Control-Allow-Origin", origin);
         response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
         response.headers.set("Access-Control-Allow-Credentials", "true");
         response.headers.set("Access-Control-Max-Age", "86400");
+      } else {
+        console.warn("⛔ Origin not allowed:", origin);
       }
+
       return response;
     }
 
     // Handle actual request
     const response = NextResponse.next();
+
     if (origin && allowedOrigins.includes(origin)) {
+      console.log("✅ Setting CORS headers for origin:", origin);
       response.headers.set("Access-Control-Allow-Origin", origin);
       response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
       response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
       response.headers.set("Access-Control-Allow-Credentials", "true");
       response.headers.set("Access-Control-Expose-Headers", "*");
+    } else {
+      console.warn("❌ No CORS headers set — origin not allowed:", origin);
     }
     return response;
   }
