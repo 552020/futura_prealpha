@@ -44,75 +44,71 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Handle CORS for PostHog endpoints
-  if (pathname.startsWith("/ingest/") || pathname.startsWith("/decide/") || pathname.startsWith("/static/")) {
+  if (
+    pathname.startsWith("/ingest/") ||
+    pathname.startsWith("/decide/") ||
+    pathname.startsWith("/static/") ||
+    pathname.startsWith("/e/")
+  ) {
     const origin = request.headers.get("origin");
 
+    // Handle preflight requests
+    if (request.method === "OPTIONS") {
+      const response = new NextResponse(null, { status: 204 });
+      if (origin && allowedOrigins.includes(origin)) {
+        response.headers.set("Access-Control-Allow-Origin", origin);
+        response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+        response.headers.set("Access-Control-Allow-Credentials", "true");
+        response.headers.set("Access-Control-Max-Age", "86400");
+      }
+      return response;
+    }
+
+    // Handle actual requests
     if (origin && allowedOrigins.includes(origin)) {
       const response = NextResponse.next();
-
       response.headers.set("Access-Control-Allow-Origin", origin);
       response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
       response.headers.set("Access-Control-Allow-Headers", "Content-Type");
       response.headers.set("Access-Control-Allow-Credentials", "true");
-
       return response;
     }
 
-    // If origin not allowed, still respond (but without CORS headers)
     return NextResponse.next();
   }
 
-  // Skip middleware for static files and test pages
-  if (
-    pathname.startsWith("/_next") || // Skip Next.js system files
-    pathname.includes("/api/") || // Skip API routes
-    pathname.startsWith("/images/") || // Skip image files in the public directory
-    pathname.startsWith("/tests/") || // Skip test pages
-    pathname.match(/\.(png|jpg|jpeg|svg|ico|css|js|webp)$/) // Skip static files by extension
-  ) {
-    return;
-  }
-
-  // Check if there is any supported locale in the pathname
-  // Extracts the pathname from the URL (e.g., "/about" from "https://example.com/about")
-  //   console.log("Pathname:", pathname);
-  // Check if the pathname does NOT start with any of the supported locales
-  // returns true for "/about" but false for "/en/about"
+  // Handle i18n routing
   const pathnameIsMissingLocale = locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   );
 
-  //   console.log("pathnameIsMissingLocale:", pathnameIsMissingLocale);
-
   if (pathnameIsMissingLocale) {
     const locale = getLocale(request);
-    // console.log("Detected locale:", locale);
-
-    // Update URL
-    const newUrl = new URL(`/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`, request.url);
-    // console.log("Redirecting to:", newUrl.toString());
-
-    return NextResponse.redirect(newUrl);
-  } else {
-    // console.log("Pathname already has locale, no redirect needed");
+    return NextResponse.redirect(new URL(`/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`, request.url));
   }
 
-  // Redirect if there is no locale
-  //   if (pathnameIsMissingLocale) {
-  //     const locale = getLocale(request);
-  //     console.log("Locale:", locale);
-  //     return NextResponse.redirect(new URL(`/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`, request.url));
-  //   }
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    // PostHog endpoints
-    "/ingest/:path*",
-    "/decide/:path*",
-    "/static/:path*",
-    // i18n routes
-    "/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)",
+    // PostHog endpoints that need CORS
+    {
+      source: "/(ingest|decide|static|e)/:path*",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+    // i18n routes (but exclude all API, static, and asset paths)
+    {
+      source: "/((?!api|_next|images|assets|favicon.ico|sw.js).*)",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "purpose", value: "prefetch" },
+      ],
+    },
   ],
 };
 
