@@ -61,6 +61,7 @@ export function middleware(request: NextRequest) {
 
   // Skip static files, API, and tests
   if (
+    pathname.startsWith("/ingest") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/images") ||
@@ -68,7 +69,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/tests") ||
     pathname.match(/\.(png|jpg|jpeg|svg|ico|css|js|webp)$/)
   ) {
-    return;
+    return NextResponse.next();
   }
 
   //   if (isPosthogPath) {
