@@ -1,8 +1,16 @@
 {
   "rewrites": [
     {
+      "source": "/ingest",
+      "destination": "https://eu.i.posthog.com/ingest"
+    },
+    {
       "source": "/ingest/:path*",
       "destination": "https://eu.i.posthog.com/ingest/:path*"
+    },
+    {
+      "source": "/decide",
+      "destination": "https://eu.i.posthog.com/decide"
     },
     {
       "source": "/decide/:path*",
