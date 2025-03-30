@@ -59,17 +59,17 @@ export function middleware(request: NextRequest) {
   //     return NextResponse.next();
   //   }
 
-  //   // Skip static files, API, and tests
-  //   if (
-  //     pathname.startsWith("/_next") ||
-  //     pathname.startsWith("/api") ||
-  //     pathname.startsWith("/images") ||
-  //     pathname.startsWith("/assets") ||
-  //     pathname.startsWith("/tests") ||
-  //     pathname.match(/\.(png|jpg|jpeg|svg|ico|css|js|webp)$/)
-  //   ) {
-  //     return;
-  //   }
+  // Skip static files, API, and tests
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/images") ||
+    pathname.startsWith("/assets") ||
+    pathname.startsWith("/tests") ||
+    pathname.match(/\.(png|jpg|jpeg|svg|ico|css|js|webp)$/)
+  ) {
+    return;
+  }
 
   if (isPosthogPath) {
     return NextResponse.next();
