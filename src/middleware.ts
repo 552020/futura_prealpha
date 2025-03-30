@@ -5,7 +5,7 @@ import Negotiator from "negotiator";
 export const locales = ["en", "fr", "es", "pt", "it", "de", "pl", "zh"];
 export const defaultLocale = "en";
 
-// const allowedOrigins = ["https://www.futura.now", "https://futura.now"];
+const allowedOrigins = ["https://www.futura.now", "https://futura.now"];
 
 function getLocale(request: NextRequest): string | undefined {
   const negotiatorHeaders: Record<string, string> = {};
@@ -18,12 +18,10 @@ function getLocale(request: NextRequest): string | undefined {
 }
 
 export function middleware(request: NextRequest) {
-  //   console.log("⛔ Middleware triggered at:", request.nextUrl.href);
   const pathname = request.nextUrl.pathname;
-  //   const origin = request.headers.get("origin");
+  const origin = request.headers.get("origin");
 
-  // Handle PostHog CORS
-
+  // Handle PostHog paths
   const isPosthogPath =
     pathname === "/ingest" ||
     pathname === "/decide" ||
@@ -39,36 +37,31 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/i/") ||
     pathname.startsWith("/s/");
 
-  // ✅ Skip PostHog proxy endpoints completely
+  // Handle PostHog requests with CORS
   if (isPosthogPath) {
-    return NextResponse.next();
+    // Handle preflight
+    if (request.method === "OPTIONS") {
+      const response = new NextResponse(null, { status: 204 });
+      if (origin && allowedOrigins.includes(origin)) {
+        response.headers.set("Access-Control-Allow-Origin", origin);
+        response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+        response.headers.set("Access-Control-Allow-Credentials", "true");
+        response.headers.set("Access-Control-Max-Age", "86400");
+      }
+      return response;
+    }
+
+    // Handle actual request
+    const response = NextResponse.next();
+    if (origin && allowedOrigins.includes(origin)) {
+      response.headers.set("Access-Control-Allow-Origin", origin);
+      response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+      response.headers.set("Access-Control-Allow-Credentials", "true");
+    }
+    return response;
   }
-
-  //   if (isPosthogPath) {
-  //     // Handle preflight
-  //     if (request.method === "OPTIONS") {
-  //       const response = new NextResponse(null, { status: 204 });
-  //       if (origin && allowedOrigins.includes(origin)) {
-  //         response.headers.set("Access-Control-Allow-Origin", origin);
-  //         response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  //         response.headers.set("Access-Control-Allow-Headers", "Content-Type");
-  //         response.headers.set("Access-Control-Allow-Credentials", "true");
-  //         response.headers.set("Access-Control-Max-Age", "86400");
-  //       }
-  //       return response;
-  //     }
-
-  //     if (origin && allowedOrigins.includes(origin)) {
-  //       const response = NextResponse.next();
-  //       response.headers.set("Access-Control-Allow-Origin", origin);
-  //       response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  //       response.headers.set("Access-Control-Allow-Headers", "Content-Type");
-  //       response.headers.set("Access-Control-Allow-Credentials", "true");
-  //       return response;
-  //     }
-
-  //     return NextResponse.next();
-  //   }
 
   // Skip static files, API, and tests
   if (
@@ -82,10 +75,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  //   if (isPosthogPath) {
-  //     return NextResponse.next();
-  //   }
-
+  // Handle localization for all other paths
   const missingLocale = locales.every((locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`);
 
   if (missingLocale) {
