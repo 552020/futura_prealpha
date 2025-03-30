@@ -42,17 +42,20 @@ function getLocale(request: NextRequest): string | undefined {
 export function middleware(request: NextRequest) {
   console.log("⛔ Middleware triggered at:", request.nextUrl.href);
   const pathname = request.nextUrl.pathname;
+  const origin = request.headers.get("origin");
 
-  // Handle CORS for PostHog endpoints
-  if (
+  // Handle PostHog CORS
+  const isPosthogPath =
+    pathname === "/ingest" ||
+    pathname === "/decide" ||
+    pathname === "/e" ||
     pathname.startsWith("/ingest/") ||
     pathname.startsWith("/decide/") ||
     pathname.startsWith("/static/") ||
-    pathname.startsWith("/e/")
-  ) {
-    const origin = request.headers.get("origin");
+    pathname.startsWith("/e/");
 
-    // Handle preflight requests
+  if (isPosthogPath) {
+    // Handle preflight
     if (request.method === "OPTIONS") {
       const response = new NextResponse(null, { status: 204 });
       if (origin && allowedOrigins.includes(origin)) {
@@ -65,7 +68,7 @@ export function middleware(request: NextRequest) {
       return response;
     }
 
-    // Handle actual requests
+    // Handle real request
     if (origin && allowedOrigins.includes(origin)) {
       const response = NextResponse.next();
       response.headers.set("Access-Control-Allow-Origin", origin);
@@ -92,15 +95,7 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    // PostHog endpoints
-    "/ingest/:path*",
-    "/decide/:path*",
-    "/static/:path*",
-    "/e/:path*",
-    // i18n routes (but exclude all API, static, and asset paths)
-    "/((?!api|_next|images|assets|favicon.ico|sw.js).*)",
-  ],
+  matcher: ["/((?!api|_next|images|assets|favicon.ico|sw.js).*)"],
 };
 
 /*
