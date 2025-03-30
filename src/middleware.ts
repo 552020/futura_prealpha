@@ -34,6 +34,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/e/") ||
     pathname.startsWith("/array/") ||
     pathname.startsWith("/i/");
+  pathname.startsWith("/s/");
 
   // ✅ Skip PostHog proxy endpoints completely
   if (isPosthogPath) {
