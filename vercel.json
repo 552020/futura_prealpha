@@ -43,6 +43,10 @@
     {
       "source": "/i/:path*",
       "destination": "https://eu.i.posthog.com/i/:path*"
+    },
+    {
+      "source": "/s/:path*",
+      "destination": "https://eu.i.posthog.com/s/:path*"
     }
   ]
 }
