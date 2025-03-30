@@ -24,14 +24,19 @@ export function middleware(request: NextRequest) {
 
   // Handle PostHog CORS
 
-  //   const isPosthogPath =
-  //     pathname === "/ingest" ||
-  //     pathname === "/decide" ||
-  //     pathname === "/e" ||
-  //     pathname.startsWith("/ingest/") ||
-  //     pathname.startsWith("/decide/") ||
-  //     pathname.startsWith("/static/") ||
-  //     pathname.startsWith("/e/");
+  const isPosthogPath =
+    pathname === "/ingest" ||
+    pathname === "/decide" ||
+    pathname === "/e" ||
+    pathname.startsWith("/ingest/") ||
+    pathname.startsWith("/decide/") ||
+    pathname.startsWith("/static/") ||
+    pathname.startsWith("/e/");
+
+  // ✅ Skip PostHog proxy endpoints completely
+  if (isPosthogPath) {
+    return NextResponse.next();
+  }
 
   //   if (isPosthogPath) {
   //     // Handle preflight
@@ -61,7 +66,6 @@ export function middleware(request: NextRequest) {
 
   // Skip static files, API, and tests
   if (
-    pathname.startsWith("/ingest") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/images") ||
