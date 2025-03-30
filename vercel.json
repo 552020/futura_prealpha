@@ -1,20 +1,16 @@
 {
   "rewrites": [
     {
+      "source": "/ingest/:path*",
+      "destination": "https://eu.i.posthog.com/:path*"
+    },
+    {
       "source": "/ingest",
-      "destination": "https://eu.i.posthog.com/ingest/"
+      "destination": "https://eu.i.posthog.com/"
     },
     {
-      "source": "/ingest/decide",
-      "destination": "https://eu.i.posthog.com/decide/"
-    },
-    {
-      "source": "/ingest/e",
-      "destination": "https://eu.i.posthog.com/e/"
-    },
-    {
-      "source": "/ingest/array/:path*",
-      "destination": "https://eu.i.posthog.com/array/:path*"
+      "source": "/static/:path*",
+      "destination": "https://eu-assets.i.posthog.com/static/:path*"
     }
   ]
 }
