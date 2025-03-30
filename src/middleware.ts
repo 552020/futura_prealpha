@@ -33,42 +33,46 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/static/") ||
     pathname.startsWith("/e/");
 
+  //   if (isPosthogPath) {
+  //     // Handle preflight
+  //     if (request.method === "OPTIONS") {
+  //       const response = new NextResponse(null, { status: 204 });
+  //       if (origin && allowedOrigins.includes(origin)) {
+  //         response.headers.set("Access-Control-Allow-Origin", origin);
+  //         response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  //         response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+  //         response.headers.set("Access-Control-Allow-Credentials", "true");
+  //         response.headers.set("Access-Control-Max-Age", "86400");
+  //       }
+  //       return response;
+  //     }
+
+  //     if (origin && allowedOrigins.includes(origin)) {
+  //       const response = NextResponse.next();
+  //       response.headers.set("Access-Control-Allow-Origin", origin);
+  //       response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  //       response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+  //       response.headers.set("Access-Control-Allow-Credentials", "true");
+  //       return response;
+  //     }
+
+  //     return NextResponse.next();
+  //   }
+
+  //   // Skip static files, API, and tests
+  //   if (
+  //     pathname.startsWith("/_next") ||
+  //     pathname.startsWith("/api") ||
+  //     pathname.startsWith("/images") ||
+  //     pathname.startsWith("/assets") ||
+  //     pathname.startsWith("/tests") ||
+  //     pathname.match(/\.(png|jpg|jpeg|svg|ico|css|js|webp)$/)
+  //   ) {
+  //     return;
+  //   }
+
   if (isPosthogPath) {
-    // Handle preflight
-    if (request.method === "OPTIONS") {
-      const response = new NextResponse(null, { status: 204 });
-      if (origin && allowedOrigins.includes(origin)) {
-        response.headers.set("Access-Control-Allow-Origin", origin);
-        response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        response.headers.set("Access-Control-Allow-Headers", "Content-Type");
-        response.headers.set("Access-Control-Allow-Credentials", "true");
-        response.headers.set("Access-Control-Max-Age", "86400");
-      }
-      return response;
-    }
-
-    if (origin && allowedOrigins.includes(origin)) {
-      const response = NextResponse.next();
-      response.headers.set("Access-Control-Allow-Origin", origin);
-      response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-      response.headers.set("Access-Control-Allow-Headers", "Content-Type");
-      response.headers.set("Access-Control-Allow-Credentials", "true");
-      return response;
-    }
-
     return NextResponse.next();
-  }
-
-  // Skip static files, API, and tests
-  if (
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/api") ||
-    pathname.startsWith("/images") ||
-    pathname.startsWith("/assets") ||
-    pathname.startsWith("/tests") ||
-    pathname.match(/\.(png|jpg|jpeg|svg|ico|css|js|webp)$/)
-  ) {
-    return;
   }
 
   const missingLocale = locales.every((locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`);
