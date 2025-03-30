@@ -93,22 +93,13 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // PostHog endpoints that need CORS
-    {
-      source: "/(ingest|decide|static|e)/:path*",
-      missing: [
-        { type: "header", key: "next-router-prefetch" },
-        { type: "header", key: "purpose", value: "prefetch" },
-      ],
-    },
+    // PostHog endpoints
+    "/ingest/:path*",
+    "/decide/:path*",
+    "/static/:path*",
+    "/e/:path*",
     // i18n routes (but exclude all API, static, and asset paths)
-    {
-      source: "/((?!api|_next|images|assets|favicon.ico|sw.js).*)",
-      missing: [
-        { type: "header", key: "next-router-prefetch" },
-        { type: "purpose", value: "prefetch" },
-      ],
-    },
+    "/((?!api|_next|images|assets|favicon.ico|sw.js).*)",
   ],
 };
 
