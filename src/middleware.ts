@@ -23,7 +23,11 @@ export function middleware(request: NextRequest) {
   const origin = request.headers.get("origin");
 
   // Handle PostHog CORS
+
   const isPosthogPath =
+    pathname === "/ingest" ||
+    pathname === "/decide" ||
+    pathname === "/e" ||
     pathname.startsWith("/ingest/") ||
     pathname.startsWith("/decide/") ||
     pathname.startsWith("/static/") ||
