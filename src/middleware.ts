@@ -28,6 +28,9 @@ export function middleware(request: NextRequest) {
     pathname === "/ingest" ||
     pathname === "/decide" ||
     pathname === "/e" ||
+    pathname === "/s" ||
+    pathname === "/array" ||
+    pathname === "/i" ||
     pathname.startsWith("/ingest/") ||
     pathname.startsWith("/decide/") ||
     pathname.startsWith("/static/") ||
