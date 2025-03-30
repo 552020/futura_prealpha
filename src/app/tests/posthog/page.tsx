@@ -32,6 +32,12 @@ export default function PostHogTestPage() {
     }
   }, []);
 
+  useEffect(() => {
+    // expose to window
+    // @ts-ignore
+    window.posthog = posthog;
+  }, []);
+
   const testEvents = [
     {
       name: "test_event",
