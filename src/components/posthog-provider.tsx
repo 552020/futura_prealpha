@@ -24,6 +24,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       capture_pageview: false,
       capture_pageleave: true,
     });
+    console.log("✅ Final PostHog config after init:", posthog.config); // 🔍 Check what this shows
   }, []);
 
   return (
