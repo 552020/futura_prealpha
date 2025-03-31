@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db/db";
 import { eq } from "drizzle-orm";
-import { documents, images, notes } from "@/db/schema";
+import { documents, images, notes, allUsers } from "@/db/schema";
 import type { DBImage, DBDocument, DBNote } from "@/db/schema";
 import { findMemory } from "@/app/api/memories/utils/memory";
 
@@ -17,6 +17,16 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Get the allUserId for the authenticated user
+  const allUserRecord = await db.query.allUsers.findFirst({
+    where: eq(allUsers.userId, session.user.id),
+  });
+
+  if (!allUserRecord) {
+    console.error("No allUsers record found for user:", session.user.id);
+    return NextResponse.json({ error: "User record not found" }, { status: 404 });
+  }
+
   if (!id) {
     return NextResponse.json({ error: "File ID is required" }, { status: 400 });
   }
@@ -27,17 +37,23 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
       return NextResponse.json({ error: "Memory not found" }, { status: 404 });
     }
 
-    return await handleMemoryAccess(memory.data, session.user.id);
+    console.log("Memory access check:", {
+      memoryOwnerId: memory.data.ownerId,
+      requestingUserId: allUserRecord.id,
+      isPublic: memory.data.isPublic,
+    });
+
+    return await handleMemoryAccess(memory.data, allUserRecord.id);
   } catch (error) {
     console.error("Error retrieving memory:", error);
     return NextResponse.json({ error: "Failed to retrieve memory" }, { status: 500 });
   }
 }
 
-async function handleMemoryAccess(memory: DBDocument | DBImage | DBNote, userId: string): Promise<NextResponse> {
+async function handleMemoryAccess(memory: DBDocument | DBImage | DBNote, allUserId: string): Promise<NextResponse> {
   // Check if user has permission
-  if (memory.ownerId !== userId && !memory.isPublic) {
-    const hasAccess = await checkUserHasAccess(memory.id, userId);
+  if (memory.ownerId !== allUserId && !memory.isPublic) {
+    const hasAccess = await checkUserHasAccess(memory.id, allUserId);
     if (!hasAccess) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
@@ -51,9 +67,9 @@ async function handleMemoryAccess(memory: DBDocument | DBImage | DBNote, userId:
   });
 }
 
-async function checkUserHasAccess(memoryId: string, userId: string): Promise<boolean> {
+async function checkUserHasAccess(memoryId: string, allUserId: string): Promise<boolean> {
   // This will be implemented when you add sharing functionality
-  console.log("checkUserHasAccess", memoryId, userId);
+  console.log("checkUserHasAccess", { memoryId, allUserId });
   return false;
 }
 
@@ -66,6 +82,16 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Get the allUserId for the authenticated user
+  const allUserRecord = await db.query.allUsers.findFirst({
+    where: eq(allUsers.userId, session.user.id),
+  });
+
+  if (!allUserRecord) {
+    console.error("No allUsers record found for user:", session.user.id);
+    return NextResponse.json({ error: "User record not found" }, { status: 404 });
+  }
+
   try {
     const memory = await findMemory(id);
     if (!memory) {
@@ -73,7 +99,7 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
     }
 
     // Check ownership only
-    if (memory.data.ownerId !== session.user.id) {
+    if (memory.data.ownerId !== allUserRecord.id) {
       return NextResponse.json({ error: "Only the owner can delete this memory" }, { status: 403 });
     }
 
@@ -99,17 +125,6 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
   }
 }
 
-// async function checkMemoryAccess(memory: DBDocument | DBImage | DBNote, userId: string): Promise<boolean> {
-//   // Direct ownership
-//   if (memory.userId === userId) return true;
-
-//   // Check shared access (if implemented)
-//   // const hasSharedAccess = await checkSharedAccess(memory.id, userId);
-//   // return hasSharedAccess;
-
-//   return false;
-// }
-
 // PATCH handler for updating files
 export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
@@ -119,6 +134,16 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Get the allUserId for the authenticated user
+  const allUserRecord = await db.query.allUsers.findFirst({
+    where: eq(allUsers.userId, session.user.id),
+  });
+
+  if (!allUserRecord) {
+    console.error("No allUsers record found for user:", session.user.id);
+    return NextResponse.json({ error: "User record not found" }, { status: 404 });
+  }
+
   try {
     const memory = await findMemory(id);
     if (!memory) {
@@ -126,7 +151,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
     }
 
     // Check ownership
-    if (memory.data.ownerId !== session.user.id) {
+    if (memory.data.ownerId !== allUserRecord.id) {
       return NextResponse.json({ error: "Only the owner can modify this memory" }, { status: 403 });
     }
 

@@ -3,8 +3,16 @@
 import Link from "next/link";
 import { Dictionary } from "@/utils/dictionaries";
 import { Share2, Twitter, Instagram, Facebook } from "lucide-react";
+import { useInterface } from "@/contexts/interface-context";
 
 export default function Footer({ dict, lang }: { dict?: Dictionary; lang?: string }) {
+  const { mode } = useInterface();
+
+  // Don't render footer in app mode
+  if (mode === "app") {
+    return null;
+  }
+
   // Use the passed lang prop if available, otherwise default to "en"
   const currentLang = lang || "en";
 

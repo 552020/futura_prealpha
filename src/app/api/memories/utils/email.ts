@@ -17,7 +17,6 @@ const mg = new Mailgun(FormData).client({
   url: "https://api.eu.mailgun.net", // Add EU region URL
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface EmailOptions {
   to: string;
   subject: string;

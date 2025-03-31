@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Share2, Twitter, Instagram, Facebook } from "lucide-react";
 // import { useSession } from "next-auth/react";
 import { ModeToggle } from "./mode-toggle";
 import NavBar from "./nav-bar";
@@ -20,6 +20,27 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
   const { mode } = useInterface();
   // Use the passed lang prop if available, otherwise get it from params
   const currentLang = lang || "en";
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "Futura",
+          text: "Check out Futura - Live Forever. Now.",
+          url: window.location.href,
+        });
+        console.log("Content shared successfully");
+      } else {
+        console.log("Web Share API not supported");
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        console.log("Share was canceled by the user");
+        return;
+      }
+      console.error("Error sharing content:", error);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-sm dark:bg-slate-950/80">
@@ -74,6 +95,68 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
 
                   <div className="border-t pt-4">
                     <UserButtonClient lang={currentLang} />
+                  </div>
+
+                  {/* Footer Links in Mobile Menu */}
+                  <div className="border-t pt-4">
+                    <div className="flex flex-col space-y-2">
+                      <Link
+                        href={`/${currentLang}/terms`}
+                        className="text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                      >
+                        {dict?.footer?.terms || "Terms"}
+                      </Link>
+                      <Link
+                        href={`/${currentLang}/privacy`}
+                        className="text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                      >
+                        {dict?.footer?.privacy || "Privacy"}
+                      </Link>
+                      <Link
+                        href={`/${currentLang}/contact`}
+                        className="text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                      >
+                        {dict?.footer?.contact || "Contact"}
+                      </Link>
+                      <button
+                        onClick={handleShare}
+                        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                      >
+                        <Share2 className="h-4 w-4" />
+                        <span>{dict?.footer?.share || "Share"}</span>
+                      </button>
+                    </div>
+
+                    {/* Social Links */}
+                    <div className="flex items-center gap-4 mt-4">
+                      <a
+                        href="https://twitter.com/futura"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                        aria-label="Twitter"
+                      >
+                        <Twitter className="h-4 w-4" />
+                      </a>
+                      <a
+                        href="https://instagram.com/futura"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                        aria-label="Instagram"
+                      >
+                        <Instagram className="h-4 w-4" />
+                      </a>
+                      <a
+                        href="https://facebook.com/futura"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                        aria-label="Facebook"
+                      >
+                        <Facebook className="h-4 w-4" />
+                      </a>
+                    </div>
                   </div>
                 </div>
               </SheetContent>
