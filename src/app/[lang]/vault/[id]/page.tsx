@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { MemoryActions } from "@/components/memory/MemoryActions";
 import { Button } from "@/components/ui/button";
-import { Loader2, Image, Video, FileText, Music } from "lucide-react";
+import { Loader2, Image, Video, FileText, Music, ChevronLeft } from "lucide-react";
 import { useAuthGuard } from "@/utils/authentication";
+import { format } from "date-fns";
 
 interface Memory {
   id: string;
@@ -15,10 +17,12 @@ interface Memory {
   url?: string;
   content?: string;
   mimeType?: string;
+  ownerId?: string;
 }
 
-export default function MemoryDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
+export default function MemoryDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const { isAuthorized, isAuthenticated, isTemporaryUser, userId, redirectToSignIn } = useAuthGuard();
   const [memory, setMemory] = useState<Memory | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,12 +37,12 @@ export default function MemoryDetailPage({ params }: { params: Promise<{ id: str
     if (isAuthorized && userId) {
       fetchMemory();
     }
-  }, [isAuthorized, userId, resolvedParams.id]);
+  }, [isAuthorized, userId, id]);
 
   const fetchMemory = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/memories/${resolvedParams.id}`);
+      const response = await fetch(`/api/memories/${id}`);
 
       console.log("Memory API Response:", {
         status: response.status,
@@ -65,6 +69,7 @@ export default function MemoryDetailPage({ params }: { params: Promise<{ id: str
           url: data.data.url,
           content: "content" in data.data ? data.data.content : undefined,
           mimeType: "mimeType" in data.data ? data.data.mimeType : undefined,
+          ownerId: data.data.ownerId,
         };
         setMemory(transformedMemory);
       } else {
@@ -80,14 +85,14 @@ export default function MemoryDetailPage({ params }: { params: Promise<{ id: str
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`/api/memories/${resolvedParams.id}`, {
+      const response = await fetch(`/api/memories/${id}`, {
         method: "DELETE",
       });
 
       if (!response.ok) throw new Error("Failed to delete memory");
 
-      // Redirect back to vault page
-      window.location.href = "/vault";
+      // Use router.push for smoother navigation
+      router.push("/vault");
     } catch (error) {
       console.error("Error deleting memory:", error);
     }
@@ -95,7 +100,7 @@ export default function MemoryDetailPage({ params }: { params: Promise<{ id: str
 
   const handleShare = () => {
     // TODO: Implement share functionality
-    console.log("Share memory:", resolvedParams.id);
+    console.log("Share memory:", id);
   };
 
   if (!isAuthorized) {
@@ -116,7 +121,15 @@ export default function MemoryDetailPage({ params }: { params: Promise<{ id: str
 
   if (!memory) {
     return (
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto px-6 py-8">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="mb-6 w-10 h-10 rounded-full bg-black dark:bg-white hover:scale-105 transition-transform"
+          onClick={() => router.push("/vault")}
+        >
+          <ChevronLeft className="h-6 w-6 text-white dark:text-black" />
+        </Button>
         <h1 className="text-2xl font-bold text-red-600">Memory not found</h1>
         <p className="mt-2">The memory you're looking for doesn't exist or you don't have access to it.</p>
       </div>
@@ -138,8 +151,23 @@ export default function MemoryDetailPage({ params }: { params: Promise<{ id: str
     }
   };
 
+  // Check if the current user is the owner
+  const isOwner = memory.ownerId === userId;
+
+  // Get display title
+  const displayTitle = memory.title?.trim() && memory.title !== memory.id ? memory.title : "Untitled Memory";
+
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto px-6 py-8">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="mb-6 w-10 h-10 rounded-full bg-black dark:bg-white hover:scale-105 transition-transform"
+        onClick={() => router.push("/vault")}
+      >
+        <ChevronLeft className="h-6 w-6 text-white dark:text-black" />
+      </Button>
+
       {isTemporaryUser && (
         <div className="mb-4 rounded-lg bg-yellow-50 p-4 text-yellow-800">
           <div className="flex items-start gap-3">
@@ -165,13 +193,20 @@ export default function MemoryDetailPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
       )}
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          {getIcon()}
-          <h1 className="text-3xl font-bold">{memory.title}</h1>
+
+      <div className="mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {getIcon()}
+            <div>
+              <h1 className="text-xl font-semibold sm:text-2xl md:text-3xl truncate">{displayTitle}</h1>
+              <p className="text-sm text-muted-foreground">Saved on {format(new Date(memory.createdAt), "PPP")}</p>
+            </div>
+          </div>
+          {isOwner && <MemoryActions id={memory.id} onDelete={handleDelete} onShare={handleShare} />}
         </div>
-        <MemoryActions id={memory.id} onDelete={handleDelete} onShare={handleShare} />
       </div>
+
       <div className="rounded-lg border p-6">
         {memory.type === "image" && memory.url && (
           <img src={memory.url} alt={memory.title} className="mx-auto max-h-[600px] rounded-lg" />
