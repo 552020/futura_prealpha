@@ -1,5 +1,7 @@
 "use client";
 
+// this page is necessary to redirect to the correct profile page
+
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";

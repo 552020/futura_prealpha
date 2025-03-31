@@ -8,9 +8,10 @@ import { useSession } from "next-auth/react";
 interface UseFileUploadProps {
   isOnboarding?: boolean;
   onSuccess?: () => void;
+  onError?: (error: Error) => void;
 }
 
-export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUploadProps) {
+export function useFileUpload({ isOnboarding = false, onSuccess, onError }: UseFileUploadProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { addFile: addOnboardingFile, updateUserData, setCurrentStep } = useOnboarding();
@@ -47,13 +48,18 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
       const url = URL.createObjectURL(file);
       console.log("🖼️ Created temporary preview URL");
 
-      // Determine which endpoint to use based on session status
-      const endpoint = session ? "/api/memories/upload" : "/api/memories/upload/onboarding";
-      console.log("🎯 Using endpoint:", endpoint);
+      // If we're in onboarding flow, always use onboarding endpoint
+      // If not, use the regular upload endpoint which requires authentication
+      const endpoint = isOnboarding ? "/api/memories/upload/onboarding" : "/api/memories/upload";
+      console.log("🎯 Using endpoint:", endpoint, {
+        isOnboarding,
+        isAuthenticated: !!session,
+      });
 
       // Upload file
       const formData = new FormData();
       formData.append("file", file);
+
       console.log("📤 Sending file to server...");
 
       const response = await fetch(endpoint, {
@@ -104,10 +110,7 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
       }
 
       console.log("✅ Upload process completed successfully");
-      toast({
-        title: "Memory uploaded!",
-        description: "Your memory was successfully saved.",
-      });
+      // Let the page component handle success notifications
       onSuccess?.();
     } catch (error) {
       let title = "Something went wrong";
@@ -124,6 +127,10 @@ export function useFileUpload({ isOnboarding = false, onSuccess }: UseFileUpload
         title,
         description,
       });
+
+      if (onError) {
+        onError(error as Error);
+      }
     } finally {
       setIsLoading(false);
     }

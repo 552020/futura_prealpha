@@ -3,24 +3,22 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { COPY_VARIATIONS } from "./_copy/variations";
-import { Plus, Loader2 } from "lucide-react";
 import { useInterface } from "@/contexts/interface-context";
 import { useRouter } from "next/navigation";
-import { useFileUpload } from "@/hooks/user-file-upload";
 import { OnboardModal as OnboardModalOld } from "@/components/onboard-modal";
 import { OnboardModal } from "@/components/onboarding/onboard-modal";
+import { MemoryUpload } from "@/components/memory/MemoryUpload";
+
 export default function ItemsUpload() {
   const router = useRouter();
   const { setMode } = useInterface();
   const [showOnboardModal, setShowOnboardModal] = useState(false);
   const [showOldOnboardModal, setShowOldOnboardModal] = useState(false);
-  const { isLoading, fileInputRef, handleUploadClick, handleFileChange } = useFileUpload({
-    isOnboarding: true,
-    onSuccess: () => {
-      console.log("📤 File upload success - opening modal");
-      setShowOnboardModal(true);
-    },
-  });
+
+  const handleUploadSuccess = () => {
+    console.log("📤 File upload success - opening modal");
+    setShowOnboardModal(true);
+  };
 
   const handleModalClose = () => {
     console.log("🚪 Modal closing");
@@ -48,20 +46,9 @@ export default function ItemsUpload() {
         <p className="text-xl sm:text-2xl text-muted-foreground">{copy.subtitle}</p>
       </div>
 
-      {/* Hidden file input */}
-      <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" multiple={false} />
-
       {/* Upload button container */}
       <div className="flex justify-center">
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={handleUploadClick}
-          onKeyDown={(e) => e.key === "Enter" && handleUploadClick()}
-          className="w-20 h-20 rounded-full bg-black hover:bg-white dark:bg-white dark:hover:bg-black flex items-center justify-center cursor-pointer text-white hover:text-black dark:text-black dark:hover:text-white border-2 border-transparent hover:border-black dark:hover:border-white transition-all"
-        >
-          {isLoading ? <Loader2 size={72} className="animate-spin" /> : <Plus size={72} />}
-        </div>
+        <MemoryUpload isOnboarding variant="large-icon" onSuccess={handleUploadSuccess} />
       </div>
 
       {/* Onboarding Modal */}
