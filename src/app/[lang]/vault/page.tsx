@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { MemoryGrid } from "@/components/memory/MemoryGrid";
 import { Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
@@ -18,50 +18,22 @@ export default function VaultPage() {
   const [memories, setMemories] = useState<Memory[]>([]);
   const [isLoadingMemories, setIsLoadingMemories] = useState(true);
   const [hasMore, setHasMore] = useState(true);
-  const pageRef = useRef(1);
-  const { ref, inView } = useInView();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { ref } = useInView();
 
-  useEffect(() => {
-    if (!isLoading && !isAuthorized) {
-      redirectToSignIn();
-      return;
-    }
-  }, [isLoading, isAuthorized, redirectToSignIn]);
-
-  useEffect(() => {
-    if (isAuthorized && userId) {
-      fetchMemories();
-    }
-  }, [isAuthorized, userId]);
-
-  useEffect(() => {
-    if (inView && hasMore && !isLoadingMemories) {
-      const nextPage = pageRef.current + 1;
-      pageRef.current = nextPage;
-      fetchMemories(nextPage);
-    }
-  }, [inView]);
-
-  const resetMemories = () => {
-    pageRef.current = 1;
-    setMemories([]);
-    setHasMore(true);
-    fetchMemories(1); // Explicitly fetch page 1
-  };
-
-  const fetchMemories = async (page = pageRef.current) => {
+  const fetchMemories = useCallback(async () => {
     const timestamp = new Date().toISOString();
     try {
       console.group(`🎯 FETCH MEMORIES [${timestamp}]`);
       console.log("Starting fetch:", {
-        requestedPage: page,
-        currentPageRef: pageRef.current,
+        requestedPage: currentPage,
+        currentPageRef: currentPage,
         limit: 12,
         existingMemories: memories.length,
       });
 
       setIsLoadingMemories(true);
-      const response = await fetch(`/api/memories?page=${page}&limit=12`);
+      const response = await fetch(`/api/memories?page=${currentPage}&limit=12`);
 
       console.log("API Response:", {
         status: response.status,
@@ -83,7 +55,7 @@ export default function VaultPage() {
       });
 
       // Update memories based on whether this is a reset (page 1) or pagination
-      if (page === 1) {
+      if (currentPage === 1) {
         setMemories(newMemories);
         console.log("Reset memories with page 1 data");
       } else {
@@ -101,7 +73,7 @@ export default function VaultPage() {
       setHasMore(newMemories.length === 12);
       console.log("Pagination update:", {
         hasMore: newMemories.length === 12,
-        nextPage: page + 1,
+        nextPage: currentPage + 1,
       });
       console.groupEnd();
     } catch (error) {
@@ -119,7 +91,32 @@ export default function VaultPage() {
     } finally {
       setIsLoadingMemories(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (!isAuthorized) {
+      redirectToSignIn();
+    }
+  }, [isAuthorized, redirectToSignIn]);
+
+  useEffect(() => {
+    if (isAuthorized && userId) {
+      fetchMemories();
+    }
+  }, [isAuthorized, userId, fetchMemories]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100) {
+        if (!isLoadingMemories && hasMore) {
+          setCurrentPage((prev) => prev + 1);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isLoadingMemories, hasMore]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -155,7 +152,10 @@ export default function VaultPage() {
 
   const handleUploadSuccess = () => {
     console.log("🎉 UPLOAD SUCCESS - Resetting and refreshing memories...");
-    resetMemories();
+    setCurrentPage(1);
+    setMemories([]);
+    setHasMore(true);
+    fetchMemories();
     toast({
       title: "Success",
       description: "Memory uploaded successfully!",
@@ -163,6 +163,7 @@ export default function VaultPage() {
   };
 
   const handleUploadError = (error: Error) => {
+    console.error("❌ UPLOAD ERROR:", error);
     toast({
       title: "Error",
       description: "Failed to upload memory. Please try again.",

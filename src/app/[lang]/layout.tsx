@@ -12,6 +12,8 @@ import { notFound } from "next/navigation";
 import { getDictionary, Dictionary } from "@/utils/dictionaries";
 import { Toaster } from "@/components/ui/toaster";
 import { PostHogProvider } from "@/components/posthog-provider";
+import BottomNav from "@/components/bottom-nav";
+import Sidebar from "@/components/sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -89,8 +91,10 @@ export default async function RootLayout({
                 <InterfaceProvider>
                   <OnboardingProvider>
                     <Header dict={dict} lang={lang} />
-                    <main className="flex-1">{children}</main>
+                    <main className="flex-1 md:pl-56">{children}</main>
                     <Footer dict={dict} lang={lang} />
+                    <BottomNav dict={dict} />
+                    <Sidebar dict={dict} />
                     <Toaster />
                   </OnboardingProvider>
                 </InterfaceProvider>

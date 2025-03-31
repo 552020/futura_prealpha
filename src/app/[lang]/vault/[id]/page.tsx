@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { MemoryActions } from "@/components/memory/MemoryActions";
 import { Button } from "@/components/ui/button";
-import { Loader2, Image, Video, FileText, Music, ChevronLeft } from "lucide-react";
+import { Loader2, Image as ImageIcon, Video, FileText, Music, ChevronLeft } from "lucide-react";
 import { useAuthGuard } from "@/utils/authentication";
 import { format } from "date-fns";
 
@@ -23,23 +24,11 @@ interface Memory {
 export default function MemoryDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { isAuthorized, isAuthenticated, isTemporaryUser, userId, redirectToSignIn } = useAuthGuard();
+  const { isAuthorized, isTemporaryUser, userId, redirectToSignIn } = useAuthGuard();
   const [memory, setMemory] = useState<Memory | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (!isAuthorized) {
-      redirectToSignIn();
-    }
-  }, [isAuthorized, redirectToSignIn]);
-
-  useEffect(() => {
-    if (isAuthorized && userId) {
-      fetchMemory();
-    }
-  }, [isAuthorized, userId, id]);
-
-  const fetchMemory = async () => {
+  const fetchMemory = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch(`/api/memories/${id}`);
@@ -59,7 +48,6 @@ export default function MemoryDetailPage() {
       console.log("Memory data:", data);
 
       if (data.success && data.data) {
-        // Transform API response to match our Memory interface
         const transformedMemory: Memory = {
           id: data.data.id,
           type: data.type === "document" ? (data.data.mimeType?.startsWith("video/") ? "video" : "audio") : data.type,
@@ -81,7 +69,19 @@ export default function MemoryDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (!isAuthorized) {
+      redirectToSignIn();
+    }
+  }, [isAuthorized, redirectToSignIn]);
+
+  useEffect(() => {
+    if (isAuthorized && userId) {
+      fetchMemory();
+    }
+  }, [isAuthorized, userId, fetchMemory]);
 
   const handleDelete = async () => {
     try {
@@ -131,7 +131,9 @@ export default function MemoryDetailPage() {
           <ChevronLeft className="h-6 w-6 text-white dark:text-black" />
         </Button>
         <h1 className="text-2xl font-bold text-red-600">Memory not found</h1>
-        <p className="mt-2">The memory you're looking for doesn't exist or you don't have access to it.</p>
+        <p className="mt-2">
+          The memory you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
+        </p>
       </div>
     );
   }
@@ -139,7 +141,7 @@ export default function MemoryDetailPage() {
   const getIcon = () => {
     switch (memory.type) {
       case "image":
-        return <Image className="h-8 w-8" />;
+        return <ImageIcon className="h-8 w-8" />;
       case "video":
         return <Video className="h-8 w-8" />;
       case "note":
@@ -209,7 +211,15 @@ export default function MemoryDetailPage() {
 
       <div className="rounded-lg border p-6">
         {memory.type === "image" && memory.url && (
-          <img src={memory.url} alt={memory.title} className="mx-auto max-h-[600px] rounded-lg" />
+          <div className="relative mx-auto h-[600px] w-full">
+            <Image
+              src={memory.url}
+              alt={memory.title || "Memory image"}
+              fill
+              className="rounded-lg object-contain"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+            />
+          </div>
         )}
         {memory.type === "video" && memory.url && (
           <video controls className="mx-auto max-h-[600px] rounded-lg">

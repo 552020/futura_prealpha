@@ -20,6 +20,13 @@
     "vault": "Vault",
     "feed": "Feed"
   },
+  "navigation": {
+    "vault": "Vault",
+    "feed": "Feed",
+    "shared": "Shared",
+    "contacts": "Contacts",
+    "profile": "Profile"
+  },
   "footer": {
     "tagline": "Made with ❤️ between Berlin, Marseille and Lisbon",
     "terms": "Terms of Service",

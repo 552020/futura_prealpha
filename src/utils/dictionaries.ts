@@ -44,6 +44,13 @@ export type BaseDictionary = {
     vault?: string;
     feed?: string;
   };
+  navigation?: {
+    vault?: string;
+    feed?: string;
+    shared?: string;
+    contacts?: string;
+    profile?: string;
+  };
   footer?: {
     tagline?: string;
     contact?: string;
