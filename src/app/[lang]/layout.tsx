@@ -14,6 +14,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { PostHogProvider } from "@/components/posthog-provider";
 import BottomNav from "@/components/bottom-nav";
 import Sidebar from "@/components/sidebar";
+import { cn } from "@/lib/utils";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -83,22 +84,18 @@ export default async function RootLayout({
 
   return (
     <html lang={lang} suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SessionProvider basePath="/api/auth">
           <PostHogProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-              <div className="relative min-h-screen flex flex-col">
-                <InterfaceProvider>
-                  <OnboardingProvider>
-                    <Header dict={dict} lang={lang} />
-                    <main className="flex-1 md:pl-56">{children}</main>
-                    <Footer dict={dict} lang={lang} />
-                    <BottomNav dict={dict} />
-                    <Sidebar dict={dict} />
-                    <Toaster />
-                  </OnboardingProvider>
-                </InterfaceProvider>
-              </div>
+              <InterfaceProvider>
+                <div className="relative flex min-h-screen flex-col">
+                  <Header dict={dict} lang={resolvedParams.lang} />
+                  <BottomNav dict={dict} />
+                  <Sidebar dict={dict} />
+                  <main className="flex-1">{children}</main>
+                </div>
+              </InterfaceProvider>
             </ThemeProvider>
           </PostHogProvider>
         </SessionProvider>

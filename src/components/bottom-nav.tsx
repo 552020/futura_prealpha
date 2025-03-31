@@ -27,28 +27,24 @@ export default function BottomNav({ dict }: BottomNavProps) {
   }
 
   return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm dark:bg-slate-950/80 border-t border-gray-200 dark:border-gray-800 md:hidden"
-      role="navigation"
-      aria-label="Bottom navigation"
-    >
-      <div className="flex justify-around items-center h-16">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background md:hidden">
+      <div className="mx-auto flex max-w-screen-xl items-center justify-around px-4 py-2">
         {allNavItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
-              aria-label={getTranslatedLabel(item, dict)}
               className={cn(
-                "flex flex-col items-center justify-center w-full h-full text-xs relative",
+                "flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
                 isActive ? "text-primary" : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
               )}
+              aria-label={getTranslatedLabel(item, dict)}
             >
               {/* Active indicator pill */}
               {isActive && <div className="absolute top-0 left-1/2 -translate-x-1/2 h-1 w-8 bg-primary rounded-full" />}
-              <item.icon className="h-5 w-5 mb-1" />
-              <span className="tracking-wide">{getTranslatedLabel(item, dict)}</span>
+              <item.icon className="h-5 w-5" />
+              <span>{getTranslatedLabel(item, dict)}</span>
             </Link>
           );
         })}
