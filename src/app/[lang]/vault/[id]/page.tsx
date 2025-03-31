@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { MemoryActions } from "@/components/memory/MemoryActions";
 import { Button } from "@/components/ui/button";
 import { Loader2, Image, Video, FileText, Music } from "lucide-react";
@@ -17,7 +17,8 @@ interface Memory {
   mimeType?: string;
 }
 
-export default function MemoryDetailPage({ params }: { params: { id: string } }) {
+export default function MemoryDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   const { isAuthorized, isAuthenticated, isTemporaryUser, userId, redirectToSignIn } = useAuthGuard();
   const [memory, setMemory] = useState<Memory | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -32,18 +33,46 @@ export default function MemoryDetailPage({ params }: { params: { id: string } })
     if (isAuthorized && userId) {
       fetchMemory();
     }
-  }, [isAuthorized, userId, params.id]);
+  }, [isAuthorized, userId, resolvedParams.id]);
 
   const fetchMemory = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/memories/${params.id}`);
-      if (!response.ok) throw new Error("Failed to fetch memory");
+      const response = await fetch(`/api/memories/${resolvedParams.id}`);
+
+      console.log("Memory API Response:", {
+        status: response.status,
+        ok: response.ok,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Memory fetch error:", errorData);
+        throw new Error(errorData.error || "Failed to fetch memory");
+      }
 
       const data = await response.json();
-      setMemory(data);
+      console.log("Memory data:", data);
+
+      if (data.success && data.data) {
+        // Transform API response to match our Memory interface
+        const transformedMemory: Memory = {
+          id: data.data.id,
+          type: data.type === "document" ? (data.data.mimeType?.startsWith("video/") ? "video" : "audio") : data.type,
+          title: data.data.title || "Untitled",
+          description: data.data.description,
+          createdAt: data.data.createdAt,
+          url: data.data.url,
+          content: "content" in data.data ? data.data.content : undefined,
+          mimeType: "mimeType" in data.data ? data.data.mimeType : undefined,
+        };
+        setMemory(transformedMemory);
+      } else {
+        throw new Error("Invalid memory data format");
+      }
     } catch (error) {
       console.error("Error fetching memory:", error);
+      setMemory(null);
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +80,7 @@ export default function MemoryDetailPage({ params }: { params: { id: string } })
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`/api/memories/${params.id}`, {
+      const response = await fetch(`/api/memories/${resolvedParams.id}`, {
         method: "DELETE",
       });
 
@@ -66,7 +95,7 @@ export default function MemoryDetailPage({ params }: { params: { id: string } })
 
   const handleShare = () => {
     // TODO: Implement share functionality
-    console.log("Share memory:", params.id);
+    console.log("Share memory:", resolvedParams.id);
   };
 
   if (!isAuthorized) {
