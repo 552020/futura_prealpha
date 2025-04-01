@@ -11,6 +11,7 @@ interface MemoryCardProps {
   memory: Memory & {
     status: "private" | "shared" | "public";
     sharedWithCount?: number;
+    sharedBy?: string;
   };
   onClick: (memory: Memory) => void;
   onShare: (memoryId: string) => void;
@@ -21,7 +22,7 @@ export function MemoryCard({ memory, onClick, onShare, onDelete }: MemoryCardPro
   return (
     <Card className="cursor-pointer transition-all hover:shadow-md" onClick={() => onClick(memory)}>
       <CardHeader className="p-4">
-        <MemoryStatus status={memory.status} sharedWithCount={memory.sharedWithCount} />
+        <MemoryStatus status={memory.status} sharedWithCount={memory.sharedWithCount} sharedBy={memory.sharedBy} />
       </CardHeader>
       <CardContent className="p-4">
         <div className="flex items-center gap-2">

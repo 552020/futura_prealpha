@@ -8,4 +8,6 @@ export interface Memory {
   content?: string;
   url?: string;
   mimeType?: string;
+  ownerId?: string;
+  ownerName?: string;
 }

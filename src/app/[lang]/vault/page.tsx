@@ -10,6 +10,7 @@ import { Memory } from "@/types/memory";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { MemoryUpload } from "@/components/memory/MemoryUpload";
+import { useParams } from "next/navigation";
 
 export default function VaultPage() {
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
@@ -22,6 +23,7 @@ export default function VaultPage() {
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const { ref } = useInView();
+  const params = useParams();
 
   const fetchMemories = useCallback(async () => {
     const timestamp = new Date().toISOString();
@@ -132,7 +134,7 @@ export default function VaultPage() {
   };
 
   const handleMemoryClick = (memory: Memory) => {
-    router.push(`/vault/${memory.id}`);
+    router.push(`/${params.lang}/${params.segment}/vault/${memory.id}`);
   };
 
   const handleUploadSuccess = () => {

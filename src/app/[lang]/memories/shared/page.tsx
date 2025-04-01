@@ -18,7 +18,7 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
   const router = useRouter();
   const { toast } = useToast();
   const [memories, setMemories] = useState<
-    (Memory & { status: "private" | "shared" | "public"; sharedWithCount?: number })[]
+    (Memory & { status: "private" | "shared" | "public"; sharedWithCount?: number; sharedBy?: string })[]
   >([]);
   const [isLoadingMemories, setIsLoadingMemories] = useState(true);
   const [hasMore, setHasMore] = useState(true);
@@ -61,6 +61,7 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
         ...memory,
         status: "shared" as const,
         sharedWithCount: 1, // Since this is the shared memories page, each memory is shared with the current user
+        sharedBy: memory.ownerName || "Unknown", // Add the sharer's name
       }));
 
       setMemories((prev) => {
@@ -139,7 +140,7 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
   };
 
   const handleMemoryClick = (memory: Memory) => {
-    router.push(`/${lang}/${segment}/vault/${memory.id}`);
+    router.push(`/${lang}/vault/${memory.id}`);
   };
 
   if (!isAuthorized || isLoading) {

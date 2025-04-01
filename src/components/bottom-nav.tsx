@@ -15,23 +15,22 @@ export default function BottomNav({ dict }: BottomNavProps) {
   const pathname = usePathname();
   const { mode } = useInterface();
 
-  // Extract lang and segment from pathname
-  const [, lang, segment] = pathname.split("/");
+  // Extract lang from pathname
+  const [, lang] = pathname.split("/");
 
   // Guard against edge cases
-  if (!lang || !segment) {
-    console.warn("Missing required URL segments");
+  if (!lang) {
+    console.warn("Missing required language parameter");
   }
 
   // Helper function to construct full URLs
-  const getFullHref = (baseHref: string) => `/${lang}/${segment}${baseHref}`;
+  const getFullHref = (baseHref: string) => `/${lang}${baseHref}`;
 
   console.log("BottomNav Debug:", {
     pathname,
     mode,
     isVisible: mode !== "marketing",
     lang,
-    segment,
   });
 
   // Don't render bottom nav in marketing mode
@@ -44,7 +43,7 @@ export default function BottomNav({ dict }: BottomNavProps) {
       <div className="mx-auto flex max-w-screen-xl items-center justify-around px-4 py-2">
         {allNavItems.map((item) => {
           const fullHref = getFullHref(item.href);
-          const isActive = pathname.startsWith(fullHref);
+          const isActive = pathname === fullHref || pathname.startsWith(`${fullHref}/`);
           return (
             <Link
               key={item.href}

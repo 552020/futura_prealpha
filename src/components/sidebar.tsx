@@ -16,16 +16,16 @@ export default function Sidebar({ dict }: SidebarProps) {
   const pathname = usePathname();
   const { mode } = useInterface();
 
-  // Extract lang and segment from pathname
-  const [, lang, segment] = pathname.split("/");
+  // Extract lang from pathname
+  const [, lang] = pathname.split("/");
 
   // Guard against edge cases
-  if (!lang || !segment) {
-    console.warn("Missing required URL segments");
+  if (!lang) {
+    console.warn("Missing required language parameter");
   }
 
   // Helper function to construct full URLs
-  const getFullHref = (baseHref: string) => `/${lang}/${segment}${baseHref}`;
+  const getFullHref = (baseHref: string) => `/${lang}${baseHref}`;
 
   // Don't render sidebar in marketing mode
   if (mode === "marketing") {
@@ -44,7 +44,7 @@ export default function Sidebar({ dict }: SidebarProps) {
         <div className="space-y-1">
           {mainNavItems.map((item) => {
             const fullHref = getFullHref(item.href);
-            const isActive = pathname.startsWith(fullHref);
+            const isActive = pathname === fullHref || pathname.startsWith(`${fullHref}/`);
             return (
               <Link
                 key={item.href}
@@ -75,7 +75,7 @@ export default function Sidebar({ dict }: SidebarProps) {
         <div className="mt-6 space-y-1">
           {secondaryNavItems.map((item) => {
             const fullHref = getFullHref(item.href);
-            const isActive = pathname.startsWith(fullHref);
+            const isActive = pathname === fullHref || pathname.startsWith(`${fullHref}/`);
             return (
               <Link
                 key={item.href}
