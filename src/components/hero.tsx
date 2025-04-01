@@ -39,12 +39,12 @@ function Hero({ dict, lang }: HeroProps) {
         </div>
 
         {/* Arrow button */}
-        <div className="flex justify-center md:absolute md:top-10 md:right-10 z-10 mt-8 md:mt-0">
+        <div className="flex justify-center md:absolute md:top-10 md:right-10 z-10">
           <div className="relative">
-            <div className="absolute -inset-1 w-[104px] h-[104px] rounded-full bg-foreground animate-pulse-scale" />
+            <div className="absolute -inset-1 w-[104px] h-[104px] rounded-full bg-neutral-900 dark:bg-white animate-pulse-scale" />
             <Link
               href={`/${currentLang}/onboarding/items-upload`}
-              className="relative w-24 h-24 rounded-full bg-foreground hover:bg-background flex items-center justify-center cursor-pointer text-background hover:text-foreground border-2 border-transparent hover:border-foreground transition-all text-4xl font-bold"
+              className="relative w-24 h-24 rounded-full bg-neutral-900 hover:bg-white dark:bg-white dark:hover:bg-neutral-900 flex items-center justify-center cursor-pointer text-white hover:text-neutral-900 dark:text-neutral-900 dark:hover:text-white border-2 border-transparent hover:border-neutral-900 dark:hover:border-white transition-all text-4xl font-bold"
               aria-label={dict?.hero?.startNow || "Start Now"}
             >
               {dict?.hero?.arrowSymbol || "→"}
