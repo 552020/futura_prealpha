@@ -10,9 +10,12 @@ if (typeof window !== "undefined") {
 }
 
 // Ensure DATABASE_URL is set
-if (!process.env.DATABASE_URL) {
-  throw new Error("❌ DATABASE_URL is missing! Make sure it's set in .env.local");
+if (!process.env.DATABASE_URL && !process.env.DATABASE_URL_UNPOOLED) {
+  throw new Error("❌ DATABASE_URL or DATABASE_URL_UNPOOLED is missing! Make sure it's set in .env.local");
 }
 
-const sql = neon(process.env.DATABASE_URL!);
+// Use unpooled connection for non-browser environments (like seeding)
+const connectionString = typeof window === "undefined" ? process.env.DATABASE_URL_UNPOOLED : process.env.DATABASE_URL;
+
+const sql = neon(connectionString!);
 export const db = drizzle(sql, { schema }); // Pass schema as second parameter

@@ -71,6 +71,13 @@
       "when": 1743162237025,
       "tag": "0009_quiet_mephistopheles",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1743516540769,
+      "tag": "0010_familiar_living_mummy",
+      "breakpoints": true
     }
   ]
 }
