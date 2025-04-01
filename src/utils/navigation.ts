@@ -17,7 +17,7 @@ export function getTranslatedLabel(item: NavItem, dict: Dictionary): string {
 export const mainNavItems: NavItem[] = [
   { href: "/vault", icon: Vault, label: "Vault", translationKey: "vault" },
   { href: "/feed", icon: Newspaper, label: "Feed", translationKey: "feed" },
-  { href: "/memories/shared", icon: Share2, label: "Shared", translationKey: "shared" },
+  { href: "/shared", icon: Share2, label: "Shared", translationKey: "shared" },
 ];
 
 export const secondaryNavItems: NavItem[] = [

@@ -14,7 +14,7 @@ interface MemoryStatusProps {
 
 export function MemoryStatus({ status, sharedWithCount, sharedBy, className }: MemoryStatusProps) {
   const pathname = usePathname();
-  const isSharedRoute = pathname.includes("/memories/shared");
+  const isSharedRoute = pathname.includes("/shared");
 
   const getStatusConfig = () => {
     switch (status) {

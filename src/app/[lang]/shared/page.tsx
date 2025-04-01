@@ -10,9 +10,9 @@ import { Memory } from "@/types/memory";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
-export default function SharedMemoriesPage({ params }: { params: Promise<{ lang: string; segment: string }> }) {
+export default function SharedMemoriesPage({ params }: { params: Promise<{ lang: string }> }) {
   // Unwrap params using React.use()
-  const { lang, segment } = use(params);
+  const { lang } = use(params);
 
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
   const router = useRouter();
@@ -26,7 +26,7 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
   const { ref } = useInView();
 
   // Log route parameters for debugging
-  console.log("Rendering SharedMemoriesPage", { lang, segment, isAuthorized, userId });
+  console.log("Rendering SharedMemoriesPage", { lang, isAuthorized, userId });
 
   const fetchMemories = useCallback(async () => {
     const timestamp = new Date().toISOString();
@@ -35,7 +35,6 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
         page: currentPage,
         timestamp,
         lang,
-        segment,
       });
 
       const response = await fetch(`/api/memories/shared?page=${currentPage}`);
@@ -84,7 +83,7 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
     } finally {
       setIsLoadingMemories(false);
     }
-  }, [currentPage, toast, lang, segment]);
+  }, [currentPage, toast, lang]);
 
   useEffect(() => {
     if (!isAuthorized) {
@@ -140,7 +139,7 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
   };
 
   const handleMemoryClick = (memory: Memory) => {
-    router.push(`/${lang}/vault/${memory.id}`);
+    router.push(`/${lang}/shared/${memory.id}`);
   };
 
   if (!isAuthorized || isLoading) {
