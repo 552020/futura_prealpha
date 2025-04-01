@@ -16,6 +16,17 @@ export default function Sidebar({ dict }: SidebarProps) {
   const pathname = usePathname();
   const { mode } = useInterface();
 
+  // Extract lang and segment from pathname
+  const [, lang, segment] = pathname.split("/");
+
+  // Guard against edge cases
+  if (!lang || !segment) {
+    console.warn("Missing required URL segments");
+  }
+
+  // Helper function to construct full URLs
+  const getFullHref = (baseHref: string) => `/${lang}/${segment}${baseHref}`;
+
   // Don't render sidebar in marketing mode
   if (mode === "marketing") {
     return null;
@@ -32,11 +43,12 @@ export default function Sidebar({ dict }: SidebarProps) {
         {/* Main navigation items */}
         <div className="space-y-1">
           {mainNavItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            const fullHref = getFullHref(item.href);
+            const isActive = pathname.startsWith(fullHref);
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={fullHref}
                 aria-label={getTranslatedLabel(item, dict)}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 text-sm relative",
@@ -62,11 +74,12 @@ export default function Sidebar({ dict }: SidebarProps) {
         {/* Secondary navigation items */}
         <div className="mt-6 space-y-1">
           {secondaryNavItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            const fullHref = getFullHref(item.href);
+            const isActive = pathname.startsWith(fullHref);
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={fullHref}
                 aria-label={getTranslatedLabel(item, dict)}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 text-sm relative",

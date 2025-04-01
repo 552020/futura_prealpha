@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, use } from "react";
 import { MemoryGrid } from "@/components/memory/MemoryGrid";
 import { Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
@@ -10,7 +10,10 @@ import { Memory } from "@/types/memory";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
-export default function SharedMemoriesPage() {
+export default function SharedMemoriesPage({ params }: { params: Promise<{ lang: string; segment: string }> }) {
+  // Unwrap params using React.use()
+  const { lang, segment } = use(params);
+
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
   const router = useRouter();
   const { toast } = useToast();
@@ -22,12 +25,17 @@ export default function SharedMemoriesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const { ref } = useInView();
 
+  // Log route parameters for debugging
+  console.log("Rendering SharedMemoriesPage", { lang, segment, isAuthorized, userId });
+
   const fetchMemories = useCallback(async () => {
     const timestamp = new Date().toISOString();
     try {
       console.log("🔄 FETCH SHARED MEMORIES - Starting fetch:", {
         page: currentPage,
         timestamp,
+        lang,
+        segment,
       });
 
       const response = await fetch(`/api/memories/shared?page=${currentPage}`);
@@ -75,7 +83,7 @@ export default function SharedMemoriesPage() {
     } finally {
       setIsLoadingMemories(false);
     }
-  }, [currentPage, toast]);
+  }, [currentPage, toast, lang, segment]);
 
   useEffect(() => {
     if (!isAuthorized) {
@@ -131,7 +139,7 @@ export default function SharedMemoriesPage() {
   };
 
   const handleMemoryClick = (memory: Memory) => {
-    router.push(`/vault/${memory.id}`);
+    router.push(`/${lang}/${segment}/vault/${memory.id}`);
   };
 
   if (!isAuthorized || isLoading) {

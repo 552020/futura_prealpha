@@ -15,10 +15,23 @@ export default function BottomNav({ dict }: BottomNavProps) {
   const pathname = usePathname();
   const { mode } = useInterface();
 
+  // Extract lang and segment from pathname
+  const [, lang, segment] = pathname.split("/");
+
+  // Guard against edge cases
+  if (!lang || !segment) {
+    console.warn("Missing required URL segments");
+  }
+
+  // Helper function to construct full URLs
+  const getFullHref = (baseHref: string) => `/${lang}/${segment}${baseHref}`;
+
   console.log("BottomNav Debug:", {
     pathname,
     mode,
     isVisible: mode !== "marketing",
+    lang,
+    segment,
   });
 
   // Don't render bottom nav in marketing mode
@@ -30,11 +43,12 @@ export default function BottomNav({ dict }: BottomNavProps) {
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background md:hidden">
       <div className="mx-auto flex max-w-screen-xl items-center justify-around px-4 py-2">
         {allNavItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
+          const fullHref = getFullHref(item.href);
+          const isActive = pathname.startsWith(fullHref);
           return (
             <Link
               key={item.href}
-              href={item.href}
+              href={fullHref}
               className={cn(
                 "flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
                 isActive ? "text-primary" : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
