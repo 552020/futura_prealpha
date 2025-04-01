@@ -2,16 +2,15 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { MemoryGrid } from "@/components/memory/MemoryGrid";
-import { Loader2, Plus, Share2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { useAuthGuard } from "@/utils/authentication";
 import { normalizeMemories } from "@/utils/normalizeMemories";
 import { Memory } from "@/types/memory";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { MemoryUpload } from "@/components/memory/MemoryUpload";
 
-export default function VaultPage() {
+export default function SharedMemoriesPage() {
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
   const router = useRouter();
   const { toast } = useToast();
@@ -26,18 +25,18 @@ export default function VaultPage() {
   const fetchMemories = useCallback(async () => {
     const timestamp = new Date().toISOString();
     try {
-      console.log("🔄 FETCH MEMORIES - Starting fetch:", {
+      console.log("🔄 FETCH SHARED MEMORIES - Starting fetch:", {
         page: currentPage,
         timestamp,
       });
 
-      const response = await fetch(`/api/memories?page=${currentPage}`);
+      const response = await fetch(`/api/memories/shared?page=${currentPage}`);
       if (!response.ok) {
-        throw new Error("Failed to fetch memories");
+        throw new Error("Failed to fetch shared memories");
       }
 
       const data = await response.json();
-      console.log("✅ FETCH MEMORIES - Success:", {
+      console.log("✅ FETCH SHARED MEMORIES - Success:", {
         imagesCount: data.images.length,
         documentsCount: data.documents.length,
         notesCount: data.notes.length,
@@ -51,8 +50,8 @@ export default function VaultPage() {
         notes: data.notes,
       }).map((memory) => ({
         ...memory,
-        status: "private" as const, // Default to private for user's own memories
-        sharedWithCount: 0, // Default to 0 for user's own memories
+        status: "shared" as const,
+        sharedWithCount: 1, // Since this is the shared memories page, each memory is shared with the current user
       }));
 
       setMemories((prev) => {
@@ -61,7 +60,7 @@ export default function VaultPage() {
       });
       setHasMore(data.hasMore);
     } catch (error) {
-      console.error("❌ FETCH MEMORIES ERROR:", {
+      console.error("❌ FETCH SHARED MEMORIES ERROR:", {
         error,
         message: error instanceof Error ? error.message : "Unknown error",
         stack: error instanceof Error ? error.stack : undefined,
@@ -69,7 +68,7 @@ export default function VaultPage() {
       });
       toast({
         title: "Error",
-        description: "Failed to load memories. Please try again.",
+        description: "Failed to load shared memories. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -134,19 +133,6 @@ export default function VaultPage() {
     router.push(`/vault/${memory.id}`);
   };
 
-  const handleUploadSuccess = () => {
-    // Refresh the memories list to show the new memory
-    fetchMemories();
-  };
-
-  const handleUploadError = (error: Error) => {
-    toast({
-      title: "Error",
-      description: error.message || "Failed to upload memory",
-      variant: "destructive",
-    });
-  };
-
   if (!isAuthorized || isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -157,7 +143,7 @@ export default function VaultPage() {
 
   return (
     <div className="container mx-auto px-6 py-8">
-      <h1 className="mb-8 text-3xl font-bold">Your Digital Vault</h1>
+      <h1 className="mb-8 text-3xl font-bold">Shared Memories</h1>
 
       {isTemporaryUser && (
         <div className="mb-4 rounded-lg bg-yellow-50 p-4 text-yellow-800">
@@ -187,11 +173,10 @@ export default function VaultPage() {
 
       {memories.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
-          <h3 className="text-lg font-medium">No memories yet</h3>
+          <h3 className="text-lg font-medium">No shared memories yet</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            Start by uploading your first memory. You can add images, videos, audio files, or write notes.
+            When someone shares a memory with you, it will appear here.
           </p>
-          <MemoryUpload variant="large-icon" onSuccess={handleUploadSuccess} onError={handleUploadError} />
         </div>
       ) : (
         <MemoryGrid memories={memories} onDelete={handleDelete} onShare={handleShare} onClick={handleMemoryClick} />

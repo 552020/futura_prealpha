@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import { Download, Edit, Trash } from "lucide-react";
 import { useState } from "react";
-import type { DBImage, DBDocument, DBNote } from "@/db/schema";
+import type { DBImage, DBDocument, DBNote, DBVideo } from "@/db/schema";
 
 interface MemoryViewerProps {
   memory: MemoryWithType;
@@ -87,6 +87,15 @@ export function MemoryViewer({ memory, isOwner }: MemoryViewerProps) {
           </div>
         )}
 
+        {memory.type === "video" && (
+          <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+            <video controls className="h-full w-full">
+              <source src={(memory.data as DBVideo).url} type={(memory.data as DBVideo).mimeType} />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        )}
+
         {memory.type === "document" && (
           <div className="rounded-lg border p-4">
             <p className="text-sm text-muted-foreground">Document Type: {(memory.data as DBDocument).mimeType}</p>
@@ -100,8 +109,8 @@ export function MemoryViewer({ memory, isOwner }: MemoryViewerProps) {
           </div>
         )}
 
-        {(memory.data as DBImage | DBDocument).description && (
-          <p className="mt-4 text-muted-foreground">{(memory.data as DBImage | DBDocument).description}</p>
+        {(memory.data as DBImage | DBDocument | DBVideo).description && (
+          <p className="mt-4 text-muted-foreground">{(memory.data as DBImage | DBDocument | DBVideo).description}</p>
         )}
       </div>
     </div>

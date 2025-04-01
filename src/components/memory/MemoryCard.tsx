@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, Image as ImageIcon, FileText, Music, Video } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -16,41 +16,39 @@ import {
 import { ShareDialog } from "./ShareDialog";
 import { Memory } from "@/types/memory";
 import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { MemoryStatus } from "./MemoryStatus";
+import { cn } from "@/lib/utils";
 
-interface MemoryCardProps extends Memory {
-  onDelete: (id: string) => void;
+interface MemoryCardProps {
+  memory: Memory & { status: "private" | "shared" | "public"; sharedWithCount?: number };
+  onDelete?: (id: string) => void;
   onShare?: () => void;
+  onClick?: (memory: Memory) => void;
+  className?: string;
 }
 
-export function MemoryCard({
-  id,
-  type,
-  title,
-  description,
-  createdAt,
-  thumbnail,
-  content,
-  onDelete,
-  onShare,
-}: MemoryCardProps) {
+export function MemoryCard({ memory, onDelete, onShare, onClick, className }: MemoryCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   const handleDelete = () => {
-    onDelete(id);
-    setIsDeleteDialogOpen(false);
+    if (onDelete) {
+      onDelete(memory.id);
+      setIsDeleteDialogOpen(false);
+    }
   };
 
   const getIcon = () => {
-    switch (type) {
+    switch (memory.type) {
       case "image":
-        return <ImageIcon className="h-6 w-6" />;
+        return <ImageIcon className="h-4 w-4" />;
       case "video":
-        return <Video className="h-6 w-6" />;
+        return <Video className="h-4 w-4" />;
       case "note":
-        return <FileText className="h-6 w-6" />;
+        return <FileText className="h-4 w-4" />;
       case "audio":
-        return <Music className="h-6 w-6" />;
+        return <Music className="h-4 w-4" />;
       default:
         return null;
     }
@@ -59,75 +57,98 @@ export function MemoryCard({
   return (
     <>
       <Card
-        className="group relative overflow-hidden transition-all hover:shadow-lg"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        className={cn(
+          "group relative overflow-hidden transition-all hover:shadow-md",
+          onClick && "cursor-pointer",
+          className
+        )}
+        onClick={() => onClick?.(memory)}
       >
-        <CardHeader className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {getIcon()}
-              <div>
-                <h3 className="font-semibold truncate">{title || "Untitled"}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {formatDistanceToNow(new Date(createdAt), { addSuffix: true })}
-                </p>
-              </div>
-            </div>
-            <div className={`flex gap-2 transition-opacity ${isHovered ? "opacity-100" : "opacity-0"}`}>
-              <ShareDialog memoryId={id} onShare={onShare} />
-              <Button variant="ghost" size="icon" onClick={() => setIsDeleteDialogOpen(true)}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <div className="flex items-center space-x-2">
+            {getIcon()}
+            <h3 className="font-semibold leading-none tracking-tight">{memory.title}</h3>
           </div>
+          <MemoryStatus status={memory.status} sharedWithCount={memory.sharedWithCount} />
         </CardHeader>
-        <CardContent className="p-4 pt-0">
-          {type === "image" && thumbnail && (
+        <CardContent>
+          {memory.type === "image" && memory.thumbnail && (
             <div className="relative aspect-square w-full overflow-hidden rounded-lg">
               <Image
-                src={thumbnail}
-                alt={title || "Memory image"}
+                src={memory.thumbnail}
+                alt={memory.title || "Memory image"}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             </div>
           )}
-          {type === "note" && content && <p className="line-clamp-3 text-sm text-muted-foreground">{content}</p>}
-          {type === "audio" && (
+          {memory.type === "note" && memory.content && (
+            <p className="line-clamp-3 text-sm text-muted-foreground">{memory.content}</p>
+          )}
+          {memory.type === "audio" && (
             <div className="flex items-center gap-2 rounded-lg bg-muted p-2">
               <Music className="h-4 w-4" />
               <span className="text-sm">Audio file</span>
             </div>
           )}
-          {type === "video" && thumbnail && (
+          {memory.type === "video" && memory.thumbnail && (
             <div className="relative aspect-square w-full overflow-hidden rounded-lg">
-              <video src={thumbnail} className="h-full w-full object-cover" poster={thumbnail} />
+              <video src={memory.thumbnail} className="h-full w-full object-cover" poster={memory.thumbnail} />
             </div>
           )}
-          {description && <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{description}</p>}
+          {memory.description && (
+            <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{memory.description}</p>
+          )}
         </CardContent>
-      </Card>
-
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Memory</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this memory? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-              Cancel
+        <CardFooter className="flex justify-end space-x-2">
+          {onShare && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onShare();
+              }}
+            >
+              Share
             </Button>
-            <Button variant="destructive" onClick={handleDelete}>
+          )}
+          {onDelete && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsDeleteDialogOpen(true);
+              }}
+            >
               Delete
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          )}
+        </CardFooter>
+      </Card>
+
+      {onDelete && (
+        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Memory</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this memory? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={handleDelete}>
+                Delete
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

@@ -6,6 +6,7 @@ import crypto from "crypto";
 
 // Constants
 export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+export const MAX_VIDEO_SIZE = 25 * 1024 * 1024; // 25MB
 // Self written notes are dealt in another route
 export const ACCEPTED_MIME_TYPES = {
   image: [
@@ -19,6 +20,8 @@ export const ACCEPTED_MIME_TYPES = {
     "application/pdf", // .pdf
     "application/msword", // .doc
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+    "application/rtf", // .rtf
+    "application/epub+zip", // .epub
 
     // OpenDocument
     "application/vnd.oasis.opendocument.text", // .odt
@@ -154,38 +157,44 @@ export type FileValidationResult = {
   buffer?: Buffer;
 };
 
-export async function validateFile(file: File): Promise<FileValidationResult> {
-  // Check if it's a File instance
-  if (!(file instanceof File)) {
-    return { isValid: false, error: "Invalid file upload" };
-  }
-
-  // Validate file size
-  if (file.size > MAX_FILE_SIZE) {
+export async function validateFile(file: File): Promise<{ isValid: boolean; error?: string; buffer?: Buffer }> {
+  // Check file size
+  const isVideo = file.type.startsWith("video/");
+  const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_FILE_SIZE;
+  if (file.size > maxSize) {
     return { isValid: false, error: "File too large" };
   }
 
-  // Get actual file type
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  const fileType = await fileTypeFromBuffer(buffer);
-
-  if (!fileType || !isAcceptedMimeType(fileType.mime)) {
-    return { isValid: false, error: "Unsupported file type" };
+  // Check mime type
+  if (!isAcceptedMimeType(file.type)) {
+    return { isValid: false, error: "Invalid file type" };
   }
 
-  // Build common metadata
-  const metadata = {
-    uploadedAt: new Date().toISOString(),
-    originalName: file.name,
-    size: file.size,
-    mimeType: fileType.mime,
-  };
+  // Get file buffer
+  const buffer = Buffer.from(await file.arrayBuffer());
 
-  return {
-    isValid: true,
-    fileType: { mime: fileType.mime as AcceptedMimeType },
-    metadata,
-    buffer,
-  };
+  // Skip file type validation for text files (like .md, .txt) because:
+  // 1. Text files don't have a specific binary signature (magic numbers)
+  // 2. file-type package can't reliably detect text file types
+  // 3. We already validated the mime type above, which is sufficient for text files
+  if (file.type.startsWith("text/")) {
+    return { isValid: true, buffer };
+  }
+
+  // Validate file type for non-text files
+  const fileType = await fileTypeFromBuffer(buffer);
+  if (!fileType) {
+    return { isValid: false, error: "Could not determine file type" };
+  }
+
+  // Check if the detected mime type matches the file's mime type
+  const memoryType = getMemoryType(file.type);
+  if (memoryType === "video" && !fileType.mime.startsWith("video/")) {
+    return { isValid: false, error: "Invalid video file" };
+  }
+  if (memoryType === "image" && !fileType.mime.startsWith("image/")) {
+    return { isValid: false, error: "Invalid image file" };
+  }
+
+  return { isValid: true, buffer };
 }

@@ -34,23 +34,50 @@ interface UserData {
   memories: Memory[];
 }
 
-async function uploadAsset(filename: string): Promise<string> {
+async function uploadAsset(filename: string): Promise<{ url: string; size: number; mimeType: string }> {
   const assetPath = join(__dirname, "..", "assets", "tenenbaum", filename);
   try {
     const buffer = readFileSync(assetPath);
     const mimeType = filename.endsWith(".mp4")
       ? "video/mp4"
+      : filename.endsWith(".mov")
+      ? "video/quicktime"
+      : filename.endsWith(".avi")
+      ? "video/x-msvideo"
+      : filename.endsWith(".webm")
+      ? "video/webm"
       : filename.endsWith(".pdf")
       ? "application/pdf"
+      : filename.endsWith(".docx")
+      ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      : filename.endsWith(".doc")
+      ? "application/msword"
+      : filename.endsWith(".odt")
+      ? "application/vnd.oasis.opendocument.text"
+      : filename.endsWith(".rtf")
+      ? "application/rtf"
+      : filename.endsWith(".epub")
+      ? "application/epub+zip"
       : filename.endsWith(".md")
       ? "text/markdown"
-      : "image/jpeg";
+      : filename.endsWith(".jpg") || filename.endsWith(".jpeg")
+      ? "image/jpeg"
+      : filename.endsWith(".png")
+      ? "image/png"
+      : filename.endsWith(".gif")
+      ? "image/gif"
+      : filename.endsWith(".webp")
+      ? "image/webp"
+      : filename.endsWith(".tiff")
+      ? "image/tiff"
+      : "application/octet-stream";
     const file = new File([buffer], filename, { type: mimeType });
     const validationResult = await validateFile(file);
     if (!validationResult.isValid) {
       throw new Error(`Invalid file: ${validationResult.error}`);
     }
-    return await uploadFileToStorage(file, validationResult.buffer);
+    const url = await uploadFileToStorage(file, validationResult.buffer);
+    return { url, size: buffer.length, mimeType };
   } catch (error) {
     console.error(`Failed to upload asset ${filename}:`, error);
     throw error;
@@ -61,7 +88,7 @@ async function createUser(userData: UserData) {
   // Upload profile image if exists
   let imageUrl = userData.user.image;
   if (imageUrl) {
-    imageUrl = await uploadAsset(imageUrl);
+    imageUrl = await uploadAsset(imageUrl).then((asset) => asset.url);
   }
 
   // Create user record
@@ -94,13 +121,13 @@ async function createMemory(memory: Memory, ownerId: string) {
   switch (memory.type) {
     case "image":
       if (!memory.url) throw new Error("Image URL is required");
-      const imageUrl = await uploadAsset(memory.url);
+      const imageUpload = await uploadAsset(memory.url);
       const [image] = await db
         .insert(images)
         .values({
           id: faker.string.uuid(),
           ownerId,
-          url: imageUrl,
+          url: imageUpload.url,
           title: memory.title,
           description: memory.description,
           ownerSecureCode: faker.string.alphanumeric(12),
@@ -123,17 +150,17 @@ async function createMemory(memory: Memory, ownerId: string) {
 
     case "document":
       if (!memory.file) throw new Error("Document file is required");
-      const documentUrl = await uploadAsset(memory.file);
+      const documentUpload = await uploadAsset(memory.file);
       const [document] = await db
         .insert(documents)
         .values({
           id: faker.string.uuid(),
           ownerId,
-          url: documentUrl,
+          url: documentUpload.url,
           title: memory.title,
           description: memory.description,
-          mimeType: "application/pdf", // We should determine this from the file
-          size: "1024", // We should get the actual file size
+          mimeType: documentUpload.mimeType,
+          size: documentUpload.size.toString(),
           ownerSecureCode: faker.string.alphanumeric(12),
         })
         .returning();
@@ -141,17 +168,17 @@ async function createMemory(memory: Memory, ownerId: string) {
 
     case "video":
       if (!memory.url) throw new Error("Video URL is required");
-      const videoUrl = await uploadAsset(memory.url);
+      const videoUpload = await uploadAsset(memory.url);
       const [video] = await db
         .insert(videos)
         .values({
           id: faker.string.uuid(),
           ownerId,
-          url: videoUrl,
+          url: videoUpload.url,
           title: memory.title,
           description: memory.description,
-          mimeType: "video/mp4", // We should determine this from the file
-          size: "1024", // We should get the actual file size
+          mimeType: videoUpload.mimeType,
+          size: videoUpload.size.toString(),
           ownerSecureCode: faker.string.alphanumeric(12),
         })
         .returning();
@@ -207,6 +234,7 @@ export async function seedTenenbaum() {
       await db.delete(images).where(inArray(images.ownerId, allUserIds));
       await db.delete(documents).where(inArray(documents.ownerId, allUserIds));
       await db.delete(notes).where(inArray(notes.ownerId, allUserIds));
+      await db.delete(videos).where(inArray(videos.ownerId, allUserIds));
     }
 
     if (userIds.length > 0) {
