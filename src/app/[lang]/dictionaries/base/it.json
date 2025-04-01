@@ -20,6 +20,13 @@
     "vault": "Archivio",
     "feed": "Feed"
   },
+  "navigation": {
+    "vault": "Archivio",
+    "feed": "Feed",
+    "shared": "Condiviso",
+    "contacts": "Contatti",
+    "profile": "Profilo"
+  },
   "footer": {
     "tagline": "Fatto con ❤️ tra Berlino, Marsiglia e Lisbona",
     "terms": "Termini di Servizio",

@@ -20,6 +20,13 @@
     "vault": "保险库",
     "feed": "动态"
   },
+  "navigation": {
+    "vault": "保险库",
+    "feed": "动态",
+    "shared": "已共享",
+    "contacts": "联系人",
+    "profile": "个人资料"
+  },
   "footer": {
     "tagline": "在柏林、马赛和里斯本之间用❤️制作",
     "terms": "服务条款",

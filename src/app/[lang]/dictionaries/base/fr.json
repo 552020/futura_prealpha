@@ -20,6 +20,13 @@
     "vault": "Coffre-fort",
     "feed": "Fil d'actualité"
   },
+  "navigation": {
+    "vault": "Coffre-fort",
+    "feed": "Fil d'actualité",
+    "shared": "Partagé",
+    "contacts": "Contacts",
+    "profile": "Profil"
+  },
   "footer": {
     "tagline": "Fait avec ❤️ entre Berlin, Marseille et Lisbonne",
     "terms": "Conditions d'Utilisation",

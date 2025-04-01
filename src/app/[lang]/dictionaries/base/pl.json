@@ -20,6 +20,13 @@
     "vault": "Skarbiec",
     "feed": "Feed"
   },
+  "navigation": {
+    "vault": "Skarbiec",
+    "feed": "Feed",
+    "shared": "Udostępnione",
+    "contacts": "Kontakty",
+    "profile": "Profil"
+  },
   "footer": {
     "tagline": "Stworzone z ❤️ pomiędzy Berlinem, Marsylią i Lizboną",
     "terms": "Warunki Korzystania",

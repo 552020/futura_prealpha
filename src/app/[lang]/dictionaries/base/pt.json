@@ -20,6 +20,13 @@
     "vault": "Cofre",
     "feed": "Feed"
   },
+  "navigation": {
+    "vault": "Cofre",
+    "feed": "Feed",
+    "shared": "Compartilhado",
+    "contacts": "Contatos",
+    "profile": "Perfil"
+  },
   "footer": {
     "tagline": "Feito com ❤️ entre Berlim, Marselha e Lisboa",
     "terms": "Termos de Serviço",
