@@ -4,17 +4,13 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider } from "next-auth/react";
 import Header from "@/components/header";
-import Footer from "@/components/footer";
 import { InterfaceProvider } from "@/contexts/interface-context";
-import { OnboardingProvider } from "@/contexts/onboarding-context";
 import { locales } from "@/middleware";
 import { notFound } from "next/navigation";
 import { getDictionary, Dictionary } from "@/utils/dictionaries";
-import { Toaster } from "@/components/ui/toaster";
 import { PostHogProvider } from "@/components/posthog-provider";
 import BottomNav from "@/components/bottom-nav";
 import Sidebar from "@/components/sidebar";
-import { cn } from "@/lib/utils";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
