@@ -1,0 +1,18 @@
+{
+  "user": {
+    "name": "Margot Tenenbaum",
+    "email": "margot@tenenbaum.com",
+    "username": "margot",
+    "password": "tenenbaum123",
+    "image": "margot.jpg"
+  },
+  "memories": [
+    {
+      "type": "note",
+      "title": "My Secret Play",
+      "description": "A play I wrote about my family",
+      "content": "The Royal Tenenbaums\n\nA family of geniuses, each with their own unique talents and struggles...",
+      "isPublic": false
+    }
+  ]
+}
