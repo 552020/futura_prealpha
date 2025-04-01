@@ -58,17 +58,15 @@ export const normalizeMemories = (data: RawMemoryData): Memory[] => {
       url: video.url,
       mimeType: video.mimeType,
     })),
-    ...data.documents
-      .filter((doc) => getDocumentType(doc.mimeType) === "audio")
-      .map((doc) => ({
-        id: doc.id,
-        type: "audio" as const,
-        title: doc.title || "Untitled Audio",
-        description: doc.description,
-        createdAt: doc.createdAt,
-        url: doc.url,
-        mimeType: doc.mimeType,
-      })),
+    ...data.documents.map((doc) => ({
+      id: doc.id,
+      type: "document" as const,
+      title: doc.title || "Untitled Document",
+      description: doc.description,
+      createdAt: doc.createdAt,
+      url: doc.url,
+      mimeType: doc.mimeType,
+    })),
     ...data.notes.map((note) => ({
       id: note.id,
       type: "note" as const,

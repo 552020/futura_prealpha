@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, ImageIcon, Video, Share2, Trash2 } from "lucide-react";
+import { FileText, ImageIcon, Video, Share2, Trash2, File } from "lucide-react";
 import { Memory } from "@/types/memory";
 import { MemoryStatus } from "./MemoryStatus";
 import Image from "next/image";
@@ -29,6 +29,10 @@ export function MemoryCard({ memory, onClick, onShare, onDelete }: MemoryCardPro
             <ImageIcon className="h-5 w-5" />
           ) : memory.type === "video" ? (
             <Video className="h-5 w-5" />
+          ) : memory.type === "note" ? (
+            <FileText className="h-5 w-5" />
+          ) : memory.type === "document" ? (
+            <File className="h-5 w-5" />
           ) : (
             <FileText className="h-5 w-5" />
           )}
