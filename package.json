@@ -10,11 +10,14 @@
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:pull": "drizzle-kit pull",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "seed": "tsx src/db/seed.ts",
+    "create-test-users": "tsx src/db/create-test-users.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.4",
     "@auth/unstorage-adapter": "^2.7.4",
+    "@faker-js/faker": "^8.4.1",
     "@formatjs/intl-localematcher": "^0.6.0",
     "@neondatabase/serverless": "^0.10.4",
     "@radix-ui/react-accordion": "^1.2.3",
@@ -39,7 +42,8 @@
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.3",
     "esbuild": "^0.25.0",
-    "file-type": "^20.4.1",
+    "faker-js": "^1.0.0",
+    "file-type": "^18.7.0",
     "form-data": "^4.0.2",
     "lucide-react": "^0.475.0",
     "mailgun.js": "^12.0.1",
@@ -74,6 +78,7 @@
     "pg": "^8.13.2",
     "postcss": "^8",
     "tailwindcss": "^4.0.0",
+    "tsx": "^4.19.3",
     "typescript": "^5"
   },
   "pnpm": {
