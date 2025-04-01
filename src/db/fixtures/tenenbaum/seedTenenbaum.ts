@@ -1,13 +1,12 @@
 import { db } from "@/db/db";
 import { allUsers, users, images, notes, documents, memoryShares, videos } from "@/db/schema";
 import { faker } from "@faker-js/faker";
-import { eq, inArray } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import { uploadFileToStorage, validateFile } from "@/app/api/memories/upload/utils";
 import { join } from "path";
 import { readFileSync } from "fs";
 import margotData from "./margot.json" assert { type: "json" };
 import richieData from "./richie.json" assert { type: "json" };
-import chasData from "./chas.json" assert { type: "json" };
 import wesData from "./wes.json" assert { type: "json" };
 import eliData from "./eli.json" assert { type: "json" };
 
@@ -248,7 +247,7 @@ export async function seedTenenbaum() {
     console.log("👥 Creating Tenenbaum users...");
     const margot = await createUser(margotData as UserData);
     const richie = await createUser(richieData as UserData);
-    const chas = await createUser(chasData as UserData);
+    // const chas = await createUser(chasData as UserData);
     const wes = await createUser(wesData as UserData);
     const eli = await createUser(eliData as UserData);
     console.log("✅ Tenenbaum users created");
@@ -260,10 +259,6 @@ export async function seedTenenbaum() {
 
     const richieMemories = await Promise.all(
       richieData.memories.map((memory) => createMemory(memory as Memory, richie.allUser.id))
-    );
-
-    const chasMemories = await Promise.all(
-      chasData.memories.map((memory) => createMemory(memory as Memory, chas.allUser.id))
     );
 
     const wesMemories = await Promise.all(

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { storeInDatabase, uploadFileToStorage, validateFile } from "../utils";
+import { storeInDatabase, uploadFileToStorage, validateFile, isAcceptedMimeType, getMemoryType } from "../utils";
 import { createTemporaryUserBase } from "../../../utils";
 
 export async function POST(request: NextRequest) {
@@ -20,6 +20,10 @@ export async function POST(request: NextRequest) {
       size: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
     });
 
+    if (!isAcceptedMimeType(file.type)) {
+      return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+    }
+
     // Validate file
     let validationResult;
     try {
@@ -30,8 +34,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: validationResult.error }, { status: 400 });
       }
       console.log("✅ File validation successful:", {
-        type: validationResult.fileType?.mime,
-        metadata: validationResult.metadata,
+        type: file.type,
+        size: file.size,
       });
     } catch (validationError) {
       console.error("❌ Validation error:", validationError);
@@ -72,11 +76,16 @@ export async function POST(request: NextRequest) {
     try {
       console.log("💾 Storing file metadata in database...");
       const result = await storeInDatabase({
-        type: validationResult.fileType!.mime.startsWith("image/") ? "image" : "document",
+        type: getMemoryType(file.type),
         ownerId: allUser.id,
         url,
         file,
-        metadata: validationResult.metadata!,
+        metadata: {
+          uploadedAt: new Date().toISOString(),
+          originalName: file.name,
+          size: file.size,
+          mimeType: file.type,
+        },
       });
       console.log("✅ File metadata stored successfully");
 

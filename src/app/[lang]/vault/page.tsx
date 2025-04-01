@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { MemoryGrid } from "@/components/memory/MemoryGrid";
-import { Loader2, Plus, Share2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { useAuthGuard } from "@/utils/authentication";
 import { normalizeMemories } from "@/utils/normalizeMemories";
@@ -49,6 +49,7 @@ export default function VaultPage() {
         images: data.images,
         documents: data.documents,
         notes: data.notes,
+        videos: data.videos || [],
       }).map((memory) => ({
         ...memory,
         status: "private" as const, // Default to private for user's own memories
@@ -75,7 +76,7 @@ export default function VaultPage() {
     } finally {
       setIsLoadingMemories(false);
     }
-  }, [currentPage]);
+  }, [currentPage, toast]);
 
   useEffect(() => {
     if (!isAuthorized) {

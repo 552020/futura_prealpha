@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db/db";
 import { eq } from "drizzle-orm";
-import { documents, images, notes, allUsers } from "@/db/schema";
-import type { DBImage, DBDocument, DBNote } from "@/db/schema";
+import { documents, images, notes, videos, allUsers } from "@/db/schema";
+import type { DBImage, DBDocument, DBNote, DBVideo } from "@/db/schema";
 import { findMemory } from "@/app/api/memories/utils/memory";
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
@@ -50,7 +50,10 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
   }
 }
 
-async function handleMemoryAccess(memory: DBDocument | DBImage | DBNote, allUserId: string): Promise<NextResponse> {
+async function handleMemoryAccess(
+  memory: DBDocument | DBImage | DBNote | DBVideo,
+  allUserId: string
+): Promise<NextResponse> {
   // Check if user has permission
   if (memory.ownerId !== allUserId && !memory.isPublic) {
     const hasAccess = await checkUserHasAccess(memory.id, allUserId);
@@ -63,7 +66,7 @@ async function handleMemoryAccess(memory: DBDocument | DBImage | DBNote, allUser
   return NextResponse.json({
     success: true,
     data: memory,
-    type: "content" in memory ? "note" : "url" in memory ? "image" : "document",
+    type: "content" in memory ? "note" : "url" in memory ? "image" : "duration" in memory ? "video" : "document",
   });
 }
 
@@ -112,6 +115,9 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
         break;
       case "note":
         await db.delete(notes).where(eq(notes.id, id));
+        break;
+      case "video":
+        await db.delete(videos).where(eq(videos.id, id));
         break;
     }
 
@@ -184,6 +190,15 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
           .update(notes)
           .set({ title, content, isPublic, metadata })
           .where(eq(notes.id, id))
+          .returning();
+        return NextResponse.json({ success: true, data: updated });
+      }
+      case "video": {
+        const { title, description, isPublic, metadata } = updates;
+        const [updated] = await db
+          .update(videos)
+          .set({ title, description, isPublic, metadata })
+          .where(eq(videos.id, id))
           .returning();
         return NextResponse.json({ success: true, data: updated });
       }

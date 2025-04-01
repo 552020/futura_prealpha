@@ -292,6 +292,7 @@ export const videos = pgTable("video", {
   ownerSecureCode: text("owner_secure_code").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  isPublic: boolean("is_public").default(false),
   metadata: json("metadata")
     .$type<{
       width?: number;

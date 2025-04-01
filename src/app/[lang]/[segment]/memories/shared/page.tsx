@@ -48,6 +48,7 @@ export default function SharedMemoriesPage() {
         images: data.images,
         documents: data.documents,
         notes: data.notes,
+        videos: data.videos || [],
       }).map((memory) => ({
         ...memory,
         status: "shared" as const,
@@ -74,7 +75,7 @@ export default function SharedMemoriesPage() {
     } finally {
       setIsLoadingMemories(false);
     }
-  }, [currentPage]);
+  }, [currentPage, toast]);
 
   useEffect(() => {
     if (!isAuthorized) {

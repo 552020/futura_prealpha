@@ -1,23 +1,28 @@
 import { db } from "@/db/db";
 import { users, allUsers } from "@/db/schema";
-import { eq } from "drizzle-orm";
 
 async function createTestUsers() {
   try {
     // Create test users
-    const testUser1 = await db.insert(users).values({
-      email: "test1@example.com",
-      name: "Test User 1",
-      username: "testuser1",
-      password: "test-password-1", // In production, this should be hashed
-    });
+    const [testUser1] = await db
+      .insert(users)
+      .values({
+        email: "test1@example.com",
+        name: "Test User 1",
+        username: "testuser1",
+        password: "test-password-1", // In production, this should be hashed
+      })
+      .returning();
 
-    const testUser2 = await db.insert(users).values({
-      email: "test2@example.com",
-      name: "Test User 2",
-      username: "testuser2",
-      password: "test-password-2", // In production, this should be hashed
-    });
+    const [testUser2] = await db
+      .insert(users)
+      .values({
+        email: "test2@example.com",
+        name: "Test User 2",
+        username: "testuser2",
+        password: "test-password-2", // In production, this should be hashed
+      })
+      .returning();
 
     // Create allUsers records
     await Promise.all([
