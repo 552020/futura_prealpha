@@ -90,8 +90,10 @@ export default async function RootLayout({
                   <div className="relative flex min-h-screen flex-col">
                     <Header dict={dict} lang={resolvedParams.lang} />
                     <BottomNav dict={dict} />
-                    <Sidebar dict={dict} />
-                    <main className="flex-1">{children}</main>
+                    <div className="flex flex-1">
+                      <Sidebar dict={dict} />
+                      <main className="flex-1">{children}</main>
+                    </div>
                   </div>
                 </OnboardingProvider>
               </InterfaceProvider>

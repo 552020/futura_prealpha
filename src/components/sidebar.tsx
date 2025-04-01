@@ -23,7 +23,7 @@ export default function Sidebar({ dict }: SidebarProps) {
 
   return (
     <aside
-      className="fixed left-0 top-16 bottom-0 w-56 bg-white/80 backdrop-blur-sm dark:bg-slate-950/80 border-r border-gray-200 dark:border-gray-800 hidden md:flex flex-col"
+      className="w-56 hidden md:flex flex-col bg-white/80 backdrop-blur-sm dark:bg-slate-950/80 border-r border-gray-200 dark:border-gray-800"
       role="navigation"
       aria-label="Main navigation"
     >

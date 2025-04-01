@@ -5,6 +5,7 @@ import { inArray } from "drizzle-orm";
 import { uploadFileToStorage, validateFile } from "@/app/api/memories/upload/utils";
 import { join } from "path";
 import { readFileSync } from "fs";
+import { hash } from "bcrypt";
 import margotData from "./margot.json" assert { type: "json" };
 import richieData from "./richie.json" assert { type: "json" };
 import wesData from "./wes.json" assert { type: "json" };
@@ -90,6 +91,9 @@ async function createUser(userData: UserData) {
     imageUrl = await uploadAsset(imageUrl).then((asset) => asset.url);
   }
 
+  // Hash the password
+  const hashedPassword = await hash(userData.user.password, 10);
+
   // Create user record
   const [user] = await db
     .insert(users)
@@ -98,7 +102,7 @@ async function createUser(userData: UserData) {
       email: userData.user.email,
       name: userData.user.name,
       username: userData.user.username,
-      password: userData.user.password,
+      password: hashedPassword,
       image: imageUrl,
     })
     .returning();
