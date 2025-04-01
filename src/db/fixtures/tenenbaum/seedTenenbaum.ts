@@ -2,7 +2,7 @@ import { db } from "@/db/db";
 import { allUsers, users, images, notes, documents, memoryShares, videos } from "@/db/schema";
 import { faker } from "@faker-js/faker";
 import { eq, inArray } from "drizzle-orm";
-import { uploadFileToStorage, validateFile, storeInDatabase } from "@/app/api/memories/upload/utils";
+import { uploadFileToStorage, validateFile } from "@/app/api/memories/upload/utils";
 import { join } from "path";
 import { readFileSync } from "fs";
 import margotData from "./margot.json" assert { type: "json" };
@@ -38,7 +38,14 @@ async function uploadAsset(filename: string): Promise<string> {
   const assetPath = join(__dirname, "..", "assets", "tenenbaum", filename);
   try {
     const buffer = readFileSync(assetPath);
-    const file = new File([buffer], filename, { type: "image/jpeg" }); // We'll need to determine proper mime type
+    const mimeType = filename.endsWith(".mp4")
+      ? "video/mp4"
+      : filename.endsWith(".pdf")
+      ? "application/pdf"
+      : filename.endsWith(".md")
+      ? "text/markdown"
+      : "image/jpeg";
+    const file = new File([buffer], filename, { type: mimeType });
     const validationResult = await validateFile(file);
     if (!validationResult.isValid) {
       throw new Error(`Invalid file: ${validationResult.error}`);
