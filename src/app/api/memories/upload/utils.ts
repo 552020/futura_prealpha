@@ -1,5 +1,5 @@
 import { db } from "@/db/db";
-import { DBDocument, DBImage, documents, images } from "@/db/schema";
+import { DBDocument, DBImage, DBVideo, documents, images, videos } from "@/db/schema";
 import { put } from "@vercel/blob";
 import { fileTypeFromBuffer } from "file-type";
 import crypto from "crypto";
@@ -31,23 +31,34 @@ export const ACCEPTED_MIME_TYPES = {
     // Org mode
     "text/x-org", // .org
   ],
+  video: [
+    "video/mp4", // .mp4
+    "video/quicktime", // .mov
+    "video/x-msvideo", // .avi
+    "video/webm", // .webm
+  ],
 } as const;
 
 export type UploadResponse = {
-  type: "image" | "document";
-  data: DBImage | DBDocument;
+  type: "image" | "document" | "video";
+  data: DBImage | DBDocument | DBVideo;
 };
 
 export type AcceptedMimeType =
   | (typeof ACCEPTED_MIME_TYPES.image)[number]
-  | (typeof ACCEPTED_MIME_TYPES.document)[number];
+  | (typeof ACCEPTED_MIME_TYPES.document)[number]
+  | (typeof ACCEPTED_MIME_TYPES.video)[number];
 
 export function isAcceptedMimeType(mime: string): mime is AcceptedMimeType {
-  return [...ACCEPTED_MIME_TYPES.image, ...ACCEPTED_MIME_TYPES.document].includes(mime as AcceptedMimeType);
+  return [...ACCEPTED_MIME_TYPES.image, ...ACCEPTED_MIME_TYPES.document, ...ACCEPTED_MIME_TYPES.video].includes(
+    mime as AcceptedMimeType
+  );
 }
 
-export function getMemoryType(mime: AcceptedMimeType): "document" | "image" {
-  return ACCEPTED_MIME_TYPES.image.includes(mime as (typeof ACCEPTED_MIME_TYPES.image)[number]) ? "image" : "document";
+export function getMemoryType(mime: AcceptedMimeType): "document" | "image" | "video" {
+  if (ACCEPTED_MIME_TYPES.image.includes(mime as (typeof ACCEPTED_MIME_TYPES.image)[number])) return "image";
+  if (ACCEPTED_MIME_TYPES.video.includes(mime as (typeof ACCEPTED_MIME_TYPES.video)[number])) return "video";
+  return "document";
 }
 
 export async function uploadFileToStorage(file: File, existingBuffer?: Buffer): Promise<string> {
@@ -63,7 +74,7 @@ export async function uploadFileToStorage(file: File, existingBuffer?: Buffer): 
 }
 
 export async function storeInDatabase(params: {
-  type: "document" | "image";
+  type: "document" | "image" | "video";
   ownerId: string;
   url: string;
   file: File;
@@ -92,6 +103,26 @@ export async function storeInDatabase(params: {
       })
       .returning();
     return { type: "image", data: image };
+  } else if (type === "video") {
+    const [video] = await db
+      .insert(videos)
+      .values({
+        ownerId,
+        url,
+        title: file.name.split(".")[0],
+        description: "",
+        mimeType: metadata.mimeType,
+        size: metadata.size.toString(),
+        ownerSecureCode,
+        metadata: {
+          width: undefined,
+          height: undefined,
+          format: metadata.mimeType.split("/")[1],
+          thumbnail: undefined,
+        },
+      })
+      .returning();
+    return { type: "video", data: video };
   } else {
     const [document] = await db
       .insert(documents)

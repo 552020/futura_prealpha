@@ -601,6 +601,9 @@ export type NewDBGroup = typeof group.$inferInsert;
 export type DBGroupMember = typeof groupMember.$inferSelect;
 export type NewDBGroupMember = typeof groupMember.$inferInsert;
 
+export type DBVideo = typeof videos.$inferSelect;
+export type NewDBVideo = typeof videos.$inferInsert;
+
 // Type helpers for the enums
 export type MemoryType = (typeof MEMORY_TYPES)[number];
 export type AccessLevel = (typeof ACCESS_LEVELS)[number];
