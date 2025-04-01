@@ -11,6 +11,7 @@ import { getDictionary, Dictionary } from "@/utils/dictionaries";
 import { PostHogProvider } from "@/components/posthog-provider";
 import BottomNav from "@/components/bottom-nav";
 import Sidebar from "@/components/sidebar";
+import { OnboardingProvider } from "@/contexts/onboarding-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -85,12 +86,14 @@ export default async function RootLayout({
           <PostHogProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
               <InterfaceProvider>
-                <div className="relative flex min-h-screen flex-col">
-                  <Header dict={dict} lang={resolvedParams.lang} />
-                  <BottomNav dict={dict} />
-                  <Sidebar dict={dict} />
-                  <main className="flex-1">{children}</main>
-                </div>
+                <OnboardingProvider>
+                  <div className="relative flex min-h-screen flex-col">
+                    <Header dict={dict} lang={resolvedParams.lang} />
+                    <BottomNav dict={dict} />
+                    <Sidebar dict={dict} />
+                    <main className="flex-1">{children}</main>
+                  </div>
+                </OnboardingProvider>
               </InterfaceProvider>
             </ThemeProvider>
           </PostHogProvider>
