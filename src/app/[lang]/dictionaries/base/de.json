@@ -20,6 +20,13 @@
     "vault": "Tresor",
     "feed": "Feed"
   },
+  "navigation": {
+    "vault": "Tresor",
+    "feed": "Feed",
+    "shared": "Geteilt",
+    "contacts": "Kontakte",
+    "profile": "Profil"
+  },
   "footer": {
     "tagline": "Mit ❤️ zwischen Berlin, Marseille und Lissabon gemacht",
     "terms": "Nutzungsbedingungen",

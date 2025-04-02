@@ -1,0 +1,60 @@
+{
+  "user": {
+    "name": "Margot Tenenbaum",
+    "email": "margot@tenenbaum.com",
+    "username": "margot",
+    "password": "tenenbaum123",
+    "image": "margot.jpg"
+  },
+  "memories": [
+    {
+      "type": "note",
+      "title": "The Year of Secret Umbrellas - Markdown",
+      "description": "My play in markdown format",
+      "content": "The Year of Secret Umbrellas\n\nA play about a family of geniuses...",
+      "isPublic": false
+    },
+    {
+      "type": "document",
+      "title": "The Year of Secret Umbrellas - PDF",
+      "description": "My play in PDF format",
+      "file": "the_year_of_secret_umbrellas.pdf",
+      "isPublic": false
+    },
+    {
+      "type": "document",
+      "title": "The Year of Secret Umbrellas - Word",
+      "description": "My play in Word format",
+      "file": "the_year_of_secret_umbrellas.docx",
+      "isPublic": false
+    },
+    {
+      "type": "document",
+      "title": "The Year of Secret Umbrellas - OpenDocument",
+      "description": "My play in OpenDocument format",
+      "file": "the_year_of_secret_umbrellas.odt",
+      "isPublic": false
+    },
+    {
+      "type": "document",
+      "title": "The Year of Secret Umbrellas - RTF",
+      "description": "My play in RTF format",
+      "file": "the_year_of_secret_umbrellas.rtf",
+      "isPublic": false
+    },
+    {
+      "type": "document",
+      "title": "The Year of Secret Umbrellas - EPUB",
+      "description": "My play in EPUB format",
+      "file": "the_year_of_secret_umbrellas.epub",
+      "isPublic": false
+    },
+    {
+      "type": "image",
+      "title": "Margot and Richard in the Tent",
+      "description": "A photo of me and Richard in our childhood tent",
+      "url": "margot_richard_tent.jpg",
+      "isPublic": false
+    }
+  ]
+}

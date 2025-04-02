@@ -16,6 +16,9 @@ export default function Sidebar({ dict }: SidebarProps) {
   const pathname = usePathname();
   const { mode } = useInterface();
 
+  // Helper function to construct full URLs
+  const getFullHref = (baseHref: string) => `/${baseHref}`;
+
   // Don't render sidebar in marketing mode
   if (mode === "marketing") {
     return null;
@@ -23,7 +26,7 @@ export default function Sidebar({ dict }: SidebarProps) {
 
   return (
     <aside
-      className="fixed left-0 top-16 bottom-0 w-56 bg-white/80 backdrop-blur-sm dark:bg-slate-950/80 border-r border-gray-200 dark:border-gray-800 hidden md:flex flex-col"
+      className="w-56 hidden md:flex flex-col bg-white/80 backdrop-blur-sm dark:bg-slate-950/80 border-r border-gray-200 dark:border-gray-800"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -32,11 +35,12 @@ export default function Sidebar({ dict }: SidebarProps) {
         {/* Main navigation items */}
         <div className="space-y-1">
           {mainNavItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            const fullHref = getFullHref(item.href);
+            const isActive = pathname === fullHref || pathname.startsWith(`${fullHref}/`);
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={fullHref}
                 aria-label={getTranslatedLabel(item, dict)}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 text-sm relative",
@@ -62,11 +66,12 @@ export default function Sidebar({ dict }: SidebarProps) {
         {/* Secondary navigation items */}
         <div className="mt-6 space-y-1">
           {secondaryNavItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            const fullHref = getFullHref(item.href);
+            const isActive = pathname === fullHref || pathname.startsWith(`${fullHref}/`);
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={fullHref}
                 aria-label={getTranslatedLabel(item, dict)}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 text-sm relative",

@@ -4,8 +4,8 @@ import { type MemoryWithType } from "@/app/api/memories/utils/memory";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { Download, Edit, Trash } from "lucide-react";
-import { useState } from "react";
-import type { DBImage, DBDocument, DBNote } from "@/db/schema";
+import { useState, useEffect } from "react";
+import type { DBImage, DBDocument, DBNote, DBVideo } from "@/db/schema";
 
 interface MemoryViewerProps {
   memory: MemoryWithType;
@@ -15,6 +15,8 @@ interface MemoryViewerProps {
 
 export function MemoryViewer({ memory, isOwner }: MemoryViewerProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [downloadFileName, setDownloadFileName] = useState<string | null>(null);
 
   const handleDownload = async () => {
     try {
@@ -23,17 +25,21 @@ export function MemoryViewer({ memory, isOwner }: MemoryViewerProps) {
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = memory.data.title || "memory";
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      setDownloadUrl(url);
+      setDownloadFileName(memory.data.title || "memory");
     } catch (error) {
       console.error("Error downloading memory:", error);
     }
   };
+
+  // Cleanup URL when component unmounts or URL changes
+  useEffect(() => {
+    return () => {
+      if (downloadUrl) {
+        window.URL.revokeObjectURL(downloadUrl);
+      }
+    };
+  }, [downloadUrl]);
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this memory?")) return;
@@ -87,6 +93,15 @@ export function MemoryViewer({ memory, isOwner }: MemoryViewerProps) {
           </div>
         )}
 
+        {memory.type === "video" && (
+          <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+            <video controls className="h-full w-full">
+              <source src={(memory.data as DBVideo).url} type={(memory.data as DBVideo).mimeType} />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        )}
+
         {memory.type === "document" && (
           <div className="rounded-lg border p-4">
             <p className="text-sm text-muted-foreground">Document Type: {(memory.data as DBDocument).mimeType}</p>
@@ -100,10 +115,25 @@ export function MemoryViewer({ memory, isOwner }: MemoryViewerProps) {
           </div>
         )}
 
-        {(memory.data as DBImage | DBDocument).description && (
-          <p className="mt-4 text-muted-foreground">{(memory.data as DBImage | DBDocument).description}</p>
+        {(memory.data as DBImage | DBDocument | DBVideo).description && (
+          <p className="mt-4 text-muted-foreground">{(memory.data as DBImage | DBDocument | DBVideo).description}</p>
         )}
       </div>
+
+      {downloadUrl && downloadFileName && (
+        <a
+          href={downloadUrl}
+          download={downloadFileName}
+          className="hidden"
+          ref={(el) => {
+            if (el) {
+              el.click();
+              setDownloadUrl(null);
+              setDownloadFileName(null);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -11,10 +11,10 @@ import { compare } from "bcrypt"; // make sure bcrypt is installed
 import { allUsers, temporaryUsers } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
-console.log("--------------------------------");
-console.log("auth.ts");
-console.log("--------------------------------");
-console.log("NODE_ENV:", process.env.NODE_ENV);
+// console.log("--------------------------------");
+// console.log("auth.ts");
+// console.log("--------------------------------");
+// console.log("NODE_ENV:", process.env.NODE_ENV);
 
 declare module "next-auth" {
   interface User {
@@ -57,9 +57,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
 
       profile(profile) {
-        console.log("--------------------------------");
-        console.log("Google profile:", profile);
-        console.log("--------------------------------");
+        // console.log("--------------------------------");
+        // console.log("Google profile:", profile);
+        // console.log("--------------------------------");
         return {
           id: profile.sub, // ✅ crucial line!
           email: profile.email,
@@ -121,7 +121,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       if (isLoginFlow) {
         const redirectTo = `${baseUrl}/user/profile`;
-        console.log("[NextAuth] Redirecting after login:", redirectTo);
+        // console.log("[NextAuth] Redirecting after login:", redirectTo);
         return redirectTo;
       }
 
@@ -131,7 +131,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
     authorized({ request, auth }) {
       const { pathname } = request.nextUrl;
-      console.log("NextAuth authorized callback called with pathname:", pathname);
+      // console.log("NextAuth authorized callback called with pathname:", pathname);
 
       // Tests route check
       if (pathname.startsWith("/tests")) {
@@ -160,12 +160,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       if (account?.access_token) {
         token.accessToken = account.access_token;
-        console.log("Added access token to JWT");
+        // console.log("Added access token to JWT");
       }
       // On first sign-in
       if (user?.role) {
         token.role = user.role;
-        console.log("Added role to JWT from user object:", token.role);
+        // console.log("Added role to JWT from user object:", token.role);
       }
       //   if (user) {
       //     token.role = user.role;
@@ -179,10 +179,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (dbUser) {
           token.role = dbUser.role;
-          console.log("Fetched role from DB and added to JWT:", token.role);
+          // console.log("Fetched role from DB and added to JWT:", token.role);
         } else {
           token.role = "user";
-          console.log("Fallback role set to 'user'");
+          // console.log("Fallback role set to 'user'");
         }
       }
       return token;
@@ -207,7 +207,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   debug: true,
   events: {
     async createUser({ user }) {
-      console.log("[Auth] ✅ User created:", user);
+      // console.log("[Auth] ✅ User created:", user);
 
       // Check if there's a temporary user with the same email
       const temporaryUser = await db.query.temporaryUsers.findFirst({
@@ -222,12 +222,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         : null;
 
       if (temporaryUser && allUserEntry) {
-        console.log("[Auth] 🚀 Promoting temporary user to permanent user:", {
-          temporaryUserId: temporaryUser.id,
-          newUserId: user.id,
-          allUserId: allUserEntry.id,
-          email: user.email,
-        });
+        // console.log("[Auth] 🚀 Promoting temporary user to permanent user:", {
+        //   temporaryUserId: temporaryUser.id,
+        //   newUserId: user.id,
+        //   allUserId: allUserEntry.id,
+        //   email: user.email,
+        // });
 
         // Update the allUsers entry to point to the new permanent user
         await db
@@ -244,10 +244,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         console.log("[Auth] ✅ Successfully promoted user");
       } else if (temporaryUser) {
-        console.log("[Auth] ⚠️ Found temporary user but no corresponding allUsers entry:", {
-          temporaryUserId: temporaryUser.id,
-          email: user.email,
-        });
+        // console.log("[Auth] ⚠️ Found temporary user but no corresponding allUsers entry:", {
+        //   temporaryUserId: temporaryUser.id,
+        //   email: user.email,
+        // });
       } else {
         // No temporary user found, create a new allUsers entry
         console.log("[Auth] 🆕 Creating new allUsers entry for:", {

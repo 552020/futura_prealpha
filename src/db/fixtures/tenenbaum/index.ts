@@ -1,0 +1,1 @@
+export { seedTenenbaum } from "./seedTenenbaum";

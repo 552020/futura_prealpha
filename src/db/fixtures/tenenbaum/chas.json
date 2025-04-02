@@ -1,0 +1,10 @@
+{
+  "user": {
+    "name": "Chas Tenenbaum",
+    "email": "chas@tenenbaum.com",
+    "username": "chas",
+    "password": "tenenbaum123",
+    "image": "chas.jpeg"
+  },
+  "memories": []
+}

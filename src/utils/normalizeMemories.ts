@@ -22,15 +22,17 @@ interface RawMemoryData {
     content: string;
     createdAt: string;
   }>;
+  videos: Array<{
+    id: string;
+    title: string;
+    description?: string;
+    createdAt: string;
+    url: string;
+    mimeType: string;
+  }>;
 }
 
 export const normalizeMemories = (data: RawMemoryData): Memory[] => {
-  const getDocumentType = (mime: string): "video" | "audio" | "unknown" => {
-    if (mime.startsWith("video/")) return "video";
-    if (mime.startsWith("audio/")) return "audio";
-    return "unknown";
-  };
-
   return [
     ...data.images.map((img) => ({
       id: img.id,
@@ -40,16 +42,25 @@ export const normalizeMemories = (data: RawMemoryData): Memory[] => {
       createdAt: img.createdAt,
       thumbnail: img.url,
     })),
-    ...data.documents
-      .filter((doc) => getDocumentType(doc.mimeType) !== "unknown")
-      .map((doc) => ({
-        id: doc.id,
-        type: getDocumentType(doc.mimeType) as "video" | "audio",
-        title: doc.title || "Untitled File",
-        description: doc.description,
-        createdAt: doc.createdAt,
-        thumbnail: doc.mimeType.startsWith("video/") ? doc.url : undefined,
-      })),
+    ...data.videos.map((video) => ({
+      id: video.id,
+      type: "video" as const,
+      title: video.title || "Untitled Video",
+      description: video.description,
+      createdAt: video.createdAt,
+      thumbnail: video.url,
+      url: video.url,
+      mimeType: video.mimeType,
+    })),
+    ...data.documents.map((doc) => ({
+      id: doc.id,
+      type: "document" as const,
+      title: doc.title || "Untitled Document",
+      description: doc.description,
+      createdAt: doc.createdAt,
+      url: doc.url,
+      mimeType: doc.mimeType,
+    })),
     ...data.notes.map((note) => ({
       id: note.id,
       type: "note" as const,

@@ -276,6 +276,33 @@ export const images = pgTable("image", {
     }),
 });
 
+export const videos = pgTable("video", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  ownerId: text("owner_id")
+    .notNull()
+    .references(() => allUsers.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  duration: integer("duration"), // Duration in seconds
+  mimeType: text("mime_type").notNull(),
+  size: text("size").notNull(), // File size in bytes
+  ownerSecureCode: text("owner_secure_code").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  isPublic: boolean("is_public").default(false),
+  metadata: json("metadata")
+    .$type<{
+      width?: number;
+      height?: number;
+      format?: string;
+      thumbnail?: string;
+    }>()
+    .default({}),
+});
+
 export const notes = pgTable("note", {
   id: text("id")
     .primaryKey()
@@ -331,7 +358,7 @@ export const documents = pgTable("document", {
     }),
 });
 
-export const MEMORY_TYPES = ["image", "document", "note"] as const;
+export const MEMORY_TYPES = ["image", "document", "note", "video"] as const;
 export const ACCESS_LEVELS = ["read", "write"] as const;
 export const MEMBER_ROLES = ["admin", "member"] as const;
 
@@ -382,7 +409,7 @@ export const memoryShares = pgTable("memory_share", {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   memoryId: text("memory_id").notNull(), // The ID of the memory (e.g., image, note, document)
-  memoryType: text("memory_type", { enum: MEMORY_TYPES }).notNull(), // Type of memory (e.g., "image", "note", "document")
+  memoryType: text("memory_type", { enum: MEMORY_TYPES }).notNull(), // Type of memory (e.g., "image", "note", "document", "video")
   ownerId: text("owner_id") // The user who originally created (or owns) the memory
     .notNull()
     .references(() => allUsers.id, { onDelete: "cascade" }),
@@ -574,6 +601,9 @@ export type NewDBGroup = typeof group.$inferInsert;
 
 export type DBGroupMember = typeof groupMember.$inferSelect;
 export type NewDBGroupMember = typeof groupMember.$inferInsert;
+
+export type DBVideo = typeof videos.$inferSelect;
+export type NewDBVideo = typeof videos.$inferInsert;
 
 // Type helpers for the enums
 export type MemoryType = (typeof MEMORY_TYPES)[number];

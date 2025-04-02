@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { db } from "@/db/db";
 import { allUsers, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { storeInDatabase, uploadFileToStorage, validateFile } from "./utils";
+import { storeInDatabase, uploadFileToStorage, validateFile, isAcceptedMimeType, getMemoryType } from "./utils";
 
 export async function POST(request: Request) {
   try {
@@ -61,16 +61,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: validationResult.error }, { status: 400 });
     }
 
+    if (!isAcceptedMimeType(file.type)) {
+      return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+    }
+
     // Upload file to storage
     const url = await uploadFileToStorage(file);
 
     // Store in database using the allUserId
     const result = await storeInDatabase({
-      type: validationResult.fileType!.mime.includes("image/") ? "image" : "document",
+      type: getMemoryType(file.type),
       ownerId: allUserId,
       url,
       file,
-      metadata: validationResult.metadata!,
+      metadata: {
+        uploadedAt: new Date().toISOString(),
+        originalName: file.name,
+        size: file.size,
+        mimeType: file.type,
+      },
     });
 
     console.log("✅ Upload successful:", {

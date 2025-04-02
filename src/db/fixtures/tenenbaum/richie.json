@@ -1,0 +1,25 @@
+{
+  "user": {
+    "name": "Richie Tenenbaum",
+    "email": "richie@tenenbaum.com",
+    "username": "richie",
+    "password": "tenenbaum123",
+    "image": "richard.jpeg"
+  },
+  "memories": [
+    {
+      "type": "image",
+      "title": "Tent with Margot",
+      "description": "Photo of the tent setup with Margot",
+      "url": "margot_richard_tent.jpg",
+      "isPublic": false
+    },
+    {
+      "type": "image",
+      "title": "Meltdown Moment",
+      "description": "Photo from my difficult time",
+      "url": "richard_meltdown.jpg",
+      "isPublic": false
+    }
+  ]
+}

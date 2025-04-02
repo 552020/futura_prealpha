@@ -1,0 +1,25 @@
+{
+  "user": {
+    "name": "Eli Cash",
+    "email": "eli@cash.com",
+    "username": "eli",
+    "password": "tenenbaum123",
+    "image": "eli.webp"
+  },
+  "memories": [
+    {
+      "type": "document",
+      "title": "Old Custer - NYRB Review",
+      "description": "The New York Review of Books review of Old Custer",
+      "file": "old_custer_NYRB.md",
+      "isPublic": false
+    },
+    {
+      "type": "document",
+      "title": "Old Custer - Quarterly Review",
+      "description": "Frontier Reimagined Quarterly review of Old Custer",
+      "file": "old_custer_quarterly.md",
+      "isPublic": false
+    }
+  ]
+}

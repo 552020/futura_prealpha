@@ -156,8 +156,8 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     }
 
     // Generate magic links for both owner and invitee
-    const ownerMagicLink = `${process.env.NEXT_PUBLIC_APP_URL}/memories/${memoryId}/shared?code=${memory.data.ownerSecureCode}`;
-    const inviteeMagicLink = `${process.env.NEXT_PUBLIC_APP_URL}/memories/${memoryId}/shared?code=${share.inviteeSecureCode}`;
+    const ownerMagicLink = `${process.env.NEXT_PUBLIC_APP_URL}/memories/${memoryId}/share-link?code=${memory.data.ownerSecureCode}`;
+    const inviteeMagicLink = `${process.env.NEXT_PUBLIC_APP_URL}/memories/${memoryId}/share-link?code=${share.inviteeSecureCode}`;
 
     // Send email if requested
     if (sendEmail && target.type === "user") {

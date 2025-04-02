@@ -20,6 +20,13 @@
     "vault": "Bóveda",
     "feed": "Feed"
   },
+  "navigation": {
+    "vault": "Bóveda",
+    "feed": "Feed",
+    "shared": "Compartido",
+    "contacts": "Contactos",
+    "profile": "Perfil"
+  },
   "footer": {
     "tagline": "Hecho con ❤️ entre Berlín, Marsella y Lisboa",
     "terms": "Términos de Servicio",

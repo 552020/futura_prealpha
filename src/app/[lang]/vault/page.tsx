@@ -10,72 +10,59 @@ import { Memory } from "@/types/memory";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { MemoryUpload } from "@/components/memory/MemoryUpload";
+import { useParams } from "next/navigation";
 
 export default function VaultPage() {
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
   const router = useRouter();
   const { toast } = useToast();
-  const [memories, setMemories] = useState<Memory[]>([]);
+  const [memories, setMemories] = useState<
+    (Memory & { status: "private" | "shared" | "public"; sharedWithCount?: number })[]
+  >([]);
   const [isLoadingMemories, setIsLoadingMemories] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const { ref } = useInView();
+  const params = useParams();
 
   const fetchMemories = useCallback(async () => {
     const timestamp = new Date().toISOString();
     try {
-      console.group(`🎯 FETCH MEMORIES [${timestamp}]`);
-      console.log("Starting fetch:", {
-        requestedPage: currentPage,
-        currentPageRef: currentPage,
-        limit: 12,
-        existingMemories: memories.length,
+      console.log("🔄 FETCH MEMORIES - Starting fetch:", {
+        page: currentPage,
+        timestamp,
       });
 
-      setIsLoadingMemories(true);
-      const response = await fetch(`/api/memories?page=${currentPage}&limit=12`);
-
-      console.log("API Response:", {
-        status: response.status,
-        ok: response.ok,
-        statusText: response.statusText,
-        timestamp: new Date().toISOString(),
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch memories");
-
-      const data = await response.json();
-      console.log("Raw data from API:", data);
-
-      const newMemories = normalizeMemories(data);
-      console.log("Normalized memories:", {
-        count: newMemories.length,
-        firstMemory: newMemories[0],
-        lastMemory: newMemories[newMemories.length - 1],
-      });
-
-      // Update memories based on whether this is a reset (page 1) or pagination
-      if (currentPage === 1) {
-        setMemories(newMemories);
-        console.log("Reset memories with page 1 data");
-      } else {
-        setMemories((prev) => {
-          const updated = [...prev, ...newMemories];
-          console.log("Appended new memories:", {
-            previousCount: prev.length,
-            newCount: updated.length,
-            added: newMemories.length,
-          });
-          return updated;
-        });
+      const response = await fetch(`/api/memories?page=${currentPage}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch memories");
       }
 
-      setHasMore(newMemories.length === 12);
-      console.log("Pagination update:", {
-        hasMore: newMemories.length === 12,
-        nextPage: currentPage + 1,
+      const data = await response.json();
+      console.log("✅ FETCH MEMORIES - Success:", {
+        imagesCount: data.images.length,
+        documentsCount: data.documents.length,
+        notesCount: data.notes.length,
+        hasMore: data.hasMore,
+        timestamp,
       });
-      console.groupEnd();
+
+      const normalizedMemories = normalizeMemories({
+        images: data.images,
+        documents: data.documents,
+        notes: data.notes,
+        videos: data.videos || [],
+      }).map((memory) => ({
+        ...memory,
+        status: "private" as const, // Default to private for user's own memories
+        sharedWithCount: 0, // Default to 0 for user's own memories
+      }));
+
+      setMemories((prev) => {
+        if (currentPage === 1) return normalizedMemories;
+        return [...prev, ...normalizedMemories];
+      });
+      setHasMore(data.hasMore);
     } catch (error) {
       console.error("❌ FETCH MEMORIES ERROR:", {
         error,
@@ -91,7 +78,7 @@ export default function VaultPage() {
     } finally {
       setIsLoadingMemories(false);
     }
-  }, [currentPage]);
+  }, [currentPage, toast]);
 
   useEffect(() => {
     if (!isAuthorized) {
@@ -147,31 +134,23 @@ export default function VaultPage() {
   };
 
   const handleMemoryClick = (memory: Memory) => {
-    router.push(`/vault/${memory.id}`);
+    router.push(`/${params.lang}/${params.segment}/vault/${memory.id}`);
   };
 
   const handleUploadSuccess = () => {
-    console.log("🎉 UPLOAD SUCCESS - Resetting and refreshing memories...");
-    setCurrentPage(1);
-    setMemories([]);
-    setHasMore(true);
+    // Refresh the memories list to show the new memory
     fetchMemories();
-    toast({
-      title: "Success",
-      description: "Memory uploaded successfully!",
-    });
   };
 
   const handleUploadError = (error: Error) => {
-    console.error("❌ UPLOAD ERROR:", error);
     toast({
       title: "Error",
-      description: "Failed to upload memory. Please try again.",
+      description: error.message || "Failed to upload memory",
       variant: "destructive",
     });
   };
 
-  if (isLoading) {
+  if (!isAuthorized || isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -179,21 +158,10 @@ export default function VaultPage() {
     );
   }
 
-  if (!isAuthorized) {
-    return null;
-  }
-
   return (
     <div className="container mx-auto px-6 py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Your Memory Vault</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {memories.length} {memories.length === 1 ? "memory" : "memories"}
-          </p>
-        </div>
-        <MemoryUpload onSuccess={handleUploadSuccess} onError={handleUploadError} />
-      </div>
+      <h1 className="mb-8 text-3xl font-bold">Your Digital Vault</h1>
+
       {isTemporaryUser && (
         <div className="mb-4 rounded-lg bg-yellow-50 p-4 text-yellow-800">
           <div className="flex items-start gap-3">
@@ -219,6 +187,7 @@ export default function VaultPage() {
           </div>
         </div>
       )}
+
       {memories.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
           <h3 className="text-lg font-medium">No memories yet</h3>
@@ -230,9 +199,13 @@ export default function VaultPage() {
       ) : (
         <MemoryGrid memories={memories} onDelete={handleDelete} onShare={handleShare} onClick={handleMemoryClick} />
       )}
-      <div ref={ref} className="mt-8 flex justify-center">
-        {isLoadingMemories && <Loader2 className="h-8 w-8 animate-spin" />}
-      </div>
+
+      {/* Loading indicator */}
+      {isLoadingMemories && (
+        <div className="mt-8 flex justify-center" ref={ref}>
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      )}
     </div>
   );
 }
