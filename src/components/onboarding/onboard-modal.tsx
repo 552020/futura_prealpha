@@ -18,7 +18,7 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
   // Only show modal for steps that should be in the modal
   const modalSteps = ["user-info", "share", "sign-up"];
   const showModal = isOpen && modalSteps.includes(currentStep);
-  console.log("🔍 Modal props:", { isOpen, currentStep, showModal, isValidStep: modalSteps.includes(currentStep) });
+  // console.log("🔍 Modal props:", { isOpen, currentStep, showModal, isValidStep: modalSteps.includes(currentStep) });
 
   // Handle next step
   const handleNext = async () => {
@@ -63,22 +63,22 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
       case "share":
         try {
           // Add debug logs
-          console.log("🔍 Files in share step:", {
-            filesLength: files.length,
-            files: files.map((f) => ({
-              url: f.url,
-              memoryId: f.memoryId,
-              type: f.fileType,
-            })),
-          });
+          // console.log("🔍 Files in share step:", {
+          //   filesLength: files.length,
+          //   files: files.map((f) => ({
+          //     url: f.url,
+          //     memoryId: f.memoryId,
+          //     type: f.fileType,
+          //   })),
+          // });
 
           // Get the last uploaded file's memoryId
           const lastUploadedFile = files[files.length - 1];
-          console.log("📄 Last uploaded file:", {
-            exists: !!lastUploadedFile,
-            memoryId: lastUploadedFile?.memoryId,
-            type: lastUploadedFile?.fileType,
-          });
+          // console.log("📄 Last uploaded file:", {
+          //   exists: !!lastUploadedFile,
+          //   memoryId: lastUploadedFile?.memoryId,
+          //   type: lastUploadedFile?.fileType,
+          // });
 
           if (!lastUploadedFile?.memoryId) {
             throw new Error("Memory ID not found");

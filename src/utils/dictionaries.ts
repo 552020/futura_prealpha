@@ -1,4 +1,3 @@
-import "server-only";
 import { locales } from "@/middleware";
 
 /**
@@ -141,11 +140,62 @@ export type FAQDictionary = {
   };
 };
 
+// Onboarding dictionary type
+export type OnboardingDictionary = {
+  onboarding?: {
+    "items-upload"?: {
+      variations?: {
+        "leave-one-item"?: {
+          title?: string;
+          subtitle?: string;
+        };
+        "single-item"?: {
+          title?: string;
+          subtitle?: string;
+        };
+        "three-items"?: {
+          title?: string;
+          subtitle?: string;
+        };
+        "one-photo-one-memory-forever"?: {
+          title?: string;
+          subtitle?: string;
+        };
+        "preserve-your-digital-legacy"?: {
+          title?: string;
+          subtitle?: string;
+        };
+        "digital-time-capsule"?: {
+          title?: string;
+          subtitle?: string;
+        };
+        "pass-to-the-future"?: {
+          title?: string;
+          subtitle?: string;
+        };
+      };
+    };
+  };
+};
+
 // Combined dictionary type that includes all content types
 export type Dictionary = BaseDictionary &
   ValueJourneyDictionary &
   AboutDictionary &
-  FAQDictionary & {
+  FAQDictionary &
+  OnboardingDictionary & {
+    "items-upload"?: {
+      variations: {
+        "leave-one-item": { title: string; subtitle: string };
+        "single-item": { title: string; subtitle: string };
+        "three-items": { title: string; subtitle: string };
+        "one-photo-one-memory-forever": { title: string; subtitle: string };
+        "preserve-your-digital-legacy": { title: string; subtitle: string };
+        "digital-time-capsule": { title: string; subtitle: string };
+        "pass-to-the-future": { title: string; subtitle: string };
+      };
+    };
+  } & {
     [K in
       | "metadata"
       | "hero"
@@ -168,6 +218,15 @@ const dictionaries: Record<string, () => Promise<BaseDictionary>> = {
   de: () => import("../app/[lang]/dictionaries/base/de.json").then((module) => module.default),
   pl: () => import("../app/[lang]/dictionaries/base/pl.json").then((module) => module.default),
   zh: () => import("../app/[lang]/dictionaries/base/zh.json").then((module) => module.default),
+};
+
+// Onboarding dictionaries
+const onboardingDictionaries: Record<string, () => Promise<OnboardingDictionary>> = {
+  en: () =>
+    import("../app/[lang]/dictionaries/onboarding/en.json").then((module) => module.default as OnboardingDictionary),
+  de: () =>
+    import("../app/[lang]/dictionaries/onboarding/de.json").then((module) => module.default as OnboardingDictionary),
+  // Add other languages as needed
 };
 
 // Segment-specific dictionaries
@@ -212,6 +271,7 @@ const faqDictionaries: Record<string, () => Promise<FAQDictionary>> = {
  * @param options.segment - Optional segment name (e.g., "family", "black-mirror")
  * @param options.includeAbout - Whether to include About page content
  * @param options.includeFAQ - Whether to include FAQ page content
+ * @param options.includeOnboarding - Whether to include Onboarding content
  * @returns A Promise resolving to a Dictionary containing all requested content
  */
 export const getDictionary = async (
@@ -220,6 +280,7 @@ export const getDictionary = async (
     segment?: string;
     includeAbout?: boolean;
     includeFAQ?: boolean;
+    includeOnboarding?: boolean;
   }
 ): Promise<Dictionary> => {
   try {
@@ -232,6 +293,21 @@ export const getDictionary = async (
     // Load the main dictionary for the locale
     const baseDictionary = await dictionaries[locale]();
     let result: Dictionary = { ...baseDictionary };
+
+    // If onboarding content is requested, load and merge it
+    if (options?.includeOnboarding) {
+      try {
+        if (onboardingDictionaries[locale]) {
+          const onboardingDict = await onboardingDictionaries[locale]();
+          result = { ...result, ...onboardingDict };
+        } else if (onboardingDictionaries.en) {
+          const onboardingDict = await onboardingDictionaries.en();
+          result = { ...result, ...onboardingDict };
+        }
+      } catch (error) {
+        console.error(`Error loading onboarding dictionary:`, error);
+      }
+    }
 
     // If a segment is specified, try to load and merge the segment-specific dictionary
     if (options?.segment) {
@@ -298,8 +374,7 @@ export const getDictionary = async (
 
     return result;
   } catch (error) {
-    console.error(`Error loading dictionary for locale: ${locale}`, error);
-    // Fallback to English if there's an error with the base dictionary
-    return await dictionaries.en();
+    console.error(`Error loading dictionaries:`, error);
+    throw error;
   }
 };

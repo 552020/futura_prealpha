@@ -16,16 +16,8 @@ export default function Sidebar({ dict }: SidebarProps) {
   const pathname = usePathname();
   const { mode } = useInterface();
 
-  // Extract lang from pathname
-  const [, lang] = pathname.split("/");
-
-  // Guard against edge cases
-  if (!lang) {
-    console.warn("Missing required language parameter");
-  }
-
   // Helper function to construct full URLs
-  const getFullHref = (baseHref: string) => `/${lang}${baseHref}`;
+  const getFullHref = (baseHref: string) => `/${baseHref}`;
 
   // Don't render sidebar in marketing mode
   if (mode === "marketing") {

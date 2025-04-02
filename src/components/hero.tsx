@@ -10,10 +10,8 @@ interface HeroProps {
 }
 
 function Hero({ dict, lang }: HeroProps) {
-  const currentLang = lang || "en";
-
   // Validate translations using the helper function
-  validateTranslations(dict, currentLang, "hero");
+  validateTranslations(dict, lang, "hero");
 
   return (
     <div className="w-full flex items-center justify-center min-h-[calc(100vh-4rem)]">
@@ -43,7 +41,7 @@ function Hero({ dict, lang }: HeroProps) {
           <div className="relative">
             <div className="absolute -inset-1 w-[104px] h-[104px] rounded-full bg-neutral-900 dark:bg-white animate-pulse-scale" />
             <Link
-              href={`/${currentLang}/onboarding/items-upload`}
+              href={`/${lang}/onboarding/items-upload`}
               className="relative w-24 h-24 rounded-full bg-neutral-900 hover:bg-white dark:bg-white dark:hover:bg-neutral-900 flex items-center justify-center cursor-pointer text-white hover:text-neutral-900 dark:text-neutral-900 dark:hover:text-white border-2 border-transparent hover:border-neutral-900 dark:hover:border-white transition-all text-4xl font-bold"
               aria-label={dict?.hero?.startNow || "Start Now"}
             >

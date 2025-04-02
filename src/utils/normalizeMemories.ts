@@ -33,12 +33,6 @@ interface RawMemoryData {
 }
 
 export const normalizeMemories = (data: RawMemoryData): Memory[] => {
-  const getDocumentType = (mime: string): "video" | "audio" | "unknown" => {
-    if (mime.startsWith("video/")) return "video";
-    if (mime.startsWith("audio/")) return "audio";
-    return "unknown";
-  };
-
   return [
     ...data.images.map((img) => ({
       id: img.id,

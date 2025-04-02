@@ -1,0 +1,34 @@
+{
+  "items-upload": {
+    "variations": {
+      "leave-one-item": {
+        "title": "Wähle die eine und einzige digitale Erinnerung.",
+        "subtitle": "Und teile sie mit der Zukunft und deinen liebsten Menschen."
+      },
+      "single-item": {
+        "title": "Wähle die eine und einzige digitale Erinnerung.",
+        "subtitle": "Dies ist deine Chance, etwas Ewiges zu hinterlassen."
+      },
+      "three-items": {
+        "title": "Du kannst bis zu drei Gegenstände auswählen, die du mit der Zukunft und deinen liebsten Menschen teilen möchtest.",
+        "subtitle": "Wähle mit Bedacht, was du für immer bewahren möchtest."
+      },
+      "one-photo-one-memory-forever": {
+        "title": "Ein Foto. Eine Erinnerung. Für immer.",
+        "subtitle": "Lade ein Foto oder digitales Objekt hoch, das am wichtigsten ist, und wir bewahren es für kommende Generationen."
+      },
+      "preserve-your-digital-legacy": {
+        "title": "Bewahre dein digitales Erbe.",
+        "subtitle": "Füge bis zu 3 bedeutungsvolle Gegenstände hinzu. Teile sie jetzt—oder bewahre sie für die Zukunft."
+      },
+      "digital-time-capsule": {
+        "title": "Deine digitale Zeitkapsel",
+        "subtitle": "Wähle bis zu drei Erinnerungen aus, die für die Ewigkeit bewahrt werden sollen."
+      },
+      "pass-to-the-future": {
+        "title": "Was möchtest du der Zukunft hinterlassen?",
+        "subtitle": "Wähle eine kostbare Erinnerung, die du mit deinen Liebsten teilen möchtest."
+      }
+    }
+  }
+}

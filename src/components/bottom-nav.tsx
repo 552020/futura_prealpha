@@ -26,13 +26,6 @@ export default function BottomNav({ dict }: BottomNavProps) {
   // Helper function to construct full URLs
   const getFullHref = (baseHref: string) => `/${lang}${baseHref}`;
 
-  console.log("BottomNav Debug:", {
-    pathname,
-    mode,
-    isVisible: mode !== "marketing",
-    lang,
-  });
-
   // Don't render bottom nav in marketing mode
   if (mode === "marketing") {
     return null;

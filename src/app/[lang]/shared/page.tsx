@@ -26,16 +26,16 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
   const { ref } = useInView();
 
   // Log route parameters for debugging
-  console.log("Rendering SharedMemoriesPage", { lang, isAuthorized, userId });
+  // console.log("Rendering SharedMemoriesPage", { lang, isAuthorized, userId });
 
   const fetchMemories = useCallback(async () => {
     const timestamp = new Date().toISOString();
     try {
-      console.log("🔄 FETCH SHARED MEMORIES - Starting fetch:", {
-        page: currentPage,
-        timestamp,
-        lang,
-      });
+      // console.log("🔄 FETCH SHARED MEMORIES - Starting fetch:", {
+      //   page: currentPage,
+      //   timestamp,
+      //   lang,
+      // });
 
       const response = await fetch(`/api/memories/shared?page=${currentPage}`);
       if (!response.ok) {
@@ -43,13 +43,13 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
       }
 
       const data = await response.json();
-      console.log("✅ FETCH SHARED MEMORIES - Success:", {
-        imagesCount: data.images.length,
-        documentsCount: data.documents.length,
-        notesCount: data.notes.length,
-        hasMore: data.hasMore,
-        timestamp,
-      });
+      // console.log("✅ FETCH SHARED MEMORIES - Success:", {
+      //   imagesCount: data.images.length,
+      //   documentsCount: data.documents.length,
+      //   notesCount: data.notes.length,
+      //   hasMore: data.hasMore,
+      //   timestamp,
+      // });
 
       const normalizedMemories = normalizeMemories({
         images: data.images,
@@ -83,7 +83,7 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
     } finally {
       setIsLoadingMemories(false);
     }
-  }, [currentPage, toast, lang]);
+  }, [currentPage, toast]);
 
   useEffect(() => {
     if (!isAuthorized) {
