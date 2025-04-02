@@ -104,9 +104,14 @@ export function useFileUpload({ isOnboarding = false, onSuccess, onError }: UseF
         console.log("📝 Adding file to onboarding context:", fileToAdd);
         addOnboardingFile(fileToAdd);
 
-        // Set the current step to user-info after successful upload
-        console.log("🔄 Setting current step to user-info");
-        setCurrentStep("user-info");
+        // Set the next step based on authentication status
+        if (session) {
+          console.log("🔄 Setting current step to share (authenticated user)");
+          setCurrentStep("share");
+        } else {
+          console.log("🔄 Setting current step to user-info (unauthenticated user)");
+          setCurrentStep("user-info");
+        }
       }
 
       console.log("✅ Upload process completed successfully");

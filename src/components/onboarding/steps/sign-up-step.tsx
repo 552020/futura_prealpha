@@ -4,33 +4,68 @@ import { Github } from "lucide-react";
 import { useOnboarding } from "@/contexts/onboarding-context";
 import { StepContainer } from "../common/step-container";
 import { StepNavigation } from "../common/step-navigation";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import { useParams } from "next/navigation";
 
 interface SignUpStepProps {
   onBack?: () => void;
 }
 
 export function SignUpStep({ onBack }: SignUpStepProps) {
-  const { currentStep } = useOnboarding();
+  const { currentStep, userData } = useOnboarding();
+  const params = useParams();
+  const lang = params.lang || "en";
+  const [email, setEmail] = useState(userData.email || "");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const handleGithubSignIn = () => {
     signIn("github", {
-      callbackUrl: "/dashboard",
+      callbackUrl: `/${lang}/vault`,
     });
   };
 
   const handleGoogleSignIn = () => {
     signIn("google", {
-      callbackUrl: "/dashboard",
+      callbackUrl: `/${lang}/vault`,
     });
   };
 
+  const handleEmailSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    try {
+      const response = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (response?.error) {
+        setError("Invalid email or password");
+        return;
+      }
+
+      // If successful, redirect to vault
+      window.location.href = `/${lang}/vault`;
+    } catch {
+      setError("An error occurred. Please try again.");
+    }
+  };
+
   return (
-    // <StepContainer
-    //   title="Create your account"
-    //   description="Choose your preferred way to sign up and access your memories"
-    // >
     <StepContainer>
-      <div className="grid gap-4">
+      <div className="pt-4">
+        <p className="text-4xl font-bold mb-8">Last Step: Sign Up! </p>
+        <p className="text-xl text-muted-foreground">
+          If you want the real deal! Keep your memories forever by creating an account.
+        </p>
+      </div>
+
+      <div className="grid gap-4 mt-8">
         <Button variant="outline" className="gap-2" onClick={handleGithubSignIn}>
           <Github className="h-4 w-4" />
           Continue with GitHub
@@ -58,7 +93,7 @@ export function SignUpStep({ onBack }: SignUpStepProps) {
         </Button>
       </div>
 
-      <div className="relative">
+      <div className="relative my-8">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />
         </div>
@@ -66,6 +101,35 @@ export function SignUpStep({ onBack }: SignUpStepProps) {
           <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
         </div>
       </div>
+
+      <form onSubmit={handleEmailSignUp} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Create a password"
+            required
+          />
+        </div>
+        {error && <p className="text-sm text-red-500">{error}</p>}
+        <Button type="submit" className="w-full">
+          Sign up with Email
+        </Button>
+      </form>
 
       <StepNavigation currentStep={currentStep} onBack={onBack} showBackButton={true} />
     </StepContainer>

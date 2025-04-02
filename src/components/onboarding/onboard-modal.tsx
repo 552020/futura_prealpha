@@ -1,9 +1,12 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useOnboarding } from "@/contexts/onboarding-context";
 import { useToast } from "@/hooks/use-toast";
 import { UserInfoStep } from "./steps/user-info-step";
 import { ShareStep } from "./steps/share-step";
 import { SignUpStep } from "./steps/sign-up-step";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface OnboardModalProps {
   isOpen: boolean;
@@ -12,20 +15,39 @@ interface OnboardModalProps {
 }
 
 export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
-  const { currentStep, setCurrentStep, userData, setOnboardingStatus, files } = useOnboarding();
+  const { currentStep, setCurrentStep, userData, setOnboardingStatus, files, updateUserData } = useOnboarding();
   const { toast } = useToast();
+  const { data: session, status } = useSession();
 
   // Only show modal for steps that should be in the modal
   const modalSteps = ["user-info", "share", "sign-up"];
   const showModal = isOpen && modalSteps.includes(currentStep);
-  // console.log("🔍 Modal props:", { isOpen, currentStep, showModal, isValidStep: modalSteps.includes(currentStep) });
+
+  // Pre-fill user data with session data when authenticated
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.name && session?.user?.email) {
+      // Only update if the data has actually changed
+      if (userData.name !== session.user.name || userData.email !== session.user.email || userData.isTemporary) {
+        updateUserData({
+          name: session.user.name,
+          email: session.user.email,
+          isTemporary: false,
+        });
+      }
+    }
+  }, [status, session, updateUserData, userData]);
 
   // Handle next step
   const handleNext = async () => {
     switch (currentStep) {
       case "upload":
         setOnboardingStatus("in_progress");
-        setCurrentStep("user-info");
+        // Skip user-info and sign-up steps if user is authenticated
+        if (status === "authenticated") {
+          setCurrentStep("share");
+        } else {
+          setCurrentStep("user-info");
+        }
         break;
 
       case "user-info":
@@ -62,23 +84,7 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
 
       case "share":
         try {
-          // Add debug logs
-          // console.log("🔍 Files in share step:", {
-          //   filesLength: files.length,
-          //   files: files.map((f) => ({
-          //     url: f.url,
-          //     memoryId: f.memoryId,
-          //     type: f.fileType,
-          //   })),
-          // });
-
-          // Get the last uploaded file's memoryId
           const lastUploadedFile = files[files.length - 1];
-          // console.log("📄 Last uploaded file:", {
-          //   exists: !!lastUploadedFile,
-          //   memoryId: lastUploadedFile?.memoryId,
-          //   type: lastUploadedFile?.fileType,
-          // });
 
           if (!lastUploadedFile?.memoryId) {
             throw new Error("Memory ID not found");
@@ -145,7 +151,13 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
             throw new Error(errorData.error || errorData.details || "Failed to share memory");
           }
 
-          setCurrentStep("sign-up");
+          // If authenticated, we're done. If not, go to sign-up
+          if (status === "authenticated") {
+            setOnboardingStatus("completed");
+            setCurrentStep("complete");
+          } else {
+            setCurrentStep("sign-up");
+          }
         } catch (error) {
           console.error("Error in share step:", {
             error,
@@ -178,7 +190,12 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
         setCurrentStep("upload");
         break;
       case "share":
-        setCurrentStep("user-info");
+        // Skip user-info step if user is authenticated
+        if (status === "authenticated") {
+          setCurrentStep("upload");
+        } else {
+          setCurrentStep("user-info");
+        }
         break;
       case "sign-up":
         setCurrentStep("share");
@@ -189,15 +206,24 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
   return (
     <Dialog open={showModal} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Lorem ipsum</DialogTitle>
-          <DialogDescription>Lorem ipsum dolor sit amet</DialogDescription>
-        </DialogHeader>
+        <VisuallyHidden asChild>
+          <DialogTitle>
+            {currentStep === "user-info" && "Enter Your Information"}
+            {currentStep === "share" && "Share Your Memory"}
+            {currentStep === "sign-up" && "Create Your Account"}
+          </DialogTitle>
+        </VisuallyHidden>
         {currentStep === "user-info" && (
-          <UserInfoStep withImage={false} collectEmail={true} onNext={handleNext} onBack={handleBack} />
+          <UserInfoStep
+            withImage={false}
+            collectEmail={true}
+            onNext={handleNext}
+            onBack={handleBack}
+            isReadOnly={status === "authenticated"}
+          />
         )}
         {currentStep === "share" && <ShareStep onNext={handleNext} onBack={handleBack} />}
-        {currentStep === "sign-up" && <SignUpStep onBack={handleBack} />}
+        {currentStep === "sign-up" && status !== "authenticated" && <SignUpStep onBack={handleBack} />}
       </DialogContent>
     </Dialog>
   );
