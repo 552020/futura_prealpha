@@ -11,9 +11,16 @@ interface UserInfoStepProps {
   collectEmail?: boolean;
   onNext: () => void;
   onBack: () => void;
+  isReadOnly?: boolean;
 }
 
-export function UserInfoStep({ withImage = false, collectEmail = true, onNext, onBack }: UserInfoStepProps) {
+export function UserInfoStep({
+  withImage = false,
+  collectEmail = true,
+  onNext,
+  onBack,
+  isReadOnly = false,
+}: UserInfoStepProps) {
   const {
     userData,
     updateUserData,
@@ -50,6 +57,13 @@ export function UserInfoStep({ withImage = false, collectEmail = true, onNext, o
     }
   }, [currentStep, localEmail]);
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    const isValid = emailRegex.test(email);
+    console.log("Email validation:", { email, isValid });
+    return isValid;
+  };
+
   const handleEventBasedNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setLocalName(newValue);
@@ -58,9 +72,26 @@ export function UserInfoStep({ withImage = false, collectEmail = true, onNext, o
 
   const handleEventBasedEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
+    console.log("Email changed:", newValue);
     setLocalEmail(newValue);
     updateUserData({ email: newValue });
   };
+
+  const handleNext = () => {
+    if (collectEmail && !validateEmail(localEmail)) {
+      return;
+    }
+    onNext();
+  };
+
+  // Add debug log for button state
+  const isNextDisabled = collectEmail && !validateEmail(localEmail);
+  console.log("Button state:", {
+    collectEmail,
+    localEmail,
+    isValid: validateEmail(localEmail),
+    isNextDisabled,
+  });
 
   return (
     // <StepContainer title="Tell us about yourself" description="Help us personalize your experience">
@@ -81,18 +112,22 @@ export function UserInfoStep({ withImage = false, collectEmail = true, onNext, o
       <div className="space-y-4 py-4">
         {!withImage && (
           <div className="pt-4">
-            <p className="text-4xl font-bold">Let&apos;s now share this memory with someone special!</p>
+            <p className="text-5xl font-bold">How should we call you?</p>
+            <p className="text-sm text-muted-foreground italic mt-3">
+              We need at least your name to let you retrieve your memory for the case you don&apos;t want to sign in.
+            </p>
           </div>
         )}
         <div className="space-y-2">
-          <Label htmlFor="name">How should we call you?</Label>
+          <Label htmlFor="name">Name</Label>
           <Input
             ref={nameInputRef}
             id="name"
             name="name"
-            defaultValue={userData.name}
+            value={localName}
             onChange={handleEventBasedNameChange}
             placeholder="Enter your name"
+            readOnly={isReadOnly}
           />
         </div>
 
@@ -104,14 +139,16 @@ export function UserInfoStep({ withImage = false, collectEmail = true, onNext, o
               id="email"
               name="email"
               type="email"
-              defaultValue={userData.email}
+              value={localEmail}
               onChange={handleEventBasedEmailChange}
               placeholder="Enter your email"
+              readOnly={isReadOnly}
             />
+            {!validateEmail(localEmail) && <p className="text-sm text-red-500">Please enter a valid email address</p>}
           </div>
         )}
       </div>
-      <StepNavigation currentStep={currentStep} onNext={onNext} onBack={onBack} />
+      <StepNavigation currentStep={currentStep} onNext={handleNext} onBack={onBack} isNextDisabled={isNextDisabled} />
     </StepContainer>
   );
 }

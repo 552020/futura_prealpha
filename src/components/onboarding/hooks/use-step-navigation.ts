@@ -1,35 +1,41 @@
 import { useCallback } from "react";
 import { OnboardingStep, useOnboarding } from "@/contexts/onboarding-context";
+import { useSession } from "next-auth/react";
 
-const STEP_ORDER: OnboardingStep[] = ["upload", "user-info", "share", "sign-up", "complete"];
+// Define step sequences for different user states
+const UNAUTHENTICATED_STEPS: OnboardingStep[] = ["upload", "user-info", "share", "sign-up", "complete"];
+const AUTHENTICATED_STEPS: OnboardingStep[] = ["upload", "share", "complete"];
 
 export function useStepNavigation() {
   const { currentStep, setCurrentStep } = useOnboarding();
+  const { status } = useSession();
 
-  const currentStepIndex = STEP_ORDER.indexOf(currentStep);
+  // Get the appropriate step sequence based on auth status
+  const steps = status === "authenticated" ? AUTHENTICATED_STEPS : UNAUTHENTICATED_STEPS;
+  const currentStepIndex = steps.indexOf(currentStep);
 
   const canGoBack = currentStepIndex > 0;
-  const canGoForward = currentStepIndex < STEP_ORDER.length - 1;
+  const canGoForward = currentStepIndex < steps.length - 1;
 
   const goToNextStep = useCallback(() => {
     if (canGoForward) {
-      setCurrentStep(STEP_ORDER[currentStepIndex + 1]);
+      setCurrentStep(steps[currentStepIndex + 1]);
     }
-  }, [canGoForward, currentStepIndex, setCurrentStep]);
+  }, [canGoForward, currentStepIndex, setCurrentStep, steps]);
 
   const goToPreviousStep = useCallback(() => {
     if (canGoBack) {
-      setCurrentStep(STEP_ORDER[currentStepIndex - 1]);
+      setCurrentStep(steps[currentStepIndex - 1]);
     }
-  }, [canGoBack, currentStepIndex, setCurrentStep]);
+  }, [canGoBack, currentStepIndex, setCurrentStep, steps]);
 
   const goToStep = useCallback(
     (step: OnboardingStep) => {
-      if (STEP_ORDER.includes(step)) {
+      if (steps.includes(step)) {
         setCurrentStep(step);
       }
     },
-    [setCurrentStep]
+    [setCurrentStep, steps]
   );
 
   return {

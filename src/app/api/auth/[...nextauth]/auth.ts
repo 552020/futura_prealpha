@@ -95,6 +95,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
+    redirect({ url, baseUrl }) {
+      // If there's a callbackUrl in the URL, use that
+      const callbackUrl = new URL(url).searchParams.get("callbackUrl");
+      if (callbackUrl) {
+        return callbackUrl;
+      }
+
+      // Default to vault page
+      return `${baseUrl}/vault`;
+    },
     async jwt({ token, user }) {
       if (user?.role) {
         token.role = user.role;

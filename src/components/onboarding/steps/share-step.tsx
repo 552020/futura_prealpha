@@ -32,21 +32,50 @@ export function ShareStep({ onNext, onBack }: ShareStepProps) {
     }
   }, [currentStep, localRecipientName, localRecipientEmail, lastFocusedField]);
 
-  const handleRefBasedRecipientChange = () => {
-    if (document.activeElement === recipientNameRef.current && recipientNameRef.current) {
-      const newValue = recipientNameRef.current.value;
-      setLocalRecipientName(newValue);
-      updateUserData({ recipientName: newValue });
-    } else if (document.activeElement === recipientEmailRef.current && recipientEmailRef.current) {
-      const newValue = recipientEmailRef.current.value;
-      setLocalRecipientEmail(newValue);
-      updateUserData({ recipientEmail: newValue });
-    }
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    const isValid = emailRegex.test(email);
+    console.log("Recipient email validation:", { email, isValid });
+    return isValid;
   };
 
+  const handleRecipientNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setLocalRecipientName(newValue);
+    updateUserData({ recipientName: newValue });
+  };
+
+  const handleRecipientEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    console.log("Recipient email changed:", newValue);
+    setLocalRecipientEmail(newValue);
+    updateUserData({ recipientEmail: newValue });
+  };
+
+  const handleNext = () => {
+    if (!validateEmail(localRecipientEmail)) {
+      return;
+    }
+    onNext();
+  };
+
+  // Add debug log for button state
+  const isNextDisabled = !validateEmail(localRecipientEmail);
+  console.log("Share step button state:", {
+    localRecipientEmail,
+    isValid: validateEmail(localRecipientEmail),
+    isNextDisabled,
+  });
+
   return (
-    // <StepContainer title="Share your memory" description="Choose who you want to share this memory with">
     <StepContainer>
+      <div className="pt-4">
+        <p className="text-4xl font-bold mb-8">Let&apos;s share your memory with someone special!</p>
+        <p className="text-xl text-muted-foreground mb-8 italic">
+          Tell us about the person you want to share this memory with.
+        </p>
+      </div>
+
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="recipientName">Their Name</Label>
@@ -54,8 +83,8 @@ export function ShareStep({ onNext, onBack }: ShareStepProps) {
             ref={recipientNameRef}
             id="recipientName"
             name="recipientName"
-            value={userData.recipientName}
-            onChange={handleRefBasedRecipientChange}
+            value={localRecipientName}
+            onChange={handleRecipientNameChange}
             onFocus={() => setLastFocusedField("recipientName")}
             placeholder="Enter their name"
           />
@@ -67,11 +96,15 @@ export function ShareStep({ onNext, onBack }: ShareStepProps) {
             ref={recipientEmailRef}
             id="recipientEmail"
             name="recipientEmail"
-            value={userData.recipientEmail}
-            onChange={handleRefBasedRecipientChange}
+            type="email"
+            value={localRecipientEmail}
+            onChange={handleRecipientEmailChange}
             onFocus={() => setLastFocusedField("recipientEmail")}
             placeholder="Enter their email"
           />
+          {!validateEmail(localRecipientEmail) && (
+            <p className="text-sm text-red-500">Please enter a valid email address</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -131,7 +164,7 @@ export function ShareStep({ onNext, onBack }: ShareStepProps) {
         )}
       </div>
 
-      <StepNavigation currentStep={currentStep} onNext={onNext} onBack={onBack} />
+      <StepNavigation currentStep={currentStep} onNext={handleNext} onBack={onBack} isNextDisabled={isNextDisabled} />
     </StepContainer>
   );
 }
