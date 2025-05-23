@@ -1,3 +1,4 @@
+import { withJuno } from "@junobuild/nextjs-plugin";
 import type { NextConfig } from "next/dist/server/config";
 
 const POSTHOG_INGEST_DOMAIN = process.env.NEXT_PUBLIC_POSTHOG_INGEST || "https://eu.i.posthog.com";
@@ -34,4 +35,9 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const isDev = process.env.NODE_ENV === "development";
+
+export default withJuno({
+  nextConfig,
+  juno: isDev ? { container: true } : undefined,
+});

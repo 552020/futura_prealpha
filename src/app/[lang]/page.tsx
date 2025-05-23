@@ -2,6 +2,7 @@ import Hero from "@/components/hero";
 import ValueJourney from "@/components/value-journey";
 import { getDictionary } from "@/utils/dictionaries";
 import { cookies } from "next/headers";
+import JunoInsertDemo from "@/components/JunoInsertDemo";
 
 type PageProps = {
   params: Promise<{
@@ -10,6 +11,10 @@ type PageProps = {
 };
 
 const DEFAULT_SEGMENT = "family";
+
+type Record = {
+  hello: string;
+};
 
 export default async function LangPage({ params }: PageProps) {
   // Resolve the params promise
@@ -24,6 +29,7 @@ export default async function LangPage({ params }: PageProps) {
 
   return (
     <main className="bg-white dark:bg-[#0A0A0B]">
+      <JunoInsertDemo />
       <Hero dict={dict} lang={resolvedParams.lang} />
       <ValueJourney dict={dict} lang={resolvedParams.lang} segment={segment} />
     </main>
