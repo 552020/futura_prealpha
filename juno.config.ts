@@ -4,11 +4,11 @@ export default defineConfig({
   satellite: {
     ids: {
       //   development: '<DEV_SATELLITE_ID>',
-      development: "bkyz2-fmaaa-aaaaa-qaaaq-cai",
+      development: "ak7hz-xyaaa-aaaal-asgqq-cai",
       //   production: "<PROD_SATELLITE_ID>",
-      production: "uocd6-laaaa-aaaal-asfga-cai",
+      production: "ak7hz-xyaaa-aaaal-asgqq-cai",
     },
     source: "out",
-    predeploy: ["pnpm build"],
+    predeploy: ["npm run build"]
   },
 });
