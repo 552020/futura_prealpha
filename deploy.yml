@@ -1,10 +1,6 @@
 name: Deploy to Juno
 
-
 on:
-  push:
-    branches:
-      - juno
   push:
     branches:
       - juno
