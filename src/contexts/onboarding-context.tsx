@@ -16,7 +16,12 @@ export interface TempFile {
   fileType?: string; // MIME type of the file
 }
 
-export type OnboardingStep = "upload" | "user-info" | "share" | "sign-up" | "complete";
+export type OnboardingStep =
+  | "upload"
+  | "user-info"
+  | "share"
+  | "sign-up"
+  | "complete";
 
 interface OnboardingContextType {
   files: TempFile[];
@@ -42,12 +47,19 @@ interface OnboardingContextType {
   clearOnboardingState: () => void;
 }
 
-const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined);
+const OnboardingContext = createContext<OnboardingContextType | undefined>(
+  undefined
+);
 
-export function OnboardingProvider({ children }: { children: React.ReactNode }) {
+export function OnboardingProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [files, setFiles] = useState<TempFile[]>([]);
   const [currentStep, setCurrentStep] = useState<OnboardingStep>("upload");
-  const [onboardingStatus, setOnboardingStatus] = useState<OnboardingStatus>("not_started");
+  const [onboardingStatus, setOnboardingStatus] =
+    useState<OnboardingStatus>("not_started");
   const [userData, setUserData] = useState({
     name: "",
     email: "",
@@ -100,8 +112,15 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   }, [currentStep, userData, onboardingStatus]);
 
   // Update user data - using functional update pattern
-  const updateUserData = (update: Partial<typeof userData> | ((prev: typeof userData) => Partial<typeof userData>)) => {
-    console.log("Updating userData:", typeof update === "function" ? "function" : update);
+  const updateUserData = (
+    update:
+      | Partial<typeof userData>
+      | ((prev: typeof userData) => Partial<typeof userData>)
+  ) => {
+    console.log(
+      "Updating userData:",
+      typeof update === "function" ? "function" : update
+    );
     setUserData((prev) => ({
       ...prev,
       ...(typeof update === "function" ? update(prev) : update),
@@ -175,6 +194,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
 export const useOnboarding = () => {
   const context = useContext(OnboardingContext);
-  if (!context) throw new Error("useOnboarding must be used within OnboardingProvider");
+  if (!context)
+    throw new Error("useOnboarding must be used within OnboardingProvider");
   return context;
 };

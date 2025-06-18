@@ -12,9 +12,9 @@ type PageProps = {
 
 const DEFAULT_SEGMENT = "family";
 
-type Record = {
-  hello: string;
-};
+// type Record = {
+//   hello: string;
+// };
 
 export default async function LangPage({ params }: PageProps) {
   // Resolve the params promise
