@@ -284,6 +284,7 @@ export const getDictionary = async (
   }
 ): Promise<Dictionary> => {
   try {
+    console.log("Entering getDictionary");
     // Check if the locale is supported
     if (!locales.includes(locale)) {
       console.warn(`Locale ${locale} not supported, falling back to English`);

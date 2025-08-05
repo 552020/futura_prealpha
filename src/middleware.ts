@@ -21,6 +21,9 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const origin = request.headers.get("origin");
 
+  // Log all requests hitting the middleware
+  console.log(`🔍 Middleware hit - Path: ${pathname}, Origin: ${origin || "direct"}`);
+
   // Log for /decide paths
   if (pathname.includes("decide")) {
     console.log("🔥 DECIDE HIT");

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "./ui/button";
 import { Menu, Share2, Twitter, Instagram, Facebook } from "lucide-react";
 // import { useSession } from "next-auth/react";
@@ -20,6 +21,8 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
   const { mode } = useInterface();
   // Use the passed lang prop if available, otherwise get it from params
   const currentLang = lang || "en";
+  // Flag to determine if logo should be an image
+  const logoIsImage = true;
 
   const handleShare = async () => {
     try {
@@ -49,7 +52,11 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
         <section className="logo-section flex items-center">
           <Link href={`/${currentLang}`} className="transition-transform hover:scale-105">
             <div className="w-10 h-10 rounded-full bg-black dark:bg-white flex items-center justify-center">
-              <span className="text-xl sm:text-2xl font-bold text-white dark:text-black">F</span>
+              {logoIsImage ? (
+                <Image src="/logo/f_logo.png" alt="Futura Logo" width={30} height={30} className="object-contain" />
+              ) : (
+                <span className="text-xl sm:text-2xl font-bold text-white dark:text-black">F</span>
+              )}
             </div>
           </Link>
         </section>
