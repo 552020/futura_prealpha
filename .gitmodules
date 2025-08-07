@@ -1,0 +1,6 @@
+[submodule "docs"]
+	path = docs
+	url = git@github.com:552020/futura_prealpha_docs.git
+[submodule "lab"]
+	path = lab
+	url = github.com:552020/futura_prealpha_lab.git

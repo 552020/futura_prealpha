@@ -13,6 +13,16 @@
 - Drizzle
 - Mailgun
 
+## Documentation
+
+Documentation is maintained in a separate repository as a git submodule. To access the docs:
+
+```bash
+git submodule update --init --recursive
+```
+
+The docs are located in the `docs/` directory.
+
 ## Next.js Docs
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
