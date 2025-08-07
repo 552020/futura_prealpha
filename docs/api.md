@@ -2,6 +2,24 @@
 
 This document outlines all API endpoints for the family file sharing application.
 
+## Overview
+
+### File Management
+
+- `POST /api/files/upload` - Upload a new file, text, or photo
+- `GET /api/files` - List all files owned by the authenticated user
+- `GET /api/files/[id]` - Download or view a specific file
+- `PATCH /api/files/[id]` - Update file metadata
+- `DELETE /api/files/[id]` - Delete a file
+
+### File Sharing
+
+- `POST /api/files/[id]/share` - Share a file with other users
+- `DELETE /api/files/[id]/share/[userId]` - Remove sharing for a specific user
+- `GET /api/shared` - Get files shared with the current user
+
+---
+
 ## Authentication
 
 All API routes require authentication unless specified otherwise. Authentication is handled via Next.js Auth.js session cookies.
