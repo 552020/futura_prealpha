@@ -1,5 +1,9 @@
 # Authentication Client-Server Boundaries
 
+## Overview
+
+This document shows how to fix Next.js authentication errors that happen when developers accidentally mix client-side and server-side code. The problem occurs when you try to use database operations in client components or authentication hooks in server components, which breaks the build and causes runtime errors.
+
 ## ⚠️ Important Note
 
 This document serves as a reference guide based on the **working implementation** in the Futura codebase. The error described below is **not present in Futura**, but this document explains how Futura's implementation correctly handles client-server boundaries, which can help solve similar issues in other projects.

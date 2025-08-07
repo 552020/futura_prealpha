@@ -1,5 +1,9 @@
 # Navigation and Segment Structure Refactoring
 
+## Overview
+
+This document explains how to fix navigation components (sidebar, bottom nav, footer) that disappear when users navigate to the shared memories page. The problem occurs because the app incorrectly identifies deep routes like `/memories/shared` as marketing pages instead of app pages.
+
 ## Context
 
 The application has two distinct types of routes:
