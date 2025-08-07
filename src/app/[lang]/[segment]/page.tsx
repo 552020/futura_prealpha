@@ -7,7 +7,10 @@ import { notFound } from "next/navigation";
 // import { setSegmentCookie } from "./actions";
 
 // Define valid segments
-const validSegments = ["family", "wedding", "creative", "black-mirror"];
+const validSegments = ["family", "black-mirror"];
+
+// Define locales (supported languages)
+const locales = ["en", "fr", "es", "pt", "it", "de", "pl", "zh"];
 
 // Define the correct type for the page props in Next.js 14+
 type PageProps = {
@@ -30,12 +33,29 @@ export default async function SegmentPage({ params }: PageProps) {
   // await setSegmentCookie(resolvedParams.segment);
 
   // Get dictionary with segment-specific content
-  const dict = await getDictionary(resolvedParams.lang, { segment: resolvedParams.segment });
+  const dict = await getDictionary(resolvedParams.lang, {
+    segment: resolvedParams.segment,
+  });
 
   return (
     <main>
       <Hero dict={dict} lang={resolvedParams.lang} />
-      <ValueJourney dict={dict} lang={resolvedParams.lang} segment={resolvedParams.segment} />
+      <ValueJourney
+        dict={dict}
+        lang={resolvedParams.lang}
+        segment={resolvedParams.segment}
+      />
     </main>
   );
+}
+
+// Generate static params for all combinations of langs and segments
+export async function generateStaticParams() {
+  const params = [];
+  for (const lang of locales) {
+    for (const segment of validSegments) {
+      params.push({ lang, segment });
+    }
+  }
+  return params;
 }

@@ -2,16 +2,17 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { SessionProvider } from "next-auth/react";
 import Header from "@/components/header";
 import { InterfaceProvider } from "@/contexts/interface-context";
-import { locales } from "@/middleware";
 import { notFound } from "next/navigation";
 import { getDictionary, Dictionary } from "@/utils/dictionaries";
 import { PostHogProvider } from "@/components/posthog-provider";
 import BottomNav from "@/components/bottom-nav";
 import Sidebar from "@/components/sidebar";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
+
+// Define locales directly since we removed middleware
+const locales = ["en", "fr", "es", "pt", "it", "de", "pl", "zh"];
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,7 +25,11 @@ const geistMono = Geist_Mono({
 });
 
 // Dynamic metadata based on the current language
-export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
   // Await the params Promise
   const resolvedParams = await params;
 
@@ -81,25 +86,30 @@ export default async function RootLayout({
 
   return (
     <html lang={lang} suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SessionProvider basePath="/api/auth">
-          <PostHogProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-              <InterfaceProvider>
-                <OnboardingProvider>
-                  <div className="relative flex min-h-screen flex-col">
-                    <Header dict={dict} lang={resolvedParams.lang} />
-                    <BottomNav dict={dict} />
-                    <div className="flex flex-1">
-                      <Sidebar dict={dict} />
-                      <main className="flex-1">{children}</main>
-                    </div>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <PostHogProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <InterfaceProvider>
+              <OnboardingProvider>
+                <div className="relative flex min-h-screen flex-col">
+                  <Header dict={dict} lang={resolvedParams.lang} />
+                  <BottomNav dict={dict} />
+                  <div className="flex flex-1">
+                    <Sidebar dict={dict} />
+                    <main className="flex-1">{children}</main>
                   </div>
-                </OnboardingProvider>
-              </InterfaceProvider>
-            </ThemeProvider>
-          </PostHogProvider>
-        </SessionProvider>
+                </div>
+              </OnboardingProvider>
+            </InterfaceProvider>
+          </ThemeProvider>
+        </PostHogProvider>
       </body>
     </html>
   );

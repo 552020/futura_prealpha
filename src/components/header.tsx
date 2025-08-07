@@ -6,16 +6,27 @@ import { Menu, Share2, Twitter, Instagram, Facebook } from "lucide-react";
 // import { useSession } from "next-auth/react";
 import { ModeToggle } from "./mode-toggle";
 import NavBar from "./nav-bar";
-import UserButtonClient from "./user-button-client";
 import { useInterface } from "@/contexts/interface-context";
 import { LanguageSwitcher } from "./language-switcher";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "./ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+  SheetHeader,
+} from "./ui/sheet";
 import { Dictionary } from "@/utils/dictionaries";
 
 // Define a proper type for the dictionary with optional fields
 type HeaderDictionary = Dictionary;
 
-export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: string }) {
+export default function Header({
+  dict,
+  lang,
+}: {
+  dict: HeaderDictionary;
+  lang?: string;
+}) {
   //   const { data: session, status } = useSession();
   const { mode } = useInterface();
   // Use the passed lang prop if available, otherwise get it from params
@@ -47,9 +58,14 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Left: Logo section */}
         <section className="logo-section flex items-center">
-          <Link href={`/${currentLang}`} className="transition-transform hover:scale-105">
+          <Link
+            href={`/${currentLang}`}
+            className="transition-transform hover:scale-105"
+          >
             <div className="w-10 h-10 rounded-full bg-black dark:bg-white flex items-center justify-center">
-              <span className="text-xl sm:text-2xl font-bold text-white dark:text-black">F</span>
+              <span className="text-xl sm:text-2xl font-bold text-white dark:text-black">
+                F
+              </span>
             </div>
           </Link>
         </section>
@@ -61,11 +77,6 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
 
         {/* Right User controls */}
         <section className="user-controls-section flex items-center gap-4 sm:gap-6">
-          {/* Desktop-only user controls */}
-          <div className="hidden md:block transition-opacity hover:opacity-80">
-            <UserButtonClient lang={currentLang} />
-          </div>
-
           {/* Always visible controls */}
           <div className="transition-opacity hover:opacity-80">
             <LanguageSwitcher />
@@ -86,16 +97,19 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px]">
                 <SheetHeader className="border-b pb-4 mb-4">
-                  <SheetTitle className="text-lg font-semibold">Menu</SheetTitle>
+                  <SheetTitle className="text-lg font-semibold">
+                    Menu
+                  </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col space-y-4">
                   <nav className="flex flex-col">
-                    <NavBar mode={mode} lang={currentLang} dict={dict} className="mobile" />
+                    <NavBar
+                      mode={mode}
+                      lang={currentLang}
+                      dict={dict}
+                      className="mobile"
+                    />
                   </nav>
-
-                  <div className="border-t pt-4">
-                    <UserButtonClient lang={currentLang} />
-                  </div>
 
                   {/* Footer Links in Mobile Menu */}
                   <div className="border-t pt-4">

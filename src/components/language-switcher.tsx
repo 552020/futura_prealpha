@@ -1,11 +1,18 @@
 "use client";
 
 import { useParams, usePathname } from "next/navigation";
-import { locales } from "@/middleware";
 import { Button } from "./ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 import { Globe } from "lucide-react";
 import { useState } from "react";
+
+// Define locales directly since we removed middleware
+const locales = ["en", "fr", "es", "pt", "it", "de", "pl", "zh"];
 
 // Language display names and flags
 // const languageInfo: Record<string, { name: string; flag: string }> = {

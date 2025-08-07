@@ -1,7 +1,6 @@
 "use client";
 
 import { Profile } from "@/components/profile";
-import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 /**
@@ -21,20 +20,7 @@ import { Suspense } from "react";
  */
 
 function OnboardingProfilePage() {
-  const searchParams = useSearchParams();
-  const fileUrl = searchParams.get("fileUrl");
-  const fileName = searchParams.get("fileName");
-
-  // Recreate the file object from URL params
-  const uploadedFile =
-    fileUrl && fileName
-      ? {
-          url: fileUrl,
-          file: new File([], fileName), // This is a placeholder File object
-        }
-      : null;
-
-  return <Profile isOnboarding={true} uploadedFile={uploadedFile} />;
+  return <Profile isOnboarding={true} />;
 }
 
 export default function SuspenseWrappedOnboardingProfilePage() {

@@ -4,8 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useInterface } from "@/contexts/interface-context";
-import UserButtonClient from "./user-button-client";
-import { mainNavItems, secondaryNavItems, getTranslatedLabel } from "@/utils/navigation";
+import {
+  mainNavItems,
+  secondaryNavItems,
+  getTranslatedLabel,
+} from "@/utils/navigation";
 import { Dictionary } from "@/utils/dictionaries";
 
 interface SidebarProps {
@@ -36,7 +39,8 @@ export default function Sidebar({ dict }: SidebarProps) {
         <div className="space-y-1">
           {mainNavItems.map((item) => {
             const fullHref = getFullHref(item.href);
-            const isActive = pathname === fullHref || pathname.startsWith(`${fullHref}/`);
+            const isActive =
+              pathname === fullHref || pathname.startsWith(`${fullHref}/`);
             return (
               <Link
                 key={item.href}
@@ -67,7 +71,8 @@ export default function Sidebar({ dict }: SidebarProps) {
         <div className="mt-6 space-y-1">
           {secondaryNavItems.map((item) => {
             const fullHref = getFullHref(item.href);
-            const isActive = pathname === fullHref || pathname.startsWith(`${fullHref}/`);
+            const isActive =
+              pathname === fullHref || pathname.startsWith(`${fullHref}/`);
             return (
               <Link
                 key={item.href}
@@ -94,11 +99,6 @@ export default function Sidebar({ dict }: SidebarProps) {
           })}
         </div>
       </nav>
-
-      {/* User section at the bottom */}
-      <div className="border-t border-gray-200 dark:border-gray-800 p-4">
-        <UserButtonClient />
-      </div>
     </aside>
   );
 }
