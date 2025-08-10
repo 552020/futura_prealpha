@@ -1,0 +1,76 @@
+{
+	"valueJourney": {
+	  "scene1": {
+		"image": "/images/segments/wedding-memories/wedding_memories_1.png",
+		"title": "The perfect day deserves a perfect gift",
+		"subtitle": "Give them something that grows more precious with time, like their love",
+		"description": "More than a gift, it's their story's beginning"
+	  },
+	  "scene2": {
+		"image": "/images/segments/wedding-memories/wedding_memories_2.png",
+		"title": "Every guest becomes part of their story",
+		"subtitle": "From vows to cake, capture it all in one place",
+		"description": "Everyone's memories, forever together"
+	  },
+	  "scene3": {
+		"image": "/images/segments/wedding-memories/wedding_memories_3.png",
+		"title": "A time capsule that opens year after year",
+		"subtitle": "First anniversary, tenth anniversary, golden anniversary",
+		"description": "The gift that keeps giving back"
+	  },
+	  "scene4": {
+		"image": "/images/segments/wedding-memories/wedding_memories_4.png",
+		"title": "From newlyweds to grandparents",
+		"subtitle": "Watch their love story unfold decade by decade",
+		"description": "A lifetime of memories in one place"
+	  },
+	  "scene5": {
+		"image": "/images/segments/wedding-memories/wedding_memories_5.png",
+		"title": "Their children will thank you someday",
+		"subtitle": "The day mom and dad said 'I do'",
+		"description": "A family treasure that lasts forever"
+	  },
+	  "scene6": {
+		"image": "/images/segments/wedding-memories/wedding_memories_6.png",
+		"title": "Futura: The unforgettable wedding gift",
+		"subtitle": "Because love stories deserve to be remembered",
+		"description": "Give them forever"
+	  },
+	  "conclusion": "Create their wedding time capsule today. The most meaningful gift starts here.",
+	  "arrowSymbol": "♡"
+	},
+	"variations": {
+	  "valueJourney": {
+		"scene1": {
+		  "titles": ["The perfect day deserves a perfect gift", "Give them something that grows more precious with time", "More than a gift, it's their story's beginning"],
+		  "subtitles": ["Give them something that grows more precious with time", "More than a gift, it's their story's beginning", "The perfect day deserves a perfect gift"],
+		  "descriptions": ["More than a gift, it's their story's beginning", "The perfect day deserves a perfect gift", "Give them something that grows more precious with time"]
+		},
+		"scene2": {
+		  "titles": ["Every guest becomes part of their story", "From vows to cake, capture it all in one place", "Everyone's memories, forever together"],
+		  "subtitles": ["From vows to cake, capture it all in one place", "Everyone's memories, forever together", "Every guest becomes part of their story"],
+		  "descriptions": ["Everyone's memories, forever together", "Every guest becomes part of their story", "From vows to cake, capture it all in one place"]
+		},
+		"scene3": {
+		  "titles": ["A time capsule that opens year after year", "First anniversary, tenth anniversary, golden anniversary", "The gift that keeps giving back"],
+		  "subtitles": ["First anniversary, tenth anniversary, golden anniversary", "The gift that keeps giving back", "A time capsule that opens year after year"],
+		  "descriptions": ["The gift that keeps giving back", "A time capsule that opens year after year", "First anniversary, tenth anniversary, golden anniversary"]
+		},
+		"scene4": {
+		  "titles": ["From newlyweds to grandparents", "Watch their love story unfold decade by decade", "A lifetime of memories in one place"],
+		  "subtitles": ["Watch their love story unfold decade by decade", "A lifetime of memories in one place", "From newlyweds to grandparents"],
+		  "descriptions": ["A lifetime of memories in one place", "From newlyweds to grandparents", "Watch their love story unfold decade by decade"]
+		},
+		"scene5": {
+		  "titles": ["Their children will thank you someday", "The day mom and dad said 'I do'", "A family treasure that lasts forever"],
+		  "subtitles": ["The day mom and dad said 'I do'", "A family treasure that lasts forever", "Their children will thank you someday"],
+		  "descriptions": ["A family treasure that lasts forever", "Their children will thank you someday", "The day mom and dad said 'I do'"]
+		},
+		"scene6": {
+		  "titles": ["Futura: The unforgettable wedding gift", "Because love stories deserve to be remembered", "Give them forever"],
+		  "subtitles": ["Because love stories deserve to be remembered", "Give them forever", "Futura: The unforgettable wedding gift"],
+		  "descriptions": ["Give them forever", "Futura: The unforgettable wedding gift", "Because love stories deserve to be remembered"]
+		}
+	  }
+	}
+  }

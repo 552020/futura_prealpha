@@ -293,11 +293,12 @@ const segmentDictionaries: Record<
       import("../app/[lang]/dictionaries/segments/digital-vault/en.json").then(
         (module) => module.default
       ),
-    de: () =>
-      import("../app/[lang]/dictionaries/segments/digital-vault/en.json").then(
+  },
+  wedding: {
+    en: () =>
+      import("../app/[lang]/dictionaries/segments/wedding/en.json").then(
         (module) => module.default
       ),
-    // Add other languages as needed
   },
   // Add other segments as needed
 };
