@@ -300,6 +300,12 @@ const segmentDictionaries: Record<
         (module) => module.default
       ),
   },
+  transcendence: {
+    en: () =>
+      import("../app/[lang]/dictionaries/segments/transcendence/en.json").then(
+        (module) => module.default
+      ),
+  },
   // Add other segments as needed
 };
 

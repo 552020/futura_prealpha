@@ -11,6 +11,7 @@ type JourneyType =
   | "black-mirror"
   | "digital-vault"
   | "creatives"
+  | "transcendence"
   | "wedding";
 
 type Scene = {
