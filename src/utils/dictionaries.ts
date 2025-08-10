@@ -288,6 +288,17 @@ const segmentDictionaries: Record<
       ),
     // Add other languages as needed
   },
+  "digital-vault": {
+    en: () =>
+      import("../app/[lang]/dictionaries/segments/digital-vault/en.json").then(
+        (module) => module.default
+      ),
+    de: () =>
+      import("../app/[lang]/dictionaries/segments/digital-vault/en.json").then(
+        (module) => module.default
+      ),
+    // Add other languages as needed
+  },
   // Add other segments as needed
 };
 

@@ -6,7 +6,12 @@ import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
 
 // Define valid journey types
-type JourneyType = "family" | "black-mirror" | "creatives" | "wedding";
+type JourneyType =
+  | "family"
+  | "black-mirror"
+  | "digital-vault"
+  | "creatives"
+  | "wedding";
 
 type Scene = {
   image?: string;
@@ -21,7 +26,11 @@ interface ValueJourneyProps {
   segment?: string; // Make segment optional with a default
 }
 
-const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "family" }) => {
+const ValueJourney: React.FC<ValueJourneyProps> = ({
+  dict,
+  lang,
+  segment = "family",
+}) => {
   // Validate that segment is a valid journey type, default to "family" if not
   const journeyType = (segment as JourneyType) || "family";
 
@@ -50,7 +59,9 @@ const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "fami
       // Type guard to ensure scene is an object with the expected properties
       if (typeof scene === "object" && scene !== null && isScene(scene)) {
         // Make sure image paths are absolute from the root, not relative to the current route
-        let imagePath = scene.image || `/images/segments/${journeyType}/scene_${sceneIndex}.webp`;
+        let imagePath =
+          scene.image ||
+          `/images/segments/${journeyType}/scene_${sceneIndex}.webp`;
 
         // Ensure the path starts with a slash and doesn't have the locale prefix
         if (!imagePath.startsWith("/")) {
@@ -61,7 +72,8 @@ const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "fami
           image: imagePath,
           title: scene.title || `Scene ${sceneIndex}`,
           subtitle: scene.subtitle,
-          description: scene.description || `Description for scene ${sceneIndex}`,
+          description:
+            scene.description || `Description for scene ${sceneIndex}`,
         });
       }
 
@@ -81,7 +93,12 @@ const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "fami
           {scenes.length > 0 ? (
             <>
               {scenes.map((scene, index) => (
-                <SceneItem key={index} scene={scene} index={index} isLast={index === scenes.length - 1} />
+                <SceneItem
+                  key={index}
+                  scene={scene}
+                  index={index}
+                  isLast={index === scenes.length - 1}
+                />
               ))}
 
               {conclusion && (
@@ -174,10 +191,18 @@ function SceneItem({
         </div>
       </div>
 
-      <div className={`w-full md:flex-1 ${isEven ? "md:pl-12 lg:pl-24" : "md:pr-12 lg:pr-24"}`}>
-        <h3 className="text-3xl md:text-4xl 2xl:text-6xl font-bold mb-4">{scene.title}</h3>
+      <div
+        className={`w-full md:flex-1 ${
+          isEven ? "md:pl-12 lg:pl-24" : "md:pr-12 lg:pr-24"
+        }`}
+      >
+        <h3 className="text-3xl md:text-4xl 2xl:text-6xl font-bold mb-4">
+          {scene.title}
+        </h3>
         {scene.subtitle && (
-          <h4 className="text-xl md:text-2xl 2xl:text-4xl text-gray-600 dark:text-gray-400">{scene.subtitle}</h4>
+          <h4 className="text-xl md:text-2xl 2xl:text-4xl text-gray-600 dark:text-gray-400">
+            {scene.subtitle}
+          </h4>
         )}
       </div>
     </div>

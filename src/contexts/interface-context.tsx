@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { usePathname } from "next/navigation";
 
 type InterfaceMode = "marketing" | "app";
@@ -10,10 +16,12 @@ interface InterfaceContextType {
   setMode: (mode: InterfaceMode) => void;
 }
 
-const InterfaceContext = createContext<InterfaceContextType | undefined>(undefined);
+const InterfaceContext = createContext<InterfaceContextType | undefined>(
+  undefined
+);
 
 // Define app routes that should use app mode
-const APP_ROUTES = ["/vault", "/feed", "/shared", "/profile", "/contacts"];
+const APP_ROUTES = ["/feed", "/shared", "/profile", "/contacts"];
 
 // Helper function to determine if a path is an app route
 function isAppRoute(path: string): boolean {
@@ -35,7 +43,11 @@ export function InterfaceProvider({ children }: { children: ReactNode }) {
     setMode(isAppRoute(pathname) ? "app" : "marketing");
   }, [pathname]);
 
-  return <InterfaceContext.Provider value={{ mode, setMode }}>{children}</InterfaceContext.Provider>;
+  return (
+    <InterfaceContext.Provider value={{ mode, setMode }}>
+      {children}
+    </InterfaceContext.Provider>
+  );
 }
 
 export function useInterface() {
