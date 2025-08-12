@@ -43,6 +43,6 @@ jobs:
       - name: Deploy to Development Satellite
         uses: junobuild/juno-action@v0.4.9
         with:
-          args: deploy --mode development
+          args: deploy --mode staging
         env:
           JUNO_TOKEN: ${{ secrets.JUNO_DEV_TOKEN }}
