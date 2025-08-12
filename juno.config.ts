@@ -9,6 +9,6 @@ export default defineConfig({
       production: "5yoof-ciaaa-aaaal-asevq-cai",
     },
     source: "out",
-    predeploy: ["npm run build"]
+    predeploy: ["pnpm run build"],
   },
 });
