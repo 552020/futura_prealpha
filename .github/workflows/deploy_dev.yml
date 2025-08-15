@@ -3,7 +3,7 @@ name: Deploy to Development
 on:
   push:
     branches:
-      - lmangallon/icp-156-make-the-page-juno-ready
+      - lmangallon/icp-179-finish-website-structure
 
 concurrency:
   group: juno-deploy-dev-${{ github.ref }}
