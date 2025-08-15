@@ -1,0 +1,48 @@
+name: Deploy to Development
+
+on:
+  push:
+    branches:
+      - lmangallon/icp-156-make-the-page-juno-ready
+
+concurrency:
+  group: juno-deploy-dev-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test JUNO_TOKEN availability
+        run: |
+          if [ -z "$JUNO_DEV_TOKEN" ]; then
+            echo "❌ JUNO_DEV_TOKEN is not set"
+            exit 1
+          else
+            echo "✅ JUNO_DEV_TOKEN is available (length: ${#JUNO_DEV_TOKEN})"
+          fi
+        env:
+          JUNO_DEV_TOKEN: ${{ secrets.JUNO_DEV_TOKEN }}
+
+      - name: Deploy to Development Satellite
+        uses: junobuild/juno-action@v0.4.9
+        with:
+          args: deploy --mode staging
+        env:
+          JUNO_TOKEN: ${{ secrets.JUNO_DEV_TOKEN }}
