@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 // Define valid segments
 const validSegments = [
   "family",
+  "family-2",
   "black-mirror",
   "digital-vault",
   "wedding",

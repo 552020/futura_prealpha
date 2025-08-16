@@ -277,6 +277,12 @@ const segmentDictionaries: Record<
       ),
     // Add other languages as needed
   },
+  "family-2": {
+    en: () =>
+      import("../app/[lang]/dictionaries/segments/family-2/en.json").then(
+        (module) => module.default
+      ),
+  },
   "black-mirror": {
     en: () =>
       import("../app/[lang]/dictionaries/segments/black-mirror/en.json").then(

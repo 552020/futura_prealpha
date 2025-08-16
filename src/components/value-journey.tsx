@@ -8,6 +8,7 @@ import { useRef, useEffect, useState } from "react";
 // Define valid journey types
 type JourneyType =
   | "family"
+  | "family-2"
   | "black-mirror"
   | "digital-vault"
   | "creatives"
