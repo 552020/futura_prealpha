@@ -277,6 +277,12 @@ const segmentDictionaries: Record<
       ),
     // Add other languages as needed
   },
+  "family-2": {
+    en: () =>
+      import("../app/[lang]/dictionaries/segments/family-2/en.json").then(
+        (module) => module.default
+      ),
+  },
   "black-mirror": {
     en: () =>
       import("../app/[lang]/dictionaries/segments/black-mirror/en.json").then(
@@ -287,6 +293,24 @@ const segmentDictionaries: Record<
         (module) => module.default
       ),
     // Add other languages as needed
+  },
+  "digital-vault": {
+    en: () =>
+      import("../app/[lang]/dictionaries/segments/digital-vault/en.json").then(
+        (module) => module.default
+      ),
+  },
+  wedding: {
+    en: () =>
+      import("../app/[lang]/dictionaries/segments/wedding/en.json").then(
+        (module) => module.default
+      ),
+  },
+  transcendence: {
+    en: () =>
+      import("../app/[lang]/dictionaries/segments/transcendence/en.json").then(
+        (module) => module.default
+      ),
   },
   // Add other segments as needed
 };

@@ -1,0 +1,76 @@
+{
+	"valueJourney": {
+	  "scene1": {
+		"image": "/images/segments/transcendence/transcendence_1.png",
+		"title": "What if your stories never had to end?",
+		"subtitle": "Your memories, thoughts, and wisdom preserved forever",
+		"description": "The beginning of digital immortality"
+	  },
+	  "scene2": {
+		"image": "/images/segments/transcendence/transcendence_2.png",
+		"title": "Every conversation becomes part of you",
+		"subtitle": "AI learns your voice, your thoughts, your essence",
+		"description": "Building your digital consciousness"
+	  },
+	  "scene3": {
+		"image": "/images/segments/transcendence/transcendence_3.png",
+		"title": "When you're gone, you're still here",
+		"subtitle": "Your digital self lives on, forever accessible",
+		"description": "Death is not the end of your story"
+	  },
+	  "scene4": {
+		"image": "/images/segments/transcendence/transcendence_4.png",
+		"title": "Meet your great-great-grandfather",
+		"subtitle": "Generations talking across the void of time",
+		"description": "Conversations that transcend centuries"
+	  },
+	  "scene5": {
+		"image": "/images/segments/transcendence/transcendence_5.png",
+		"title": "Your wisdom guides them forever",
+		"subtitle": "Advice, stories, love—always available when needed",
+		"description": "An eternal presence in their lives"
+	  },
+	  "scene6": {
+		"image": "/images/segments/transcendence/transcendence_6.png",
+		"title": "Futura: Where consciousness meets eternity",
+		"subtitle": "Your digital self awaits on the blockchain",
+		"description": "Transcend mortality itself"
+	  },
+	  "conclusion": "Begin your journey to digital immortality. Your eternal self starts today.",
+	  "arrowSymbol": "∞"
+	},
+	"variations": {
+	  "valueJourney": {
+		"scene1": {
+		  "titles": ["What if your stories never had to end?", "Your memories, thoughts, and wisdom preserved forever", "The beginning of digital immortality"],
+		  "subtitles": ["Your memories, thoughts, and wisdom preserved forever", "The beginning of digital immortality", "What if your stories never had to end?"],
+		  "descriptions": ["The beginning of digital immortality", "What if your stories never had to end?", "Your memories, thoughts, and wisdom preserved forever"]
+		},
+		"scene2": {
+		  "titles": ["Every conversation becomes part of you", "AI learns your voice, your thoughts, your essence", "Building your digital consciousness"],
+		  "subtitles": ["AI learns your voice, your thoughts, your essence", "Building your digital consciousness", "Every conversation becomes part of you"],
+		  "descriptions": ["Building your digital consciousness", "Every conversation becomes part of you", "AI learns your voice, your thoughts, your essence"]
+		},
+		"scene3": {
+		  "titles": ["When you're gone, you're still here", "Your digital self lives on, forever accessible", "Death is not the end of your story"],
+		  "subtitles": ["Your digital self lives on, forever accessible", "Death is not the end of your story", "When you're gone, you're still here"],
+		  "descriptions": ["Death is not the end of your story", "When you're gone, you're still here", "Your digital self lives on, forever accessible"]
+		},
+		"scene4": {
+		  "titles": ["Meet your great-great-grandfather", "Generations talking across the void of time", "Conversations that transcend centuries"],
+		  "subtitles": ["Generations talking across the void of time", "Conversations that transcend centuries", "Meet your great-great-grandfather"],
+		  "descriptions": ["Conversations that transcend centuries", "Meet your great-great-grandfather", "Generations talking across the void of time"]
+		},
+		"scene5": {
+		  "titles": ["Your wisdom guides them forever", "Advice, stories, love—always available when needed", "An eternal presence in their lives"],
+		  "subtitles": ["Advice, stories, love—always available when needed", "An eternal presence in their lives", "Your wisdom guides them forever"],
+		  "descriptions": ["An eternal presence in their lives", "Your wisdom guides them forever", "Advice, stories, love—always available when needed"]
+		},
+		"scene6": {
+		  "titles": ["Futura: Where consciousness meets eternity", "Your digital self awaits on the blockchain", "Transcend mortality itself"],
+		  "subtitles": ["Your digital self awaits on the blockchain", "Transcend mortality itself", "Futura: Where consciousness meets eternity"],
+		  "descriptions": ["Transcend mortality itself", "Futura: Where consciousness meets eternity", "Your digital self awaits on the blockchain"]
+		}
+	  }
+	}
+  }

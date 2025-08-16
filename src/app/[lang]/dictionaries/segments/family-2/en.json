@@ -1,0 +1,76 @@
+{
+	"valueJourney": {
+	  "scene1": {
+		"image": "/images/segments/family-2/family_2-1.png",
+		"title": "Some moments stand apart",
+		"subtitle": "They define who you are, and who you'll always be remembered as",
+		"description": "Iconic moments that shape our legacy"
+	  },
+	  "scene2": {
+		"image": "/images/segments/family-2/family_2-2.png",
+		"title": "Moments turn into memories",
+		"subtitle": "Held closely in our hearts, passed down through generations",
+		"description": "Anonymous couple BW photography, holding baby, wedding picture on the wall"
+	  },
+	  "scene3": {
+		"image": "/images/segments/family-2/family_2-3.png",
+		"title": "Every precious memory deserves protection",
+		"subtitle": "Some things are irreplaceable. Too important to be lost",
+		"description": "Hands gently holding a faded family photograph, emphasizing fragility and loss"
+	  },
+	  "scene4": {
+		"image": "/images/segments/family-2/family_2-4.png",
+		"title": "Meet Futura - where memories live forever",
+		"subtitle": "Revolutionary Web3 technology protects your most precious moments far beyond a lifetime - safer, stronger, and more secure than any storage you've used before",
+		"description": "Family in a light filled room, heaven like atmosphere"
+	  },
+	  "scene5": {
+		"image": "/images/segments/family-2/family_2-5.png",
+		"title": "Share today. Be remembered tomorrow",
+		"subtitle": "Preserve your family's stories, photos, and milestones for children, grandchildren, and generations yet to come. Your memories become their inheritance",
+		"description": "Split-screen showing someone uploading photos today, and future descendants discovering those memories decades later"
+	  },
+	  "scene6": {
+		"image": "/images/segments/family-2/family_2-6.png",
+		"title": "Start your forever archive today",
+		"subtitle": "Begin with 2 GB free. Upload, share, and secure your memories now - because some things should never be lost",
+		"description": "Final call-to-action without visual"
+	  },
+	  "conclusion": "Begin My Family Archive",
+	  "arrowSymbol": "→"
+	},
+	"variations": {
+	  "valueJourney": {
+		"scene1": {
+		  "titles": ["Some moments stand apart", "They define who you are", "Iconic moments shape us"],
+		  "subtitles": ["They define who you are, and who you'll always be remembered as", "Iconic moments that define our legacy", "These are the moments that matter most"],
+		  "descriptions": ["Iconic moments that shape our legacy", "Defining moments of human connection", "The moments that make us who we are"]
+		},
+		"scene2": {
+		  "titles": ["Moments turn into memories", "Held closely in our hearts", "Passed down through generations"],
+		  "subtitles": ["Held closely in our hearts, passed down through generations", "Treasured across time and family", "The foundation of our family story"],
+		  "descriptions": ["Treasured across generations", "The foundation of family legacy", "Love captured in timeless moments"]
+		},
+		"scene3": {
+		  "titles": ["Every precious memory deserves protection", "Some things are irreplaceable", "Too important to be lost"],
+		  "subtitles": ["Some things are irreplaceable. Too important to be lost", "These moments deserve eternal protection", "Your memories are priceless"],
+		  "descriptions": ["The fragility of irreplaceable memories", "Protecting what matters most", "Safeguarding precious moments from time"]
+		},
+		"scene4": {
+		  "titles": ["Meet Futura - where memories live forever", "Revolutionary Web3 technology", "Safer, stronger, more secure"],
+		  "subtitles": ["Revolutionary Web3 technology protects your most precious moments far beyond a lifetime", "Ultra-secure generational data storage", "Technology that transcends time"],
+		  "descriptions": ["Heaven-like preservation of family moments", "Technology meets eternal love", "Where memories find their forever home"]
+		},
+		"scene5": {
+		  "titles": ["Share today. Be remembered tomorrow", "Your memories become their inheritance", "Preserve for generations yet to come"],
+		  "subtitles": ["Preserve your family's stories, photos, and milestones for generations yet to come", "Your memories become their inheritance", "Creating a legacy that lasts forever"],
+		  "descriptions": ["Bridging today with tomorrow through memories", "Generational connection through preserved moments", "Your legacy living on through time"]
+		},
+		"scene6": {
+		  "titles": ["Start your forever archive today", "Begin with 2 GB free", "Your memories await"],
+		  "subtitles": ["Begin with 2 GB free. Upload, share, and secure your memories now", "Because some things should never be lost", "Start preserving your legacy today"],
+		  "descriptions": ["Risk-free beginning of your family archive", "The first step toward eternal preservation", "Your journey to forever starts now"]
+		}
+	  }
+	}
+  }

@@ -1,0 +1,76 @@
+{
+  "valueJourney": {
+    "scene1": {
+      "image": "/images/segments/digital-vault/digital_vault_1.png",
+      "title": "Every memory is a legacy in the making",
+      "subtitle": "What you capture today becomes tomorrow's heritage",
+      "description": "The first step in preserving forever"
+    },
+    "scene2": {
+      "image": "/images/segments/digital-vault/digital_vault_2.png",
+      "title": "Your life story, one memory at a time",
+      "subtitle": "Building a collection that tells your story",
+      "description": "Every moment adds to your legacy"
+    },
+    "scene3": {
+      "image": "/images/segments/digital-vault/digital_vault_3.png",
+      "title": "A vault that never closes, never fails",
+      "subtitle": "Where memories are preserved for eternity",
+      "description": "Your personal time capsule"
+    },
+    "scene4": {
+      "image": "/images/segments/digital-vault/digital_vault_4.png",
+      "title": "Share with those who matter most",
+      "subtitle": "Your memories, their inheritance",
+      "description": "Connecting hearts across time"
+    },
+    "scene5": {
+      "image": "/images/segments/digital-vault/digital_vault_5.png",
+      "title": "From you to them, and beyond",
+      "subtitle": "Your memories become their history",
+      "description": "A bridge between past and future"
+    },
+    "scene6": {
+      "image": "/images/segments/digital-vault/digital_vault_6.png",
+      "title": "Futura: Your memories, immortal",
+      "subtitle": "Preserving your legacy for eternity",
+      "description": "Because some things should never be forgotten"
+    },
+    "conclusion": "Your digital vault awaits. Start building your legacy today.",
+    "arrowSymbol": "→"
+  },
+  "variations": {
+    "valueJourney": {
+      "scene1": {
+        "titles": ["Every memory is a legacy in the making", "What you capture today becomes tomorrow's heritage", "The first step in preserving forever"],
+        "subtitles": ["What you capture today becomes tomorrow's heritage", "The first step in preserving forever", "Every memory is a legacy in the making"],
+        "descriptions": ["The first step in preserving forever", "Every memory is a legacy in the making", "What you capture today becomes tomorrow's heritage"]
+      },
+      "scene2": {
+        "titles": ["Your life story, one memory at a time", "Building a collection that tells your story", "Every moment adds to your legacy"],
+        "subtitles": ["Building a collection that tells your story", "Every moment adds to your legacy", "Your life story, one memory at a time"],
+        "descriptions": ["Every moment adds to your legacy", "Your life story, one memory at a time", "Building a collection that tells your story"]
+      },
+      "scene3": {
+        "titles": ["A vault that never closes, never fails", "Where memories are preserved for eternity", "Your personal time capsule"],
+        "subtitles": ["Where memories are preserved for eternity", "Your personal time capsule", "A vault that never closes, never fails"],
+        "descriptions": ["Your personal time capsule", "A vault that never closes, never fails", "Where memories are preserved for eternity"]
+      },
+      "scene4": {
+        "titles": ["Share with those who matter most", "Your memories, their inheritance", "Connecting hearts across time"],
+        "subtitles": ["Your memories, their inheritance", "Connecting hearts across time", "Share with those who matter most"],
+        "descriptions": ["Connecting hearts across time", "Share with those who matter most", "Your memories, their inheritance"]
+      },
+      "scene5": {
+        "titles": ["From you to them, and beyond", "Your memories become their history", "A bridge between past and future"],
+        "subtitles": ["Your memories become their history", "A bridge between past and future", "From you to them, and beyond"],
+        "descriptions": ["A bridge between past and future", "From you to them, and beyond", "Your memories become their history"]
+      },
+      "scene6": {
+        "titles": ["Futura: Your memories, immortal", "Preserving your legacy for eternity", "Because some things should never be forgotten"],
+        "subtitles": ["Preserving your legacy for eternity", "Because some things should never be forgotten", "Futura: Your memories, immortal"],
+        "descriptions": ["Because some things should never be forgotten", "Futura: Your memories, immortal", "Preserving your legacy for eternity"]
+      }
+    }
+  }
+} 
