@@ -138,15 +138,19 @@ function SceneItem({
   index,
   isLast,
 }: {
-  scene: { image: string; title: string; subtitle?: string };
+  scene: { image?: string; title: string; subtitle?: string };
   index: number;
   isLast: boolean;
 }) {
   const [isVisible, setIsVisible] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   // Alternate layout for even/odd scenes
   const isEven = index % 2 === 0;
+  
+  // Check if we have a valid image
+  const hasValidImage = scene.image && !imageError;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -172,31 +176,36 @@ function SceneItem({
     <div
       ref={ref}
       className={`
-        flex flex-col md:flex-row items-center 
+        flex flex-col items-center 
         ${!isLast ? "mb-24" : "mb-8"} 
-        ${isEven ? "" : "md:flex-row-reverse"}
+        ${hasValidImage ? `md:flex-row ${isEven ? "" : "md:flex-row-reverse"}` : ""}
         transition-opacity duration-700 ease-in-out
         ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
         w-full
       `}
     >
-      <div className="w-full md:flex-1 mb-8 md:mb-0">
-        <div className="relative w-full aspect-square">
-          <Image
-            src={scene.image}
-            alt={scene.title}
-            fill
-            className="object-cover rounded-lg transition-transform duration-500 hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 90vw"
-            priority={index === 0}
-          />
+      {hasValidImage && (
+        <div className="w-full md:flex-1 mb-8 md:mb-0">
+          <div className="relative w-full aspect-square">
+            <Image
+              src={scene.image!}
+              alt={scene.title}
+              fill
+              className="object-cover rounded-lg transition-transform duration-500 hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 90vw"
+              priority={index === 0}
+              onError={() => setImageError(true)}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <div
-        className={`w-full md:flex-1 ${
-          isEven ? "md:pl-12 lg:pl-24" : "md:pr-12 lg:pr-24"
-        }`}
+        className={`w-full ${
+          hasValidImage 
+            ? `md:flex-1 ${isEven ? "md:pl-12 lg:pl-24" : "md:pr-12 lg:pr-24"}` 
+            : "w-full md:w-1/2 mx-auto text-center"
+          }`}
       >
         <h3 className="text-3xl md:text-4xl 2xl:text-6xl font-bold mb-4">
           {scene.title}
