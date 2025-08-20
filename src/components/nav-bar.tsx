@@ -14,17 +14,14 @@ type NavItem = {
   label: string;
 };
 
-export default function NavBar({ lang, dict, className }: NavBarProps) {
+export default function NavBar({ lang, className }: NavBarProps) {
   const pathname = usePathname();
+
+  const navItems: NavItem[] = []; // still empty for now
 
   return (
     <>
-      {(
-        [
-          { href: "/dashboard", label: dict.nav?.dashboard || "Dashboard" },
-          { href: "/settings", label: dict.nav?.settings || "Settings" },
-        ] as NavItem[]
-      ).map((item) => (
+      {navItems.map((item) => (
         <Link
           key={item.href}
           href={`/${lang}${item.href}`}
