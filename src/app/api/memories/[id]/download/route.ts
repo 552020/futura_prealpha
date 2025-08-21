@@ -40,7 +40,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
           if (!response.ok) throw new Error(`Failed to fetch ${image.url}`);
 
           const buffer = Buffer.from(await response.arrayBuffer());
-          const fileResponse = new NextResponse(buffer);
+          const fileResponse = new NextResponse(new Uint8Array(buffer));
 
           // Set the content type based on the URL extension or a default
           const ext = path.extname(image.url).toLowerCase();
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
           const contentType =
             ext === ".png" ? "image/png" : ext === ".gif" ? "image/gif" : ext === ".webp" ? "image/webp" : "image/jpeg";
 
-          const response = new NextResponse(fileBuffer);
+          const response = new NextResponse(new Uint8Array(fileBuffer));
           response.headers.set("Content-Type", contentType);
           response.headers.set("Content-Disposition", `attachment; filename="${path.basename(filePath)}"`);
 
@@ -121,7 +121,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
           if (!response.ok) throw new Error(`Failed to fetch ${document.url}`);
 
           const buffer = Buffer.from(await response.arrayBuffer());
-          const fileResponse = new NextResponse(buffer);
+          const fileResponse = new NextResponse(new Uint8Array(buffer));
 
           fileResponse.headers.set("Content-Type", document.mimeType || "application/octet-stream");
           fileResponse.headers.set("Content-Disposition", `attachment; filename="${document.title}"`);
@@ -151,7 +151,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
           // If we get here, the file exists
           const fileBuffer = await fs.readFile(filePath);
 
-          const response = new NextResponse(fileBuffer);
+          const response = new NextResponse(new Uint8Array(fileBuffer));
           response.headers.set("Content-Type", document.mimeType || "application/octet-stream");
           response.headers.set("Content-Disposition", `attachment; filename="${document.title}"`);
 
