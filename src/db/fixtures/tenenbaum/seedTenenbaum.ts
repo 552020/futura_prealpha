@@ -71,7 +71,7 @@ async function uploadAsset(filename: string): Promise<{ url: string; size: numbe
       : filename.endsWith(".tiff")
       ? "image/tiff"
       : "application/octet-stream";
-    const file = new File([buffer], filename, { type: mimeType });
+    const file = new File([new Uint8Array(buffer)], filename, { type: mimeType });
     const validationResult = await validateFile(file);
     if (!validationResult.isValid) {
       throw new Error(`Invalid file: ${validationResult.error}`);

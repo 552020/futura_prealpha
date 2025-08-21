@@ -12,6 +12,7 @@ import { PostHogProvider } from "@/components/posthog-provider";
 import BottomNav from "@/components/bottom-nav";
 import Sidebar from "@/components/sidebar";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
+import { Analytics } from "@vercel/analytics/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -100,6 +101,7 @@ export default async function RootLayout({
             </ThemeProvider>
           </PostHogProvider>
         </SessionProvider>
+        <Analytics />
       </body>
     </html>
   );
