@@ -1,4 +1,4 @@
-# FUTURA Pre-alpha
+# FUTURA - WCHL National Edition
 
 ## Stack
 
@@ -62,4 +62,10 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-update
+## WCHL National Edition
+
+This project is part of the [WCHL National Edition Hackathon](https://dorahacks.io/hackathon/wchl25-national-round/detail).
+
+---
+
+_FUTURA - WCHL National Edition_
