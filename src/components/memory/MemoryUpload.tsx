@@ -11,6 +11,25 @@ interface MemoryUploadProps {
   onError?: (error: Error) => void;
 }
 
+/**
+ * TODO: Refactor component structure for better readability
+ *
+ * Current issues:
+ * - Multiple return statements scattered throughout renderTrigger()
+ * - Main return is confusing (always reached but unclear intent)
+ * - Logic mixed between file handling and UI rendering
+ *
+ * Proposed improvements:
+ * - Single return with conditional rendering
+ * - Separate components for native vs custom variants
+ * - Clearer separation of concerns
+ *
+ * The idea of different upload button shapes based on context is good:
+ * - "large-icon": Big circular button for prominent upload areas (onboarding, vault)
+ * - "icon": Small icon for inline uploads
+ * - "button": Standard button with text
+ * - "native": Browser's default file input
+ */
 export function MemoryUpload({ isOnboarding = false, variant = "button", onSuccess, onError }: MemoryUploadProps) {
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const { isLoading, fileInputRef, handleUploadClick, handleFileChange } = useFileUpload({
