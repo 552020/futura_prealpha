@@ -1,4 +1,6 @@
 import Hero from "@/components/hero";
+import HeroDemo from "@/components/hero-demo";
+
 import ValueJourney from "@/components/value-journey";
 import { getDictionary } from "@/utils/dictionaries";
 import { cookies } from "next/headers";
@@ -25,7 +27,8 @@ export default async function LangPage({ params }: PageProps) {
   return (
     <main className="bg-white dark:bg-[#0A0A0B]">
       <Hero dict={dict} lang={resolvedParams.lang} />
-      <ValueJourney dict={dict} lang={resolvedParams.lang} segment={segment} />
+      <HeroDemo dict={dict} lang={resolvedParams.lang} />
+      {/* <ValueJourney dict={dict} lang={resolvedParams.lang} segment={segment} /> */}
     </main>
   );
 }
