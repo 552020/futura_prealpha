@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useOnboarding } from "@/contexts/onboarding-context";
 import { useToast } from "@/hooks/use-toast";
-import { setDoc } from "@junobuild/core";
+import { setDoc, initSatellite } from "@junobuild/core-peer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,6 +47,17 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
   } = useOnboarding();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Initialize Juno satellite when component mounts
+  useEffect(() => {
+    (async () => {
+      try {
+        await initSatellite();
+      } catch (error) {
+        console.error("Failed to initialize Juno satellite:", error);
+      }
+    })();
+  }, []);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
