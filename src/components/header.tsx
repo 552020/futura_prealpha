@@ -6,7 +6,7 @@ import { Menu, Share2, Twitter, Instagram, Facebook } from "lucide-react";
 // import { useSession } from "next-auth/react";
 import { ModeToggle } from "./mode-toggle";
 import NavBar from "./nav-bar";
-import { useInterface } from "@/contexts/interface-context";
+
 import { LanguageSwitcher } from "./language-switcher";
 import {
   Sheet,
@@ -28,7 +28,6 @@ export default function Header({
   lang?: string;
 }) {
   //   const { data: session, status } = useSession();
-  const { mode } = useInterface();
   // Use the passed lang prop if available, otherwise get it from params
   const currentLang = lang || "en";
 
@@ -72,7 +71,7 @@ export default function Header({
 
         {/* Center: Navigation - DESKTOP ONLY */}
         <nav className="navigation-section hidden md:flex flex-1 justify-center gap-6 text-xs sm:text-sm">
-          <NavBar mode={mode} lang={currentLang} dict={dict} />
+          <NavBar lang={currentLang} dict={dict} />
         </nav>
 
         {/* Right User controls */}
@@ -103,12 +102,7 @@ export default function Header({
                 </SheetHeader>
                 <div className="flex flex-col space-y-4">
                   <nav className="flex flex-col">
-                    <NavBar
-                      mode={mode}
-                      lang={currentLang}
-                      dict={dict}
-                      className="mobile"
-                    />
+                    <NavBar lang={currentLang} dict={dict} className="mobile" />
                   </nav>
 
                   {/* Footer Links in Mobile Menu */}

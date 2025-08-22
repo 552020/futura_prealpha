@@ -7,7 +7,14 @@ import { notFound } from "next/navigation";
 // import { setSegmentCookie } from "./actions";
 
 // Define valid segments
-const validSegments = ["family", "black-mirror"];
+const validSegments = [
+  "family",
+  "family-2",
+  "black-mirror",
+  "digital-vault",
+  "wedding",
+  "transcendence",
+];
 
 // Define locales (supported languages)
 const locales = ["en", "fr", "es", "pt", "it", "de", "pl", "zh"];

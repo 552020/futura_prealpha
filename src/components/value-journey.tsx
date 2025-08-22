@@ -6,7 +6,14 @@ import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
 
 // Define valid journey types
-type JourneyType = "family" | "black-mirror" | "creatives" | "wedding";
+type JourneyType =
+  | "family"
+  | "family-2"
+  | "black-mirror"
+  | "digital-vault"
+  | "creatives"
+  | "transcendence"
+  | "wedding";
 
 type Scene = {
   image?: string;
@@ -21,7 +28,11 @@ interface ValueJourneyProps {
   segment?: string; // Make segment optional with a default
 }
 
-const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "family" }) => {
+const ValueJourney: React.FC<ValueJourneyProps> = ({
+  dict,
+  lang,
+  segment = "family",
+}) => {
   // Validate that segment is a valid journey type, default to "family" if not
   const journeyType = (segment as JourneyType) || "family";
 
@@ -50,7 +61,9 @@ const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "fami
       // Type guard to ensure scene is an object with the expected properties
       if (typeof scene === "object" && scene !== null && isScene(scene)) {
         // Make sure image paths are absolute from the root, not relative to the current route
-        let imagePath = scene.image || `/images/segments/${journeyType}/scene_${sceneIndex}.webp`;
+        let imagePath =
+          scene.image ||
+          `/images/segments/${journeyType}/scene_${sceneIndex}.webp`;
 
         // Ensure the path starts with a slash and doesn't have the locale prefix
         if (!imagePath.startsWith("/")) {
@@ -61,7 +74,8 @@ const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "fami
           image: imagePath,
           title: scene.title || `Scene ${sceneIndex}`,
           subtitle: scene.subtitle,
-          description: scene.description || `Description for scene ${sceneIndex}`,
+          description:
+            scene.description || `Description for scene ${sceneIndex}`,
         });
       }
 
@@ -81,7 +95,12 @@ const ValueJourney: React.FC<ValueJourneyProps> = ({ dict, lang, segment = "fami
           {scenes.length > 0 ? (
             <>
               {scenes.map((scene, index) => (
-                <SceneItem key={index} scene={scene} index={index} isLast={index === scenes.length - 1} />
+                <SceneItem
+                  key={index}
+                  scene={scene}
+                  index={index}
+                  isLast={index === scenes.length - 1}
+                />
               ))}
 
               {conclusion && (
@@ -119,15 +138,19 @@ function SceneItem({
   index,
   isLast,
 }: {
-  scene: { image: string; title: string; subtitle?: string };
+  scene: { image?: string; title: string; subtitle?: string };
   index: number;
   isLast: boolean;
 }) {
   const [isVisible, setIsVisible] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   // Alternate layout for even/odd scenes
   const isEven = index % 2 === 0;
+  
+  // Check if we have a valid image
+  const hasValidImage = scene.image && !imageError;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -153,31 +176,44 @@ function SceneItem({
     <div
       ref={ref}
       className={`
-        flex flex-col md:flex-row items-center 
+        flex flex-col items-center 
         ${!isLast ? "mb-24" : "mb-8"} 
-        ${isEven ? "" : "md:flex-row-reverse"}
+        ${hasValidImage ? `md:flex-row ${isEven ? "" : "md:flex-row-reverse"}` : ""}
         transition-opacity duration-700 ease-in-out
         ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
         w-full
       `}
     >
-      <div className="w-full md:flex-1 mb-8 md:mb-0">
-        <div className="relative w-full aspect-square">
-          <Image
-            src={scene.image}
-            alt={scene.title}
-            fill
-            className="object-cover rounded-lg transition-transform duration-500 hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 90vw"
-            priority={index === 0}
-          />
+      {hasValidImage && (
+        <div className="w-full md:flex-1 mb-8 md:mb-0">
+          <div className="relative w-full aspect-square">
+            <Image
+              src={scene.image!}
+              alt={scene.title}
+              fill
+              className="object-cover rounded-lg transition-transform duration-500 hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 90vw"
+              priority={index === 0}
+              onError={() => setImageError(true)}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className={`w-full md:flex-1 ${isEven ? "md:pl-12 lg:pl-24" : "md:pr-12 lg:pr-24"}`}>
-        <h3 className="text-3xl md:text-4xl 2xl:text-6xl font-bold mb-4">{scene.title}</h3>
+      <div
+        className={`w-full ${
+          hasValidImage 
+            ? `md:flex-1 ${isEven ? "md:pl-12 lg:pl-24" : "md:pr-12 lg:pr-24"}` 
+            : "w-full md:w-1/2 mx-auto text-center"
+          }`}
+      >
+        <h3 className="text-3xl md:text-4xl 2xl:text-6xl font-bold mb-4">
+          {scene.title}
+        </h3>
         {scene.subtitle && (
-          <h4 className="text-xl md:text-2xl 2xl:text-4xl text-gray-600 dark:text-gray-400">{scene.subtitle}</h4>
+          <h4 className="text-xl md:text-2xl 2xl:text-4xl text-gray-600 dark:text-gray-400">
+            {scene.subtitle}
+          </h4>
         )}
       </div>
     </div>
