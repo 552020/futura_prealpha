@@ -33,7 +33,7 @@ struct EmailPayload {
     text: String,
 }
 
-#[on_set_doc(collections = ["demo"])]
+#[on_set_doc(collections = ["email_requests"])]
 async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
     ic_cdk::println!("📧 Email function triggered for document key: {}", context.data.key);
     
