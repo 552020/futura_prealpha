@@ -3,12 +3,23 @@ import { Plus, Loader2, Upload } from "lucide-react";
 import { useFileUpload } from "@/hooks/user-file-upload";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
-interface MemoryUploadProps {
+// interface ItemUploadButtonProps {
+//   isOnboarding?: boolean;
+//   variant?: "button" | "icon" | "large-icon" | "native";
+//   onSuccess?: () => void;
+//   onError?: (error: Error) => void;
+// }
+
+type UploadMode = "folder" | "files";
+
+interface ItemUploadButtonProps {
+  mode?: UploadMode; // NEW
   isOnboarding?: boolean;
   variant?: "button" | "icon" | "large-icon" | "native";
   onSuccess?: () => void;
-  onError?: (error: Error) => void;
+  onError?: (e: Error) => void;
 }
 
 /**
@@ -29,11 +40,25 @@ interface MemoryUploadProps {
  * - "icon": Small icon for inline uploads
  * - "button": Standard button with text
  * - "native": Browser's default file input
+ *
+ * TODO: Fix TypeScript overcomplication for webkitdirectory/directory attributes
+ * - Current workaround: {...({} as any)} bypasses type checking
+ * - Better approach: Extend HTML input interface or use proper type definitions
+ * - This is just TypeScript being overly strict about experimental attributes
  */
-export function MemoryUpload({ isOnboarding = false, variant = "button", onSuccess, onError }: MemoryUploadProps) {
+export function ItemUploadButton({
+  mode = "folder",
+  isOnboarding = false,
+  variant = "button",
+  onSuccess,
+  onError,
+}: ItemUploadButtonProps) {
   const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const { toast } = useToast();
+
   const { isLoading, fileInputRef, handleUploadClick, handleFileChange } = useFileUpload({
     isOnboarding,
+    mode,
     onSuccess: () => {
       setShowUploadDialog(false);
       onSuccess?.();
@@ -44,6 +69,14 @@ export function MemoryUpload({ isOnboarding = false, variant = "button", onSucce
   });
 
   const renderTrigger = () => {
+    // Test toast on click
+    const handleClick = () => {
+      toast({
+        title: "Test",
+        description: "Toast is working",
+      });
+      handleUploadClick();
+    };
     if (variant === "native") {
       return (
         <input
@@ -62,8 +95,8 @@ export function MemoryUpload({ isOnboarding = false, variant = "button", onSucce
           <div
             role="button"
             tabIndex={0}
-            onClick={handleUploadClick}
-            onKeyDown={(e) => e.key === "Enter" && handleUploadClick()}
+            onClick={handleClick}
+            onKeyDown={(e) => e.key === "Enter" && handleClick()}
             className="w-20 h-20 rounded-full bg-black hover:bg-white dark:bg-white dark:hover:bg-black flex items-center justify-center cursor-pointer text-white hover:text-black dark:text-black dark:hover:text-white border-2 border-transparent hover:border-black dark:hover:border-white transition-all"
           >
             {isLoading ? <Loader2 size={72} className="animate-spin" /> : <Plus size={72} />}
@@ -98,6 +131,11 @@ export function MemoryUpload({ isOnboarding = false, variant = "button", onSucce
           accept="image/*,video/*,audio/*"
         />
       )}
+
+      {/* Hidden folder input */}
+      {/* <input type="file" className="hidden" webkitdirectory directory {...({} as any)} /> */}
+
+      {/* <input type="file" className="hidden" webkitdirectory directory /> */}
 
       {/* Upload trigger */}
       {renderTrigger()}

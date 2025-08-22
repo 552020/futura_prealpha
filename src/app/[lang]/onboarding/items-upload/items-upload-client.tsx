@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useInterface } from "@/contexts/interface-context";
 import { useRouter } from "next/navigation";
 import { OnboardModal } from "@/components/onboarding/onboard-modal";
-import { MemoryUpload } from "@/components/memory/MemoryUpload";
+// import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
+import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
 import { Dictionary } from "@/utils/dictionaries";
 
 // Hardcoded constants for this component
@@ -51,7 +52,7 @@ export default function ItemsUploadClient({ lang, dict }: ItemsUploadClientProps
 
       {/* Upload button container */}
       <div className="flex justify-center">
-        <MemoryUpload isOnboarding variant="large-icon" onSuccess={handleUploadSuccess} />
+        <ItemUploadButton isOnboarding variant="large-icon" onSuccess={handleUploadSuccess} />
       </div>
 
       {/* Onboarding Modal */}

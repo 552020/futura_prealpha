@@ -1,7 +1,7 @@
 import Hero from "@/components/hero";
 import HeroDemo from "@/components/hero-demo";
 
-import ValueJourney from "@/components/value-journey";
+// import ValueJourney from "@/components/value-journey";
 import { getDictionary } from "@/utils/dictionaries";
 import { cookies } from "next/headers";
 

@@ -13,6 +13,7 @@ import BottomNav from "@/components/bottom-nav";
 import Sidebar from "@/components/sidebar";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
 import { Analytics } from "@vercel/analytics/react";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -96,6 +97,7 @@ export default async function RootLayout({
                       <main className="flex-1">{children}</main>
                     </div>
                   </div>
+                  <Toaster />
                 </OnboardingProvider>
               </InterfaceProvider>
             </ThemeProvider>

@@ -9,7 +9,7 @@ import { normalizeMemories } from "@/utils/normalizeMemories";
 import { Memory } from "@/types/memory";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { MemoryUpload } from "@/components/memory/MemoryUpload";
+import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
 import { useParams } from "next/navigation";
 
 export default function VaultPage() {
@@ -194,7 +194,7 @@ export default function VaultPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             Start by uploading your first memory. You can add images, videos, audio files, or write notes.
           </p>
-          <MemoryUpload variant="large-icon" onSuccess={handleUploadSuccess} onError={handleUploadError} />
+          <ItemUploadButton variant="large-icon" onSuccess={handleUploadSuccess} onError={handleUploadError} />
         </div>
       ) : (
         <MemoryGrid memories={memories} onDelete={handleDelete} onShare={handleShare} onClick={handleMemoryClick} />

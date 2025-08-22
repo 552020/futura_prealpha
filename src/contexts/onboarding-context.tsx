@@ -37,6 +37,7 @@ interface OnboardingContextType {
     allUserId?: string;
     isTemporary: boolean;
     memoryId?: string;
+    uploadedFileCount?: number;
   };
   updateUserData: (data: Partial<OnboardingContextType["userData"]>) => void;
   clearOnboardingState: () => void;
@@ -58,6 +59,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
     isTemporary: true,
     allUserId: undefined as string | undefined,
     memoryId: undefined as string | undefined,
+    uploadedFileCount: undefined as number | undefined,
   });
 
   // Load state from localStorage on mount

@@ -3,6 +3,7 @@ import { DBDocument, DBImage, DBVideo, documents, images, videos } from "@/db/sc
 import { put } from "@vercel/blob";
 import { fileTypeFromBuffer } from "file-type";
 import crypto from "crypto";
+import { NextRequest, NextResponse } from "next/server";
 
 // Constants
 export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -197,4 +198,260 @@ export async function validateFile(file: File): Promise<{ isValid: boolean; erro
   }
 
   return { isValid: true, buffer };
+}
+
+// ============================================================================
+// UPLOAD UTILITY FUNCTIONS (Extracted from onboarding/utils.ts)
+// ============================================================================
+
+/**
+ * Parse form data and extract a single file
+ * Used for single file uploads
+ */
+export async function parseSingleFile(
+  request: NextRequest
+): Promise<{ file: File | null; error: NextResponse | null }> {
+  console.log("📦 Parsing form data...");
+
+  try {
+    const formData = await request.formData();
+    const file = formData.get("file") as File;
+
+    if (!file) {
+      console.error("❌ No file found in form data");
+      return {
+        file: null,
+        error: NextResponse.json({ error: "Missing file" }, { status: 400 }),
+      };
+    }
+
+    return { file, error: null };
+  } catch (error) {
+    console.error("❌ Error parsing form data:", error);
+    return {
+      file: null,
+      error: NextResponse.json({ error: "Invalid form data" }, { status: 400 }),
+    };
+  }
+}
+
+/**
+ * Parse form data and extract multiple files
+ * Used for folder uploads
+ */
+export async function parseMultipleFiles(request: NextRequest): Promise<{ files: File[]; error: NextResponse | null }> {
+  console.log("📦 Parsing form data for folder upload...");
+
+  try {
+    const formData = await request.formData();
+    const files = formData.getAll("file") as File[];
+
+    if (!files || files.length === 0) {
+      console.error("❌ No files found in form data");
+      return {
+        files: [],
+        error: NextResponse.json({ error: "Missing files" }, { status: 400 }),
+      };
+    }
+
+    console.log(`📁 Found ${files.length} files in folder upload`);
+    return { files, error: null };
+  } catch (error) {
+    console.error("❌ Error parsing form data:", error);
+    return {
+      files: [],
+      error: NextResponse.json({ error: "Invalid form data" }, { status: 400 }),
+    };
+  }
+}
+
+/**
+ * Log file details for debugging
+ * Used for both single file and folder uploads
+ */
+export function logFileDetails(file: File): void {
+  console.log("📄 File details:", {
+    name: file.name,
+    type: file.type,
+    size: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
+  });
+}
+
+/**
+ * Log multiple file details for debugging
+ * Used for folder uploads
+ */
+export function logMultipleFileDetails(files: File[]): void {
+  console.log(`📁 Folder contains ${files.length} files:`);
+  files.forEach((file, index) => {
+    console.log(`  ${index + 1}. `);
+    logFileDetails(file);
+  });
+}
+
+/**
+ * Validate file MIME type
+ * Returns error response if file type is not accepted
+ */
+export function validateFileType(file: File, isAcceptedMimeType: (mime: string) => boolean): NextResponse | null {
+  if (!isAcceptedMimeType(file.type)) {
+    return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+  }
+  return null;
+}
+
+/**
+ * Perform comprehensive file validation with error handling
+ * Returns validation result or error response
+ */
+export async function validateFileWithErrorHandling(
+  file: File,
+  validateFile: (file: File) => Promise<{ isValid: boolean; error?: string; buffer?: Buffer }>
+): Promise<{
+  validationResult: { isValid: boolean; error?: string; buffer?: Buffer } | null;
+  error: NextResponse | null;
+}> {
+  let validationResult;
+  try {
+    console.log("🔍 Starting file validation...");
+    validationResult = await validateFile(file);
+    if (!validationResult.isValid) {
+      console.error("❌ File validation failed:", validationResult.error);
+      return {
+        validationResult: null,
+        error: NextResponse.json({ error: validationResult.error }, { status: 400 }),
+      };
+    }
+    console.log("✅ File validation successful:", {
+      type: file.type,
+      size: file.size,
+    });
+    return { validationResult, error: null };
+  } catch (validationError) {
+    console.error("❌ Validation error:", validationError);
+    return {
+      validationResult: null,
+      error: NextResponse.json(
+        {
+          error: "File validation failed",
+          step: "validation",
+          details: validationError instanceof Error ? validationError.message : String(validationError),
+        },
+        { status: 500 }
+      ),
+    };
+  }
+}
+
+/**
+ * Upload file to storage with error handling
+ * Returns URL or error response
+ */
+export async function uploadFileToStorageWithErrorHandling(
+  file: File,
+  buffer: Buffer,
+  uploadFileToStorage: (file: File, buffer?: Buffer) => Promise<string>
+): Promise<{ url: string; error: NextResponse | null }> {
+  let url;
+  try {
+    console.log("📤 Starting file upload to storage...");
+    url = await uploadFileToStorage(file, buffer);
+    console.log("✅ File uploaded successfully to:", url);
+    return { url, error: null };
+  } catch (uploadError) {
+    console.error("❌ Upload error:", uploadError);
+    return {
+      url: "",
+      error: NextResponse.json(
+        {
+          error: "File upload failed",
+          step: "upload",
+          details: uploadError instanceof Error ? uploadError.message : String(uploadError),
+        },
+        { status: 500 }
+      ),
+    };
+  }
+}
+
+/**
+ * Store file metadata in database with error handling
+ * Returns database result or error response
+ */
+export async function storeFileInDatabaseWithErrorHandling(
+  file: File,
+  url: string,
+  ownerId: string,
+  getMemoryType: (mimeType: AcceptedMimeType) => "document" | "image" | "video",
+  storeInDatabase: (params: {
+    type: "image" | "video" | "document";
+    ownerId: string;
+    url: string;
+    file: File;
+    metadata: {
+      uploadedAt: string;
+      originalName: string;
+      size: number;
+      mimeType: AcceptedMimeType;
+    };
+  }) => Promise<{ type: string; data: { id: string; ownerId: string } }>
+): Promise<{ result: { type: string; data: { id: string; ownerId: string } } | null; error: NextResponse | null }> {
+  try {
+    console.log("💾 Storing file metadata in database...");
+    const result = await storeInDatabase({
+      type: getMemoryType(file.type as AcceptedMimeType),
+      ownerId,
+      url,
+      file,
+      metadata: {
+        uploadedAt: new Date().toISOString(),
+        originalName: file.name,
+        size: file.size,
+        mimeType: file.type as AcceptedMimeType,
+      },
+    });
+    console.log("✅ File metadata stored successfully");
+    return { result, error: null };
+  } catch (dbError) {
+    console.error("❌ Database error:", dbError);
+    return {
+      result: null,
+      error: NextResponse.json(
+        {
+          error: "Failed to store file metadata",
+          step: "database",
+          details: dbError instanceof Error ? dbError.message : String(dbError),
+        },
+        { status: 500 }
+      ),
+    };
+  }
+}
+
+/**
+ * Create temporary user with error handling
+ * Returns user or error response
+ */
+export async function createTemporaryUserWithErrorHandling(
+  createTemporaryUserBase: (role: "inviter" | "invitee") => Promise<{ allUser: { id: string } }>
+): Promise<{ allUser: { id: string }; error: NextResponse | null }> {
+  try {
+    console.log("👤 Creating temporary user...");
+    const { allUser } = await createTemporaryUserBase("inviter");
+    console.log("✅ Temporary user created:", { userId: allUser.id });
+    return { allUser, error: null };
+  } catch (userError) {
+    console.error("❌ User creation error:", userError);
+    return {
+      allUser: { id: "" },
+      error: NextResponse.json(
+        {
+          error: "Failed to create temporary user",
+          step: "user_creation",
+          details: userError instanceof Error ? userError.message : String(userError),
+        },
+        { status: 500 }
+      ),
+    };
+  }
 }

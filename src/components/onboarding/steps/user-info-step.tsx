@@ -113,6 +113,11 @@ export function UserInfoStep({
         {!withImage && (
           <div className="pt-4">
             <p className="text-5xl font-bold">How should we call you?</p>
+            {userData.uploadedFileCount && userData.uploadedFileCount > 1 && (
+              <p className="text-sm text-muted-foreground mt-2">
+                Great! You&apos;ve uploaded {userData.uploadedFileCount} files.
+              </p>
+            )}
             <p className="text-sm text-muted-foreground italic mt-3">
               We need at least your name to let you retrieve your memory for the case you don&apos;t want to sign in.
             </p>
