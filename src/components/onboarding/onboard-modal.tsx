@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useOnboarding } from "@/contexts/onboarding-context";
 import { useToast } from "@/hooks/use-toast";
+import { setDoc } from "@junobuild/core";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -88,8 +89,37 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
           break;
 
         case "share":
-          // Simulate sharing process
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          // Send email through Juno serverless function
+          try {
+            await setDoc({
+              collection: "email_requests",
+              doc: {
+                key: crypto.randomUUID(),
+                data: {
+                  from: "noreply@futura.app",
+                  to: userData.recipientEmail,
+                  subject: `${userData.name} has shared files with you on Futura`,
+                  text: "Placeholder text - will be replaced by serverless function",
+                  user_name: userData.name,
+                  recipient_name: userData.recipientName,
+                }
+              }
+            });
+            
+            toast({
+              title: "Email Sent!",
+              description: `Sharing notification sent to ${userData.recipientName}`,
+            });
+          } catch (error) {
+            console.error("Failed to send email:", error);
+            toast({
+              variant: "destructive",
+              title: "Email Failed",
+              description: "Failed to send sharing notification. Please try again.",
+            });
+            return;
+          }
+          
           setCurrentStep("complete");
           setOnboardingStatus("completed");
           break;
