@@ -33,14 +33,25 @@ struct EmailPayload {
     text: String,
 }
 
-#[on_set_doc(collections = ["email_requests"])]
+#[on_set_doc(collections = ["demo"])]
 async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
-    let email_data: EmailRequest = decode_doc_data(&context.data.data.after.data)?;
+    ic_cdk::println!("📧 Email function triggered for document key: {}", context.data.key);
+    
+    let email_data: EmailRequest = match decode_doc_data(&context.data.data.after.data) {
+        Ok(data) => {
+            ic_cdk::println!("✅ Successfully decoded email data for: {} -> {}", data.user_name, data.recipient_name);
+            data
+        }
+        Err(e) => {
+            ic_cdk::println!("❌ Failed to decode email data: {}", e);
+            return Err(format!("Failed to decode email data: {}", e));
+        }
+    };
     
     let email_payload = EmailPayload {
         from: email_data.from.clone(), 
         to: email_data.to.clone(),
-        subject: email_data.subject,
+        subject: email_data.subject.clone(),
         text: format!(
             "Hello {},\n\n{} has shared some files with you through Futura.\n\nYou can access your shared files at: https://futura.app\n\nBest regards,\nThe Futura Team",
             email_data.recipient_name,
@@ -48,10 +59,24 @@ async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
         ),
     };
     
+    ic_cdk::println!("📝 Email payload created - From: {}, To: {}, Subject: {}", 
+                     email_payload.from, email_payload.to, email_payload.subject);
+    
 
-    let json_body = serde_json::to_string(&email_payload)
-        .map_err(|e| format!("Failed to serialize email payload: {}", e))?;
+    let json_body = match serde_json::to_string(&email_payload) {
+        Ok(json) => {
+            ic_cdk::println!("✅ Email payload serialized successfully, length: {} bytes", json.len());
+            json
+        }
+        Err(e) => {
+            ic_cdk::println!("❌ Failed to serialize email payload: {}", e);
+            return Err(format!("Failed to serialize email payload: {}", e));
+        }
+    };
 
+    let auth_token = std::env::var("NOTIFICATIONS_TOKEN").unwrap_or_default();
+    ic_cdk::println!("🔑 Auth token present: {}", if auth_token.is_empty() { "NO" } else { "YES" });
+    
     let request_headers = vec![
         HttpHeader {
             name: "Content-Type".to_string(),
@@ -59,16 +84,21 @@ async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
         },
         HttpHeader {
             name: "Authorization".to_string(),
-            value: format!("Bearer {}", std::env::var("NOTIFICATIONS_TOKEN").unwrap_or_default()),
+            value: format!("Bearer {}", auth_token),
         },
         HttpHeader {
             name: "idempotency-key".to_string(),
             value: format!("futura-{}", context.data.key),
         },
     ];
+    
+    ic_cdk::println!("📡 Prepared {} headers for HTTP request", request_headers.len());
 
+    let url = "https://observatory-7kdhmtcbfq-oa.a.run.app/notifications/email";
+    ic_cdk::println!("🌐 Making HTTP POST request to: {}", url);
+    
     let request = CanisterHttpRequestArgument {
-        url: "https://observatory-7kdhmtcbfq-oa.a.run.app/notifications/email".to_string(),
+        url: url.to_string(),
         method: HttpMethod::POST,
         body: Some(json_body.into_bytes()),
         max_response_bytes: Some(1000),
@@ -76,17 +106,24 @@ async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
         headers: request_headers,
     };
 
+    ic_cdk::println!("⏳ Initiating HTTP outcall with 5s timeout...");
+    
     match http_request_outcall(request, 5_000_000_000).await {
         Ok((response,)) => {
+            ic_cdk::println!("📨 HTTP response received - Status: {}, Body length: {} bytes", 
+                           response.status, response.body.len());
+            
             if response.status >= Nat::from(200u32) && response.status < Nat::from(300u32) {
-                ic_cdk::println!("Email sent successfully to {}", email_data.to);
+                ic_cdk::println!("✅ Email sent successfully to {}", email_data.to);
                 Ok(())
             } else {
                 let error_body = String::from_utf8_lossy(&response.body);
+                ic_cdk::println!("❌ Email API error - Status: {}, Body: {}", response.status, error_body);
                 Err(format!("Email API returned status {}: {}", response.status, error_body))
             }
         }
         Err((r, m)) => {
+            ic_cdk::println!("❌ HTTP request failed - RejectionCode: {:?}, Error: {}", r, m);
             Err(format!("HTTP request failed. RejectionCode: {:?}, Error: {}", r, m))
         }
     }
