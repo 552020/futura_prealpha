@@ -26,6 +26,9 @@ importers:
       '@junobuild/config':
         specifier: ^0.1.8
         version: 0.1.8(zod@3.25.76)
+      '@junobuild/core':
+        specifier: ^1.1.1
+        version: 1.1.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/auth-client@2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/identity@2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/identity@2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1)(@dfinity/utils@2.14.0(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))
       '@junobuild/core-peer':
         specifier: ^0.1.14
         version: 0.1.17(6c8ae97e004b27830b4cf3b1dceaf52f)
@@ -859,6 +862,19 @@ packages:
       '@dfinity/identity': ^2.3.0
       '@dfinity/principal': ^2.3.0
       '@dfinity/utils': ^2
+
+  '@junobuild/core@1.1.1':
+    resolution: {integrity: sha512-PTQ4OTrFiIL2Noik5TizSDSz/Q8fz3oPNOHgbgp6reor2LJI7tlaWF1MwqCIN0Z///CylurtTcP7BvLYWcZfvw==}
+    peerDependencies:
+      '@dfinity/agent': ^2.3.0
+      '@dfinity/auth-client': ^2.3.0
+      '@dfinity/candid': ^2.3.0
+      '@dfinity/identity': ^2.3.0
+      '@dfinity/principal': ^2.3.0
+      '@dfinity/utils': ^2
+
+  '@junobuild/errors@0.1.1':
+    resolution: {integrity: sha512-elHOG1d/tejSplIF2CE/Nk6Q/GguPAqA/evse+CCDyYs2AtL5mSwpzFyvwV4l2Jby2IzmcLpUac+9PD+WxdH+g==}
 
   '@junobuild/ic-client@1.1.0':
     resolution: {integrity: sha512-NhHEPC2/JB0S7FqFeYYQVmTgdxlKX29xKBNN0jfemIWw8w5osRUUC0msIVTAs3Qp5nMY0io5gerLGOHwmkuMGA==}
@@ -4458,6 +4474,21 @@ snapshots:
       '@junobuild/utils': 0.1.4(@dfinity/utils@2.14.0(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))
     transitivePeerDependencies:
       - '@junobuild/ic-client'
+
+  '@junobuild/core@1.1.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/auth-client@2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/identity@2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/identity@2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1)(@dfinity/utils@2.14.0(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))':
+    dependencies:
+      '@dfinity/agent': 2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1)
+      '@dfinity/auth-client': 2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/identity@2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1)
+      '@dfinity/candid': 2.4.1(@dfinity/principal@2.4.1)
+      '@dfinity/identity': 2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1)
+      '@dfinity/principal': 2.4.1
+      '@dfinity/utils': 2.14.0(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1)
+      '@junobuild/errors': 0.1.1
+      '@junobuild/ic-client': 1.1.0(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/identity@2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1)
+      '@junobuild/storage': 1.1.0(c0c741ae91ba1eb7a75f541223a44760)
+      '@junobuild/utils': 0.1.4(@dfinity/utils@2.14.0(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))
+
+  '@junobuild/errors@0.1.1': {}
 
   '@junobuild/ic-client@1.1.0(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/identity@2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1)':
     dependencies:
