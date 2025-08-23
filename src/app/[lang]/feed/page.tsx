@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAuthGuard } from "@/utils/authentication";
 import { Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 
 interface FeedItem {
   id: string;
@@ -16,30 +15,32 @@ interface FeedItem {
 
 export default function FeedPage() {
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
-  const { toast } = useToast();
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [isLoadingFeed, setIsLoadingFeed] = useState(true);
 
   // Sample feed data - in a real app, this would come from an API
-  const sampleFeedItems: FeedItem[] = [
-    {
-      id: "1",
-      type: "youtube",
-      title: "Rick Astley - Never Gonna Give You Up",
-      content: "https://www.youtube.com/embed/dQw4w9WgXcQ?si=rKeJHC7Y8EuIaKLH",
-      createdAt: new Date().toISOString(),
-      author: "Rick Astley",
-    },
-    {
-      id: "2",
-      type: "text",
-      title: "Welcome to the Feed!",
-      content:
-        "This is where you can see shared content from your family and friends. You can embed YouTube videos, share photos, and post updates.",
-      createdAt: new Date().toISOString(),
-      author: "Futura Team",
-    },
-  ];
+  const sampleFeedItems = useMemo<FeedItem[]>(
+    () => [
+      {
+        id: "1",
+        type: "youtube",
+        title: "Rick Astley - Never Gonna Give You Up",
+        content: "https://www.youtube.com/embed/dQw4w9WgXcQ?si=rKeJHC7Y8EuIaKLH",
+        createdAt: new Date().toISOString(),
+        author: "Rick Astley",
+      },
+      {
+        id: "2",
+        type: "text",
+        title: "Welcome to the Feed!",
+        content:
+          "This is where you can see shared content from your family and friends. You can embed YouTube videos, share photos, and post updates.",
+        createdAt: new Date().toISOString(),
+        author: "Futura Team",
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     if (!isAuthorized) {
@@ -55,7 +56,7 @@ export default function FeedPage() {
         setIsLoadingFeed(false);
       }, 1000);
     }
-  }, [isAuthorized, userId]);
+  }, [isAuthorized, userId, sampleFeedItems]);
 
   const renderFeedItem = (item: FeedItem) => {
     switch (item.type) {

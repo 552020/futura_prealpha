@@ -43,7 +43,7 @@ export function LanguageSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="flex items-center gap-2">
-          <Globe className="h-4 w-4" />
+          <Globe className="h-5 w-5" />
           <span className="uppercase text-xs font-medium">{lang}</span>
         </Button>
       </DropdownMenuTrigger>

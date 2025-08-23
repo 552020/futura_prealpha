@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { Menu, Share2, Twitter, Instagram, Facebook } from "lucide-react";
 // import { useSession } from "next-auth/react";
 import { ModeToggle } from "./mode-toggle";
+import { SettingsButton } from "./settings-button";
 import NavBar from "./nav-bar";
 import UserButtonClient from "./user-button-client";
 import { useInterface } from "@/contexts/interface-context";
@@ -60,7 +61,7 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
         </nav>
 
         {/* Right User controls */}
-        <section className="user-controls-section flex items-center gap-4 sm:gap-6">
+        <section className="user-controls-section flex items-center gap-2 sm:gap-3">
           {/* Desktop-only user controls */}
           <div className="hidden md:block transition-opacity hover:opacity-80">
             <UserButtonClient lang={currentLang} />
@@ -73,6 +74,11 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
 
           <div className="transition-opacity hover:opacity-80">
             <ModeToggle />
+          </div>
+
+          {/* Settings button - always visible */}
+          <div className="transition-opacity hover:opacity-80">
+            <SettingsButton />
           </div>
 
           {/* Mobile: Burger menu - MOBILE ONLY */}
