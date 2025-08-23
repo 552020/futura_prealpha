@@ -13,7 +13,7 @@ interface InterfaceContextType {
 const InterfaceContext = createContext<InterfaceContextType | undefined>(undefined);
 
 // Define app routes that should use app mode
-const APP_ROUTES = ["/dashboard", "/feed", "/shared", "/profile", "/contacts"];
+const APP_ROUTES = ["/dashboard", "/feed", "/shared", "/user", "/contacts"];
 
 // Helper function to determine if a path is an app route
 function isAppRoute(path: string): boolean {

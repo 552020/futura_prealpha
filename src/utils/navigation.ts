@@ -22,7 +22,7 @@ export const mainNavItems: NavItem[] = [
 
 export const secondaryNavItems: NavItem[] = [
   { href: "/contacts", icon: Users, label: "Contacts", translationKey: "contacts" },
-  { href: "/profile", icon: User, label: "Profile", translationKey: "profile" },
+  { href: "/user/profile", icon: User, label: "Profile", translationKey: "profile" },
 ];
 
 // Combined array for components that need all items
