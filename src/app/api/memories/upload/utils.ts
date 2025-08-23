@@ -59,6 +59,17 @@ export function isAcceptedMimeType(mime: string): mime is AcceptedMimeType {
   );
 }
 
+/**
+ * Safely convert a string to AcceptedMimeType
+ * Only use this after validating with isAcceptedMimeType()
+ */
+export function toAcceptedMimeType(mime: string): AcceptedMimeType {
+  if (!isAcceptedMimeType(mime)) {
+    throw new Error(`Invalid mime type: ${mime}`);
+  }
+  return mime;
+}
+
 export function getMemoryType(mime: AcceptedMimeType): "document" | "image" | "video" {
   if (ACCEPTED_MIME_TYPES.image.includes(mime as (typeof ACCEPTED_MIME_TYPES.image)[number])) return "image";
   if (ACCEPTED_MIME_TYPES.video.includes(mime as (typeof ACCEPTED_MIME_TYPES.video)[number])) return "video";

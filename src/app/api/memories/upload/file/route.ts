@@ -1,16 +1,38 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db/db";
 import { allUsers, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { storeInDatabase, uploadFileToStorage, validateFile, isAcceptedMimeType, getMemoryType } from "./utils";
+import {
+  storeInDatabase,
+  uploadFileToStorage,
+  validateFile,
+  isAcceptedMimeType,
+  getMemoryType,
+  parseSingleFile,
+  logFileDetails,
+  validateFileType,
+  validateFileWithErrorHandling,
+  uploadFileToStorageWithErrorHandling,
+  toAcceptedMimeType,
+} from "../utils";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  console.log("🚀 Starting file upload process...");
   try {
-    console.log("🚀 Starting upload process...");
+    // Parse form data and extract file
+    const { file, error } = await parseSingleFile(request);
+    if (error) return error;
+    if (!file) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    logFileDetails(file);
+
+    const fileTypeError = validateFileType(file, isAcceptedMimeType);
+    if (fileTypeError) return fileTypeError;
 
     const formData = await request.formData();
-    const file = formData.get("file") as File;
     const providedAllUserId = formData.get("userId") as string;
 
     // Get user either from session or from provided allUserId
@@ -56,21 +78,21 @@ export async function POST(request: Request) {
     }
 
     // Validate file
-    const validationResult = await validateFile(file);
-    if (!validationResult.isValid) {
-      return NextResponse.json({ error: validationResult.error }, { status: 400 });
-    }
-
-    if (!isAcceptedMimeType(file.type)) {
-      return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
-    }
+    const { validationResult, error: validationError } = await validateFileWithErrorHandling(file, validateFile);
+    if (validationError) return validationError;
 
     // Upload file to storage
-    const url = await uploadFileToStorage(file);
+    const { url, error: uploadError } = await uploadFileToStorageWithErrorHandling(
+      file,
+      validationResult!.buffer!,
+      uploadFileToStorage
+    );
+    if (uploadError) return uploadError;
 
     // Store in database using the allUserId
+    const mimeType = toAcceptedMimeType(file.type);
     const result = await storeInDatabase({
-      type: getMemoryType(file.type),
+      type: getMemoryType(mimeType),
       ownerId: allUserId,
       url,
       file,
@@ -78,7 +100,7 @@ export async function POST(request: Request) {
         uploadedAt: new Date().toISOString(),
         originalName: file.name,
         size: file.size,
-        mimeType: file.type,
+        mimeType,
       },
     });
 

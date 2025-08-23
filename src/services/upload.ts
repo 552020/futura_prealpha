@@ -20,7 +20,8 @@ export const uploadFile = async (
       mode === "folder" ? "/api/memories/upload/onboarding/folder" : "/api/memories/upload/onboarding/file";
     endpoint = onboardingEndpoint;
   } else {
-    endpoint = "/api/memories/upload";
+    const normalEndpoint = mode === "folder" ? "/api/memories/upload/folder" : "/api/memories/upload/file";
+    endpoint = normalEndpoint;
   }
 
   // Upload file
