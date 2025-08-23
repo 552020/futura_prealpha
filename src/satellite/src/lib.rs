@@ -59,23 +59,23 @@ async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
         ),
     };
     
-    ic_cdk::println!("📝 Email payload created - From: {}, To: {}, Subject: {}", 
-                     email_payload.from, email_payload.to, email_payload.subject);
+    ic_cdk::print(format!("Email payload created - From: {}, To: {}, Subject: {}", 
+                         email_payload.from, email_payload.to, email_payload.subject));
     
-
     let json_body = match serde_json::to_string(&email_payload) {
         Ok(json) => {
-            ic_cdk::println!("✅ Email payload serialized successfully, length: {} bytes", json.len());
+            ic_cdk::print(format!("Email payload serialized successfully, length: {} bytes", json.len()));
             json
         }
         Err(e) => {
-            ic_cdk::println!("❌ Failed to serialize email payload: {}", e);
-            return Err(format!("Failed to serialize email payload: {}", e));
+            let error_msg = format!("Failed to serialize email payload: {}", e);
+            ic_cdk::print(error_msg.clone());
+            return Err(error_msg);
         }
     };
 
     let auth_token = std::env::var("NOTIFICATIONS_TOKEN").unwrap_or_default();
-    ic_cdk::println!("🔑 Auth token present: {}", if auth_token.is_empty() { "NO" } else { "YES" });
+    ic_cdk::print(format!("Auth token present: {}", if auth_token.is_empty() { "NO" } else { "YES" }));
     
     let request_headers = vec![
         HttpHeader {
