@@ -5,7 +5,7 @@ import ItemsUploadClientExperiment from "./items-upload-client-experiment";
 interface PageProps {
   params: Promise<{ lang: string }>;
 }
-const EXPERIMENT = true;
+const EXPERIMENT = false;
 export default async function ItemsUploadPage({ params }: PageProps) {
   // Await the params Promise first
   const resolvedParams = await params;

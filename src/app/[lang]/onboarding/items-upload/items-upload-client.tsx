@@ -56,8 +56,8 @@ export default function ItemsUploadClient({ lang, dict }: ItemsUploadClientProps
       {/* Component buttons - only shown when DOUBLE_BUTTON is true */}
       {DOUBLE_BUTTON && (
         <div className="flex justify-center gap-4 mb-8">
-          <ItemUploadButton variant="album-button" mode="folder" />
-          <ItemUploadButton variant="one-shot-button" mode="files" />
+          <ItemUploadButton isOnboarding variant="album-button" mode="folder" onSuccess={handleUploadSuccess} />
+          <ItemUploadButton isOnboarding variant="one-shot-button" mode="files" onSuccess={handleUploadSuccess} />
         </div>
       )}
 

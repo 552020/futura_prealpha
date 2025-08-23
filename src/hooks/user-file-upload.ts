@@ -233,7 +233,7 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
       });
 
       setIsLoading(true);
-      await processSingleFile(file);
+      await processSingleFile(file, false, undefined);
       setIsLoading(false);
     }
   };
