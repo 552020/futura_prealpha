@@ -117,18 +117,34 @@ export function ItemUploadButton({
         return (
           <button
             onClick={handleClick}
-            className="px-6 py-3 rounded-lg font-medium transition-all bg-black text-white dark:bg-white dark:text-black"
+            disabled={isLoading}
+            className="px-6 py-3 rounded-lg font-medium transition-all duration-200 ease-in-out bg-black text-white hover:bg-gray-800 hover:shadow-md hover:scale-105 dark:bg-white dark:text-black dark:hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Album
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Uploading...
+              </div>
+            ) : (
+              "Album"
+            )}
           </button>
         );
       case "one-shot-button":
         return (
           <button
             onClick={handleClick}
-            className="px-6 py-3 rounded-lg font-medium transition-all bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            disabled={isLoading}
+            className="px-6 py-3 rounded-lg font-medium transition-all duration-200 ease-in-out bg-white text-black border border-gray-300 hover:bg-gray-50 hover:shadow-md hover:scale-105 dark:bg-gray-900 dark:text-white dark:border-gray-600 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            One Shot
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Uploading...
+              </div>
+            ) : (
+              "One Shot"
+            )}
           </button>
         );
     }

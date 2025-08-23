@@ -193,11 +193,26 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
 
         // Update context with results
         if (isOnboarding && data.successfulUploads > 0) {
+          console.log("📝 Updating onboarding context with folder upload results:", {
+            successfulUploads: data.successfulUploads,
+            allUserId: data.userId,
+            memoryId: data.results?.[0]?.memoryId,
+          });
+
           updateUserData({
             uploadedFileCount: data.successfulUploads,
-            allUserId: data.results?.[0]?.userId, // Use first result's user ID
+            allUserId: data.userId, // Use the userId from the response
             memoryId: data.results?.[0]?.memoryId, // Use first result's memory ID
           });
+
+          // Set the next step based on authentication status
+          if (session) {
+            console.log("🔄 Setting current step to share (authenticated user)");
+            setCurrentStep("share");
+          } else {
+            console.log("🔄 Setting current step to user-info (unauthenticated user)");
+            setCurrentStep("user-info");
+          }
         }
 
         const endTime = Date.now();
