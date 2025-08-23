@@ -21,7 +21,7 @@
     "feed": "Feed"
   },
   "navigation": {
-    "vault": "Vault",
+    "dashboard": "Dashboard",
     "feed": "Feed",
     "shared": "Shared",
     "contacts": "Contacts",

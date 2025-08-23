@@ -137,8 +137,6 @@ export default function VaultPage() {
 
   return (
     <div className="container mx-auto px-6 py-8">
-      <h1 className="mb-8 text-3xl font-bold">Your Dashboard</h1>
-
       {isTemporaryUser && (
         <div className="mb-4 rounded-lg bg-yellow-50 p-4 text-yellow-800">
           <div className="flex items-start gap-3">

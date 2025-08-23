@@ -5,7 +5,7 @@ export type NavItem = {
   href: string;
   icon: LucideIcon; // Lucide icon component
   label: string;
-  translationKey: "vault" | "feed" | "shared" | "contacts" | "profile";
+  translationKey: "dashboard" | "feed" | "shared" | "contacts" | "profile";
 };
 
 // Helper function to get translated label
@@ -15,7 +15,7 @@ export function getTranslatedLabel(item: NavItem, dict: Dictionary): string {
 
 // Group navigation items for better organization
 export const mainNavItems: NavItem[] = [
-  { href: "/dashboard", icon: Vault, label: "Dashboard", translationKey: "vault" },
+  { href: "/dashboard", icon: Vault, label: "Dashboard", translationKey: "dashboard" },
   { href: "/feed", icon: Newspaper, label: "Feed", translationKey: "feed" },
   { href: "/shared", icon: Share2, label: "Shared", translationKey: "shared" },
 ];
