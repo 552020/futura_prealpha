@@ -19,21 +19,19 @@ export const config = {
 The old middleware configuration format using `matcher: ["/:path*"]` is deprecated in Next.js 15. The new format requires more specific matcher patterns that exclude static files and API routes.
 
 ## Solution Applied
-Updated `src/middleware.ts` to use the new configuration format:
+Updated `src/middleware.ts` to use the new Next.js 15 format:
 
 ```typescript
-export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
-};
+export const matcher = [
+  /*
+   * Match all request paths except for the ones starting with:
+   * - api (API routes)
+   * - _next/static (static files)
+   * - _next/image (image optimization files)
+   * - favicon.ico (favicon file)
+   */
+  "/((?!api|_next/static|_next/image|favicon.ico).*)",
+];
 ```
 
 ## Benefits
