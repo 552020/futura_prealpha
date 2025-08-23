@@ -8,9 +8,11 @@ import {
   integer,
   uniqueIndex,
   foreignKey,
+  index,
   //   IndexBuilder,
 } from "drizzle-orm/pg-core";
-import type { DefaultSession } from "next-auth";
+import { sql } from "drizzle-orm";
+
 // import type { AdapterAccount } from "@auth/core/adapters";
 import type { AdapterAccount } from "next-auth/adapters";
 // Users table - Core user data - required for auth.js
@@ -66,10 +68,10 @@ export const users = pgTable(
       .default({}),
   },
   (table) => [
-    // Define the self-referencing foreign key separately
+    // Define the foreign key to allUsers
     foreignKey({
       columns: [table.invitedByAllUserId],
-      foreignColumns: [table.id],
+      foreignColumns: [allUsers.id],
       name: "user_invited_by_fk",
     }),
     // Self-referencing Foreign Key
@@ -94,23 +96,13 @@ export const allUsers = pgTable(
     temporaryUserId: text("temporary_user_id"), // FK defined below
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
-  }
-  //   (table): (ReturnType<typeof foreignKey> | IndexBuilder)[] => [
-  // ✅ Optional FK to permanent users - fixed to reference users table
-  // foreignKey({
-  //   columns: [table.userId],
-  //   foreignColumns: [users.id],
-  //   name: "all_users_user_fk",
-  // }),
-  // ✅ Optional FK to temporary users
-  // foreignKey({
-  //   columns: [table.temporaryUserId],
-  //   foreignColumns: [temporaryUsers.id],
-  //   name: "all_users_temporary_user_fk",
-  // }),
-  // ✅ Ensure a user can't be both permanent and temporary
-  // uniqueIndex("one_user_type_check").on(table.userId, table.temporaryUserId),
-  //   ]
+  },
+  (table) => [
+    // Ensure exactly one of userId or temporaryUserId is set
+    uniqueIndex("all_users_one_ref_guard").on(table.id) // dummy index anchor
+      .where(sql`(CASE WHEN ${table.userId} IS NOT NULL THEN 1 ELSE 0 END +
+                   CASE WHEN ${table.temporaryUserId} IS NOT NULL THEN 1 ELSE 0 END) = 1`),
+  ]
 );
 
 export const temporaryUsers = pgTable(
@@ -258,7 +250,7 @@ export const images = pgTable("image", {
   url: text("url").notNull(),
   caption: text("caption"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  isPublic: boolean("is_public").default(false),
+  isPublic: boolean("is_public").default(false).notNull(),
   title: text("title"),
   description: text("description"),
   ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
@@ -292,7 +284,7 @@ export const videos = pgTable("video", {
   ownerSecureCode: text("owner_secure_code").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  isPublic: boolean("is_public").default(false),
+  isPublic: boolean("is_public").default(false).notNull(),
   metadata: json("metadata")
     .$type<{
       width?: number;
@@ -314,7 +306,7 @@ export const notes = pgTable("note", {
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  isPublic: boolean("is_public").default(false),
+  isPublic: boolean("is_public").default(false).notNull(),
   ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
   metadata: json("metadata")
     .$type<{
@@ -342,7 +334,7 @@ export const documents = pgTable("document", {
   mimeType: text("mime_type").notNull(),
   size: text("size").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  isPublic: boolean("is_public").default(false),
+  isPublic: boolean("is_public").default(false).notNull(),
   ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
   metadata: json("metadata")
     .$type<
@@ -559,14 +551,46 @@ export const familyMember = pgTable(
   ]
 );
 
-// Type definitions for Auth.js
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-    } & DefaultSession["user"];
-  }
-}
+// Gallery tables for forever-gallery vertical - TEMPORARILY COMMENTED OUT
+export const galleries = pgTable("gallery", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  ownerId: text("owner_id")
+    .notNull()
+    .references(() => allUsers.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  description: text("description"), // nullable, no default
+  isPublic: boolean("is_public").default(false).notNull(),
+  isDefault: boolean("is_default").default(false).notNull(),
+  theme: text("theme"), // nullable, no default
+  // metadata: json("metadata").$type<Record<string, unknown>>().notNull().default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const galleryItems = pgTable(
+  "gallery_item",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    galleryId: text("gallery_id")
+      .notNull()
+      .references(() => galleries.id, { onDelete: "cascade" }),
+    memoryId: text("memory_id").notNull(),
+    position: integer("position").notNull(),
+    caption: text("caption"), // nullable, no default
+    isFeatured: boolean("is_featured").default(false).notNull(),
+    metadata: json("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => [
+    index("gallery_items_gallery_position_idx").on(t.galleryId, t.position),
+    uniqueIndex("gallery_items_gallery_memory_uq").on(t.galleryId, t.memoryId),
+  ]
+);
 
 // Type inference helpers
 export type DBUser = typeof users.$inferSelect;
@@ -604,6 +628,12 @@ export type NewDBGroupMember = typeof groupMember.$inferInsert;
 
 export type DBVideo = typeof videos.$inferSelect;
 export type NewDBVideo = typeof videos.$inferInsert;
+
+export type DBGallery = typeof galleries.$inferSelect;
+export type NewDBGallery = typeof galleries.$inferInsert;
+
+export type DBGalleryItem = typeof galleryItems.$inferSelect;
+export type NewDBGalleryItem = typeof galleryItems.$inferInsert;
 
 // Type helpers for the enums
 export type MemoryType = (typeof MEMORY_TYPES)[number];

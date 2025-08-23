@@ -6,4 +6,8 @@ declare module "next-auth" {
       businessUserId?: string;
     } & DefaultSession["user"];
   }
+
+  interface JWT {
+    businessUserId?: string;
+  }
 }
