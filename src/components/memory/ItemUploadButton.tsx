@@ -3,7 +3,6 @@ import { Plus, Loader2, Upload } from "lucide-react";
 import { useFileUpload } from "@/hooks/user-file-upload";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
 
 // interface ItemUploadButtonProps {
 //   isOnboarding?: boolean;
@@ -17,7 +16,7 @@ type UploadMode = "folder" | "files";
 interface ItemUploadButtonProps {
   mode?: UploadMode; // NEW
   isOnboarding?: boolean;
-  variant?: "button" | "icon" | "large-icon" | "native";
+  variant?: "button" | "icon" | "large-icon" | "native" | "album-button" | "one-shot-button";
   onSuccess?: () => void;
   onError?: (e: Error) => void;
 }
@@ -54,7 +53,6 @@ export function ItemUploadButton({
   onError,
 }: ItemUploadButtonProps) {
   const [showUploadDialog, setShowUploadDialog] = useState(false);
-  const { toast } = useToast();
 
   const { isLoading, fileInputRef, handleUploadClick, handleFileChange } = useFileUpload({
     isOnboarding,
@@ -71,10 +69,10 @@ export function ItemUploadButton({
   const renderTrigger = () => {
     // Test toast on click
     const handleClick = () => {
-      toast({
-        title: "Test",
-        description: "Toast is working",
-      });
+      //   toast({
+      //     title: "Test",
+      //     description: "Toast is working",
+      //   });
       handleUploadClick();
     };
     if (variant === "native") {
@@ -115,6 +113,24 @@ export function ItemUploadButton({
             Upload Memory
           </Button>
         );
+      case "album-button":
+        return (
+          <button
+            onClick={handleClick}
+            className="px-6 py-3 rounded-lg font-medium transition-all bg-black text-white dark:bg-white dark:text-black"
+          >
+            Album
+          </button>
+        );
+      case "one-shot-button":
+        return (
+          <button
+            onClick={handleClick}
+            className="px-6 py-3 rounded-lg font-medium transition-all bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+          >
+            One Shot
+          </button>
+        );
     }
   };
 
@@ -131,11 +147,6 @@ export function ItemUploadButton({
           accept="image/*,video/*,audio/*"
         />
       )}
-
-      {/* Hidden folder input */}
-      {/* <input type="file" className="hidden" webkitdirectory directory {...({} as any)} /> */}
-
-      {/* <input type="file" className="hidden" webkitdirectory directory /> */}
 
       {/* Upload trigger */}
       {renderTrigger()}

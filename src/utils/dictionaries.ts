@@ -173,6 +173,10 @@ export type OnboardingDictionary = {
           title?: string;
           subtitle?: string;
         };
+        "wedding-memory"?: {
+          title?: string;
+          subtitle?: string;
+        };
       };
     };
   };
@@ -193,6 +197,7 @@ export type Dictionary = BaseDictionary &
         "preserve-your-digital-legacy": { title: string; subtitle: string };
         "digital-time-capsule": { title: string; subtitle: string };
         "pass-to-the-future": { title: string; subtitle: string };
+        "wedding-memory": { title: string; subtitle: string };
       };
     };
   } & {
