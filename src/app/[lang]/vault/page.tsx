@@ -5,20 +5,18 @@ import { MemoryGrid } from "@/components/memory/MemoryGrid";
 import { Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { useAuthGuard } from "@/utils/authentication";
-import { normalizeMemories } from "@/utils/normalizeMemories";
 import { Memory } from "@/types/memory";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
 import { useParams } from "next/navigation";
+import { fetchAndNormalizeMemories, deleteMemory, memoryActions, type NormalizedMemory } from "@/services/memories";
 
 export default function VaultPage() {
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
   const router = useRouter();
   const { toast } = useToast();
-  const [memories, setMemories] = useState<
-    (Memory & { status: "private" | "shared" | "public"; sharedWithCount?: number })[]
-  >([]);
+  const [memories, setMemories] = useState<NormalizedMemory[]>([]);
   const [isLoadingMemories, setIsLoadingMemories] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,36 +31,19 @@ export default function VaultPage() {
         timestamp,
       });
 
-      const response = await fetch(`/api/memories?page=${currentPage}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch memories");
-      }
+      const result = await fetchAndNormalizeMemories(currentPage);
 
-      const data = await response.json();
       console.log("✅ FETCH MEMORIES - Success:", {
-        imagesCount: data.images.length,
-        documentsCount: data.documents.length,
-        notesCount: data.notes.length,
-        hasMore: data.hasMore,
+        memoriesCount: result.memories.length,
+        hasMore: result.hasMore,
         timestamp,
       });
 
-      const normalizedMemories = normalizeMemories({
-        images: data.images,
-        documents: data.documents,
-        notes: data.notes,
-        videos: data.videos || [],
-      }).map((memory) => ({
-        ...memory,
-        status: "private" as const, // Default to private for user's own memories
-        sharedWithCount: 0, // Default to 0 for user's own memories
-      }));
-
       setMemories((prev) => {
-        if (currentPage === 1) return normalizedMemories;
-        return [...prev, ...normalizedMemories];
+        if (currentPage === 1) return result.memories;
+        return [...prev, ...result.memories];
       });
-      setHasMore(data.hasMore);
+      setHasMore(result.hasMore);
     } catch (error) {
       console.error("❌ FETCH MEMORIES ERROR:", {
         error,
@@ -107,12 +88,7 @@ export default function VaultPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`/api/memories/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete memory");
-
+      await deleteMemory(id);
       setMemories((prev) => prev.filter((memory) => memory.id !== id));
       toast({
         title: "Success",
@@ -134,7 +110,8 @@ export default function VaultPage() {
   };
 
   const handleMemoryClick = (memory: Memory) => {
-    router.push(`/${params.lang}/${params.segment}/vault/${memory.id}`);
+    const path = memoryActions.navigate(memory, params.lang as string, params.segment as string);
+    router.push(path);
   };
 
   const handleUploadSuccess = () => {

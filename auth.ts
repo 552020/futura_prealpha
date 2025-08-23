@@ -24,6 +24,7 @@ declare module "next-auth" {
     accessToken?: string;
     user: User & {
       id: string;
+      businessUserId?: string;
     } & DefaultSession["user"];
   }
 }
@@ -32,6 +33,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     /** Add role to JWT */
     role?: string;
+    businessUserId?: string;
   }
 }
 
@@ -120,7 +122,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const isLoginFlow = url.includes("/api/auth/signin") || url.includes("/api/auth/callback");
 
       if (isLoginFlow) {
-        const redirectTo = `${baseUrl}/user/profile`;
+        const redirectTo = `${baseUrl}/vault`;
         // console.log("[NextAuth] Redirecting after login:", redirectTo);
         return redirectTo;
       }
@@ -185,6 +187,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           // console.log("Fallback role set to 'user'");
         }
       }
+
+      // Add business user ID lookup
+      if (user?.id && !token.businessUserId) {
+        try {
+          const allUser = await db.query.allUsers.findFirst({
+            where: (allUsers, { eq }) => eq(allUsers.userId, user.id!),
+            columns: { id: true },
+          });
+          if (allUser?.id) {
+            token.businessUserId = allUser.id;
+            console.log("[Auth] ✅ Business user ID added to token:", {
+              authUserId: user.id,
+              businessUserId: allUser.id,
+            });
+          } else {
+            console.warn("[Auth] ⚠️ No allUsers entry found for Auth.js user:", user.id);
+          }
+        } catch (error) {
+          console.error("[Auth] ❌ Error looking up business user ID:", error);
+        }
+      }
+
       return token;
     },
 
@@ -197,6 +221,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.role = token.role as string;
         session.user.id = token.sub as string;
+
+        // Add business user ID
+        if (token.businessUserId && typeof token.businessUserId === "string") {
+          (session.user as { businessUserId?: string }).businessUserId = token.businessUserId;
+        }
       }
       if (token.accessToken) {
         session.accessToken = token.accessToken as string;

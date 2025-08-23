@@ -12,7 +12,7 @@ import {
   uploadFileToStorageWithErrorHandling,
 } from "../utils";
 import { isAcceptedMimeType, validateFile, uploadFileToStorage, getMemoryType } from "../utils";
-import { auth } from "@/app/api/auth/[...nextauth]/auth";
+import { auth } from "@/auth";
 
 // Type definitions for database inserts
 type ImageInsert = InferInsertModel<typeof images>;
