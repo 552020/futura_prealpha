@@ -6,6 +6,7 @@ import { FileText, ImageIcon, Video, Share2, Trash2, File } from "lucide-react";
 import { Memory } from "@/types/memory";
 import { MemoryStatus } from "./MemoryStatus";
 import Image from "next/image";
+import { shortenTitle } from "@/lib/utils";
 
 interface MemoryCardProps {
   memory: Memory & {
@@ -27,17 +28,17 @@ export function MemoryCard({ memory, onClick, onShare, onDelete }: MemoryCardPro
       <CardContent className="p-4">
         <div className="flex items-center gap-2">
           {memory.type === "image" ? (
-            <ImageIcon className="h-5 w-5" />
+            <ImageIcon className="h-5 w-5 flex-shrink-0" />
           ) : memory.type === "video" ? (
-            <Video className="h-5 w-5" />
+            <Video className="h-5 w-5 flex-shrink-0" />
           ) : memory.type === "note" ? (
-            <FileText className="h-5 w-5" />
+            <FileText className="h-5 w-5 flex-shrink-0" />
           ) : memory.type === "document" ? (
-            <File className="h-5 w-5" />
+            <File className="h-5 w-5 flex-shrink-0" />
           ) : (
-            <FileText className="h-5 w-5" />
+            <FileText className="h-5 w-5 flex-shrink-0" />
           )}
-          <h3 className="font-medium">{memory.title}</h3>
+          <h3 className="font-medium truncate min-w-0" title={memory.title}>{shortenTitle(memory.title)}</h3>
         </div>
         {memory.description && <p className="mt-2 text-sm text-muted-foreground">{memory.description}</p>}
         {memory.type === "image" && memory.thumbnail && (

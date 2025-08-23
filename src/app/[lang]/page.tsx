@@ -19,7 +19,7 @@ export default async function LangPage({ params }: PageProps) {
 
   // Check if user is authenticated
   const session = await auth();
-  
+
   // If authenticated, redirect to vault
   if (session?.user?.id) {
     redirect(`/${resolvedParams.lang}/vault`);

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Image as ImageIcon, Video, FileText, Music, ChevronLeft } from "lucide-react";
 import { useAuthGuard } from "@/utils/authentication";
 import { format } from "date-fns";
+import { shortenTitle } from "@/lib/utils";
 
 interface Memory {
   id: string;
@@ -158,6 +159,7 @@ export default function MemoryDetailPage() {
 
   // Get display title
   const displayTitle = memory.title?.trim() && memory.title !== memory.id ? memory.title : "Untitled Memory";
+  const shortTitle = shortenTitle(displayTitle, 40);
 
   return (
     <div className="container mx-auto px-6 py-8">
@@ -201,7 +203,7 @@ export default function MemoryDetailPage() {
           <div className="flex items-center gap-4">
             {getIcon()}
             <div>
-              <h1 className="text-xl font-semibold sm:text-2xl md:text-3xl truncate">{displayTitle}</h1>
+              <h1 className="text-xl font-semibold sm:text-2xl md:text-3xl truncate min-w-0" title={displayTitle}>{shortTitle}</h1>
               <p className="text-sm text-muted-foreground">Saved on {format(new Date(memory.createdAt), "PPP")}</p>
             </div>
           </div>
