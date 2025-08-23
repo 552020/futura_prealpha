@@ -1,9 +1,9 @@
 import Hero from "@/components/hero";
 import HeroDemo from "@/components/hero-demo";
-
-// import ValueJourney from "@/components/value-journey";
 import { getDictionary } from "@/utils/dictionaries";
 import { cookies } from "next/headers";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 type PageProps = {
   params: Promise<{
@@ -16,6 +16,14 @@ const DEFAULT_SEGMENT = "family";
 export default async function LangPage({ params }: PageProps) {
   // Resolve the params promise
   const resolvedParams = await params;
+
+  // Check if user is authenticated
+  const session = await auth();
+  
+  // If authenticated, redirect to vault
+  if (session?.user?.id) {
+    redirect(`/${resolvedParams.lang}/vault`);
+  }
 
   // Get the preferred segment from cookies, default to "family" if not found
   const cookieStore = await cookies();

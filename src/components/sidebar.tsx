@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useInterface } from "@/contexts/interface-context";
 import UserButtonClient from "./user-button-client";
@@ -15,9 +15,11 @@ interface SidebarProps {
 export default function Sidebar({ dict }: SidebarProps) {
   const pathname = usePathname();
   const { mode } = useInterface();
+  const params = useParams();
+  const lang = (params.lang as string) || "en";
 
-  // Helper function to construct full URLs
-  const getFullHref = (baseHref: string) => `/${baseHref}`;
+  // Helper function to construct full URLs with language
+  const getFullHref = (baseHref: string) => `/${lang}${baseHref}`;
 
   // Don't render sidebar in marketing mode
   if (mode === "marketing") {

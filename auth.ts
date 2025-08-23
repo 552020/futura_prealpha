@@ -122,7 +122,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const isLoginFlow = url.includes("/api/auth/signin") || url.includes("/api/auth/callback");
 
       if (isLoginFlow) {
-        const redirectTo = `${baseUrl}/vault`;
+        // Extract language from URL if available, default to 'en'
+        const urlObj = new URL(url);
+        const lang = urlObj.searchParams.get("lang") || "en";
+        const redirectTo = `${baseUrl}/${lang}/vault`;
         // console.log("[NextAuth] Redirecting after login:", redirectTo);
         return redirectTo;
       }
