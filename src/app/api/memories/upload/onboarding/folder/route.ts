@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import pLimit from "p-limit";
+import { db } from "@/db/db";
+import { images, videos, documents } from "@/db/schema";
+import type { InferInsertModel } from "drizzle-orm";
 import {
   parseMultipleFiles,
   logMultipleFileDetails,
@@ -6,10 +10,83 @@ import {
   validateFileWithErrorHandling,
   uploadFileToStorageWithErrorHandling,
   createTemporaryUserWithErrorHandling,
-  storeFileInDatabaseWithErrorHandling,
 } from "../../utils";
-import { isAcceptedMimeType, validateFile, uploadFileToStorage, getMemoryType, storeInDatabase } from "../../utils";
+import { isAcceptedMimeType, validateFile, uploadFileToStorage, getMemoryType } from "../../utils";
 import { createTemporaryUserBase } from "../../../../utils";
+
+// Type definitions for database inserts
+type ImageInsert = InferInsertModel<typeof images>;
+type VideoInsert = InferInsertModel<typeof videos>;
+type DocumentInsert = InferInsertModel<typeof documents>;
+
+// Type for upload results
+type UploadResult = {
+  fileName: string;
+  url: string;
+  success: boolean;
+  userId: string;
+  memoryId: string;
+};
+
+// Type for successful uploads with discriminated union
+type UploadOk =
+  | { success: true; memoryType: "image"; fileName: string; url: string; row: ImageInsert }
+  | { success: true; memoryType: "video"; fileName: string; url: string; row: VideoInsert }
+  | { success: true; memoryType: "document"; fileName: string; url: string; row: DocumentInsert };
+
+type UploadErr = { success: false; fileName: string; error: unknown };
+
+// Row builder functions that match exact schema types
+function buildImageRow(file: File, url: string, ownerId: string): ImageInsert {
+  const name = file.name || "Untitled";
+  return {
+    ownerId,
+    url,
+    title: name,
+    caption: name,
+    description: "",
+    ownerSecureCode: crypto.randomUUID(),
+    metadata: {
+      size: file.size,
+      mimeType: file.type,
+      originalName: name,
+      uploadedAt: new Date().toISOString(),
+    },
+  };
+}
+
+function buildVideoRow(file: File, url: string, ownerId: string): VideoInsert {
+  const name = file.name || "Untitled";
+  return {
+    ownerId,
+    url,
+    title: name,
+    description: "",
+    mimeType: file.type || "video/mp4",
+    size: String(file.size),
+    ownerSecureCode: crypto.randomUUID(),
+    metadata: {},
+  };
+}
+
+function buildDocumentRow(file: File, url: string, ownerId: string): DocumentInsert {
+  const name = file.name || "Untitled";
+  return {
+    ownerId,
+    url,
+    title: name,
+    description: "",
+    mimeType: file.type || "application/pdf",
+    size: String(file.size),
+    ownerSecureCode: crypto.randomUUID(),
+    metadata: {
+      size: file.size,
+      mimeType: file.type,
+      originalName: name,
+      uploadedAt: new Date().toISOString(),
+    },
+  };
+}
 
 /**
  * Folder Upload Endpoint
@@ -35,6 +112,7 @@ import { createTemporaryUserBase } from "../../../../utils";
  */
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
   console.log("🚀 Starting onboarding folder upload process...");
 
   try {
@@ -57,55 +135,172 @@ export async function POST(request: NextRequest) {
     const { allUser, error: userError } = await createTemporaryUserWithErrorHandling(createTemporaryUserBase);
     if (userError) return userError;
 
-    // Validate and upload each file
-    const uploadResults = [];
-    for (const file of files) {
-      // Validate file
-      const { validationResult, error: validationError } = await validateFileWithErrorHandling(file, validateFile);
-      if (validationError) {
-        console.error(`❌ Validation failed for ${file.name}:`, validationError);
-        continue; // Skip this file and continue with others
-      }
+    // Process files in parallel with concurrency limit (validate + upload only)
+    const limit = pLimit(5); // max 5 concurrent uploads
+    const uploadTasks = files.map((file) =>
+      limit(async (): Promise<UploadOk | UploadErr> => {
+        try {
+          const name = String(file.name || "Untitled"); // Guarantee string type
 
-      // Upload file to storage
-      const { url, error: uploadError } = await uploadFileToStorageWithErrorHandling(
-        file,
-        validationResult!.buffer!,
-        uploadFileToStorage
-      );
-      if (uploadError) {
-        console.error(`❌ Upload failed for ${file.name}:`, uploadError);
-        continue; // Skip this file and continue with others
-      }
+          // Validate file
+          const { validationResult, error: validationError } = await validateFileWithErrorHandling(file, validateFile);
+          if (validationError) {
+            console.error(`❌ Validation failed for ${name}:`, validationError);
+            return { success: false, fileName: name, error: validationError };
+          }
 
-      // Store in database
-      const { result, error: dbError } = await storeFileInDatabaseWithErrorHandling(
-        file,
-        url,
-        allUser.id,
-        getMemoryType,
-        storeInDatabase
-      );
-      if (dbError) {
-        console.error(`❌ Database storage failed for ${file.name}:`, dbError);
-        continue; // Skip this file and continue with others
+          // Upload file to storage
+          const { url, error: uploadError } = await uploadFileToStorageWithErrorHandling(
+            file,
+            validationResult!.buffer!,
+            uploadFileToStorage
+          );
+          if (uploadError) {
+            console.error(`❌ Upload failed for ${name}:`, uploadError);
+            return { success: false, fileName: name, error: uploadError };
+          }
+
+          // Build database row based on memory type
+          const memoryType = getMemoryType(
+            file.type as
+              | "image/jpeg"
+              | "image/png"
+              | "image/gif"
+              | "image/webp"
+              | "video/mp4"
+              | "video/webm"
+              | "application/pdf"
+              | "application/msword"
+              | "text/plain"
+              | "text/markdown"
+          );
+
+          if (memoryType === "image") {
+            return {
+              success: true,
+              memoryType,
+              fileName: name,
+              url,
+              row: buildImageRow(file, url, allUser.id),
+            };
+          }
+          if (memoryType === "video") {
+            return {
+              success: true,
+              memoryType,
+              fileName: name,
+              url,
+              row: buildVideoRow(file, url, allUser.id),
+            };
+          }
+          return {
+            success: true,
+            memoryType: "document",
+            fileName: name,
+            url,
+            row: buildDocumentRow(file, url, allUser.id),
+          };
+        } catch (error) {
+          const name = String(file.name || "Untitled");
+          console.error(`❌ Unexpected error for ${name}:`, error);
+          return { success: false, fileName: name, error };
+        }
+      })
+    );
+
+    const results = await Promise.allSettled(uploadTasks);
+
+    // Process results and collect successful rows by type
+    const imageRows: ImageInsert[] = [];
+    const videoRows: VideoInsert[] = [];
+    const documentRows: DocumentInsert[] = [];
+    const uploadResults: UploadResult[] = [];
+
+    const ok = results
+      .filter((r): r is PromiseFulfilledResult<UploadOk> => r.status === "fulfilled" && r.value.success)
+      .map((r) => r.value);
+
+    const failures = results.filter(
+      (r) => r.status === "rejected" || (r.status === "fulfilled" && !(r.value as UploadOk | UploadErr).success)
+    ).length;
+
+    // Split rows by type using type guards
+    ok.forEach((value) => {
+      if (value.memoryType === "image") {
+        imageRows.push(value.row);
+      } else if (value.memoryType === "video") {
+        videoRows.push(value.row);
+      } else {
+        documentRows.push(value.row);
       }
 
       uploadResults.push({
-        fileName: file.name,
-        url,
+        fileName: value.fileName,
+        url: value.url,
         success: true,
         userId: allUser.id,
-        memoryId: result!.data.id, // Add memory ID to results
+        memoryId: "", // Will be set after batch insert
       });
+    });
+
+    console.log(`✅ ${ok.length} uploads ready for batch insert, ❌ ${failures} failures`);
+
+    // Batch insert all successful files (no transactions - Neon HTTP limitation)
+    const insertedIds: string[] = [];
+
+    if (imageRows.length > 0) {
+      const imageResults = await db.insert(images).values(imageRows).returning({ id: images.id });
+      insertedIds.push(...imageResults.map((r) => r.id));
     }
 
+    if (videoRows.length > 0) {
+      const videoResults = await db.insert(videos).values(videoRows).returning({ id: videos.id });
+      insertedIds.push(...videoResults.map((r) => r.id));
+    }
+
+    if (documentRows.length > 0) {
+      const documentResults = await db.insert(documents).values(documentRows).returning({ id: documents.id });
+      insertedIds.push(...documentResults.map((r) => r.id));
+    }
+
+    // Update uploadResults with actual memory IDs
+    uploadResults.forEach((result, index) => {
+      if (result.success && insertedIds[index]) {
+        result.memoryId = insertedIds[index];
+      }
+    });
+
+    console.log(`✅ Batch inserted ${insertedIds.length} files into database`);
+
+    const endTime = Date.now();
+    const totalTime = (endTime - startTime) / 1000;
+    const averageTime = totalTime / files.length;
+
+    // Calculate total file size
+    const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+    const totalSizeMB = (totalSize / (1024 * 1024)).toFixed(2);
+
+    console.log("=== FOLDER UPLOAD COMPLETE ===");
+    console.log(`📁 Files processed: ${uploadResults.length}/${files.length} successful`);
+    console.log(`📦 Total size: ${totalSizeMB} MB`);
+    console.log(`⏱️ Total time: ${totalTime.toFixed(1)} seconds`);
+    console.log(`📊 Average: ${averageTime.toFixed(1)} seconds per file`);
+    console.log(`🚀 Upload speed: ${(parseFloat(totalSizeMB) / totalTime).toFixed(2)} MB/s`);
+    console.log(`👤 User ID: ${allUser.id}`);
+    console.log(`❌ Failed uploads: ${files.length - uploadResults.length}`);
+    console.log("================================");
+
     return NextResponse.json({
-      message: "Folder upload endpoint - validation and upload completed",
-      status: "partial_implementation",
+      message: "Folder upload completed successfully",
+      status: "success",
       totalFiles: files.length,
       successfulUploads: uploadResults.length,
       failedUploads: files.length - uploadResults.length,
+      totalTime: totalTime.toFixed(1),
+      averageTime: averageTime.toFixed(1),
+      totalSizeMB: totalSizeMB,
+      uploadSpeedMBps: (parseFloat(totalSizeMB) / totalTime).toFixed(2),
+      userId: allUser.id,
       results: uploadResults,
     });
   } catch (error) {

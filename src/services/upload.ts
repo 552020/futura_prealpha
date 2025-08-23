@@ -5,14 +5,23 @@ interface UploadResponse {
   };
 }
 
+type UploadMode = "files" | "folder";
+
 export const uploadFile = async (
   file: File,
   isOnboarding: boolean,
-  existingUserId?: string
+  existingUserId?: string,
+  mode: UploadMode = "files"
 ): Promise<UploadResponse> => {
-  // If we're in onboarding flow, always use onboarding endpoint
-  // If not, use the regular upload endpoint which requires authentication
-  const endpoint = isOnboarding ? "/api/memories/upload/onboarding/file" : "/api/memories/upload";
+  // Determine endpoint based on onboarding status and mode
+  let endpoint: string;
+  if (isOnboarding) {
+    const onboardingEndpoint =
+      mode === "folder" ? "/api/memories/upload/onboarding/folder" : "/api/memories/upload/onboarding/file";
+    endpoint = onboardingEndpoint;
+  } else {
+    endpoint = "/api/memories/upload";
+  }
 
   // Upload file
   const formData = new FormData();

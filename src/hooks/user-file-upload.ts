@@ -106,7 +106,7 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
       const url = URL.createObjectURL(file);
       console.log("🖼️ Created temporary preview URL");
 
-      const data = await uploadFile(file, isOnboarding, existingUserId);
+      const data = await uploadFile(file, isOnboarding, existingUserId, mode);
       console.log("📦 Response data:", data);
 
       if (isOnboarding) {
@@ -153,11 +153,11 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (mode == "folder") {
       const startTime = Date.now();
-      console.log("🎯 Starting folder upload process in mode 'folder'...");
+      console.log("Starting folder upload process in mode 'folder'...");
       const files = event.target.files;
       if (!files) return;
 
-      console.log("🎯 Files:", files);
+      console.log(`Found ${files.length} files in folder`);
 
       // Check file count limit
       if (files.length > 25) {
@@ -171,46 +171,52 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
 
       setIsLoading(true);
 
-      // Create one temporary user for the entire folder
-      let folderUserId: string | undefined;
-      if (isOnboarding) {
-        try {
-          const response = await fetch("/api/users/folder", { method: "POST" });
-          const userData = await response.json();
-          folderUserId = userData.id;
-          console.log("👤 Created folder user:", folderUserId);
-        } catch (error) {
-          console.error("❌ Failed to create folder user:", error);
-        }
-      }
-
-      // Process all files in parallel
-      const uploadPromises = Array.from(files).map(async (file) => {
-        try {
-          await processSingleFile(file, true, folderUserId); // Skip success callback, use existing user
-          return { success: true, file };
-        } catch (error) {
-          console.error(`❌ Failed to upload ${file.name}:`, error);
-          return { success: false, file, error };
-        }
-      });
-
-      const results = await Promise.all(uploadPromises);
-      const successfulUploads = results.filter((result) => result.success).length;
-
-      // Update context with total count
-      if (isOnboarding && successfulUploads > 0) {
-        updateUserData({
-          uploadedFileCount: successfulUploads,
+      try {
+        // Send all files to folder endpoint in single request
+        const formData = new FormData();
+        Array.from(files).forEach((file) => {
+          formData.append("file", file);
         });
-      }
 
-      // Call success once after all files are processed
-      const endTime = Date.now();
-      const totalTime = (endTime - startTime) / 1000;
-      console.log(`⏱️ Folder upload completed in ${totalTime} seconds`);
-      onSuccess?.();
-      setIsLoading(false);
+        console.log("Sending folder to server...");
+        const response = await fetch("/api/memories/upload/onboarding/folder", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+        console.log("Folder upload response:", data);
+
+        if (!response.ok) {
+          throw new Error(data.error || "Folder upload failed");
+        }
+
+        // Update context with results
+        if (isOnboarding && data.successfulUploads > 0) {
+          updateUserData({
+            uploadedFileCount: data.successfulUploads,
+            allUserId: data.results?.[0]?.userId, // Use first result's user ID
+            memoryId: data.results?.[0]?.memoryId, // Use first result's memory ID
+          });
+        }
+
+        const endTime = Date.now();
+        const totalTime = (endTime - startTime) / 1000;
+        console.log(`Folder upload completed in ${totalTime} seconds`);
+        onSuccess?.();
+      } catch (error) {
+        console.error("Folder upload error:", error);
+        toast({
+          variant: "destructive",
+          title: "Upload failed",
+          description: error instanceof Error ? error.message : "Please try again.",
+        });
+        if (onError) {
+          onError(error as Error);
+        }
+      } finally {
+        setIsLoading(false);
+      }
     }
 
     if (mode == "files") {
