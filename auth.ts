@@ -125,7 +125,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Extract language from URL if available, default to 'en'
         const urlObj = new URL(url);
         const lang = urlObj.searchParams.get("lang") || "en";
-        const redirectTo = `${baseUrl}/${lang}/vault`;
+        const redirectTo = `${baseUrl}/${lang}/dashboard`;
         // console.log("[NextAuth] Redirecting after login:", redirectTo);
         return redirectTo;
       }

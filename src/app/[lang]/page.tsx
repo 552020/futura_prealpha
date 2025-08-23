@@ -20,9 +20,9 @@ export default async function LangPage({ params }: PageProps) {
   // Check if user is authenticated
   const session = await auth();
 
-  // If authenticated, redirect to vault
+  // If authenticated, redirect to dashboard
   if (session?.user?.id) {
-    redirect(`/${resolvedParams.lang}/vault`);
+    redirect(`/${resolvedParams.lang}/dashboard`);
   }
 
   // Get the preferred segment from cookies, default to "family" if not found

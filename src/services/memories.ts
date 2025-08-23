@@ -96,6 +96,6 @@ export const memoryActions = {
   },
 
   navigate: (memory: Memory, lang: string, segment: string) => {
-    return `/${lang}/${segment}/vault/${memory.id}`;
+    return `/${lang}/${segment}/dashboard/${memory.id}`;
   },
 };

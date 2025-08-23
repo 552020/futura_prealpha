@@ -127,7 +127,7 @@ export default function MemoryDetailPage() {
           variant="ghost"
           size="icon"
           className="mb-6 w-10 h-10 rounded-full bg-black dark:bg-white hover:scale-105 transition-transform"
-          onClick={() => router.push("/vault")}
+          onClick={() => router.push("/dashboard")}
         >
           <ChevronLeft className="h-6 w-6 text-white dark:text-black" />
         </Button>
@@ -167,7 +167,7 @@ export default function MemoryDetailPage() {
         variant="ghost"
         size="icon"
         className="mb-6 w-10 h-10 rounded-full bg-black dark:bg-white hover:scale-105 transition-transform"
-        onClick={() => router.push("/vault")}
+        onClick={() => router.push("/dashboard")}
       >
         <ChevronLeft className="h-6 w-6 text-white dark:text-black" />
       </Button>
