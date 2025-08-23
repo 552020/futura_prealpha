@@ -42,64 +42,148 @@ src/app/[lang]/gallery/
 - `/vault` - **MY vault** (unchanged - family vertical)
 - `/shared` - **Shared memories** (unchanged)
 
-## Implementation Plan
+## MVP Implementation Plan (Ship in Days)
 
-### Phase 1: Gallery Foundation
+### Phase 1: Database & API Foundation
 
-1. **Create gallery route structure**
+1. **Future-Proof Database Schema**
 
-   - `src/app/[lang]/gallery/page.tsx`
-   - `src/app/[lang]/gallery/[id]/page.tsx`
-   - Basic layout and navigation
+   ```typescript
+   // galleries table
+   galleries: {
+     id, ownerId, title, isPublic, isDefault, theme, metadata, createdAt, updatedAt;
+   }
 
-2. **Gallery-specific components**
+   // gallery_items table
+   gallery_items: {
+     id, galleryId, memoryId, position, caption, isFeatured, metadata, createdAt, updatedAt;
+   }
+   ```
 
-   - `GalleryGrid.tsx` - Artistic grid layout
-   - `GalleryItem.tsx` - Curated memory display
-   - `GalleryActions.tsx` - Curation tools
-   - `GalleryLayout.tsx` - Gallery-specific layout
+   **Key Design:**
 
-3. **Authentication & data fetching**
-   - Use same pattern as vault
-   - Fetch current user's memories
-   - Gallery-specific filtering/curation
+   - **Multi-gallery DB** with `isDefault` constraint for MVP UX
+   - **JSONB metadata** fields for future features
+   - **Proper indexes** for performance
 
-### Phase 2: Gallery Features
+2. **Core API Endpoints**
+   - `GET /api/gallery` → returns (create-if-missing) user's gallery + items
+   - `POST /api/gallery/items` → add memoryId(s) (bulk) with position
+   - `PUT /api/gallery/items/reorder` → array of {itemId, position}
+   - `PUT /api/gallery` → title, isPublic
 
-1. **Curation tools**
+### Phase 2: Gallery Pages
 
-   - Arrange memories in gallery
-   - Add captions/descriptions
-   - Theme selection
-   - Gallery title/description
+1. **Gallery Main Page**
 
-2. **Artistic presentation**
+   - `/gallery` → grid + lightweight **GalleryActions** (Rename, Toggle Public, Publish, Share)
+   - Auto-add new memories to end of gallery after upload
+   - Show toast "Added to your gallery"
 
-   - Different layout options
-   - Visual themes
-   - Storytelling features
-   - Portfolio-style display
+2. **Gallery Detail Page**
+   - `/gallery/[id]` → simple detail (full bleed, caption)
 
-3. **Sharing capabilities**
-   - Gallery sharing links
-   - Public/private settings
-   - Gallery-specific sharing UI
+### Phase 3: Upload Flow Integration
 
-### Phase 3: Vertical Integration
+1. **Forever-gallery Vertical**
 
-1. **Update vertical context**
+   - After upload: **redirect to `/gallery`** (skip onboarding)
+   - Auto-add new memory to gallery
+   - Show success toast
 
-   - Add "forever-gallery" vertical type
-   - Configure gallery as destination for forever-gallery users
+2. **Family Vertical** (unchanged)
+   - Continue to vault as before
 
-2. **Update onboarding flow**
+## MVP Features
 
-   - Forever-gallery users → gallery (immediate)
-   - Family users → vault (unchanged)
+### ✅ What's Included
 
-3. **Update upload success handling**
-   - Route based on vertical type
-   - Gallery users skip onboarding
+- **One default gallery per user** (enforced at DB level with `isDefault` constraint)
+- **Default tasteful layout** (no themes yet)
+- **Basic curation**: reorder, caption, feature items
+- **Publish/Share**: toggle public, shareable URL
+- **Auto-add on upload** for gallery users
+- **Future-proof DB** (supports multi-gallery without migration)
+
+### ❌ What's Deferred
+
+- **Multi-gallery UI** (DB supports it, UI shows only default)
+- **Themes and custom layouts** (theme field exists, defaults to NULL)
+- **Advanced curation tools** (metadata fields ready for future features)
+- **Per-item update endpoints** (can add later)
+- **Virtualization** (unless >200 items)
+
+## Critical UX Features
+
+### **Publish & Share**
+
+- **Publish button**: toggles `isPublic`, creates shareable URL (`/u/:slug/gallery` or `/g/:id`)
+- **Share**: copies link; if private, show "Make public to share"
+- **Empty state**: "Upload photos to start your gallery" with CTA
+
+### **Upload Flow**
+
+- **Forever-gallery users**: Upload → Gallery (immediate value)
+- **Family users**: Upload → Vault (unchanged)
+- **Auto-add**: New memories automatically added to gallery
+
+## Technical Architecture
+
+### **Data Model (Future-Proof MVP)**
+
+```typescript
+interface Gallery {
+  id: string;
+  ownerId: string; // business user id (stable)
+  title: string;
+  isPublic: boolean;
+  isDefault: boolean; // MVP: one default gallery per user
+  theme?: string; // NULL for MVP, future themes
+  metadata: Record<string, any>; // JSONB for future features
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface GalleryItem {
+  id: string;
+  galleryId: string;
+  memoryId: string;
+  position: number;
+  caption?: string;
+  isFeatured: boolean;
+  metadata: Record<string, any>; // JSONB for future features
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+**Database Constraints:**
+
+- `UNIQUE(ownerId) WHERE isDefault = true` - One default gallery per user
+- `idx_galleries_owner (ownerId)` - Fast user gallery lookup
+- `idx_gallery_items_gallery (galleryId, position)` - Fast gallery item ordering
+
+### **Security & Performance**
+
+- **Owner ID**: Use stable business user ID from session
+- **Public galleries**: Only expose published items
+- **Private galleries**: Show 404 for public routes
+- **Performance**: Use existing image thumbs + Next/Image with lazy loading
+- **Soft delete**: Consider for gallery_items (easy undo)
+
+## Success Metrics (MVP)
+
+- **% uploads that redirect to `/gallery`**
+- **Time-to-first-share after upload**
+- **Publish rate** (toggled to public)
+
+## Build Order
+
+1. **DB tables** + `GET /api/gallery` (create-if-missing)
+2. **`/gallery` page** with grid (reads API)
+3. **Auto-add on upload** (POST /items)
+4. **Publish toggle** + share link
+5. **Detail page** `/gallery/[id]`
 
 ## Technical Specifications
 
