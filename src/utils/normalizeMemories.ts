@@ -7,6 +7,10 @@ interface RawMemoryData {
     description?: string;
     createdAt: string;
     url: string;
+    metadata?: {
+      originalPath?: string;
+      folderName?: string;
+    };
   }>;
   documents: Array<{
     id: string;
@@ -15,12 +19,20 @@ interface RawMemoryData {
     createdAt: string;
     url: string;
     mimeType: string;
+    metadata?: {
+      originalPath?: string;
+      folderName?: string;
+    };
   }>;
   notes: Array<{
     id: string;
     title: string;
     content: string;
     createdAt: string;
+    metadata?: {
+      originalPath?: string;
+      folderName?: string;
+    };
   }>;
   videos: Array<{
     id: string;
@@ -29,6 +41,10 @@ interface RawMemoryData {
     createdAt: string;
     url: string;
     mimeType: string;
+    metadata?: {
+      originalPath?: string;
+      folderName?: string;
+    };
   }>;
 }
 
@@ -41,6 +57,7 @@ export const normalizeMemories = (data: RawMemoryData): Memory[] => {
       description: img.description,
       createdAt: img.createdAt,
       thumbnail: img.url,
+      metadata: img.metadata,
     })),
     ...data.videos.map((video) => ({
       id: video.id,
@@ -51,6 +68,7 @@ export const normalizeMemories = (data: RawMemoryData): Memory[] => {
       thumbnail: video.url,
       url: video.url,
       mimeType: video.mimeType,
+      metadata: video.metadata,
     })),
     ...data.documents.map((doc) => ({
       id: doc.id,
@@ -60,6 +78,7 @@ export const normalizeMemories = (data: RawMemoryData): Memory[] => {
       createdAt: doc.createdAt,
       url: doc.url,
       mimeType: doc.mimeType,
+      metadata: doc.metadata,
     })),
     ...data.notes.map((note) => ({
       id: note.id,
@@ -68,6 +87,7 @@ export const normalizeMemories = (data: RawMemoryData): Memory[] => {
       description: note.content.substring(0, 100) + "...",
       createdAt: note.createdAt,
       content: note.content,
+      metadata: note.metadata,
     })),
   ];
 };
