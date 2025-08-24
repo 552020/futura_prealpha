@@ -3,6 +3,9 @@ import type { NextConfig } from "next/dist/server/config";
 
 const nextConfig: NextConfig = {
   output: "export",
+  env: {
+    NEXT_PUBLIC_JUNO_SATELLITE_ID: process.env.JUNO_SATELLITE_ID,
+  },
   images: {
     unoptimized: true,
     domains: ["localhost"],
