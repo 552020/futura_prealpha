@@ -15,7 +15,6 @@ import {
   processDashboardItems,
   deleteMemory,
   deleteAllMemories,
-  memoryActions,
   type NormalizedMemory,
   type DashboardItem,
 } from "@/services/memories";
@@ -30,7 +29,6 @@ interface ExtendedMemory extends BaseMemory {
 import { TawkChat } from "@/components/tawk-chat";
 import { DashboardTopBar } from "@/components/dashboard-top-bar";
 import { sampleDashboardMemories } from "./sample-data";
-import { useInterface } from "@/contexts/interface-context";
 
 // Demo flag - set to false to use real data from database
 const USE_MOCK_DATA = false;
@@ -39,7 +37,6 @@ export default function VaultPage() {
   console.log("🔍 Dashboard component rendered");
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
   console.log("🔍 Dashboard auth state:", { isAuthorized, isTemporaryUser, userId, isLoading });
-  const { isAtLeastDeveloper } = useInterface();
   const router = useRouter();
   const { toast } = useToast();
   const [memories, setMemories] = useState<DashboardItem[]>([]);
@@ -277,7 +274,6 @@ export default function VaultPage() {
         showUploadButtons={true}
         onUploadSuccess={handleUploadSuccess}
         onUploadError={handleUploadError}
-        isAtLeastDeveloper={isAtLeastDeveloper}
         onClearAllMemories={handleClearAllMemories}
       />
 

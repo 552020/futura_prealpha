@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { MemoryGrid } from "@/components/memory/MemoryGrid";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useAuthGuard } from "@/utils/authentication";
 import { useRouter, useParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -10,7 +10,13 @@ import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
 import { Button } from "@/components/ui/button";
 import { DashboardTopBar } from "@/components/dashboard-top-bar";
 import { TawkChat } from "@/components/tawk-chat";
-import { fetchAndNormalizeMemories, deleteMemory, memoryActions, type NormalizedMemory } from "@/services/memories";
+import {
+  fetchAndNormalizeMemories,
+  deleteMemory,
+  type NormalizedMemory,
+  type DashboardItem,
+} from "@/services/memories";
+import { Memory } from "@/types/memory";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -122,7 +128,7 @@ export default function FolderPage() {
     });
   };
 
-  const handleMemoryClick = (memory: NormalizedMemory) => {
+  const handleMemoryClick = (memory: Memory | DashboardItem) => {
     // Navigate to the memory detail page
     router.push(`/${params.lang}/dashboard/${memory.id}`);
   };
@@ -193,7 +199,7 @@ export default function FolderPage() {
         </div>
       ) : (
         <MemoryGrid
-          memories={memories as any}
+          memories={memories}
           onDelete={handleDelete}
           onShare={handleShare}
           onEdit={handleEdit}
