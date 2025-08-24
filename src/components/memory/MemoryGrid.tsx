@@ -6,11 +6,16 @@ interface MemoryGridProps {
   onDelete?: (id: string) => void;
   onShare?: () => void;
   onClick?: (memory: Memory) => void;
+  viewMode?: "grid" | "list";
 }
 
-export function MemoryGrid({ memories, onDelete, onShare, onClick }: MemoryGridProps) {
+export function MemoryGrid({ memories, onDelete, onShare, onClick, viewMode = "grid" }: MemoryGridProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div
+      className={
+        viewMode === "grid" ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "space-y-4"
+      }
+    >
       {memories.map((memory) => (
         <MemoryCard
           key={memory.id}
@@ -18,6 +23,7 @@ export function MemoryGrid({ memories, onDelete, onShare, onClick }: MemoryGridP
           onDelete={onDelete || (() => {})}
           onShare={onShare || (() => {})}
           onClick={onClick || (() => {})}
+          viewMode={viewMode}
         />
       ))}
     </div>

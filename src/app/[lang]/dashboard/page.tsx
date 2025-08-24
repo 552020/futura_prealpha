@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { MemoryGrid } from "@/components/memory/MemoryGrid";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { useAuthGuard } from "@/utils/authentication";
 import { Memory } from "@/types/memory";
@@ -12,6 +12,7 @@ import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
 import { useParams } from "next/navigation";
 import { fetchAndNormalizeMemories, deleteMemory, memoryActions, type NormalizedMemory } from "@/services/memories";
 import { TawkChat } from "@/components/tawk-chat";
+import { SearchAndFilterBar } from "@/components/search-and-filter-bar";
 
 export default function VaultPage() {
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
@@ -21,6 +22,8 @@ export default function VaultPage() {
   const [isLoadingMemories, setIsLoadingMemories] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filteredMemories, setFilteredMemories] = useState<NormalizedMemory[]>([]);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const { ref } = useInView();
   const params = useParams();
 
@@ -86,6 +89,11 @@ export default function VaultPage() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isLoadingMemories, hasMore]);
+
+  // Initialize filtered memories when memories are loaded
+  useEffect(() => {
+    setFilteredMemories(memories);
+  }, [memories]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -164,6 +172,15 @@ export default function VaultPage() {
         </div>
       )}
 
+      {/* SearchAndFilterBar Component */}
+      <SearchAndFilterBar
+        memories={memories as any}
+        onFilteredMemoriesChange={(filtered) => setFilteredMemories(filtered as NormalizedMemory[])}
+        showViewToggle={true}
+        onViewModeChange={setViewMode}
+        viewMode={viewMode}
+      />
+
       {memories.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
           <h3 className="text-lg font-medium">No memories yet</h3>
@@ -173,7 +190,13 @@ export default function VaultPage() {
           <ItemUploadButton variant="large-icon" onSuccess={handleUploadSuccess} onError={handleUploadError} />
         </div>
       ) : (
-        <MemoryGrid memories={memories} onDelete={handleDelete} onShare={handleShare} onClick={handleMemoryClick} />
+        <MemoryGrid
+          memories={filteredMemories}
+          onDelete={handleDelete}
+          onShare={handleShare}
+          onClick={handleMemoryClick}
+          viewMode={viewMode}
+        />
       )}
 
       {/* Loading indicator */}

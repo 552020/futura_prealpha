@@ -9,15 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Grid3X3, List, Calendar, Heart, Eye, Download, Share2 } from "lucide-react";
 import { TawkChatWrapper } from "@/components/tawk-chat-wrapper";
+import { sampleMemories } from "./sample-data";
+import { Memory as BaseMemory } from "@/types/memory";
+import { SearchAndFilterBar } from "@/components/search-and-filter-bar";
 
-interface Memory {
-  id: string;
-  title: string;
-  description?: string;
-  type: "image" | "video" | "document" | "audio";
-  url: string;
-  thumbnail?: string;
-  createdAt: string;
+// Extended Memory interface for gallery with additional properties
+interface Memory extends BaseMemory {
   tags: string[];
   isFavorite: boolean;
   views: number;
@@ -30,108 +27,11 @@ export default function GalleryPage() {
   const [sortBy, setSortBy] = useState<string>("newest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // Sample data using generated test images
-  const sampleMemories: Memory[] = useMemo(
-    () => [
-      {
-        id: "1",
-        title: "Beautiful Sunset",
-        description: "A stunning sunset captured during golden hour",
-        type: "image",
-        url: "/gallery/Beautiful_Sunset_01.webp",
-        thumbnail: "/gallery/Beautiful_Sunset_01.webp",
-        createdAt: "2023-08-15",
-        tags: ["sunset", "nature", "golden-hour"],
-        isFavorite: true,
-        views: 45,
-      },
-      {
-        id: "2",
-        title: "Amazing Mountain",
-        description: "Breathtaking mountain landscape with snow peaks",
-        type: "image",
-        url: "/gallery/Amazing_Mountain_02.webp",
-        thumbnail: "/gallery/Amazing_Mountain_02.webp",
-        createdAt: "2023-06-10",
-        tags: ["mountain", "landscape", "snow"],
-        isFavorite: true,
-        views: 128,
-      },
-      {
-        id: "3",
-        title: "Stunning Ocean",
-        description: "Crystal clear ocean waters on a perfect day",
-        type: "image",
-        url: "/gallery/Stunning_Ocean_03.webp",
-        thumbnail: "/gallery/Stunning_Ocean_03.webp",
-        createdAt: "2023-05-20",
-        tags: ["ocean", "water", "nature"],
-        isFavorite: false,
-        views: 23,
-      },
-      {
-        id: "4",
-        title: "Gorgeous Forest",
-        description: "Lush green forest with morning mist",
-        type: "image",
-        url: "/gallery/Gorgeous_Forest_04.webp",
-        thumbnail: "/gallery/Gorgeous_Forest_04.webp",
-        createdAt: "2023-04-05",
-        tags: ["forest", "nature", "mist"],
-        isFavorite: true,
-        views: 67,
-      },
-      {
-        id: "5",
-        title: "Wonderful Garden",
-        description: "Colorful flowers blooming in spring",
-        type: "image",
-        url: "/gallery/Wonderful_Garden_05.webp",
-        thumbnail: "/gallery/Wonderful_Garden_05.webp",
-        createdAt: "2023-03-12",
-        tags: ["garden", "flowers", "spring"],
-        isFavorite: false,
-        views: 34,
-      },
-      {
-        id: "6",
-        title: "Fantastic Landscape",
-        description: "Rolling hills and valleys in the countryside",
-        type: "image",
-        url: "/gallery/Fantastic_Landscape_06.webp",
-        thumbnail: "/gallery/Fantastic_Landscape_06.webp",
-        createdAt: "2023-02-28",
-        tags: ["landscape", "hills", "countryside"],
-        isFavorite: false,
-        views: 19,
-      },
-      {
-        id: "7",
-        title: "Incredible Portrait",
-        description: "Professional portrait photography session",
-        type: "image",
-        url: "/gallery/Incredible_Portrait_07.webp",
-        thumbnail: "/gallery/Incredible_Portrait_07.webp",
-        createdAt: "2023-01-15",
-        tags: ["portrait", "photography", "professional"],
-        isFavorite: true,
-        views: 89,
-      },
-      {
-        id: "8",
-        title: "Spectacular Architecture",
-        description: "Modern architectural masterpiece",
-        type: "image",
-        url: "/gallery/Spectacular_Architecture_08.webp",
-        thumbnail: "/gallery/Spectacular_Architecture_08.webp",
-        createdAt: "2023-01-10",
-        tags: ["architecture", "modern", "design"],
-        isFavorite: false,
-        views: 56,
-      },
-    ],
-    []
-  );
+  // State for the new SearchAndFilterBar component
+  const [filteredMemoriesFromComponent, setFilteredMemoriesFromComponent] = useState<Memory[]>(sampleMemories);
+  const [viewModeFromComponent, setViewModeFromComponent] = useState<"grid" | "list">("grid");
+
+  // Use sample data from separate file
 
   // Filter and sort memories
   const filteredMemories = useMemo(() => {
@@ -169,7 +69,7 @@ export default function GalleryPage() {
     });
 
     return filtered;
-  }, [sampleMemories, searchQuery, filterType, sortBy]);
+  }, [searchQuery, filterType, sortBy]);
 
   const toggleFavorite = useCallback((memoryId: string) => {
     // TODO: Implement favorite toggle
@@ -249,10 +149,24 @@ export default function GalleryPage() {
         </p>
       </div>
 
-      {/* Search and Filters */}
-      <div className="mb-6 space-y-4">
+      {/* NEW SearchAndFilterBar Component */}
+      <div className="mb-8 p-4 border-2 border-blue-500 rounded-lg bg-blue-50">
+        <h2 className="text-lg font-semibold mb-4 text-blue-800">NEW SearchAndFilterBar Component:</h2>
+        <SearchAndFilterBar
+          memories={sampleMemories}
+          onFilteredMemoriesChange={(filtered) => setFilteredMemoriesFromComponent(filtered as Memory[])}
+          showViewToggle={true}
+          onViewModeChange={setViewModeFromComponent}
+          viewMode={viewModeFromComponent}
+        />
+        <p className="text-sm text-blue-600 mt-2">
+          Results: {filteredMemoriesFromComponent.length} of {sampleMemories.length} memories
+        </p>
+      </div>
+
+      {/* ORIGINAL Search and Filters - COMMENTED OUT */}
+      {/* <div className="mb-6 space-y-4">
         <div className="flex flex-col sm:flex-row gap-4">
-          {/* Search */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
@@ -263,7 +177,6 @@ export default function GalleryPage() {
             />
           </div>
 
-          {/* Type Filter */}
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="w-full sm:w-48">
               <Filter className="h-4 w-4 mr-2" />
@@ -278,7 +191,6 @@ export default function GalleryPage() {
             </SelectContent>
           </Select>
 
-          {/* Sort */}
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-full sm:w-48">
               <Calendar className="h-4 w-4 mr-2" />
@@ -292,7 +204,6 @@ export default function GalleryPage() {
             </SelectContent>
           </Select>
 
-          {/* View Mode Toggle */}
           <div className="flex border rounded-md">
             <Button
               variant={viewMode === "grid" ? "default" : "ghost"}
@@ -312,10 +223,10 @@ export default function GalleryPage() {
             </Button>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Memories Grid/List */}
-      {filteredMemories.length === 0 ? (
+      {filteredMemoriesFromComponent.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">📸</div>
           <h3 className="text-xl font-semibold mb-2">No memories found</h3>
@@ -329,13 +240,15 @@ export default function GalleryPage() {
       ) : (
         <div
           className={
-            viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "space-y-4"
+            viewModeFromComponent === "grid"
+              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              : "space-y-4"
           }
         >
-          {filteredMemories.map((memory) => (
+          {filteredMemoriesFromComponent.map((memory) => (
             <Card key={memory.id} className="group hover:shadow-lg transition-shadow">
               <CardContent className="p-4">
-                {viewMode === "grid" ? (
+                {viewModeFromComponent === "grid" ? (
                   // Grid View
                   <div className="space-y-3">
                     {/* Thumbnail */}

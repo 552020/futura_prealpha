@@ -17,9 +17,67 @@ interface MemoryCardProps {
   onClick: (memory: Memory) => void;
   onShare: (memoryId: string) => void;
   onDelete: (memoryId: string) => void;
+  viewMode?: "grid" | "list";
 }
 
-export function MemoryCard({ memory, onClick, onShare, onDelete }: MemoryCardProps) {
+export function MemoryCard({ memory, onClick, onShare, onDelete, viewMode = "grid" }: MemoryCardProps) {
+  if (viewMode === "list") {
+    return (
+      <Card className="cursor-pointer transition-all hover:shadow-md" onClick={() => onClick(memory)}>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0">
+              {memory.type === "image" ? (
+                <ImageIcon className="h-8 w-8" />
+              ) : memory.type === "video" ? (
+                <Video className="h-8 w-8" />
+              ) : memory.type === "note" ? (
+                <FileText className="h-8 w-8" />
+              ) : memory.type === "document" ? (
+                <File className="h-8 w-8" />
+              ) : (
+                <FileText className="h-8 w-8" />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-medium truncate" title={memory.title}>
+                {shortenTitle(memory.title)}
+              </h3>
+              {memory.description && <p className="text-sm text-muted-foreground truncate">{memory.description}</p>}
+            </div>
+            <div className="flex items-center gap-2">
+              <MemoryStatus
+                status={memory.status}
+                sharedWithCount={memory.sharedWithCount}
+                sharedBy={memory.sharedBy}
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onShare(memory.id);
+                }}
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(memory.id);
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="cursor-pointer transition-all hover:shadow-md" onClick={() => onClick(memory)}>
       <CardHeader className="p-4">
@@ -38,7 +96,9 @@ export function MemoryCard({ memory, onClick, onShare, onDelete }: MemoryCardPro
           ) : (
             <FileText className="h-5 w-5 flex-shrink-0" />
           )}
-          <h3 className="font-medium truncate min-w-0" title={memory.title}>{shortenTitle(memory.title)}</h3>
+          <h3 className="font-medium truncate min-w-0" title={memory.title}>
+            {shortenTitle(memory.title)}
+          </h3>
         </div>
         {memory.description && <p className="mt-2 text-sm text-muted-foreground">{memory.description}</p>}
         {memory.type === "image" && memory.thumbnail && (
