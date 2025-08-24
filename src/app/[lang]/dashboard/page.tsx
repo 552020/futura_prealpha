@@ -30,8 +30,8 @@ import { TawkChat } from "@/components/tawk-chat";
 import { DashboardTopBar } from "@/components/dashboard-top-bar";
 import { sampleDashboardMemories } from "./sample-data";
 
-// Demo flag - set to false to use real data from database
-const USE_MOCK_DATA = false;
+// Demo flag - set to true to use mock data for demo
+const USE_MOCK_DATA = true;
 
 export default function VaultPage() {
   console.log("🔍 Dashboard component rendered");
@@ -58,7 +58,8 @@ export default function VaultPage() {
 
     if (USE_MOCK_DATA) {
       console.log("🎭 MOCK DATA - Using sample data for demo");
-      setMemories(sampleDashboardMemories as NormalizedMemory[]);
+      const processedItems = processDashboardItems(sampleDashboardMemories as NormalizedMemory[]);
+      setMemories(processedItems);
       setHasMore(false);
       setIsLoadingMemories(false);
       return;
