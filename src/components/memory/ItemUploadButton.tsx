@@ -162,7 +162,7 @@ export function ItemUploadButton({
           <button
             onClick={handleClick}
             disabled={isLoading}
-            className="w-full px-3 py-2 text-sm font-medium transition-all duration-200 ease-in-out bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+            className="h-9 px-4 py-1 text-sm font-medium transition-all duration-200 ease-in-out bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed rounded-md flex items-center justify-center whitespace-nowrap"
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
@@ -179,7 +179,7 @@ export function ItemUploadButton({
           <button
             onClick={handleClick}
             disabled={isLoading}
-            className="w-full px-3 py-2 text-sm font-medium transition-all duration-200 ease-in-out bg-white text-black border border-gray-300 hover:bg-gray-50 dark:bg-gray-900 dark:text-white dark:border-gray-600 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+            className="h-9 px-4 py-1 text-sm font-medium transition-all duration-200 ease-in-out bg-white text-black border border-gray-300 hover:bg-gray-50 dark:bg-gray-900 dark:text-white dark:border-gray-600 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed rounded-md flex items-center justify-center whitespace-nowrap"
           >
             {isLoading ? (
               <div className="flex items-center gap-2">

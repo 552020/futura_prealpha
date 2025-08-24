@@ -12,11 +12,11 @@ import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
 import { useParams } from "next/navigation";
 import { fetchAndNormalizeMemories, deleteMemory, memoryActions, type NormalizedMemory } from "@/services/memories";
 import { TawkChat } from "@/components/tawk-chat";
-import { SearchAndFilterBar } from "@/components/search-and-filter-bar";
+import { DashboardTopBar } from "@/components/dashboard-top-bar";
 import { sampleDashboardMemories } from "./sample-data";
 
-// Demo flag - set to true to use sample data instead of real data
-const USE_MOCK_DATA = true;
+// Demo flag - set to false to use real data from database
+const USE_MOCK_DATA = false;
 
 export default function VaultPage() {
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
@@ -195,13 +195,16 @@ export default function VaultPage() {
         </div>
       )}
 
-      {/* SearchAndFilterBar Component */}
-      <SearchAndFilterBar
+      {/* DashboardTopBar Component */}
+      <DashboardTopBar
         memories={memories as NormalizedMemory[]}
         onFilteredMemoriesChange={(filtered) => setFilteredMemories(filtered as NormalizedMemory[])}
         showViewToggle={true}
         onViewModeChange={setViewMode}
         viewMode={viewMode}
+        showUploadButtons={true}
+        onUploadSuccess={handleUploadSuccess}
+        onUploadError={handleUploadError}
       />
 
       {memories.length === 0 ? (
