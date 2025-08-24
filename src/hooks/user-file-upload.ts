@@ -179,7 +179,8 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
         });
 
         console.log("Sending folder to server...");
-        const response = await fetch("/api/memories/upload/onboarding/folder", {
+        const endpoint = isOnboarding ? "/api/memories/upload/onboarding/folder" : "/api/memories/upload/folder";
+        const response = await fetch(endpoint, {
           method: "POST",
           body: formData,
         });

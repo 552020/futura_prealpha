@@ -252,12 +252,15 @@ export async function parseSingleFile(
  * Parse form data and extract multiple files
  * Used for folder uploads
  */
-export async function parseMultipleFiles(request: NextRequest): Promise<{ files: File[]; error: NextResponse | null }> {
+export async function parseMultipleFiles(
+  request: NextRequest
+): Promise<{ files: File[]; userId?: string; error: NextResponse | null }> {
   console.log("📦 Parsing form data for folder upload...");
 
   try {
     const formData = await request.formData();
     const files = formData.getAll("file") as File[];
+    const userId = formData.get("userId") as string | null;
 
     if (!files || files.length === 0) {
       console.error("❌ No files found in form data");
@@ -268,7 +271,7 @@ export async function parseMultipleFiles(request: NextRequest): Promise<{ files:
     }
 
     console.log(`📁 Found ${files.length} files in folder upload`);
-    return { files, error: null };
+    return { files, userId: userId || undefined, error: null };
   } catch (error) {
     console.error("❌ Error parsing form data:", error);
     return {

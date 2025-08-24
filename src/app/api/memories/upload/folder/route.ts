@@ -40,9 +40,9 @@ type UploadErr = { success: false; fileName: string; error: unknown };
 function extractFolderInfo(fileName: string): { originalPath: string; folderName: string } {
   // When using webkitdirectory, fileName contains the full relative path
   // e.g., "Wedding Photos/ceremony/img001.jpg" -> folderName: "Wedding Photos", originalPath: "Wedding Photos/ceremony/img001.jpg"
-  const pathParts = fileName.split('/');
+  const pathParts = fileName.split("/");
   const folderName = pathParts.length > 1 ? pathParts[0] : "Ungrouped";
-  
+
   return {
     originalPath: fileName,
     folderName: folderName,
@@ -53,7 +53,7 @@ function extractFolderInfo(fileName: string): { originalPath: string; folderName
 function buildImageRow(file: File, url: string, ownerId: string): ImageInsert {
   const name = file.name || "Untitled";
   const { originalPath, folderName } = extractFolderInfo(name);
-  
+
   return {
     ownerId,
     url,
@@ -75,7 +75,7 @@ function buildImageRow(file: File, url: string, ownerId: string): ImageInsert {
 function buildVideoRow(file: File, url: string, ownerId: string): VideoInsert {
   const name = file.name || "Untitled";
   const { originalPath, folderName } = extractFolderInfo(name);
-  
+
   return {
     ownerId,
     url,
@@ -94,7 +94,7 @@ function buildVideoRow(file: File, url: string, ownerId: string): VideoInsert {
 function buildDocumentRow(file: File, url: string, ownerId: string): DocumentInsert {
   const name = file.name || "Untitled";
   const { originalPath, folderName } = extractFolderInfo(name);
-  
+
   return {
     ownerId,
     url,
@@ -142,9 +142,16 @@ export async function POST(request: NextRequest) {
   console.log("🚀 Starting folder upload process...");
 
   try {
-    // Parse form data and extract files
-    const { files, error } = await parseMultipleFiles(request);
-    if (error) return error;
+    // Get user either from session or from provided allUserId
+    let allUserId: string;
+    const session = await auth();
+
+    // Parse files using the utility function
+    const { files, userId: providedAllUserId, error: parseError } = await parseMultipleFiles(request);
+    if (parseError) {
+      return parseError;
+    }
+
     if (!files || files.length === 0) {
       return NextResponse.json({ error: "No files provided" }, { status: 400 });
     }
@@ -156,12 +163,6 @@ export async function POST(request: NextRequest) {
       const fileTypeError = validateFileType(file, isAcceptedMimeType);
       if (fileTypeError) return fileTypeError;
     }
-
-    // Get user either from session or from provided allUserId
-    let allUserId: string;
-    const session = await auth();
-    const formData = await request.formData();
-    const providedAllUserId = formData.get("userId") as string;
 
     if (session?.user?.id) {
       console.log("👤 Looking up authenticated user in users table...");
