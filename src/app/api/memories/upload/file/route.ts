@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   console.log("🚀 Starting file upload process...");
   try {
     // Parse form data and extract file
-    const { file, error } = await parseSingleFile(request);
+    const { file, formData, error } = await parseSingleFile(request);
     if (error) return error;
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -32,8 +32,7 @@ export async function POST(request: NextRequest) {
     const fileTypeError = validateFileType(file, isAcceptedMimeType);
     if (fileTypeError) return fileTypeError;
 
-    const formData = await request.formData();
-    const providedAllUserId = formData.get("userId") as string;
+    const providedAllUserId = formData?.get("userId") as string;
 
     // Get user either from session or from provided allUserId
     let allUserId: string;

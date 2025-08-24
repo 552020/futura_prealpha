@@ -221,7 +221,7 @@ export async function validateFile(file: File): Promise<{ isValid: boolean; erro
  */
 export async function parseSingleFile(
   request: NextRequest
-): Promise<{ file: File | null; error: NextResponse | null }> {
+): Promise<{ file: File | null; formData: FormData | null; error: NextResponse | null }> {
   console.log("📦 Parsing form data...");
 
   try {
@@ -232,15 +232,17 @@ export async function parseSingleFile(
       console.error("❌ No file found in form data");
       return {
         file: null,
+        formData: null,
         error: NextResponse.json({ error: "Missing file" }, { status: 400 }),
       };
     }
 
-    return { file, error: null };
+    return { file, formData, error: null };
   } catch (error) {
     console.error("❌ Error parsing form data:", error);
     return {
       file: null,
+      formData: null,
       error: NextResponse.json({ error: "Invalid form data" }, { status: 400 }),
     };
   }
