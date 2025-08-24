@@ -49,10 +49,11 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Initialize Juno satellite when component mounts
+  // manual init from env var set in yml
   useEffect(() => {
     (async () => {
       try {
-        await initSatellite();
+        await initSatellite({ satelliteId: process.env.JUNO_SATELLITE_ID });
       } catch (error) {
         console.error("Failed to initialize Juno satellite:", error);
       }

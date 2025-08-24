@@ -45,6 +45,7 @@ jobs:
             echo "✅ NOTIFICATIONS_TOKEN is available (length: ${#NOTIFICATIONS_TOKEN})"
           fi
         env:
+          JUNO_SATELLITE_ID: 5yoof-ciaaa-aaaal-asevq-cai
           JUNO_DEV_TOKEN: ${{ secrets.JUNO_DEV_TOKEN }}
           NOTIFICATIONS_TOKEN: ${{ secrets.NOTIFICATIONS_TOKEN }}
 
@@ -53,5 +54,6 @@ jobs:
         with:
           args: deploy --mode staging
         env:
+          JUNO_SATELLITE_ID: 5yoof-ciaaa-aaaal-asevq-cai
           JUNO_TOKEN: ${{ secrets.JUNO_DEV_TOKEN }}
           NOTIFICATIONS_TOKEN: ${{ secrets.NOTIFICATIONS_TOKEN }}
