@@ -8,8 +8,7 @@ import UserButtonClient from "./user-button-client";
 import { mainNavItems, secondaryNavItems, getTranslatedLabel } from "@/utils/navigation";
 import { Dictionary } from "@/utils/dictionaries";
 import { Separator } from "@/components/ui/separator";
-import { Settings, FolderPlus, FilePlus } from "lucide-react";
-import { ItemUploadButton } from "./memory/ItemUploadButton";
+import { Settings } from "lucide-react";
 
 interface SidebarProps {
   dict: Dictionary;
@@ -37,17 +36,6 @@ export default function Sidebar({ dict }: SidebarProps) {
     >
       {/* Scrollable navigation area */}
       <nav className="flex-1 overflow-y-auto py-4">
-        {/* Upload buttons at the top */}
-        <div className="px-4 pb-4 space-y-2">
-          <ItemUploadButton mode="folder" variant="dashboard-add-folder" />
-          <ItemUploadButton mode="files" variant="dashboard-add-file" />
-        </div>
-
-        {/* Separator after upload buttons */}
-        <div className="mx-6">
-          <Separator className="my-4" />
-        </div>
-
         {/* Main navigation items */}
         <div className="space-y-1">
           {mainNavItems.map((item) => {

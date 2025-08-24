@@ -9,7 +9,7 @@ import { Heart, Eye, Download, Share2 } from "lucide-react";
 import { TawkChatWrapper } from "@/components/tawk-chat-wrapper";
 import { sampleMemories } from "./sample-data";
 import { Memory as BaseMemory } from "@/types/memory";
-import { SearchAndFilterBar } from "@/components/search-and-filter-bar";
+import { DashboardTopBar } from "@/components/dashboard-top-bar";
 
 // Extended Memory interface for gallery with additional properties
 interface Memory extends BaseMemory {
@@ -149,7 +149,7 @@ export default function GalleryPage() {
       {/* NEW SearchAndFilterBar Component */}
       <div className="mb-8 p-4 border-2 border-blue-500 rounded-lg bg-blue-50">
         <h2 className="text-lg font-semibold mb-4 text-blue-800">NEW SearchAndFilterBar Component:</h2>
-        <SearchAndFilterBar
+        <DashboardTopBar
           memories={sampleMemories}
           onFilteredMemoriesChange={(filtered) => setFilteredMemoriesFromComponent(filtered as Memory[])}
           showViewToggle={true}
