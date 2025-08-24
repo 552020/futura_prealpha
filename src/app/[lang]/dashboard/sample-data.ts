@@ -5,6 +5,10 @@ interface DashboardMemory extends Memory {
   status: "private" | "shared" | "public";
   sharedWithCount?: number;
   sharedBy?: string;
+  metadata?: {
+    originalPath?: string;
+    folderName?: string;
+  };
 }
 
 export const sampleDashboardMemories: DashboardMemory[] = [
@@ -17,6 +21,10 @@ export const sampleDashboardMemories: DashboardMemory[] = [
     thumbnail: "/mock/dashboard/images/test_image_1.webp",
     createdAt: "2024-01-15T10:30:00Z",
     status: "private",
+    metadata: {
+      originalPath: "Family Vacation/beach_sunset.jpg",
+      folderName: "Family Vacation",
+    },
   },
   {
     id: "2",
@@ -27,6 +35,10 @@ export const sampleDashboardMemories: DashboardMemory[] = [
     createdAt: "2024-01-10T14:20:00Z",
     status: "shared",
     sharedWithCount: 3,
+    metadata: {
+      originalPath: "Wedding Photos/ceremony/vows_moment.mp4",
+      folderName: "Wedding Photos",
+    },
   },
   {
     id: "3",
@@ -36,6 +48,10 @@ export const sampleDashboardMemories: DashboardMemory[] = [
     url: "/mock/dashboard/notes/test_note_1.txt",
     createdAt: "2024-01-08T09:15:00Z",
     status: "public",
+    metadata: {
+      originalPath: "Work Documents/meetings/q4_review.txt",
+      folderName: "Work Documents",
+    },
   },
   {
     id: "4",

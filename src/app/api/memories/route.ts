@@ -5,6 +5,7 @@ import { eq, desc, sql } from "drizzle-orm";
 // import { files, photos, texts, Photo, File, Text } from "@/db/schema";
 import { images, documents, notes, allUsers, memoryShares } from "@/db/schema";
 import { DBImage, DBDocument, DBNote } from "@/db/schema";
+import { fetchMemoriesWithGalleries } from "./queries";
 
 export async function GET(request: NextRequest) {
   // Check authentication
@@ -30,6 +31,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "12");
     const offset = (page - 1) * limit;
+    const useOptimizedQuery = searchParams.get("optimized") === "true";
 
     console.log("Fetching memories for:", {
       sessionUserId: session.user.id,
@@ -37,7 +39,33 @@ export async function GET(request: NextRequest) {
       page,
       limit,
       offset,
+      useOptimizedQuery,
     });
+
+    // Use optimized query if requested
+    if (useOptimizedQuery) {
+      try {
+        const memoriesWithGalleries = await fetchMemoriesWithGalleries(allUserRecord.id);
+
+        // Apply pagination
+        const paginatedMemories = memoriesWithGalleries.slice(offset, offset + limit);
+
+        console.log("Optimized query results:", {
+          total: memoriesWithGalleries.length,
+          paginated: paginatedMemories.length,
+          hasMore: memoriesWithGalleries.length > offset + limit,
+        });
+
+        return NextResponse.json({
+          data: paginatedMemories,
+          hasMore: memoriesWithGalleries.length > offset + limit,
+          total: memoriesWithGalleries.length,
+        });
+      } catch (error) {
+        console.error("Error with optimized query:", error);
+        // Fall back to original implementation
+      }
+    }
 
     let userImages: (DBImage & { status: "private" | "shared" | "public"; sharedWithCount: number })[] = [];
     let userDocuments: (DBDocument & { status: "private" | "shared" | "public"; sharedWithCount: number })[] = [];
