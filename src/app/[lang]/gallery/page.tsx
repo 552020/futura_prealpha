@@ -4,10 +4,8 @@ import { useState, useMemo, useCallback } from "react";
 import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Grid3X3, List, Calendar, Heart, Eye, Download, Share2 } from "lucide-react";
+import { Heart, Eye, Download, Share2 } from "lucide-react";
 import { TawkChatWrapper } from "@/components/tawk-chat-wrapper";
 import { sampleMemories } from "./sample-data";
 import { Memory as BaseMemory } from "@/types/memory";
@@ -22,10 +20,9 @@ interface Memory extends BaseMemory {
 
 export default function GalleryPage() {
   const { isAuthorized, isLoading } = useAuthGuard();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("newest");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [searchQuery] = useState("");
+  const [filterType] = useState<string>("all");
+  const [sortBy] = useState<string>("newest");
 
   // State for the new SearchAndFilterBar component
   const [filteredMemoriesFromComponent, setFilteredMemoriesFromComponent] = useState<Memory[]>(sampleMemories);
