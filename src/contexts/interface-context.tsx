@@ -13,6 +13,11 @@ interface InterfaceContextType {
   isAdmin: boolean;
   devMode: boolean;
   setDevMode: (enabled: boolean) => void;
+  // Role utility functions
+  isAtLeastModerator: boolean;
+  isAtLeastAdmin: boolean;
+  isAtLeastDeveloper: boolean;
+  isSuperAdmin: boolean;
 }
 
 const InterfaceContext = createContext<InterfaceContextType | undefined>(undefined);
@@ -33,9 +38,16 @@ export function InterfaceProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<InterfaceMode>("marketing");
   const [devMode, setDevMode] = useState(false);
 
-  // Derive isDeveloper and isAdmin from user role
-  const isDeveloper = session?.user?.role === "developer" || session?.user?.role === "superadmin";
-  const isAdmin = session?.user?.role === "admin" || session?.user?.role === "superadmin";
+  // Derive role-based permissions from user role
+  const userRole = session?.user?.role || "user";
+  const isDeveloper = userRole === "developer" || userRole === "superadmin";
+  const isAdmin = userRole === "admin" || userRole === "superadmin";
+  const isSuperAdmin = userRole === "superadmin";
+  
+  // Role utility functions
+  const isAtLeastModerator = ["moderator", "admin", "developer", "superadmin"].includes(userRole);
+  const isAtLeastAdmin = ["admin", "superadmin"].includes(userRole);
+  const isAtLeastDeveloper = ["developer", "superadmin"].includes(userRole);
 
   useEffect(() => {
     console.log("InterfaceProvider Debug:", {
@@ -50,7 +62,20 @@ export function InterfaceProvider({ children }: { children: ReactNode }) {
   }, [pathname, session?.user?.role, isDeveloper, isAdmin]);
 
   return (
-    <InterfaceContext.Provider value={{ mode, setMode, isDeveloper, isAdmin, devMode, setDevMode }}>
+    <InterfaceContext.Provider 
+      value={{ 
+        mode, 
+        setMode, 
+        isDeveloper, 
+        isAdmin, 
+        devMode, 
+        setDevMode,
+        isAtLeastModerator,
+        isAtLeastAdmin,
+        isAtLeastDeveloper,
+        isSuperAdmin
+      }}
+    >
       {children}
     </InterfaceContext.Provider>
   );

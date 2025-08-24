@@ -10,7 +10,13 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
 import { useParams } from "next/navigation";
-import { fetchAndNormalizeMemories, deleteMemory, deleteAllMemories, memoryActions, type NormalizedMemory } from "@/services/memories";
+import {
+  fetchAndNormalizeMemories,
+  deleteMemory,
+  deleteAllMemories,
+  memoryActions,
+  type NormalizedMemory,
+} from "@/services/memories";
 import { Memory as BaseMemory } from "@/types/memory";
 
 // Extended Memory interface for compatibility with DashboardTopBar
@@ -22,12 +28,14 @@ interface ExtendedMemory extends BaseMemory {
 import { TawkChat } from "@/components/tawk-chat";
 import { DashboardTopBar } from "@/components/dashboard-top-bar";
 import { sampleDashboardMemories } from "./sample-data";
+import { useInterface } from "@/contexts/interface-context";
 
 // Demo flag - set to false to use real data from database
 const USE_MOCK_DATA = false;
 
 export default function VaultPage() {
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
+  const { isAtLeastAdmin } = useInterface();
   const router = useRouter();
   const { toast } = useToast();
   const [memories, setMemories] = useState<NormalizedMemory[]>([]);
@@ -273,6 +281,8 @@ export default function VaultPage() {
         showUploadButtons={true}
         onUploadSuccess={handleUploadSuccess}
         onUploadError={handleUploadError}
+        isAtLeastAdmin={isAtLeastAdmin}
+        onClearAllMemories={handleClearAllMemories}
       />
 
       {dashboardItems.length === 0 ? (

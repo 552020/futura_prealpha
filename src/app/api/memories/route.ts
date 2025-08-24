@@ -237,10 +237,13 @@ export async function DELETE(request: NextRequest) {
       const deletedNotes = await db.delete(notes).where(eq(notes.ownerId, allUserRecord.id)).returning();
       const deletedVideos = await db.delete(videos).where(eq(videos.ownerId, allUserRecord.id)).returning();
       const deletedAudio = await db.delete(audio).where(eq(audio.ownerId, allUserRecord.id)).returning();
-      
-      deletedCount = deletedImages.length + deletedDocuments.length + 
-                    deletedNotes.length + deletedVideos.length + 
-                    deletedAudio.length;
+
+      deletedCount =
+        deletedImages.length +
+        deletedDocuments.length +
+        deletedNotes.length +
+        deletedVideos.length +
+        deletedAudio.length;
     } else if (type) {
       // Delete specific type
       switch (type) {
@@ -249,7 +252,10 @@ export async function DELETE(request: NextRequest) {
           deletedCount = deletedImages.length;
           break;
         case "document":
-          const deletedDocuments = await db.delete(documents).where(eq(documents.ownerId, allUserRecord.id)).returning();
+          const deletedDocuments = await db
+            .delete(documents)
+            .where(eq(documents.ownerId, allUserRecord.id))
+            .returning();
           deletedCount = deletedDocuments.length;
           break;
         case "note":
@@ -270,30 +276,41 @@ export async function DELETE(request: NextRequest) {
     } else if (folder) {
       // Delete memories in specific folder (using metadata.folderName)
       const folderCondition = sql`metadata->>'folderName' = ${folder}`;
-      
-      const deletedImages = await db.delete(images)
+
+      const deletedImages = await db
+        .delete(images)
         .where(sql`${eq(images.ownerId, allUserRecord.id)} AND ${folderCondition}`)
         .returning();
-      const deletedDocuments = await db.delete(documents)
+      const deletedDocuments = await db
+        .delete(documents)
         .where(sql`${eq(documents.ownerId, allUserRecord.id)} AND ${folderCondition}`)
         .returning();
-      const deletedNotes = await db.delete(notes)
+      const deletedNotes = await db
+        .delete(notes)
         .where(sql`${eq(notes.ownerId, allUserRecord.id)} AND ${folderCondition}`)
         .returning();
-      const deletedVideos = await db.delete(videos)
+      const deletedVideos = await db
+        .delete(videos)
         .where(sql`${eq(videos.ownerId, allUserRecord.id)} AND ${folderCondition}`)
         .returning();
-      const deletedAudio = await db.delete(audio)
+      const deletedAudio = await db
+        .delete(audio)
         .where(sql`${eq(audio.ownerId, allUserRecord.id)} AND ${folderCondition}`)
         .returning();
-      
-      deletedCount = deletedImages.length + deletedDocuments.length + 
-                    deletedNotes.length + deletedVideos.length + 
-                    deletedAudio.length;
+
+      deletedCount =
+        deletedImages.length +
+        deletedDocuments.length +
+        deletedNotes.length +
+        deletedVideos.length +
+        deletedAudio.length;
     } else {
-      return NextResponse.json({ 
-        error: "Missing parameter. Use 'all=true', 'type=<memory_type>', or 'folder=<folder_name>'" 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: "Missing parameter. Use 'all=true', 'type=<memory_type>', or 'folder=<folder_name>'",
+        },
+        { status: 400 }
+      );
     }
 
     console.log("Bulk delete completed:", { deletedCount, type, folder, all });

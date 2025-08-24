@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Search, Filter, Calendar, Grid3X3, List } from "lucide-react";
+import { Search, Filter, Calendar, Grid3X3, List, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,9 @@ interface SearchAndFilterBarProps {
   showUploadButtons?: boolean;
   onUploadSuccess?: () => void;
   onUploadError?: (error: Error) => void;
+  // Admin functionality
+  isAtLeastAdmin?: boolean;
+  onClearAllMemories?: () => void;
 }
 
 export function DashboardTopBar({
@@ -37,6 +40,8 @@ export function DashboardTopBar({
   showUploadButtons = false,
   onUploadSuccess,
   onUploadError,
+  isAtLeastAdmin = false,
+  onClearAllMemories,
 }: SearchAndFilterBarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
@@ -89,23 +94,38 @@ export function DashboardTopBar({
     <div className={`mb-6 space-y-4 ${className}`}>
       {/* Top row: Upload buttons and View toggle */}
       <div className="flex justify-between items-center gap-4">
-        {/* Upload buttons */}
-        {showUploadButtons && (
-          <div className="flex gap-2">
-            <ItemUploadButton
-              mode="folder"
-              variant="dashboard-add-folder"
-              onSuccess={onUploadSuccess}
-              onError={onUploadError}
-            />
-            <ItemUploadButton
-              mode="files"
-              variant="dashboard-add-file"
-              onSuccess={onUploadSuccess}
-              onError={onUploadError}
-            />
-          </div>
-        )}
+        {/* Upload buttons and Admin actions */}
+        <div className="flex gap-2">
+          {showUploadButtons && (
+            <>
+              <ItemUploadButton
+                mode="folder"
+                variant="dashboard-add-folder"
+                onSuccess={onUploadSuccess}
+                onError={onUploadError}
+              />
+              <ItemUploadButton
+                mode="files"
+                variant="dashboard-add-file"
+                onSuccess={onUploadSuccess}
+                onError={onUploadError}
+              />
+            </>
+          )}
+          
+          {/* Clear All Memories Button (Admin only) */}
+          {isAtLeastAdmin && onClearAllMemories && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={onClearAllMemories}
+              className="h-9 px-4 py-1 text-sm whitespace-nowrap"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Clear All
+            </Button>
+          )}
+        </div>
 
         {/* View Mode Toggle */}
         {showViewToggle && onViewModeChange && (
