@@ -662,8 +662,40 @@ export type NewDBVideo = typeof videos.$inferInsert;
 export type DBGallery = typeof galleries.$inferSelect;
 export type NewDBGallery = typeof galleries.$inferInsert;
 
+// Gallery sharing table - similar to memoryShares but for galleries
+export const galleryShares = pgTable("gallery_share", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  galleryId: text("gallery_id").notNull().references(() => galleries.id, { onDelete: "cascade" }),
+  ownerId: text("owner_id") // The user who owns the gallery
+    .notNull()
+    .references(() => allUsers.id, { onDelete: "cascade" }),
+
+  sharedWithType: text("shared_with_type", {
+    enum: ["user", "group", "relationship"],
+  }).notNull(),
+
+  sharedWithId: text("shared_with_id") // For direct user sharing
+    .references(() => allUsers.id, { onDelete: "cascade" }),
+  groupId: text("group_id") // For group sharing
+    .references(() => group.id, { onDelete: "cascade" }),
+  sharedRelationshipType: text("shared_relationship_type", {
+    // For relationship-based sharing
+    enum: SHARING_RELATIONSHIP_TYPES,
+  }),
+
+  accessLevel: text("access_level", { enum: ACCESS_LEVELS }).default("read").notNull(),
+  inviteeSecureCode: text("invitee_secure_code").notNull(), // For invitee to access the gallery
+  inviteeSecureCodeCreatedAt: timestamp("secure_code_created_at", { mode: "date" }).notNull().defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export type DBGalleryItem = typeof galleryItems.$inferSelect;
 export type NewDBGalleryItem = typeof galleryItems.$inferInsert;
+
+export type DBGalleryShare = typeof galleryShares.$inferSelect;
+export type NewDBGalleryShare = typeof galleryShares.$inferInsert;
 
 // Type helpers for the enums
 export type MemoryType = (typeof MEMORY_TYPES)[number];
