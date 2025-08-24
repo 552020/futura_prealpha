@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, ImageIcon, Video, Share2, Trash2, File, Pencil, Music } from "lucide-react";
+import { FileText, ImageIcon, Video, Share2, Trash2, File, Pencil, Music, Folder } from "lucide-react";
 import { Memory } from "@/types/memory";
 import { MemoryStatus } from "./MemoryStatus";
 import Image from "next/image";
@@ -38,6 +38,8 @@ export function MemoryCard({ memory, onClick, onShare, onDelete, onEdit, viewMod
                 <File className="h-8 w-8" />
               ) : memory.type === "audio" ? (
                 <Music className="h-8 w-8" />
+              ) : memory.type === "folder" ? (
+                <Folder className="h-8 w-8" />
               ) : (
                 <FileText className="h-8 w-8" />
               )}
@@ -127,6 +129,11 @@ export function MemoryCard({ memory, onClick, onShare, onDelete, onEdit, viewMod
               <FileText className="h-16 w-16 mb-2" />
               <span className="text-sm">Note</span>
             </div>
+          ) : memory.type === "folder" ? (
+            <div className="flex flex-col items-center justify-center text-muted-foreground">
+              <Folder className="h-16 w-16 mb-2" />
+              <span className="text-sm">{memory.itemCount || 0} items</span>
+            </div>
           ) : (
             <div className="flex flex-col items-center justify-center text-muted-foreground">
               <FileText className="h-16 w-16 mb-2" />
@@ -156,6 +163,8 @@ export function MemoryCard({ memory, onClick, onShare, onDelete, onEdit, viewMod
                 <File className="h-4 w-4" />
               ) : memory.type === "audio" ? (
                 <Music className="h-4 w-4" />
+              ) : memory.type === "folder" ? (
+                <Folder className="h-4 w-4" />
               ) : (
                 <FileText className="h-4 w-4" />
               )}

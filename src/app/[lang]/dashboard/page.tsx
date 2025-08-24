@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { MemoryGrid } from "@/components/memory/MemoryGrid";
 import { Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
@@ -10,7 +10,15 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
 import { useParams } from "next/navigation";
-import { fetchAndNormalizeMemories, deleteMemory, memoryActions, type NormalizedMemory } from "@/services/memories";
+import { fetchAndNormalizeMemories, deleteMemory, deleteAllMemories, memoryActions, type NormalizedMemory } from "@/services/memories";
+import { Memory as BaseMemory } from "@/types/memory";
+
+// Extended Memory interface for compatibility with DashboardTopBar
+interface ExtendedMemory extends BaseMemory {
+  tags?: string[];
+  isFavorite?: boolean;
+  views?: number;
+}
 import { TawkChat } from "@/components/tawk-chat";
 import { DashboardTopBar } from "@/components/dashboard-top-bar";
 import { sampleDashboardMemories } from "./sample-data";
@@ -28,6 +36,39 @@ export default function VaultPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredMemories, setFilteredMemories] = useState<NormalizedMemory[]>([]);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  // Folder logic: separate memories into ungrouped and grouped by folder
+  const { dashboardItems } = useMemo(() => {
+    const ungrouped = memories.filter((memory) => !memory.metadata?.folderName);
+    const folderGroups = memories.reduce((groups, memory) => {
+      const folderName = memory.metadata?.folderName;
+      if (folderName) {
+        if (!groups[folderName]) {
+          groups[folderName] = [];
+        }
+        groups[folderName].push(memory);
+      }
+      return groups;
+    }, {} as Record<string, NormalizedMemory[]>);
+
+    // Create folder items for display
+    const folders = Object.entries(folderGroups).map(([folderName, folderMemories]) => ({
+      id: `folder-${folderName}`,
+      type: "folder" as const,
+      title: folderName,
+      description: `${folderMemories.length} items`,
+      itemCount: folderMemories.length,
+      memories: folderMemories,
+      createdAt: folderMemories[0]?.createdAt || new Date().toISOString(),
+      url: folderMemories[0]?.url || "",
+      thumbnail: folderMemories[0]?.thumbnail || "",
+    }));
+
+    // Combine ungrouped memories and folder items for display
+    const items = [...ungrouped, ...folders];
+
+    return { dashboardItems: items };
+  }, [memories]);
   const { ref } = useInView();
   const params = useParams();
 
@@ -159,6 +200,33 @@ export default function VaultPage() {
     });
   };
 
+  const handleFilteredMemoriesChange = useCallback((filtered: ExtendedMemory[]) => {
+    setFilteredMemories(filtered as NormalizedMemory[]);
+  }, []);
+
+  const handleClearAllMemories = async () => {
+    if (!confirm("Are you sure you want to delete ALL memories? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const result = await deleteAllMemories({ all: true });
+      setMemories([]);
+      setFilteredMemories([]);
+      toast({
+        title: "Success",
+        description: `Successfully deleted ${result.deletedCount} memories.`,
+      });
+    } catch (error) {
+      console.error("Error clearing all memories:", error);
+      toast({
+        title: "Error",
+        description: "Failed to clear all memories. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (!isAuthorized || isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -197,8 +265,8 @@ export default function VaultPage() {
 
       {/* DashboardTopBar Component */}
       <DashboardTopBar
-        memories={memories as NormalizedMemory[]}
-        onFilteredMemoriesChange={(filtered) => setFilteredMemories(filtered as NormalizedMemory[])}
+        memories={dashboardItems as NormalizedMemory[]}
+        onFilteredMemoriesChange={handleFilteredMemoriesChange}
         showViewToggle={true}
         onViewModeChange={setViewMode}
         viewMode={viewMode}
@@ -207,7 +275,7 @@ export default function VaultPage() {
         onUploadError={handleUploadError}
       />
 
-      {memories.length === 0 ? (
+      {dashboardItems.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
           <h3 className="text-lg font-medium">No memories yet</h3>
           <p className="mt-2 text-sm text-muted-foreground">
