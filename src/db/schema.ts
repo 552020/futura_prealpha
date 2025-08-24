@@ -254,10 +254,14 @@ export const images = pgTable("image", {
   title: text("title"),
   description: text("description"),
   ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
+  // Tiny seam for future folder implementation
+  parentFolderId: text("parent_folder_id"), // Will reference folders.id when implemented
   metadata: json("metadata")
     .$type<
       ImageMetadata & {
         custom?: CustomMetadata; // For flexible user-defined annotations
+        originalPath?: string; // For folder uploads
+        folderName?: string; // For folder grouping
       }
     >()
     .default({
@@ -285,12 +289,15 @@ export const videos = pgTable("video", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   isPublic: boolean("is_public").default(false).notNull(),
+  parentFolderId: text("parent_folder_id"), // Tiny seam for future folder implementation
   metadata: json("metadata")
     .$type<{
       width?: number;
       height?: number;
       format?: string;
       thumbnail?: string;
+      originalPath?: string; // For folder uploads
+      folderName?: string; // For folder grouping
     }>()
     .default({}),
 });
@@ -308,6 +315,7 @@ export const notes = pgTable("note", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   isPublic: boolean("is_public").default(false).notNull(),
   ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
+  parentFolderId: text("parent_folder_id"), // Tiny seam for future folder implementation
   metadata: json("metadata")
     .$type<{
       tags?: string[];
@@ -317,6 +325,8 @@ export const notes = pgTable("note", {
       recipients?: string[];
       unlockDate?: string;
       custom?: CustomMetadata; // For flexible user-defined annotations
+      originalPath?: string; // For folder uploads
+      folderName?: string; // For folder grouping
     }>()
     .default({}),
 });
@@ -336,10 +346,13 @@ export const documents = pgTable("document", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   isPublic: boolean("is_public").default(false).notNull(),
   ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
+  parentFolderId: text("parent_folder_id"), // Tiny seam for future folder implementation
   metadata: json("metadata")
     .$type<
       CommonFileMetadata & {
         custom?: CustomMetadata; // For flexible user-defined annotations
+        originalPath?: string; // For folder uploads
+        folderName?: string; // For folder grouping
       }
     >()
     .default({
@@ -367,6 +380,7 @@ export const audio = pgTable("audio", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   isPublic: boolean("is_public").default(false).notNull(),
   ownerSecureCode: text("owner_secure_code").notNull(),
+  parentFolderId: text("parent_folder_id"), // Tiny seam for future folder implementation
   metadata: json("metadata")
     .$type<{
       format?: string;
@@ -374,6 +388,8 @@ export const audio = pgTable("audio", {
       sampleRate?: number;
       channels?: number;
       custom?: CustomMetadata;
+      originalPath?: string; // For folder uploads
+      folderName?: string; // For folder grouping
     }>()
     .default({}),
 });
@@ -667,7 +683,9 @@ export const galleryShares = pgTable("gallery_share", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  galleryId: text("gallery_id").notNull().references(() => galleries.id, { onDelete: "cascade" }),
+  galleryId: text("gallery_id")
+    .notNull()
+    .references(() => galleries.id, { onDelete: "cascade" }),
   ownerId: text("owner_id") // The user who owns the gallery
     .notNull()
     .references(() => allUsers.id, { onDelete: "cascade" }),
