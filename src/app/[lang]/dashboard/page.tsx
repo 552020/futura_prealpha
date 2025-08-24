@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { MemoryGrid } from "@/components/memory/MemoryGrid";
-import { Loader2, Search } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { useAuthGuard } from "@/utils/authentication";
 import { Memory } from "@/types/memory";
@@ -13,6 +13,10 @@ import { useParams } from "next/navigation";
 import { fetchAndNormalizeMemories, deleteMemory, memoryActions, type NormalizedMemory } from "@/services/memories";
 import { TawkChat } from "@/components/tawk-chat";
 import { SearchAndFilterBar } from "@/components/search-and-filter-bar";
+import { sampleDashboardMemories } from "./sample-data";
+
+// Demo flag - set to true to use sample data instead of real data
+const USE_MOCK_DATA = true;
 
 export default function VaultPage() {
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
@@ -29,6 +33,15 @@ export default function VaultPage() {
 
   const fetchMemories = useCallback(async () => {
     const timestamp = new Date().toISOString();
+
+    if (USE_MOCK_DATA) {
+      console.log("🎭 MOCK DATA - Using sample data for demo");
+      setMemories(sampleDashboardMemories as NormalizedMemory[]);
+      setHasMore(false);
+      setIsLoadingMemories(false);
+      return;
+    }
+
     try {
       console.log("🔄 FETCH MEMORIES - Starting fetch:", {
         page: currentPage,
@@ -174,7 +187,7 @@ export default function VaultPage() {
 
       {/* SearchAndFilterBar Component */}
       <SearchAndFilterBar
-        memories={memories as any}
+        memories={memories as NormalizedMemory[]}
         onFilteredMemoriesChange={(filtered) => setFilteredMemories(filtered as NormalizedMemory[])}
         showViewToggle={true}
         onViewModeChange={setViewMode}
