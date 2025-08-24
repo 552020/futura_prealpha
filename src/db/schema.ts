@@ -350,7 +350,35 @@ export const documents = pgTable("document", {
     }),
 });
 
-export const MEMORY_TYPES = ["image", "document", "note", "video"] as const;
+export const audio = pgTable("audio", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  ownerId: text("owner_id")
+    .notNull()
+    .references(() => allUsers.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  duration: integer("duration"), // Duration in seconds
+  mimeType: text("mime_type").notNull(),
+  size: text("size").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  isPublic: boolean("is_public").default(false).notNull(),
+  ownerSecureCode: text("owner_secure_code").notNull(),
+  metadata: json("metadata")
+    .$type<{
+      format?: string;
+      bitrate?: number;
+      sampleRate?: number;
+      channels?: number;
+      custom?: CustomMetadata;
+    }>()
+    .default({}),
+});
+
+export const MEMORY_TYPES = ["image", "document", "note", "video", "audio"] as const;
 export const ACCESS_LEVELS = ["read", "write"] as const;
 export const MEMBER_ROLES = ["admin", "member"] as const;
 
