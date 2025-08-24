@@ -9,7 +9,7 @@ set -e
 # Default values
 FORMAT=${1:-webp}
 COUNT=${2:-40}
-OUTPUT_DIR="public/gallery"
+OUTPUT_DIR="public/mock/dashboard/images"
 
 # Colors array
 COLORS=(
