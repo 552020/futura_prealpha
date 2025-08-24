@@ -40,6 +40,10 @@ export interface FetchMemoriesResponse extends RawMemoryData {
 export interface NormalizedMemory extends Memory {
   status: "private" | "shared" | "public";
   sharedWithCount?: number;
+  metadata?: {
+    originalPath?: string;
+    folderName?: string;
+  };
 }
 
 export const fetchMemories = async (page: number): Promise<FetchMemoriesResponse> => {
@@ -85,6 +89,34 @@ export const deleteMemory = async (id: string): Promise<void> => {
   if (!response.ok) {
     throw new Error("Failed to delete memory");
   }
+};
+
+export const deleteAllMemories = async (options?: {
+  type?: "image" | "document" | "note" | "video" | "audio";
+  folder?: string;
+  all?: boolean;
+}): Promise<{ success: boolean; message: string; deletedCount: number }> => {
+  const params = new URLSearchParams();
+  
+  if (options?.type) {
+    params.append("type", options.type);
+  }
+  if (options?.folder) {
+    params.append("folder", options.folder);
+  }
+  if (options?.all) {
+    params.append("all", "true");
+  }
+
+  const response = await fetch(`/api/memories?${params.toString()}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete memories");
+  }
+
+  return response.json();
 };
 
 export const memoryActions = {

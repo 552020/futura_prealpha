@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { db } from "@/db/db";
 import { eq, desc, sql } from "drizzle-orm";
 // import { files, photos, texts, Photo, File, Text } from "@/db/schema";
-import { images, documents, notes, allUsers, memoryShares } from "@/db/schema";
+import { images, documents, notes, videos, audio, allUsers, memoryShares } from "@/db/schema";
 import { DBImage, DBDocument, DBNote } from "@/db/schema";
 import { fetchMemoriesWithGalleries } from "./queries";
 
@@ -191,5 +191,123 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Error listing files:", error);
     return NextResponse.json({ error: "Failed to list files" }, { status: 500 });
+  }
+}
+
+// Bulk delete endpoint for testing purposes
+export async function DELETE(request: NextRequest) {
+  // Check authentication
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    // Get the allUserId for the authenticated user
+    const allUserRecord = await db.query.allUsers.findFirst({
+      where: eq(allUsers.userId, session.user.id),
+    });
+
+    if (!allUserRecord) {
+      console.error("No allUsers record found for user:", session.user.id);
+      return NextResponse.json({ error: "User record not found" }, { status: 404 });
+    }
+
+    // Get query parameters for selective deletion
+    const searchParams = request.nextUrl.searchParams;
+    const type = searchParams.get("type"); // "image", "document", "note", "video", "audio"
+    const folder = searchParams.get("folder"); // folder name to delete
+    const all = searchParams.get("all"); // "true" to delete all memories
+
+    console.log("Bulk delete request:", {
+      sessionUserId: session.user.id,
+      allUserId: allUserRecord.id,
+      type,
+      folder,
+      all,
+    });
+
+    let deletedCount = 0;
+
+    // Delete based on parameters
+    if (all === "true") {
+      // Delete all memories for the user
+      const deletedImages = await db.delete(images).where(eq(images.ownerId, allUserRecord.id)).returning();
+      const deletedDocuments = await db.delete(documents).where(eq(documents.ownerId, allUserRecord.id)).returning();
+      const deletedNotes = await db.delete(notes).where(eq(notes.ownerId, allUserRecord.id)).returning();
+      const deletedVideos = await db.delete(videos).where(eq(videos.ownerId, allUserRecord.id)).returning();
+      const deletedAudio = await db.delete(audio).where(eq(audio.ownerId, allUserRecord.id)).returning();
+      
+      deletedCount = deletedImages.length + deletedDocuments.length + 
+                    deletedNotes.length + deletedVideos.length + 
+                    deletedAudio.length;
+    } else if (type) {
+      // Delete specific type
+      switch (type) {
+        case "image":
+          const deletedImages = await db.delete(images).where(eq(images.ownerId, allUserRecord.id)).returning();
+          deletedCount = deletedImages.length;
+          break;
+        case "document":
+          const deletedDocuments = await db.delete(documents).where(eq(documents.ownerId, allUserRecord.id)).returning();
+          deletedCount = deletedDocuments.length;
+          break;
+        case "note":
+          const deletedNotes = await db.delete(notes).where(eq(notes.ownerId, allUserRecord.id)).returning();
+          deletedCount = deletedNotes.length;
+          break;
+        case "video":
+          const deletedVideos = await db.delete(videos).where(eq(videos.ownerId, allUserRecord.id)).returning();
+          deletedCount = deletedVideos.length;
+          break;
+        case "audio":
+          const deletedAudio = await db.delete(audio).where(eq(audio.ownerId, allUserRecord.id)).returning();
+          deletedCount = deletedAudio.length;
+          break;
+        default:
+          return NextResponse.json({ error: `Invalid type: ${type}` }, { status: 400 });
+      }
+    } else if (folder) {
+      // Delete memories in specific folder (using metadata.folderName)
+      const folderCondition = sql`metadata->>'folderName' = ${folder}`;
+      
+      const deletedImages = await db.delete(images)
+        .where(sql`${eq(images.ownerId, allUserRecord.id)} AND ${folderCondition}`)
+        .returning();
+      const deletedDocuments = await db.delete(documents)
+        .where(sql`${eq(documents.ownerId, allUserRecord.id)} AND ${folderCondition}`)
+        .returning();
+      const deletedNotes = await db.delete(notes)
+        .where(sql`${eq(notes.ownerId, allUserRecord.id)} AND ${folderCondition}`)
+        .returning();
+      const deletedVideos = await db.delete(videos)
+        .where(sql`${eq(videos.ownerId, allUserRecord.id)} AND ${folderCondition}`)
+        .returning();
+      const deletedAudio = await db.delete(audio)
+        .where(sql`${eq(audio.ownerId, allUserRecord.id)} AND ${folderCondition}`)
+        .returning();
+      
+      deletedCount = deletedImages.length + deletedDocuments.length + 
+                    deletedNotes.length + deletedVideos.length + 
+                    deletedAudio.length;
+    } else {
+      return NextResponse.json({ 
+        error: "Missing parameter. Use 'all=true', 'type=<memory_type>', or 'folder=<folder_name>'" 
+      }, { status: 400 });
+    }
+
+    console.log("Bulk delete completed:", { deletedCount, type, folder, all });
+
+    return NextResponse.json({
+      success: true,
+      message: `Successfully deleted ${deletedCount} memories`,
+      deletedCount,
+      type,
+      folder,
+      all,
+    });
+  } catch (error) {
+    console.error("Error in bulk delete:", error);
+    return NextResponse.json({ error: "Failed to delete memories" }, { status: 500 });
   }
 }
