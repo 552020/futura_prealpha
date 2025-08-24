@@ -53,6 +53,7 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
   useEffect(() => {
     (async () => {
       try {
+        console.log('Initializing Juno satellite with ID:', process.env.JUNO_SATELLITE_ID);
         await initSatellite({ satelliteId: process.env.JUNO_SATELLITE_ID });
       } catch (error) {
         console.error("Failed to initialize Juno satellite:", error);
