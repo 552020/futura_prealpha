@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search, Filter, Calendar, Grid3X3, List } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -74,7 +74,7 @@ export function SearchAndFilterBar({
   }, [memories, searchQuery, filterType, sortBy]);
 
   // Notify parent component of filtered results
-  useMemo(() => {
+  useEffect(() => {
     onFilteredMemoriesChange(filteredMemories);
   }, [filteredMemories, onFilteredMemoriesChange]);
 
