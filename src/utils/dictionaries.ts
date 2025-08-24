@@ -45,6 +45,7 @@ export type BaseDictionary = {
   };
   navigation?: {
     dashboard?: string;
+    gallery?: string;
     feed?: string;
     shared?: string;
     contacts?: string;
