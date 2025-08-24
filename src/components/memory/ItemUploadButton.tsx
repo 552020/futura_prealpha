@@ -16,7 +16,16 @@ type UploadMode = "folder" | "files";
 interface ItemUploadButtonProps {
   mode?: UploadMode; // NEW
   isOnboarding?: boolean;
-  variant?: "button" | "icon" | "large-icon" | "native" | "album-button" | "one-shot-button";
+  variant?:
+    | "button"
+    | "icon"
+    | "large-icon"
+    | "native"
+    | "album-button"
+    | "one-shot-button"
+    | "dashboard-add-folder"
+    | "dashboard-add-file";
+  buttonText?: string; // Custom button text
   onSuccess?: () => void;
   onError?: (e: Error) => void;
 }
@@ -49,6 +58,7 @@ export function ItemUploadButton({
   mode = "folder",
   isOnboarding = false,
   variant = "button",
+  buttonText,
   onSuccess,
   onError,
 }: ItemUploadButtonProps) {
@@ -143,7 +153,41 @@ export function ItemUploadButton({
                 Uploading...
               </div>
             ) : (
-              "One Shot"
+              buttonText || "One Shot"
+            )}
+          </button>
+        );
+      case "dashboard-add-folder":
+        return (
+          <button
+            onClick={handleClick}
+            disabled={isLoading}
+            className="w-full px-3 py-2 text-sm font-medium transition-all duration-200 ease-in-out bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Uploading...
+              </div>
+            ) : (
+              buttonText || "Add Folder"
+            )}
+          </button>
+        );
+      case "dashboard-add-file":
+        return (
+          <button
+            onClick={handleClick}
+            disabled={isLoading}
+            className="w-full px-3 py-2 text-sm font-medium transition-all duration-200 ease-in-out bg-white text-black border border-gray-300 hover:bg-gray-50 dark:bg-gray-900 dark:text-white dark:border-gray-600 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Uploading...
+              </div>
+            ) : (
+              buttonText || "Add File"
             )}
           </button>
         );
