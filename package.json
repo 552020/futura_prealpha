@@ -7,6 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:pull": "drizzle-kit pull",
@@ -72,21 +76,25 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.12",
+    "@testing-library/react": "^16.3.0",
     "@types/bcrypt": "^5.0.2",
     "@types/negotiator": "^0.6.4",
     "@types/node": "20.17.24",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@types/uuid": "^10.0.0",
+    "@vitest/ui": "^3.2.4",
     "drizzle-kit": "^0.31.4",
     "esbuild": "^0.25.0",
     "eslint": "^9.33.0",
     "eslint-config-next": "15.1.7",
+    "jsdom": "^26.1.0",
     "pg": "^8.16.3",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.12",
     "tsx": "^4.20.4",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
