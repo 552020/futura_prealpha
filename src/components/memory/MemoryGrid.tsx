@@ -5,11 +5,12 @@ interface MemoryGridProps {
   memories: (Memory & { status: "private" | "shared" | "public"; sharedWithCount?: number })[];
   onDelete?: (id: string) => void;
   onShare?: () => void;
+  onEdit?: (id: string) => void;
   onClick?: (memory: Memory) => void;
   viewMode?: "grid" | "list";
 }
 
-export function MemoryGrid({ memories, onDelete, onShare, onClick, viewMode = "grid" }: MemoryGridProps) {
+export function MemoryGrid({ memories, onDelete, onShare, onEdit, onClick, viewMode = "grid" }: MemoryGridProps) {
   return (
     <div
       className={
@@ -22,6 +23,7 @@ export function MemoryGrid({ memories, onDelete, onShare, onClick, viewMode = "g
           memory={memory}
           onDelete={onDelete || (() => {})}
           onShare={onShare || (() => {})}
+          onEdit={onEdit || (() => {})}
           onClick={onClick || (() => {})}
           viewMode={viewMode}
         />

@@ -131,6 +131,16 @@ export default function VaultPage() {
     fetchMemories();
   };
 
+  const handleEdit = (memoryId: string) => {
+    // TODO: Implement edit functionality
+    console.log("Edit memory:", memoryId);
+    // For now, just show a toast
+    toast({
+      title: "Edit",
+      description: "Edit functionality coming soon!",
+    });
+  };
+
   const handleMemoryClick = (memory: Memory) => {
     const path = memoryActions.navigate(memory, params.lang as string, params.segment as string);
     router.push(path);
@@ -207,6 +217,7 @@ export default function VaultPage() {
           memories={filteredMemories}
           onDelete={handleDelete}
           onShare={handleShare}
+          onEdit={handleEdit}
           onClick={handleMemoryClick}
           viewMode={viewMode}
         />
