@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { MemoryGrid } from "@/components/memory/MemoryGrid";
 import { Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
@@ -12,10 +12,12 @@ import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
 import { useParams } from "next/navigation";
 import {
   fetchAndNormalizeMemories,
+  processDashboardItems,
   deleteMemory,
   deleteAllMemories,
   memoryActions,
   type NormalizedMemory,
+  type DashboardItem,
 } from "@/services/memories";
 import { Memory as BaseMemory } from "@/types/memory";
 
@@ -34,54 +36,28 @@ import { useInterface } from "@/contexts/interface-context";
 const USE_MOCK_DATA = false;
 
 export default function VaultPage() {
+  console.log("🔍 Dashboard component rendered");
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
-  const { isAtLeastAdmin } = useInterface();
+  console.log("🔍 Dashboard auth state:", { isAuthorized, isTemporaryUser, userId, isLoading });
+  const { isAtLeastDeveloper } = useInterface();
   const router = useRouter();
   const { toast } = useToast();
-  const [memories, setMemories] = useState<NormalizedMemory[]>([]);
+  const [memories, setMemories] = useState<DashboardItem[]>([]);
   const [isLoadingMemories, setIsLoadingMemories] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredMemories, setFilteredMemories] = useState<NormalizedMemory[]>([]);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // Folder logic: separate memories into ungrouped and grouped by folder
-  const { dashboardItems } = useMemo(() => {
-    const ungrouped = memories.filter((memory) => !memory.metadata?.folderName);
-    const folderGroups = memories.reduce((groups, memory) => {
-      const folderName = memory.metadata?.folderName;
-      if (folderName) {
-        if (!groups[folderName]) {
-          groups[folderName] = [];
-        }
-        groups[folderName].push(memory);
-      }
-      return groups;
-    }, {} as Record<string, NormalizedMemory[]>);
-
-    // Create folder items for display
-    const folders = Object.entries(folderGroups).map(([folderName, folderMemories]) => ({
-      id: `folder-${folderName}`,
-      type: "folder" as const,
-      title: folderName,
-      description: `${folderMemories.length} items`,
-      itemCount: folderMemories.length,
-      memories: folderMemories,
-      createdAt: folderMemories[0]?.createdAt || new Date().toISOString(),
-      url: folderMemories[0]?.url || "",
-      thumbnail: folderMemories[0]?.thumbnail || "",
-    }));
-
-    // Combine ungrouped memories and folder items for display
-    const items = [...ungrouped, ...folders];
-
-    return { dashboardItems: items };
-  }, [memories]);
+  // Dashboard items are already processed by processDashboardItems
+  const dashboardItems = memories;
   const { ref } = useInView();
   const params = useParams();
 
   const fetchMemories = useCallback(async () => {
+    console.log("🚀 LINE 104: ENTERING fetchMemories function");
     const timestamp = new Date().toISOString();
+    console.log("🔍 fetchMemories called with:", { currentPage, USE_MOCK_DATA, timestamp });
 
     if (USE_MOCK_DATA) {
       console.log("🎭 MOCK DATA - Using sample data for demo");
@@ -97,17 +73,26 @@ export default function VaultPage() {
         timestamp,
       });
 
+      console.log("🚀 LINE 122: CALLING fetchAndNormalizeMemories");
       const result = await fetchAndNormalizeMemories(currentPage);
+      console.log("✅ LINE 124: EXITED fetchAndNormalizeMemories");
+
+      console.log("🚀 LINE 126: CALLING processDashboardItems");
+      const processedItems = processDashboardItems(result.memories);
+      console.log("✅ LINE 128: EXITED processDashboardItems");
 
       console.log("✅ FETCH MEMORIES - Success:", {
         memoriesCount: result.memories.length,
+        processedItemsCount: processedItems.length,
         hasMore: result.hasMore,
         timestamp,
       });
 
+      console.log("🔍 About to set memories with processedItems:", processedItems);
       setMemories((prev) => {
-        if (currentPage === 1) return result.memories;
-        return [...prev, ...result.memories];
+        const newMemories = currentPage === 1 ? processedItems : [...prev, ...processedItems];
+        console.log("🔍 Setting memories to:", newMemories);
+        return newMemories;
       });
       setHasMore(result.hasMore);
     } catch (error) {
@@ -125,6 +110,7 @@ export default function VaultPage() {
     } finally {
       setIsLoadingMemories(false);
     }
+    console.log("🚀 LINE 156: EXITING fetchMemories function");
   }, [currentPage, toast]);
 
   useEffect(() => {
@@ -134,10 +120,15 @@ export default function VaultPage() {
   }, [isAuthorized, redirectToSignIn]);
 
   useEffect(() => {
-    if (isAuthorized && userId) {
+    console.log("🔍 Dashboard useEffect - Auth check:", { isAuthorized, userId, isLoading });
+    if (isAuthorized && !isLoading) {
+      console.log("🚀 LINE 168: CALLING fetchMemories");
       fetchMemories();
+      console.log("✅ LINE 170: EXITED fetchMemories");
+    } else {
+      console.log("🔍 Dashboard useEffect - Not authorized or still loading");
     }
-  }, [isAuthorized, userId, fetchMemories]);
+  }, [isAuthorized, isLoading, userId, fetchMemories]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -191,8 +182,13 @@ export default function VaultPage() {
   };
 
   const handleMemoryClick = (memory: Memory) => {
-    const path = memoryActions.navigate(memory, params.lang as string, params.segment as string);
-    router.push(path);
+    // Check if it's a folder item
+    if (memory.type === "folder") {
+      router.push(`/${params.lang}/dashboard/folder/${memory.id}`);
+    } else {
+      // Navigate to the memory detail page
+      router.push(`/${params.lang}/dashboard/${memory.id}`);
+    }
   };
 
   const handleUploadSuccess = () => {
@@ -281,14 +277,14 @@ export default function VaultPage() {
         showUploadButtons={true}
         onUploadSuccess={handleUploadSuccess}
         onUploadError={handleUploadError}
-        isAtLeastAdmin={isAtLeastAdmin}
+        isAtLeastDeveloper={isAtLeastDeveloper}
         onClearAllMemories={handleClearAllMemories}
       />
 
       {dashboardItems.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
-          <h3 className="text-lg font-medium">No memories yet</h3>
-          <p className="mt-2 text-sm text-muted-foreground">
+        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-gray-300 p-16 text-center bg-gray-50 shadow-lg">
+          <h3 className="text-4xl font-bold text-gray-800 mb-4">No memories yet</h3>
+          <p className="mt-2 text-base text-gray-600 mb-6 max-w-md">
             Start by uploading your first memory. You can add images, videos, audio files, or write notes.
           </p>
           <ItemUploadButton variant="large-icon" onSuccess={handleUploadSuccess} onError={handleUploadError} />

@@ -46,6 +46,22 @@ export interface NormalizedMemory extends Memory {
   };
 }
 
+export interface FolderItem {
+  id: string;
+  type: "folder";
+  title: string;
+  description: string;
+  itemCount: number;
+  memories: NormalizedMemory[];
+  createdAt: string;
+  url?: string;
+  thumbnail?: string;
+  status: "private" | "shared" | "public";
+  sharedWithCount?: number;
+}
+
+export type DashboardItem = NormalizedMemory | FolderItem;
+
 export const fetchMemories = async (page: number): Promise<FetchMemoriesResponse> => {
   const response = await fetch(`/api/memories?page=${page}`);
 
@@ -62,6 +78,7 @@ export interface FetchAndNormalizeResult {
 }
 
 export const fetchAndNormalizeMemories = async (page: number): Promise<FetchAndNormalizeResult> => {
+  console.log("🚀 LINE 63: ENTERING fetchAndNormalizeMemories");
   const data = await fetchMemories(page);
 
   const normalizedMemories = normalizeMemories({
@@ -75,6 +92,7 @@ export const fetchAndNormalizeMemories = async (page: number): Promise<FetchAndN
     sharedWithCount: 0, // Default to 0 for user's own memories
   }));
 
+  console.log("✅ LINE 63: EXITING fetchAndNormalizeMemories");
   return {
     memories: normalizedMemories,
     hasMore: data.hasMore,
@@ -97,7 +115,7 @@ export const deleteAllMemories = async (options?: {
   all?: boolean;
 }): Promise<{ success: boolean; message: string; deletedCount: number }> => {
   const params = new URLSearchParams();
-  
+
   if (options?.type) {
     params.append("type", options.type);
   }
@@ -117,6 +135,54 @@ export const deleteAllMemories = async (options?: {
   }
 
   return response.json();
+};
+
+export const processDashboardItems = (memories: NormalizedMemory[]): DashboardItem[] => {
+  console.log("🚀 LINE 129: ENTERING processDashboardItems");
+  console.log("🔍 processDashboardItems - Received memories:", memories.length);
+
+  // Step 1: Group memories by folderName
+  const folderGroups = memories.reduce((groups, memory) => {
+    const folderName = memory.metadata?.folderName;
+    if (folderName) {
+      if (!groups[folderName]) {
+        groups[folderName] = [];
+      }
+      groups[folderName].push(memory);
+    }
+    return groups;
+  }, {} as Record<string, NormalizedMemory[]>);
+
+  console.log("🔍 Folder groups:", folderGroups);
+
+  // Step 2: Create FolderItems for each group
+  const folderItems: FolderItem[] = Object.entries(folderGroups).map(([folderName, folderMemories]) => ({
+    id: `folder-${folderName}`,
+    type: "folder" as const,
+    title: folderName,
+    description: `${folderMemories.length} items`,
+    itemCount: folderMemories.length,
+    memories: folderMemories,
+    createdAt: folderMemories[0]?.createdAt || new Date().toISOString(),
+    url: folderMemories[0]?.url || "",
+    thumbnail: folderMemories[0]?.thumbnail || "",
+    status: "private" as const,
+    sharedWithCount: 0,
+  }));
+
+  console.log("🔍 Created folder items:", folderItems);
+
+  // Step 3: Get individual memories (not in folders)
+  const individualMemories = memories.filter((memory) => !memory.metadata?.folderName);
+
+  console.log("🔍 Individual memories:", individualMemories.length);
+
+  // Step 4: Combine and return
+  const result = [...individualMemories, ...folderItems];
+  console.log("🔍 Final result:", result.length, "items");
+
+  console.log("✅ LINE 180: EXITING processDashboardItems");
+  return result;
 };
 
 export const memoryActions = {

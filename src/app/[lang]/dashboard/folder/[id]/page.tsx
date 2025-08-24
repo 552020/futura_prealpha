@@ -1,0 +1,216 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import { MemoryGrid } from "@/components/memory/MemoryGrid";
+import { Loader2, ArrowLeft } from "lucide-react";
+import { useAuthGuard } from "@/utils/authentication";
+import { useRouter, useParams } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
+import { Button } from "@/components/ui/button";
+import { DashboardTopBar } from "@/components/dashboard-top-bar";
+import { TawkChat } from "@/components/tawk-chat";
+import { fetchAndNormalizeMemories, deleteMemory, memoryActions, type NormalizedMemory } from "@/services/memories";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+
+export default function FolderPage() {
+  console.log("🔍 Folder page component rendered");
+  const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
+  console.log("🔍 Folder page auth state:", { isAuthorized, isTemporaryUser, userId, isLoading });
+
+  const router = useRouter();
+  const params = useParams();
+  const { toast } = useToast();
+  const [memories, setMemories] = useState<NormalizedMemory[]>([]);
+  const [isLoadingMemories, setIsLoadingMemories] = useState(true);
+  const [folderName, setFolderName] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  const folderId = params.id as string;
+  console.log("🔍 Folder ID:", folderId);
+
+  const fetchFolderMemories = useCallback(async () => {
+    console.log("🚀 ENTERING fetchFolderMemories function");
+
+    try {
+      // Get all memories and filter by folder
+      const result = await fetchAndNormalizeMemories(1);
+      const folderMemories = result.memories.filter(
+        (memory) => memory.metadata?.folderName === folderId.replace("folder-", "")
+      );
+
+      console.log("🔍 Folder memories found:", folderMemories.length);
+
+      if (folderMemories.length > 0) {
+        setFolderName(folderMemories[0].metadata?.folderName || folderId);
+        setMemories(folderMemories);
+      } else {
+        console.log("❌ No memories found for folder:", folderId);
+        toast({
+          title: "Folder not found",
+          description: "This folder doesn't exist or is empty.",
+          variant: "destructive",
+        });
+        router.push(`/${params.lang}/dashboard`);
+      }
+    } catch (error) {
+      console.error("❌ FETCH FOLDER MEMORIES ERROR:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load folder contents. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingMemories(false);
+    }
+    console.log("🚀 EXITING fetchFolderMemories function");
+  }, [folderId, params.lang, router, toast]);
+
+  useEffect(() => {
+    if (!isAuthorized) {
+      redirectToSignIn();
+    }
+  }, [isAuthorized, redirectToSignIn]);
+
+  useEffect(() => {
+    console.log("🔍 Folder useEffect - Auth check:", { isAuthorized, userId, isLoading });
+    if (isAuthorized && !isLoading && folderId) {
+      console.log("🚀 CALLING fetchFolderMemories");
+      fetchFolderMemories();
+      console.log("✅ EXITED fetchFolderMemories");
+    } else {
+      console.log("🔍 Folder useEffect - Not authorized, still loading, or no folderId");
+    }
+  }, [isAuthorized, isLoading, userId, folderId, fetchFolderMemories]);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteMemory(id);
+      setMemories((prev) => prev.filter((memory) => memory.id !== id));
+      toast({
+        title: "Success",
+        description: "Memory deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Error deleting memory:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete memory. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleShare = () => {
+    // Refresh the memories list to show any new shares
+    fetchFolderMemories();
+  };
+
+  const handleEdit = (memoryId: string) => {
+    // TODO: Implement edit functionality
+    console.log("Edit memory:", memoryId);
+    toast({
+      title: "Edit",
+      description: "Edit functionality coming soon!",
+    });
+  };
+
+  const handleMemoryClick = (memory: NormalizedMemory) => {
+    // Navigate to the memory detail page
+    router.push(`/${params.lang}/dashboard/${memory.id}`);
+  };
+
+  const handleUploadSuccess = () => {
+    // Refresh the memories list to show the new memory
+    fetchFolderMemories();
+  };
+
+  const handleUploadError = (error: Error) => {
+    toast({
+      title: "Error",
+      description: error.message || "Failed to upload memory",
+      variant: "destructive",
+    });
+  };
+
+  const handleBackToDashboard = () => {
+    router.push(`/${params.lang}/dashboard`);
+  };
+
+  if (!isAuthorized || isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-6 py-8">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb className="mb-6">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Button variant="ghost" size="sm" onClick={handleBackToDashboard} className="p-0 h-auto text-sm">
+                Dashboard
+              </Button>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage className="text-sm">{folderName}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
+      {/* DashboardTopBar Component */}
+      <DashboardTopBar
+        memories={memories}
+        onFilteredMemoriesChange={() => {}} // No filtering needed for folder view
+        showViewToggle={true}
+        onViewModeChange={setViewMode}
+        viewMode={viewMode}
+        showUploadButtons={true}
+        onUploadSuccess={handleUploadSuccess}
+        onUploadError={handleUploadError}
+      />
+
+      {memories.length === 0 && !isLoadingMemories ? (
+        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-gray-300 p-16 text-center bg-gray-50 shadow-lg">
+          <h3 className="text-4xl font-bold text-gray-800 mb-4">Folder is empty</h3>
+          <p className="mt-2 text-base text-gray-600 mb-6 max-w-md">
+            This folder doesn&apos;t contain any memories yet. Start by uploading your first memory.
+          </p>
+          <ItemUploadButton variant="large-icon" onSuccess={handleUploadSuccess} onError={handleUploadError} />
+        </div>
+      ) : (
+        <MemoryGrid
+          memories={memories as any}
+          onDelete={handleDelete}
+          onShare={handleShare}
+          onEdit={handleEdit}
+          onClick={handleMemoryClick}
+          viewMode={viewMode}
+        />
+      )}
+
+      {/* Loading indicator */}
+      {isLoadingMemories && (
+        <div className="mt-8 flex justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      )}
+
+      {/* Tawk.to Chat */}
+      <TawkChat />
+    </div>
+  );
+}

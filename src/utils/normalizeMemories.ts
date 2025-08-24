@@ -48,12 +48,22 @@ interface RawMemoryData {
   }>;
 }
 
+// Helper function to extract filename from full path
+const extractFilename = (title: string, metadata?: { originalPath?: string; folderName?: string }): string => {
+  // If we have originalPath metadata, extract just the filename
+  if (metadata?.originalPath) {
+    const pathParts = metadata.originalPath.split("/");
+    return pathParts[pathParts.length - 1] || title;
+  }
+  return title;
+};
+
 export const normalizeMemories = (data: RawMemoryData): Memory[] => {
   return [
     ...data.images.map((img) => ({
       id: img.id,
       type: "image" as const,
-      title: img.title || "Untitled Image",
+      title: extractFilename(img.title || "Untitled Image", img.metadata),
       description: img.description,
       createdAt: img.createdAt,
       thumbnail: img.url,
@@ -62,7 +72,7 @@ export const normalizeMemories = (data: RawMemoryData): Memory[] => {
     ...data.videos.map((video) => ({
       id: video.id,
       type: "video" as const,
-      title: video.title || "Untitled Video",
+      title: extractFilename(video.title || "Untitled Video", video.metadata),
       description: video.description,
       createdAt: video.createdAt,
       thumbnail: video.url,
@@ -73,7 +83,7 @@ export const normalizeMemories = (data: RawMemoryData): Memory[] => {
     ...data.documents.map((doc) => ({
       id: doc.id,
       type: "document" as const,
-      title: doc.title || "Untitled Document",
+      title: extractFilename(doc.title || "Untitled Document", doc.metadata),
       description: doc.description,
       createdAt: doc.createdAt,
       url: doc.url,
@@ -83,7 +93,7 @@ export const normalizeMemories = (data: RawMemoryData): Memory[] => {
     ...data.notes.map((note) => ({
       id: note.id,
       type: "note" as const,
-      title: note.title,
+      title: extractFilename(note.title, note.metadata),
       description: note.content.substring(0, 100) + "...",
       createdAt: note.createdAt,
       content: note.content,

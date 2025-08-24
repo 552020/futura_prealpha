@@ -11,7 +11,7 @@ import { useInterface } from "@/contexts/interface-context";
 
 export default function SettingsPage() {
   const { isAuthorized, isTemporaryUser, userId, isLoading } = useAuthGuard();
-  const { isDeveloper, isAdmin, devMode, setDevMode } = useInterface();
+  const { isAdmin, devMode, setDevMode, isAtLeastDeveloper } = useInterface();
 
   if (!isAuthorized || isLoading) {
     return (
@@ -189,7 +189,7 @@ export default function SettingsPage() {
             <CardDescription>Enable developer and admin features for testing and system management.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {isDeveloper && (
+            {isAtLeastDeveloper && (
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="developer-mode">Show Developer Options</Label>
@@ -200,7 +200,7 @@ export default function SettingsPage() {
                 <div className="text-sm text-muted-foreground">Enabled (Developer Role)</div>
               </div>
             )}
-            {isDeveloper && (
+            {isAtLeastDeveloper && (
               <>
                 <Separator />
                 <div className="flex items-center justify-between">
@@ -244,7 +244,8 @@ export default function SettingsPage() {
                         <p>
                           {devMode &&
                             "Developer mode is now enabled. You'll see additional testing tools in the dashboard."}
-                          {isAdmin && "Admin features are now enabled. You have access to system-wide controls."}
+                          {isAtLeastDeveloper &&
+                            "Admin features are now enabled. You have access to system-wide controls."}
                         </p>
                       </div>
                     </div>

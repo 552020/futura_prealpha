@@ -40,10 +40,10 @@ export function InterfaceProvider({ children }: { children: ReactNode }) {
 
   // Derive role-based permissions from user role
   const userRole = session?.user?.role || "user";
-  const isDeveloper = userRole === "developer" || userRole === "superadmin";
+  const isDeveloper = userRole === "developer" || userRole === "admin" || userRole === "superadmin";
   const isAdmin = userRole === "admin" || userRole === "superadmin";
   const isSuperAdmin = userRole === "superadmin";
-  
+
   // Role utility functions
   const isAtLeastModerator = ["moderator", "admin", "developer", "superadmin"].includes(userRole);
   const isAtLeastAdmin = ["admin", "superadmin"].includes(userRole);
@@ -62,18 +62,18 @@ export function InterfaceProvider({ children }: { children: ReactNode }) {
   }, [pathname, session?.user?.role, isDeveloper, isAdmin]);
 
   return (
-    <InterfaceContext.Provider 
-      value={{ 
-        mode, 
-        setMode, 
-        isDeveloper, 
-        isAdmin, 
-        devMode, 
+    <InterfaceContext.Provider
+      value={{
+        mode,
+        setMode,
+        isDeveloper,
+        isAdmin,
+        devMode,
         setDevMode,
         isAtLeastModerator,
         isAtLeastAdmin,
         isAtLeastDeveloper,
-        isSuperAdmin
+        isSuperAdmin,
       }}
     >
       {children}

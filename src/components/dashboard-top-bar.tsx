@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Search, Filter, Calendar, Grid3X3, List, Trash2 } from "lucide-react";
+import { Search, Filter, Calendar, Grid3X3, List } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -25,8 +25,6 @@ interface SearchAndFilterBarProps {
   showUploadButtons?: boolean;
   onUploadSuccess?: () => void;
   onUploadError?: (error: Error) => void;
-  // Admin functionality
-  isAtLeastAdmin?: boolean;
   onClearAllMemories?: () => void;
 }
 
@@ -40,7 +38,6 @@ export function DashboardTopBar({
   showUploadButtons = false,
   onUploadSuccess,
   onUploadError,
-  isAtLeastAdmin = false,
   onClearAllMemories,
 }: SearchAndFilterBarProps) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -112,19 +109,19 @@ export function DashboardTopBar({
               />
             </>
           )}
-          
-          {/* Clear All Memories Button (Admin only) */}
-          {isAtLeastAdmin && onClearAllMemories && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={onClearAllMemories}
-              className="h-9 px-4 py-1 text-sm whitespace-nowrap"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Clear All
-            </Button>
-          )}
+
+          {/* Clear All Memories Button (Developer+) */}
+          {/* {isAtLeastDeveloper && onClearAllMemories && ( */}
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={onClearAllMemories}
+            className="h-9 px-4 py-1 text-sm whitespace-nowrap"
+          >
+            {/* <Trash2 className="h-4 w-4 mr-2" /> */}
+            Clear All
+          </Button>
+          {/* )} */}
         </div>
 
         {/* View Mode Toggle */}
