@@ -36,9 +36,24 @@ type UploadOk =
 
 type UploadErr = { success: false; fileName: string; error: unknown };
 
+// Helper function to extract folder information from file path
+function extractFolderInfo(fileName: string): { originalPath: string; folderName: string } {
+  // When using webkitdirectory, fileName contains the full relative path
+  // e.g., "Wedding Photos/ceremony/img001.jpg" -> folderName: "Wedding Photos", originalPath: "Wedding Photos/ceremony/img001.jpg"
+  const pathParts = fileName.split('/');
+  const folderName = pathParts.length > 1 ? pathParts[0] : "Ungrouped";
+  
+  return {
+    originalPath: fileName,
+    folderName: folderName,
+  };
+}
+
 // Row builder functions that match exact schema types
 function buildImageRow(file: File, url: string, ownerId: string): ImageInsert {
   const name = file.name || "Untitled";
+  const { originalPath, folderName } = extractFolderInfo(name);
+  
   return {
     ownerId,
     url,
@@ -51,12 +66,16 @@ function buildImageRow(file: File, url: string, ownerId: string): ImageInsert {
       mimeType: file.type,
       originalName: name,
       uploadedAt: new Date().toISOString(),
+      originalPath,
+      folderName,
     },
   };
 }
 
 function buildVideoRow(file: File, url: string, ownerId: string): VideoInsert {
   const name = file.name || "Untitled";
+  const { originalPath, folderName } = extractFolderInfo(name);
+  
   return {
     ownerId,
     url,
@@ -65,12 +84,17 @@ function buildVideoRow(file: File, url: string, ownerId: string): VideoInsert {
     mimeType: file.type || "video/mp4",
     size: String(file.size),
     ownerSecureCode: crypto.randomUUID(),
-    metadata: {},
+    metadata: {
+      originalPath,
+      folderName,
+    },
   };
 }
 
 function buildDocumentRow(file: File, url: string, ownerId: string): DocumentInsert {
   const name = file.name || "Untitled";
+  const { originalPath, folderName } = extractFolderInfo(name);
+  
   return {
     ownerId,
     url,
@@ -84,6 +108,8 @@ function buildDocumentRow(file: File, url: string, ownerId: string): DocumentIns
       mimeType: file.type,
       originalName: name,
       uploadedAt: new Date().toISOString(),
+      originalPath,
+      folderName,
     },
   };
 }
