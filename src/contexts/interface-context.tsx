@@ -2,12 +2,17 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 type InterfaceMode = "marketing" | "app";
 
 interface InterfaceContextType {
   mode: InterfaceMode;
   setMode: (mode: InterfaceMode) => void;
+  isDeveloper: boolean;
+  isAdmin: boolean;
+  devMode: boolean;
+  setDevMode: (enabled: boolean) => void;
 }
 
 const InterfaceContext = createContext<InterfaceContextType | undefined>(undefined);
@@ -24,18 +29,31 @@ function isAppRoute(path: string): boolean {
 
 export function InterfaceProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [mode, setMode] = useState<InterfaceMode>("marketing");
+  const [devMode, setDevMode] = useState(false);
+
+  // Derive isDeveloper and isAdmin from user role
+  const isDeveloper = session?.user?.role === "developer" || session?.user?.role === "superadmin";
+  const isAdmin = session?.user?.role === "admin" || session?.user?.role === "superadmin";
 
   useEffect(() => {
     console.log("InterfaceProvider Debug:", {
       pathname,
       isAppRoute: isAppRoute(pathname),
       newMode: isAppRoute(pathname) ? "app" : "marketing",
+      userRole: session?.user?.role,
+      isDeveloper,
+      isAdmin,
     });
     setMode(isAppRoute(pathname) ? "app" : "marketing");
-  }, [pathname]);
+  }, [pathname, session?.user?.role, isDeveloper, isAdmin]);
 
-  return <InterfaceContext.Provider value={{ mode, setMode }}>{children}</InterfaceContext.Provider>;
+  return (
+    <InterfaceContext.Provider value={{ mode, setMode, isDeveloper, isAdmin, devMode, setDevMode }}>
+      {children}
+    </InterfaceContext.Provider>
+  );
 }
 
 export function useInterface() {
