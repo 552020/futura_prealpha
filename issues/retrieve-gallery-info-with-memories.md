@@ -540,6 +540,32 @@ WHERE gallery_id = $1;
 - Search and filter functionality for galleries
 - Gallery sharing and collaboration features
 
+## Implementation Notes
+
+### Why Optimized Query Was Needed
+
+The original `/api/memories` endpoint had several performance issues:
+
+1. **N+1 Query Problem**: For each memory type (images, documents, notes), it made separate database queries, then for each memory it made additional queries to count shares
+2. **Multiple Database Round-trips**: Each memory type required its own query, plus share count queries
+3. **No Gallery Information**: The original endpoint didn't include which galleries each memory belonged to
+4. **Inefficient Pagination**: Applied pagination after fetching all data
+
+**Solution**: Single optimized SQL query using:
+
+- `UNION ALL` to combine all memory types in one query
+- `LEFT JOIN` with gallery tables to include gallery membership
+- `JSON_AGG` to aggregate gallery information per memory
+- Proper indexing on `gallery_items` table for fast joins
+- Single database round-trip for all data
+
+**Performance Benefits**:
+
+- Reduced database queries from O(n) to O(1)
+- Faster response times, especially with many memories
+- Includes gallery information without additional queries
+- Better scalability as memory count grows
+
 ## TODO List
 
 ### Phase 1: Database Schema ✅ COMPLETED
@@ -551,10 +577,26 @@ WHERE gallery_id = $1;
 
 ### Phase 2: Backend Implementation
 
-- [ ] Update `/api/memories` endpoint to use optimized query
-- [ ] Implement gallery CRUD endpoints (`/api/galleries`)
+- [x] Update `/api/memories` endpoint to use optimized query
+  - **Note:** Implemented optimized query with gallery information using single SQL query with UNION, JSON aggregation, and JOINs
+  - **Files:** [`src/app/api/memories/queries.ts`](../src/app/api/memories/queries.ts) (complex SQL logic) and updated [`src/app/api/memories/route.ts`](../src/app/api/memories/route.ts) (API handler)
+  - **Why optimized:** Previous implementation used N+1 queries (separate queries for each memory type + share counts), new approach uses single database round-trip with proper indexing
+- [x] Implement gallery CRUD endpoints (`/api/galleries`)
+  - [x] `GET /api/galleries` - List user's galleries
+  - [x] `POST /api/galleries` - Create new gallery
+  - [x] `GET /api/galleries/[id]` - Get specific gallery
+  - [x] `PUT /api/galleries/[id]` - Update gallery
+  - [x] `DELETE /api/galleries/[id]` - Delete gallery
 - [ ] Implement gallery item operations (`/api/galleries/:id/items`)
-- [ ] Add gallery membership checks
+  - [ ] `GET /api/galleries/[id]/items` - List items in gallery
+  - [ ] `POST /api/galleries/[id]/items` - Add item to gallery
+  - [ ] `DELETE /api/galleries/[id]/items/[itemId]` - Remove item from gallery
+  - [ ] `PUT /api/galleries/[id]/items/reorder` - Reorder items in gallery
+- [x] Add gallery membership checks
+  - **Note:** Implemented gallery sharing system with `galleryShares` table
+  - **Features:** Direct user sharing, group sharing, relationship-based sharing
+  - **Files:** Updated [`src/db/schema.ts`](../src/db/schema.ts) with `galleryShares` table, updated [`src/app/api/gallery/[id]/route.ts`](../src/app/api/gallery/[id]/route.ts) with access control, created [`src/app/api/gallery/[id]/share/route.ts`](../src/app/api/gallery/[id]/share/route.ts) for sharing endpoints
+  - **Why important:** Wedding galleries need selective sharing with specific groups (family, friends, wedding party) rather than simple public/private
 - [ ] Test all endpoints with sample data
 
 ### Phase 3: Frontend Integration
