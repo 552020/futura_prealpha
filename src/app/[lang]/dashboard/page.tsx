@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
 import { useParams } from "next/navigation";
 import { fetchAndNormalizeMemories, deleteMemory, memoryActions, type NormalizedMemory } from "@/services/memories";
+import { TawkChat } from "@/components/tawk-chat";
 
 export default function VaultPage() {
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
@@ -181,6 +182,9 @@ export default function VaultPage() {
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
       )}
+
+      {/* Tawk.to Chat */}
+      <TawkChat />
     </div>
   );
 }

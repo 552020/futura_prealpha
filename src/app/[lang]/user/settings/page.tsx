@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { TawkChat } from "@/components/tawk-chat";
 
 export default function SettingsPage() {
   const { isAuthorized, isTemporaryUser, userId, isLoading } = useAuthGuard();
@@ -181,6 +182,9 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Tawk.to Chat */}
+      <TawkChat />
     </div>
   );
 }

@@ -7,6 +7,8 @@ import { useInterface } from "@/contexts/interface-context";
 import UserButtonClient from "./user-button-client";
 import { mainNavItems, secondaryNavItems, getTranslatedLabel } from "@/utils/navigation";
 import { Dictionary } from "@/utils/dictionaries";
+import { Separator } from "@/components/ui/separator";
+import { Settings } from "lucide-react";
 
 interface SidebarProps {
   dict: Dictionary;
@@ -45,9 +47,9 @@ export default function Sidebar({ dict }: SidebarProps) {
                 href={fullHref}
                 aria-label={getTranslatedLabel(item, dict)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 text-sm relative",
+                  "flex items-center gap-3 px-4 py-3 text-sm relative transition-colors",
                   isActive
-                    ? "text-primary bg-primary/10"
+                    ? "text-primary bg-primary/10 hover:bg-primary/20"
                     : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 )}
               >
@@ -65,35 +67,71 @@ export default function Sidebar({ dict }: SidebarProps) {
           })}
         </div>
 
+        {/* Separator between main and secondary nav */}
+        <div className="mx-6">
+          <Separator className="my-4" />
+        </div>
+
         {/* Secondary navigation items */}
-        <div className="mt-6 space-y-1">
-          {secondaryNavItems.map((item) => {
+        <div className="space-y-1">
+          {secondaryNavItems.map((item, index) => {
             const fullHref = getFullHref(item.href);
             const isActive = pathname === fullHref || pathname.startsWith(`${fullHref}/`);
             return (
-              <Link
-                key={item.href}
-                href={fullHref}
-                aria-label={getTranslatedLabel(item, dict)}
-                className={cn(
-                  "flex items-center gap-3 px-4 py-3 text-sm relative",
-                  isActive
-                    ? "text-primary bg-primary/10"
-                    : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                )}
-              >
-                {/* Active indicator bar */}
-                <div
+              <div key={item.href}>
+                <Link
+                  href={fullHref}
+                  aria-label={getTranslatedLabel(item, dict)}
                   className={cn(
-                    "absolute left-0 top-0 bottom-0 w-1 rounded-r-full transition-colors",
-                    isActive ? "bg-primary" : "bg-transparent"
+                    "flex items-center gap-3 px-4 py-3 text-sm relative transition-colors",
+                    isActive
+                      ? "text-primary bg-primary/10 hover:bg-primary/20"
+                      : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                   )}
-                />
-                <item.icon className="h-5 w-5" />
-                <span>{getTranslatedLabel(item, dict)}</span>
-              </Link>
+                >
+                  {/* Active indicator bar */}
+                  <div
+                    className={cn(
+                      "absolute left-0 top-0 bottom-0 w-1 rounded-r-full transition-colors",
+                      isActive ? "bg-primary" : "bg-transparent"
+                    )}
+                  />
+                  <item.icon className="h-5 w-5" />
+                  <span>{getTranslatedLabel(item, dict)}</span>
+                </Link>
+                {/* Add separator after contacts (first item in secondary nav) */}
+                {index === 0 && (
+                  <div className="mx-6">
+                    <Separator className="my-2" />
+                  </div>
+                )}
+              </div>
             );
           })}
+        </div>
+
+        {/* Settings */}
+        <div className="space-y-1">
+          <Link
+            href={`/${lang}/user/settings`}
+            aria-label="Settings"
+            className={cn(
+              "flex items-center gap-3 px-4 py-3 text-sm relative transition-colors",
+              pathname === `/${lang}/user/settings`
+                ? "text-primary bg-primary/10 hover:bg-primary/20"
+                : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+            )}
+          >
+            {/* Active indicator bar */}
+            <div
+              className={cn(
+                "absolute left-0 top-0 bottom-0 w-1 rounded-r-full transition-colors",
+                pathname === `/${lang}/user/settings` ? "bg-primary" : "bg-transparent"
+              )}
+            />
+            <Settings className="h-5 w-5" />
+            <span>Settings</span>
+          </Link>
         </div>
       </nav>
 
