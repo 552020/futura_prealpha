@@ -579,7 +579,7 @@ export const familyMember = pgTable(
   ]
 );
 
-// Gallery tables for forever-gallery vertical - TEMPORARILY COMMENTED OUT
+// Gallery tables for gallery functionality
 export const galleries = pgTable("gallery", {
   id: text("id")
     .primaryKey()
@@ -588,11 +588,8 @@ export const galleries = pgTable("gallery", {
     .notNull()
     .references(() => allUsers.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
-  description: text("description"), // nullable, no default
+  description: text("description"),
   isPublic: boolean("is_public").default(false).notNull(),
-  isDefault: boolean("is_default").default(false).notNull(),
-  theme: text("theme"), // nullable, no default
-  // metadata: json("metadata").$type<Record<string, unknown>>().notNull().default({}),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -607,16 +604,21 @@ export const galleryItems = pgTable(
       .notNull()
       .references(() => galleries.id, { onDelete: "cascade" }),
     memoryId: text("memory_id").notNull(),
+    memoryType: text("memory_type", { enum: MEMORY_TYPES }).notNull(), // 'image' | 'video' | 'document' | 'note' | 'audio'
     position: integer("position").notNull(),
-    caption: text("caption"), // nullable, no default
+    caption: text("caption"),
     isFeatured: boolean("is_featured").default(false).notNull(),
     metadata: json("metadata").$type<Record<string, unknown>>().notNull().default({}),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
   (t) => [
+    // Fast ordering inside a gallery
     index("gallery_items_gallery_position_idx").on(t.galleryId, t.position),
-    uniqueIndex("gallery_items_gallery_memory_uq").on(t.galleryId, t.memoryId),
+    // Prevent duplicates of same memory in the same gallery
+    uniqueIndex("gallery_items_gallery_memory_uq").on(t.galleryId, t.memoryId, t.memoryType),
+    // Quickly find all galleries for a memory
+    index("gallery_items_by_memory_idx").on(t.memoryId, t.memoryType),
   ]
 );
 

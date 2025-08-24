@@ -542,12 +542,12 @@ WHERE gallery_id = $1;
 
 ## TODO List
 
-### Phase 1: Database Schema
+### Phase 1: Database Schema ✅ COMPLETED
 
-- [ ] Enable `galleries` table in database schema
-- [ ] Enable `galleryItems` table with proper indexes
-- [ ] Add migration for gallery tables
-- [ ] Test schema with sample data
+- [x] Enable `galleries` table in database schema
+- [x] Enable `galleryItems` table with proper indexes
+- [x] Add migration for gallery tables (used `drizzle-kit push` instead)
+- [x] Test schema with sample data
 
 ### Phase 2: Backend Implementation
 
