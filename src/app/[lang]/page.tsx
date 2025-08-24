@@ -1,7 +1,6 @@
 import Hero from "@/components/hero";
 import ValueJourney from "@/components/value-journey";
 import { getDictionary } from "@/utils/dictionaries";
-import JunoInsertDemo from "@/components/JunoInsertDemo";
 
 type PageProps = {
   params: Promise<{
@@ -23,7 +22,6 @@ export default async function LangPage({ params }: PageProps) {
 
   return (
     <main className="bg-white dark:bg-[#0A0A0B]">
-      <JunoInsertDemo />
       <Hero dict={dict} lang={resolvedParams.lang} />
       <ValueJourney dict={dict} lang={resolvedParams.lang} segment={segment} />
     </main>
