@@ -20,6 +20,7 @@
     "@faker-js/faker": "^8.4.1",
     "@formatjs/intl-localematcher": "^0.6.1",
     "@junobuild/config": "^0.1.8",
+    "@junobuild/core": "^1.1.1",
     "@junobuild/core-peer": "^0.1.14",
     "@junobuild/nextjs-plugin": "^4.1.4",
     "@neondatabase/serverless": "^0.10.4",
