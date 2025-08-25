@@ -128,8 +128,8 @@ const generateMockData = () => {
       title: config.title,
       description: config.description,
       isPublic: config.isPublic,
-      createdAt: new Date(createdAt),
-      updatedAt: new Date(createdAt),
+      createdAt: createdAt,
+      updatedAt: createdAt,
       ownerId: "mock-user-1",
       items: memories.map((memory, index) => ({
         id: `item-${config.id}-${index}`,
@@ -140,8 +140,8 @@ const generateMockData = () => {
         caption: `Photo ${index + 1}`,
         isFeatured: false,
         metadata: {},
-        createdAt: new Date(createdAt),
-        updatedAt: new Date(createdAt),
+        createdAt: createdAt,
+        updatedAt: createdAt,
         memory,
       })),
       imageCount,
@@ -160,30 +160,10 @@ const generateTypeScriptFile = (galleries: any[]) => {
 import { GalleryWithItems } from "@/types/gallery";
 
 export const generatedGalleries: GalleryWithItems[] = ${JSON.stringify(galleries, null, 2)
-    .replace(/"createdAt": "([^"]+)"/g, (match, dateStr, offset, string) => {
-      // Only convert top-level createdAt (not nested in memory objects)
-      const beforeMatch = string.substring(0, offset);
-      const linesBefore = beforeMatch.split("\n");
-      const currentLine = linesBefore[linesBefore.length - 1];
-
-      // If this createdAt is at the root level (not indented much), convert to Date
-      if (currentLine.trim().startsWith('"createdAt"')) {
-        return '"createdAt": new Date("' + dateStr + '")';
-      }
-      return match; // Keep as string for nested objects
-    })
-    .replace(/"updatedAt": "([^"]+)"/g, (match, dateStr, offset, string) => {
-      // Only convert top-level updatedAt (not nested in memory objects)
-      const beforeMatch = string.substring(0, offset);
-      const linesBefore = beforeMatch.split("\n");
-      const currentLine = linesBefore[linesBefore.length - 1];
-
-      // If this updatedAt is at the root level (not indented much), convert to Date
-      if (currentLine.trim().startsWith('"updatedAt"')) {
-        return '"updatedAt": new Date("' + dateStr + '")';
-      }
-      return match; // Keep as string for nested objects
-    })};
+    .replace(/\n    "createdAt": "([^"]+)"/g, '\n    "createdAt": new Date("$1")')
+    .replace(/\n    "updatedAt": "([^"]+)"/g, '\n    "updatedAt": new Date("$1")')
+    .replace(/\n        "createdAt": "([^"]+)"/g, '\n        "createdAt": new Date("$1")')
+    .replace(/\n        "updatedAt": "([^"]+)"/g, '\n        "updatedAt": new Date("$1")')};
 
 export const getGeneratedGallery = (id: string): GalleryWithItems | undefined => {
   return generatedGalleries.find(gallery => gallery.id === id);

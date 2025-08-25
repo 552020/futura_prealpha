@@ -8,8 +8,6 @@ import { X, ChevronLeft, ChevronRight, Download, Share2 } from "lucide-react";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 
-
-
 // Gallery Hero Cover Component
 function GalleryHeroCover({
   gallery,
@@ -179,7 +177,7 @@ export default function GalleryPreviewPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
-  const [showCover, setShowCover] = useState(true);
+  const [showCover] = useState(true);
 
   useEffect(() => {
     if (isAuthorized && id) {
@@ -228,8 +226,6 @@ export default function GalleryPreviewPage() {
   const handleExitPreview = () => {
     router.push(`/gallery/${id}`);
   };
-
-
 
   const handleDownload = () => {
     // TODO: Implement download functionality
@@ -312,11 +308,7 @@ export default function GalleryPreviewPage() {
     <div className="bg-white dark:bg-slate-950">
       {/* Hero Cover Section */}
       {showCover && gallery && gallery.items.length > 0 && (
-        <GalleryHeroCover
-          gallery={gallery}
-          failedImages={failedImages}
-          onImageError={handleImageError}
-        />
+        <GalleryHeroCover gallery={gallery} failedImages={failedImages} onImageError={handleImageError} />
       )}
 
       {/* Sticky Header */}
