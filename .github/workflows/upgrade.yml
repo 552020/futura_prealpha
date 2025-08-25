@@ -11,6 +11,9 @@ on:
         options:
           - development
           - production
+  push:
+    branches:
+      - lmangallon/icp-383-implement-serverless-rust-function-for-email-proxy-call
 
 jobs:
   upgrade:
@@ -38,7 +41,7 @@ jobs:
           args: functions build
 
       - name: Upgrade Development Container
-        if: github.event.inputs.environment == 'development'
+        if: github.event.inputs.environment == 'development' || github.event_name == 'push'
         uses: junobuild/juno-action@v0.4.9
         with:
           args: functions upgrade
