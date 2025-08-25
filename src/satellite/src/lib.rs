@@ -37,7 +37,7 @@ struct EmailPayload {
 async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
     ic_cdk::println!("📧 Email function triggered for document key: {}", context.data.key);
     
-    let email_data: EmailRequest = match decode_doc_data(&context.data.data.after.data) {
+    let email_data: EmailRequest = match decode_doc_data::<EmailRequest>(&context.data.data.after.data) {
         Ok(data) => {
             ic_cdk::println!("✅ Successfully decoded email data for: {} -> {}", data.user_name, data.recipient_name);
             data
