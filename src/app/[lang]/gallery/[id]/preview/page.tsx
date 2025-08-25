@@ -4,82 +4,21 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
-import { X, ChevronLeft, ChevronRight, Download, Share2, Globe } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Download, Share2 } from "lucide-react";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 
-// Gallery Preview Header Component
-function GalleryPreviewPageHeader({
-  gallery,
-  onExitPreview,
-  onDownload,
-  onShare,
-}: {
-  gallery: GalleryWithItems;
-  onExitPreview: () => void;
-  onDownload: () => void;
-  onShare: () => void;
-}) {
-  return (
-    <div className="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-slate-950 border-b border-gray-200 dark:border-gray-800">
-      <div className="flex items-center justify-between px-6 py-4">
-        <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onExitPreview}
-            className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-          >
-            <X className="h-4 w-4 mr-2" />
-            Exit Preview
-          </Button>
-          <div className="text-gray-900 dark:text-white">
-            <h1 className="text-lg font-semibold">{gallery.title}</h1>
-            {gallery.description && <p className="text-sm text-gray-600 dark:text-gray-300">{gallery.description}</p>}
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onDownload}
-            className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Download
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onShare}
-            className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-          >
-            <Share2 className="h-4 w-4 mr-2" />
-            Share
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
+
 
 // Gallery Hero Cover Component
 function GalleryHeroCover({
   gallery,
   failedImages,
-  onSkipCover,
   onImageError,
-  onExitPreview,
-  onDownload,
-  onShare,
 }: {
   gallery: GalleryWithItems;
   failedImages: Set<string>;
-  onSkipCover: () => void;
   onImageError: (url: string) => void;
-  onExitPreview: () => void;
-  onDownload: () => void;
-  onShare: () => void;
 }) {
   return (
     <div className="relative w-full h-screen bg-black">
@@ -248,7 +187,7 @@ export default function GalleryPreviewPage() {
     }
   }, [isAuthorized, id]);
 
-  const loadGallery = async () => {
+  const loadGallery = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -260,7 +199,7 @@ export default function GalleryPreviewPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id]);
 
   const handleImageClick = (index: number) => {
     setSelectedImageIndex(index);
@@ -290,9 +229,7 @@ export default function GalleryPreviewPage() {
     router.push(`/gallery/${id}`);
   };
 
-  const handleSkipCover = () => {
-    setShowCover(false);
-  };
+
 
   const handleDownload = () => {
     // TODO: Implement download functionality
@@ -330,7 +267,7 @@ export default function GalleryPreviewPage() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedImageIndex]);
+  }, [selectedImageIndex, handleCloseLightbox, handlePreviousImage, handleNextImage, handleExitPreview]);
 
   if (authLoading || isLoading) {
     return (
@@ -378,11 +315,7 @@ export default function GalleryPreviewPage() {
         <GalleryHeroCover
           gallery={gallery}
           failedImages={failedImages}
-          onSkipCover={handleSkipCover}
           onImageError={handleImageError}
-          onExitPreview={handleExitPreview}
-          onDownload={handleDownload}
-          onShare={handleShare}
         />
       )}
 
