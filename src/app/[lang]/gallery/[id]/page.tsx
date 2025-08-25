@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ const USE_MOCK_DATA = true;
 
 export default function GalleryViewPage() {
   const { id } = useParams();
+  const router = useRouter();
   const { isAuthorized, isLoading: authLoading } = useAuthGuard();
   const [gallery, setGallery] = useState<GalleryWithItems | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -70,8 +71,7 @@ export default function GalleryViewPage() {
   };
 
   const handleFullScreenView = () => {
-    // TODO: Implement full screen view functionality
-    console.log("Enter full screen view");
+    router.push(`/gallery/${id}/preview`);
   };
 
   const handleTogglePrivacy = () => {

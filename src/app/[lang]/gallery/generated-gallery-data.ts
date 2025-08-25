@@ -1,5 +1,5 @@
 // Auto-generated file - do not edit manually
-// Generated at: 2025-08-25T09:45:29.889Z
+// Generated at: 2025-08-25T11:42:24.693Z
 
 import { GalleryWithItems } from "@/types/gallery";
 
@@ -9,8 +9,8 @@ export const generatedGalleries: GalleryWithItems[] = [
     "title": "Portrait Collection",
     "description": "Beautiful portrait photography showcasing people and emotions",
     "isPublic": true,
-    "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-    "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+    "createdAt": "2025-07-14T01:42:26.474Z",
+    "updatedAt": "2025-07-14T01:42:26.474Z",
     "ownerId": "mock-user-1",
     "items": [
       {
@@ -22,15 +22,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 1",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-1",
           "title": "Photo 1",
           "description": "Beautiful photo 1 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/image_05.webp",
-          "createdAt": new Date("2025-04-28T02:00:49.691Z"),
+          "createdAt": "2025-07-26T04:01:51.629Z",
           "metadata": {}
         }
       },
@@ -43,15 +43,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 2",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-2",
           "title": "Photo 2",
           "description": "Beautiful photo 2 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/image_11.webp",
-          "createdAt": new Date("2025-07-22T05:30:01.884Z"),
+          "createdAt": "2025-05-22T12:58:14.869Z",
           "metadata": {}
         }
       },
@@ -64,15 +64,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 3",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-3",
           "title": "Photo 3",
           "description": "Beautiful photo 3 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/photo_01.webp",
-          "createdAt": new Date("2025-07-02T11:42:20.696Z"),
+          "createdAt": "2025-06-29T15:37:56.455Z",
           "metadata": {}
         }
       },
@@ -85,15 +85,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 4",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-4",
           "title": "Photo 4",
           "description": "Beautiful photo 4 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/photo_06.webp",
-          "createdAt": new Date("2025-04-03T12:26:45.079Z"),
+          "createdAt": "2025-07-21T15:11:49.459Z",
           "metadata": {}
         }
       },
@@ -106,15 +106,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 5",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-5",
           "title": "Photo 5",
           "description": "Beautiful photo 5 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/photo_08.webp",
-          "createdAt": new Date("2025-07-05T05:16:22.940Z"),
+          "createdAt": "2025-06-27T11:56:15.426Z",
           "metadata": {}
         }
       },
@@ -127,15 +127,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 6",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-6",
           "title": "Photo 6",
           "description": "Beautiful photo 6 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/photo_12.webp",
-          "createdAt": new Date("2025-05-06T02:37:36.175Z"),
+          "createdAt": "2025-03-08T21:15:51.362Z",
           "metadata": {}
         }
       },
@@ -148,15 +148,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 7",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-7",
           "title": "Photo 7",
           "description": "Beautiful photo 7 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/photo_13.webp",
-          "createdAt": new Date("2025-06-25T07:26:41.130Z"),
+          "createdAt": "2025-03-25T03:36:45.025Z",
           "metadata": {}
         }
       },
@@ -169,15 +169,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 8",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-8",
           "title": "Photo 8",
           "description": "Beautiful photo 8 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/photo_15.webp",
-          "createdAt": new Date("2025-05-07T20:04:28.497Z"),
+          "createdAt": "2025-08-19T13:19:59.681Z",
           "metadata": {}
         }
       },
@@ -190,15 +190,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 9",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-9",
           "title": "Photo 9",
           "description": "Beautiful photo 9 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/picture_03.webp",
-          "createdAt": new Date("2025-04-11T09:07:48.690Z"),
+          "createdAt": "2025-07-07T00:01:16.748Z",
           "metadata": {}
         }
       },
@@ -211,15 +211,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 10",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-10",
           "title": "Photo 10",
           "description": "Beautiful photo 10 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/picture_07.webp",
-          "createdAt": new Date("2025-08-09T05:37:18.540Z"),
+          "createdAt": "2025-04-06T09:57:46.759Z",
           "metadata": {}
         }
       },
@@ -232,15 +232,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 11",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-11",
           "title": "Photo 11",
           "description": "Beautiful photo 11 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/picture_10.webp",
-          "createdAt": new Date("2025-05-05T00:54:52.171Z"),
+          "createdAt": "2025-07-18T01:06:07.622Z",
           "metadata": {}
         }
       },
@@ -253,15 +253,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 12",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-12",
           "title": "Photo 12",
           "description": "Beautiful photo 12 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/picture_14.webp",
-          "createdAt": new Date("2025-06-07T15:55:32.600Z"),
+          "createdAt": "2025-03-19T02:58:19.882Z",
           "metadata": {}
         }
       },
@@ -274,15 +274,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 13",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-13",
           "title": "Photo 13",
           "description": "Beautiful photo 13 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/shot_02.webp",
-          "createdAt": new Date("2025-04-15T21:06:09.605Z"),
+          "createdAt": "2025-03-17T00:28:29.507Z",
           "metadata": {}
         }
       },
@@ -295,15 +295,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 14",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-14",
           "title": "Photo 14",
           "description": "Beautiful photo 14 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/shot_04.webp",
-          "createdAt": new Date("2025-07-01T16:56:17.892Z"),
+          "createdAt": "2025-07-21T22:49:33.191Z",
           "metadata": {}
         }
       },
@@ -316,15 +316,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 15",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-16T15:49:35.373Z"),
-        "updatedAt": new Date("2025-07-16T15:49:35.373Z"),
+        "createdAt": "2025-07-14T01:42:26.474Z",
+        "updatedAt": "2025-07-14T01:42:26.474Z",
         "memory": {
           "id": "memory-portrait-gallery-15",
           "title": "Photo 15",
           "description": "Beautiful photo 15 from Portrait Collection",
           "type": "image",
           "url": "/mock/galleries/portrait-gallery/shot_09.webp",
-          "createdAt": new Date("2025-06-23T21:09:51.237Z"),
+          "createdAt": "2025-05-28T11:41:30.847Z",
           "metadata": {}
         }
       }
@@ -337,8 +337,8 @@ export const generatedGalleries: GalleryWithItems[] = [
     "title": "Landscape Photography",
     "description": "Stunning landscapes from around the world",
     "isPublic": true,
-    "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-    "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+    "createdAt": "2025-03-04T15:39:42.995Z",
+    "updatedAt": "2025-03-04T15:39:42.995Z",
     "ownerId": "mock-user-1",
     "items": [
       {
@@ -350,15 +350,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 1",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-1",
           "title": "Photo 1",
           "description": "Beautiful photo 1 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/image_03.webp",
-          "createdAt": new Date("2025-08-04T02:06:11.859Z"),
+          "createdAt": "2025-03-24T13:31:43.668Z",
           "metadata": {}
         }
       },
@@ -371,15 +371,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 2",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-2",
           "title": "Photo 2",
           "description": "Beautiful photo 2 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/image_11.webp",
-          "createdAt": new Date("2025-03-02T16:23:02.022Z"),
+          "createdAt": "2025-07-09T09:26:09.399Z",
           "metadata": {}
         }
       },
@@ -392,15 +392,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 3",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-3",
           "title": "Photo 3",
           "description": "Beautiful photo 3 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/image_12.webp",
-          "createdAt": new Date("2025-04-23T11:51:12.660Z"),
+          "createdAt": "2025-05-10T02:31:55.623Z",
           "metadata": {}
         }
       },
@@ -413,15 +413,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 4",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-4",
           "title": "Photo 4",
           "description": "Beautiful photo 4 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/photo_13.webp",
-          "createdAt": new Date("2025-08-07T19:39:03.175Z"),
+          "createdAt": "2025-07-22T18:13:48.372Z",
           "metadata": {}
         }
       },
@@ -434,15 +434,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 5",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-5",
           "title": "Photo 5",
           "description": "Beautiful photo 5 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/photo_15.webp",
-          "createdAt": new Date("2025-07-08T05:49:48.395Z"),
+          "createdAt": "2025-05-12T15:25:47.832Z",
           "metadata": {}
         }
       },
@@ -455,15 +455,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 6",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-6",
           "title": "Photo 6",
           "description": "Beautiful photo 6 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/picture_04.webp",
-          "createdAt": new Date("2025-06-04T15:35:47.699Z"),
+          "createdAt": "2025-05-27T11:07:05.208Z",
           "metadata": {}
         }
       },
@@ -476,15 +476,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 7",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-7",
           "title": "Photo 7",
           "description": "Beautiful photo 7 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/picture_05.webp",
-          "createdAt": new Date("2025-03-21T06:45:22.099Z"),
+          "createdAt": "2025-06-04T16:56:44.106Z",
           "metadata": {}
         }
       },
@@ -497,15 +497,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 8",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-8",
           "title": "Photo 8",
           "description": "Beautiful photo 8 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/picture_06.webp",
-          "createdAt": new Date("2025-07-22T09:58:36.400Z"),
+          "createdAt": "2025-08-16T04:30:05.112Z",
           "metadata": {}
         }
       },
@@ -518,15 +518,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 9",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-9",
           "title": "Photo 9",
           "description": "Beautiful photo 9 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/picture_10.webp",
-          "createdAt": new Date("2025-04-09T08:05:47.147Z"),
+          "createdAt": "2025-07-02T11:03:25.369Z",
           "metadata": {}
         }
       },
@@ -539,15 +539,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 10",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-10",
           "title": "Photo 10",
           "description": "Beautiful photo 10 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/shot_01.webp",
-          "createdAt": new Date("2025-05-16T04:26:31.027Z"),
+          "createdAt": "2025-07-01T16:11:33.888Z",
           "metadata": {}
         }
       },
@@ -560,15 +560,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 11",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-11",
           "title": "Photo 11",
           "description": "Beautiful photo 11 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/shot_02.webp",
-          "createdAt": new Date("2025-05-05T01:20:00.276Z"),
+          "createdAt": "2025-05-06T16:48:11.906Z",
           "metadata": {}
         }
       },
@@ -581,15 +581,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 12",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-12",
           "title": "Photo 12",
           "description": "Beautiful photo 12 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/shot_07.webp",
-          "createdAt": new Date("2025-08-19T12:37:58.915Z"),
+          "createdAt": "2025-04-27T11:21:57.110Z",
           "metadata": {}
         }
       },
@@ -602,15 +602,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 13",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-13",
           "title": "Photo 13",
           "description": "Beautiful photo 13 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/shot_08.webp",
-          "createdAt": new Date("2025-06-21T13:22:44.516Z"),
+          "createdAt": "2025-04-12T23:06:41.122Z",
           "metadata": {}
         }
       },
@@ -623,15 +623,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 14",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-14",
           "title": "Photo 14",
           "description": "Beautiful photo 14 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/shot_09.webp",
-          "createdAt": new Date("2025-03-26T14:59:42.462Z"),
+          "createdAt": "2025-06-10T18:47:01.978Z",
           "metadata": {}
         }
       },
@@ -644,15 +644,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 15",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-07-15T04:57:22.432Z"),
-        "updatedAt": new Date("2025-07-15T04:57:22.432Z"),
+        "createdAt": "2025-03-04T15:39:42.995Z",
+        "updatedAt": "2025-03-04T15:39:42.995Z",
         "memory": {
           "id": "memory-landscape-gallery-15",
           "title": "Photo 15",
           "description": "Beautiful photo 15 from Landscape Photography",
           "type": "image",
           "url": "/mock/galleries/landscape-gallery/shot_14.webp",
-          "createdAt": new Date("2025-05-25T22:04:13.429Z"),
+          "createdAt": "2025-05-03T07:52:23.205Z",
           "metadata": {}
         }
       }
@@ -665,8 +665,8 @@ export const generatedGalleries: GalleryWithItems[] = [
     "title": "Mixed Media Gallery",
     "description": "A diverse collection of different photography styles",
     "isPublic": false,
-    "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-    "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+    "createdAt": "2025-03-13T01:58:42.223Z",
+    "updatedAt": "2025-03-13T01:58:42.223Z",
     "ownerId": "mock-user-1",
     "items": [
       {
@@ -678,15 +678,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 1",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-1",
           "title": "Photo 1",
           "description": "Beautiful photo 1 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/image_01.webp",
-          "createdAt": new Date("2025-03-11T08:19:39.766Z"),
+          "createdAt": "2025-07-25T01:33:03.665Z",
           "metadata": {}
         }
       },
@@ -699,15 +699,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 2",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-2",
           "title": "Photo 2",
           "description": "Beautiful photo 2 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/image_04.webp",
-          "createdAt": new Date("2025-04-20T00:52:49.352Z"),
+          "createdAt": "2025-03-31T02:48:42.365Z",
           "metadata": {}
         }
       },
@@ -720,15 +720,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 3",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-3",
           "title": "Photo 3",
           "description": "Beautiful photo 3 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/image_05.webp",
-          "createdAt": new Date("2025-07-04T21:27:54.782Z"),
+          "createdAt": "2025-07-28T01:51:05.313Z",
           "metadata": {}
         }
       },
@@ -741,15 +741,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 4",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-4",
           "title": "Photo 4",
           "description": "Beautiful photo 4 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/image_08.webp",
-          "createdAt": new Date("2025-06-27T23:21:26.223Z"),
+          "createdAt": "2025-06-03T11:07:05.252Z",
           "metadata": {}
         }
       },
@@ -762,15 +762,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 5",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-5",
           "title": "Photo 5",
           "description": "Beautiful photo 5 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/image_10.webp",
-          "createdAt": new Date("2025-03-14T23:00:26.294Z"),
+          "createdAt": "2025-06-13T13:05:52.844Z",
           "metadata": {}
         }
       },
@@ -783,15 +783,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 6",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-6",
           "title": "Photo 6",
           "description": "Beautiful photo 6 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/image_13.webp",
-          "createdAt": new Date("2025-07-17T06:57:54.442Z"),
+          "createdAt": "2025-03-15T10:29:43.505Z",
           "metadata": {}
         }
       },
@@ -804,15 +804,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 7",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-7",
           "title": "Photo 7",
           "description": "Beautiful photo 7 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/image_18.webp",
-          "createdAt": new Date("2025-07-08T18:24:11.144Z"),
+          "createdAt": "2025-03-12T11:46:11.407Z",
           "metadata": {}
         }
       },
@@ -825,15 +825,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 8",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-8",
           "title": "Photo 8",
           "description": "Beautiful photo 8 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/image_19.webp",
-          "createdAt": new Date("2025-07-06T12:10:35.432Z"),
+          "createdAt": "2025-07-31T09:10:42.364Z",
           "metadata": {}
         }
       },
@@ -846,15 +846,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 9",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-9",
           "title": "Photo 9",
           "description": "Beautiful photo 9 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/photo_20.webp",
-          "createdAt": new Date("2025-03-08T17:38:04.586Z"),
+          "createdAt": "2025-07-19T15:20:00.147Z",
           "metadata": {}
         }
       },
@@ -867,15 +867,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 10",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-10",
           "title": "Photo 10",
           "description": "Beautiful photo 10 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/picture_02.webp",
-          "createdAt": new Date("2025-08-22T15:23:27.257Z"),
+          "createdAt": "2025-08-20T10:09:23.995Z",
           "metadata": {}
         }
       },
@@ -888,15 +888,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 11",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-11",
           "title": "Photo 11",
           "description": "Beautiful photo 11 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/picture_06.webp",
-          "createdAt": new Date("2025-06-02T20:03:19.876Z"),
+          "createdAt": "2025-04-29T10:35:49.439Z",
           "metadata": {}
         }
       },
@@ -909,15 +909,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 12",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-12",
           "title": "Photo 12",
           "description": "Beautiful photo 12 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/picture_15.webp",
-          "createdAt": new Date("2025-02-26T17:19:01.057Z"),
+          "createdAt": "2025-06-13T06:21:38.526Z",
           "metadata": {}
         }
       },
@@ -930,15 +930,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 13",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-13",
           "title": "Photo 13",
           "description": "Beautiful photo 13 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/picture_16.webp",
-          "createdAt": new Date("2025-04-12T07:16:42.622Z"),
+          "createdAt": "2025-06-10T21:24:29.396Z",
           "metadata": {}
         }
       },
@@ -951,15 +951,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 14",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-14",
           "title": "Photo 14",
           "description": "Beautiful photo 14 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/picture_17.webp",
-          "createdAt": new Date("2025-05-18T03:44:46.408Z"),
+          "createdAt": "2025-07-28T15:55:45.978Z",
           "metadata": {}
         }
       },
@@ -972,15 +972,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 15",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-15",
           "title": "Photo 15",
           "description": "Beautiful photo 15 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/shot_03.webp",
-          "createdAt": new Date("2025-03-30T03:32:27.768Z"),
+          "createdAt": "2025-06-20T15:35:10.191Z",
           "metadata": {}
         }
       },
@@ -993,15 +993,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 16",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-16",
           "title": "Photo 16",
           "description": "Beautiful photo 16 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/shot_07.webp",
-          "createdAt": new Date("2025-05-01T19:48:45.972Z"),
+          "createdAt": "2025-04-02T05:47:39.707Z",
           "metadata": {}
         }
       },
@@ -1014,15 +1014,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 17",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-17",
           "title": "Photo 17",
           "description": "Beautiful photo 17 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/shot_09.webp",
-          "createdAt": new Date("2025-04-26T23:25:59.198Z"),
+          "createdAt": "2025-03-09T21:11:25.710Z",
           "metadata": {}
         }
       },
@@ -1035,15 +1035,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 18",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-18",
           "title": "Photo 18",
           "description": "Beautiful photo 18 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/shot_11.webp",
-          "createdAt": new Date("2025-06-26T18:17:46.977Z"),
+          "createdAt": "2025-03-28T06:20:33.484Z",
           "metadata": {}
         }
       },
@@ -1056,15 +1056,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 19",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-19",
           "title": "Photo 19",
           "description": "Beautiful photo 19 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/shot_12.webp",
-          "createdAt": new Date("2025-06-26T16:23:28.667Z"),
+          "createdAt": "2025-05-25T09:45:31.290Z",
           "metadata": {}
         }
       },
@@ -1077,15 +1077,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 20",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-11T01:41:55.845Z"),
-        "updatedAt": new Date("2025-06-11T01:41:55.845Z"),
+        "createdAt": "2025-03-13T01:58:42.223Z",
+        "updatedAt": "2025-03-13T01:58:42.223Z",
         "memory": {
           "id": "memory-mixed-gallery-20",
           "title": "Photo 20",
           "description": "Beautiful photo 20 from Mixed Media Gallery",
           "type": "image",
           "url": "/mock/galleries/mixed-gallery/shot_14.webp",
-          "createdAt": new Date("2025-05-15T19:32:49.578Z"),
+          "createdAt": "2025-06-05T15:27:44.483Z",
           "metadata": {}
         }
       }
@@ -1098,8 +1098,8 @@ export const generatedGalleries: GalleryWithItems[] = [
     "title": "Wild & Free",
     "description": "Adventure and nature photography",
     "isPublic": true,
-    "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-    "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+    "createdAt": "2025-08-05T15:50:23.756Z",
+    "updatedAt": "2025-08-05T15:50:23.756Z",
     "ownerId": "mock-user-1",
     "items": [
       {
@@ -1111,15 +1111,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 1",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-1",
           "title": "Photo 1",
           "description": "Beautiful photo 1 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/image_03.webp",
-          "createdAt": new Date("2025-04-17T08:47:22.386Z"),
+          "createdAt": "2025-08-14T07:22:21.493Z",
           "metadata": {}
         }
       },
@@ -1132,15 +1132,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 2",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-2",
           "title": "Photo 2",
           "description": "Beautiful photo 2 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/image_04.webp",
-          "createdAt": new Date("2025-06-14T13:40:44.708Z"),
+          "createdAt": "2025-08-01T09:04:34.516Z",
           "metadata": {}
         }
       },
@@ -1153,15 +1153,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 3",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-3",
           "title": "Photo 3",
           "description": "Beautiful photo 3 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/image_06.webp",
-          "createdAt": new Date("2025-05-17T04:47:57.279Z"),
+          "createdAt": "2025-03-08T22:59:15.978Z",
           "metadata": {}
         }
       },
@@ -1174,15 +1174,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 4",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-4",
           "title": "Photo 4",
           "description": "Beautiful photo 4 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/image_09.webp",
-          "createdAt": new Date("2025-06-08T11:47:43.978Z"),
+          "createdAt": "2025-02-26T19:04:12.043Z",
           "metadata": {}
         }
       },
@@ -1195,15 +1195,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 5",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-5",
           "title": "Photo 5",
           "description": "Beautiful photo 5 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/image_16.webp",
-          "createdAt": new Date("2025-07-13T11:38:02.652Z"),
+          "createdAt": "2025-03-28T21:54:21.686Z",
           "metadata": {}
         }
       },
@@ -1216,15 +1216,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 6",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-6",
           "title": "Photo 6",
           "description": "Beautiful photo 6 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/image_21.webp",
-          "createdAt": new Date("2025-06-17T19:21:43.828Z"),
+          "createdAt": "2025-05-27T19:59:58.120Z",
           "metadata": {}
         }
       },
@@ -1237,15 +1237,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 7",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-7",
           "title": "Photo 7",
           "description": "Beautiful photo 7 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/image_24.webp",
-          "createdAt": new Date("2025-05-18T03:30:35.223Z"),
+          "createdAt": "2025-08-04T02:03:16.658Z",
           "metadata": {}
         }
       },
@@ -1258,15 +1258,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 8",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-8",
           "title": "Photo 8",
           "description": "Beautiful photo 8 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/photo_01.webp",
-          "createdAt": new Date("2025-08-19T04:33:49.861Z"),
+          "createdAt": "2025-05-17T06:41:15.872Z",
           "metadata": {}
         }
       },
@@ -1279,15 +1279,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 9",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-9",
           "title": "Photo 9",
           "description": "Beautiful photo 9 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/photo_13.webp",
-          "createdAt": new Date("2025-04-29T11:47:48.617Z"),
+          "createdAt": "2025-06-21T19:29:34.013Z",
           "metadata": {}
         }
       },
@@ -1300,15 +1300,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 10",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-10",
           "title": "Photo 10",
           "description": "Beautiful photo 10 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/photo_17.webp",
-          "createdAt": new Date("2025-03-11T03:02:28.594Z"),
+          "createdAt": "2025-07-13T11:28:16.210Z",
           "metadata": {}
         }
       },
@@ -1321,15 +1321,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 11",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-11",
           "title": "Photo 11",
           "description": "Beautiful photo 11 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/photo_18.webp",
-          "createdAt": new Date("2025-05-22T20:30:55.416Z"),
+          "createdAt": "2025-07-10T10:20:49.641Z",
           "metadata": {}
         }
       },
@@ -1342,15 +1342,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 12",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-12",
           "title": "Photo 12",
           "description": "Beautiful photo 12 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/picture_07.webp",
-          "createdAt": new Date("2025-04-01T15:38:17.041Z"),
+          "createdAt": "2025-06-26T03:44:38.569Z",
           "metadata": {}
         }
       },
@@ -1363,15 +1363,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 13",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-13",
           "title": "Photo 13",
           "description": "Beautiful photo 13 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/picture_08.webp",
-          "createdAt": new Date("2025-07-27T21:35:40.121Z"),
+          "createdAt": "2025-07-13T04:57:02.966Z",
           "metadata": {}
         }
       },
@@ -1384,15 +1384,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 14",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-14",
           "title": "Photo 14",
           "description": "Beautiful photo 14 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/picture_10.webp",
-          "createdAt": new Date("2025-04-20T14:03:37.080Z"),
+          "createdAt": "2025-06-05T05:28:06.938Z",
           "metadata": {}
         }
       },
@@ -1405,15 +1405,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 15",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-15",
           "title": "Photo 15",
           "description": "Beautiful photo 15 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/picture_11.webp",
-          "createdAt": new Date("2025-07-14T08:23:55.877Z"),
+          "createdAt": "2025-07-17T00:50:19.586Z",
           "metadata": {}
         }
       },
@@ -1426,15 +1426,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 16",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-16",
           "title": "Photo 16",
           "description": "Beautiful photo 16 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/picture_12.webp",
-          "createdAt": new Date("2025-06-10T14:39:18.697Z"),
+          "createdAt": "2025-07-31T17:41:12.742Z",
           "metadata": {}
         }
       },
@@ -1447,15 +1447,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 17",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-17",
           "title": "Photo 17",
           "description": "Beautiful photo 17 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/picture_14.webp",
-          "createdAt": new Date("2025-05-21T10:03:59.326Z"),
+          "createdAt": "2025-07-10T22:22:01.344Z",
           "metadata": {}
         }
       },
@@ -1468,15 +1468,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 18",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-18",
           "title": "Photo 18",
           "description": "Beautiful photo 18 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/picture_15.webp",
-          "createdAt": new Date("2025-04-25T13:15:54.839Z"),
+          "createdAt": "2025-05-21T17:18:04.714Z",
           "metadata": {}
         }
       },
@@ -1489,15 +1489,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 19",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-19",
           "title": "Photo 19",
           "description": "Beautiful photo 19 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/picture_20.webp",
-          "createdAt": new Date("2025-06-02T19:41:27.642Z"),
+          "createdAt": "2025-06-20T15:01:02.485Z",
           "metadata": {}
         }
       },
@@ -1510,15 +1510,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 20",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-20",
           "title": "Photo 20",
           "description": "Beautiful photo 20 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/picture_22.webp",
-          "createdAt": new Date("2025-06-02T18:53:16.693Z"),
+          "createdAt": "2025-05-06T13:00:25.250Z",
           "metadata": {}
         }
       },
@@ -1531,15 +1531,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 21",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-21",
           "title": "Photo 21",
           "description": "Beautiful photo 21 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/picture_23.webp",
-          "createdAt": new Date("2025-05-28T00:02:41.051Z"),
+          "createdAt": "2025-06-20T00:35:37.184Z",
           "metadata": {}
         }
       },
@@ -1552,15 +1552,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 22",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-22",
           "title": "Photo 22",
           "description": "Beautiful photo 22 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/shot_02.webp",
-          "createdAt": new Date("2025-08-19T05:46:11.588Z"),
+          "createdAt": "2025-03-04T02:50:48.582Z",
           "metadata": {}
         }
       },
@@ -1573,15 +1573,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 23",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-23",
           "title": "Photo 23",
           "description": "Beautiful photo 23 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/shot_05.webp",
-          "createdAt": new Date("2025-05-31T05:22:35.498Z"),
+          "createdAt": "2025-07-10T16:00:46.380Z",
           "metadata": {}
         }
       },
@@ -1594,15 +1594,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 24",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-24",
           "title": "Photo 24",
           "description": "Beautiful photo 24 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/shot_19.webp",
-          "createdAt": new Date("2025-06-01T18:57:30.711Z"),
+          "createdAt": "2025-06-04T05:36:30.707Z",
           "metadata": {}
         }
       },
@@ -1615,15 +1615,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 25",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-08-10T06:11:18.079Z"),
-        "updatedAt": new Date("2025-08-10T06:11:18.079Z"),
+        "createdAt": "2025-08-05T15:50:23.756Z",
+        "updatedAt": "2025-08-05T15:50:23.756Z",
         "memory": {
           "id": "memory-wild-gallery-25",
           "title": "Photo 25",
           "description": "Beautiful photo 25 from Wild & Free",
           "type": "image",
           "url": "/mock/galleries/wild-gallery/shot_25.webp",
-          "createdAt": new Date("2025-04-03T21:49:38.137Z"),
+          "createdAt": "2025-03-28T01:04:01.844Z",
           "metadata": {}
         }
       }
@@ -1636,8 +1636,8 @@ export const generatedGalleries: GalleryWithItems[] = [
     "title": "Small Moments",
     "description": "Intimate moments captured in time",
     "isPublic": false,
-    "createdAt": new Date("2025-06-19T17:59:31.459Z"),
-    "updatedAt": new Date("2025-06-19T17:59:31.459Z"),
+    "createdAt": "2025-08-18T06:55:45.619Z",
+    "updatedAt": "2025-08-18T06:55:45.619Z",
     "ownerId": "mock-user-1",
     "items": [
       {
@@ -1649,15 +1649,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 1",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-19T17:59:31.459Z"),
-        "updatedAt": new Date("2025-06-19T17:59:31.459Z"),
+        "createdAt": "2025-08-18T06:55:45.619Z",
+        "updatedAt": "2025-08-18T06:55:45.619Z",
         "memory": {
           "id": "memory-small-gallery-1",
           "title": "Photo 1",
           "description": "Beautiful photo 1 from Small Moments",
           "type": "image",
           "url": "/mock/galleries/small-gallery/photo_02.webp",
-          "createdAt": new Date("2025-06-12T23:14:11.238Z"),
+          "createdAt": "2025-06-22T12:25:59.970Z",
           "metadata": {}
         }
       },
@@ -1670,15 +1670,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 2",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-19T17:59:31.459Z"),
-        "updatedAt": new Date("2025-06-19T17:59:31.459Z"),
+        "createdAt": "2025-08-18T06:55:45.619Z",
+        "updatedAt": "2025-08-18T06:55:45.619Z",
         "memory": {
           "id": "memory-small-gallery-2",
           "title": "Photo 2",
           "description": "Beautiful photo 2 from Small Moments",
           "type": "image",
           "url": "/mock/galleries/small-gallery/photo_03.webp",
-          "createdAt": new Date("2025-07-30T08:06:12.698Z"),
+          "createdAt": "2025-03-26T20:42:01.752Z",
           "metadata": {}
         }
       },
@@ -1691,15 +1691,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 3",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-19T17:59:31.459Z"),
-        "updatedAt": new Date("2025-06-19T17:59:31.459Z"),
+        "createdAt": "2025-08-18T06:55:45.619Z",
+        "updatedAt": "2025-08-18T06:55:45.619Z",
         "memory": {
           "id": "memory-small-gallery-3",
           "title": "Photo 3",
           "description": "Beautiful photo 3 from Small Moments",
           "type": "image",
           "url": "/mock/galleries/small-gallery/photo_04.webp",
-          "createdAt": new Date("2025-08-21T21:37:17.731Z"),
+          "createdAt": "2025-06-11T12:47:52.136Z",
           "metadata": {}
         }
       },
@@ -1712,15 +1712,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 4",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-19T17:59:31.459Z"),
-        "updatedAt": new Date("2025-06-19T17:59:31.459Z"),
+        "createdAt": "2025-08-18T06:55:45.619Z",
+        "updatedAt": "2025-08-18T06:55:45.619Z",
         "memory": {
           "id": "memory-small-gallery-4",
           "title": "Photo 4",
           "description": "Beautiful photo 4 from Small Moments",
           "type": "image",
           "url": "/mock/galleries/small-gallery/picture_05.webp",
-          "createdAt": new Date("2025-04-02T02:07:45.288Z"),
+          "createdAt": "2025-08-13T18:17:34.499Z",
           "metadata": {}
         }
       },
@@ -1733,15 +1733,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 5",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-06-19T17:59:31.459Z"),
-        "updatedAt": new Date("2025-06-19T17:59:31.459Z"),
+        "createdAt": "2025-08-18T06:55:45.619Z",
+        "updatedAt": "2025-08-18T06:55:45.619Z",
         "memory": {
           "id": "memory-small-gallery-5",
           "title": "Photo 5",
           "description": "Beautiful photo 5 from Small Moments",
           "type": "image",
           "url": "/mock/galleries/small-gallery/shot_01.webp",
-          "createdAt": new Date("2025-08-21T11:04:28.009Z"),
+          "createdAt": "2025-06-09T05:39:30.124Z",
           "metadata": {}
         }
       }
@@ -1754,8 +1754,8 @@ export const generatedGalleries: GalleryWithItems[] = [
     "title": "Large Collection",
     "description": "An extensive collection of memories",
     "isPublic": true,
-    "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-    "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+    "createdAt": "2025-07-10T14:11:04.275Z",
+    "updatedAt": "2025-07-10T14:11:04.275Z",
     "ownerId": "mock-user-1",
     "items": [
       {
@@ -1767,15 +1767,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 1",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-1",
           "title": "Photo 1",
           "description": "Beautiful photo 1 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/image_05.webp",
-          "createdAt": new Date("2025-06-29T07:21:11.993Z"),
+          "createdAt": "2025-04-19T07:48:20.612Z",
           "metadata": {}
         }
       },
@@ -1788,15 +1788,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 2",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-2",
           "title": "Photo 2",
           "description": "Beautiful photo 2 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/image_13.webp",
-          "createdAt": new Date("2025-07-18T23:42:25.121Z"),
+          "createdAt": "2025-03-29T14:24:15.914Z",
           "metadata": {}
         }
       },
@@ -1809,15 +1809,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 3",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-3",
           "title": "Photo 3",
           "description": "Beautiful photo 3 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/image_16.webp",
-          "createdAt": new Date("2025-08-22T17:41:44.206Z"),
+          "createdAt": "2025-03-26T10:10:47.159Z",
           "metadata": {}
         }
       },
@@ -1830,15 +1830,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 4",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-4",
           "title": "Photo 4",
           "description": "Beautiful photo 4 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/image_20.webp",
-          "createdAt": new Date("2025-08-19T21:20:45.596Z"),
+          "createdAt": "2025-04-13T04:56:49.677Z",
           "metadata": {}
         }
       },
@@ -1851,15 +1851,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 5",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-5",
           "title": "Photo 5",
           "description": "Beautiful photo 5 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/image_28.webp",
-          "createdAt": new Date("2025-03-11T11:44:18.627Z"),
+          "createdAt": "2025-03-03T13:28:26.482Z",
           "metadata": {}
         }
       },
@@ -1872,15 +1872,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 6",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-6",
           "title": "Photo 6",
           "description": "Beautiful photo 6 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/image_32.webp",
-          "createdAt": new Date("2025-03-16T08:49:54.923Z"),
+          "createdAt": "2025-07-11T22:55:54.205Z",
           "metadata": {}
         }
       },
@@ -1893,15 +1893,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 7",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-7",
           "title": "Photo 7",
           "description": "Beautiful photo 7 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/image_38.webp",
-          "createdAt": new Date("2025-08-04T11:11:05.021Z"),
+          "createdAt": "2025-07-05T16:32:49.355Z",
           "metadata": {}
         }
       },
@@ -1914,15 +1914,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 8",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-8",
           "title": "Photo 8",
           "description": "Beautiful photo 8 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/image_41.webp",
-          "createdAt": new Date("2025-04-27T00:44:29.237Z"),
+          "createdAt": "2025-08-11T12:10:57.542Z",
           "metadata": {}
         }
       },
@@ -1935,15 +1935,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 9",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-9",
           "title": "Photo 9",
           "description": "Beautiful photo 9 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/image_45.webp",
-          "createdAt": new Date("2025-08-24T07:59:00.573Z"),
+          "createdAt": "2025-05-23T05:14:57.443Z",
           "metadata": {}
         }
       },
@@ -1956,15 +1956,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 10",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-10",
           "title": "Photo 10",
           "description": "Beautiful photo 10 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/image_49.webp",
-          "createdAt": new Date("2025-06-01T08:36:36.133Z"),
+          "createdAt": "2025-06-23T17:11:01.375Z",
           "metadata": {}
         }
       },
@@ -1977,15 +1977,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 11",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-11",
           "title": "Photo 11",
           "description": "Beautiful photo 11 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_01.webp",
-          "createdAt": new Date("2025-07-09T05:23:10.891Z"),
+          "createdAt": "2025-04-03T11:43:41.303Z",
           "metadata": {}
         }
       },
@@ -1998,15 +1998,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 12",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-12",
           "title": "Photo 12",
           "description": "Beautiful photo 12 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_04.webp",
-          "createdAt": new Date("2025-04-29T11:53:19.589Z"),
+          "createdAt": "2025-04-23T01:42:26.123Z",
           "metadata": {}
         }
       },
@@ -2019,15 +2019,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 13",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-13",
           "title": "Photo 13",
           "description": "Beautiful photo 13 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_07.webp",
-          "createdAt": new Date("2025-05-09T09:17:51.187Z"),
+          "createdAt": "2025-04-16T13:26:48.637Z",
           "metadata": {}
         }
       },
@@ -2040,15 +2040,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 14",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-14",
           "title": "Photo 14",
           "description": "Beautiful photo 14 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_08.webp",
-          "createdAt": new Date("2025-08-09T03:30:22.806Z"),
+          "createdAt": "2025-07-04T01:48:38.200Z",
           "metadata": {}
         }
       },
@@ -2061,15 +2061,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 15",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-15",
           "title": "Photo 15",
           "description": "Beautiful photo 15 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_10.webp",
-          "createdAt": new Date("2025-03-25T08:19:51.611Z"),
+          "createdAt": "2025-06-12T14:33:45.463Z",
           "metadata": {}
         }
       },
@@ -2082,15 +2082,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 16",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-16",
           "title": "Photo 16",
           "description": "Beautiful photo 16 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_18.webp",
-          "createdAt": new Date("2025-05-04T09:33:29.184Z"),
+          "createdAt": "2025-06-02T15:56:43.388Z",
           "metadata": {}
         }
       },
@@ -2103,15 +2103,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 17",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-17",
           "title": "Photo 17",
           "description": "Beautiful photo 17 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_24.webp",
-          "createdAt": new Date("2025-05-15T19:48:36.298Z"),
+          "createdAt": "2025-02-27T13:51:13.308Z",
           "metadata": {}
         }
       },
@@ -2124,15 +2124,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 18",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-18",
           "title": "Photo 18",
           "description": "Beautiful photo 18 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_25.webp",
-          "createdAt": new Date("2025-07-24T02:30:22.618Z"),
+          "createdAt": "2025-04-25T08:40:13.741Z",
           "metadata": {}
         }
       },
@@ -2145,15 +2145,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 19",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-19",
           "title": "Photo 19",
           "description": "Beautiful photo 19 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_26.webp",
-          "createdAt": new Date("2025-04-03T01:30:29.649Z"),
+          "createdAt": "2025-08-03T19:34:01.440Z",
           "metadata": {}
         }
       },
@@ -2166,15 +2166,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 20",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-20",
           "title": "Photo 20",
           "description": "Beautiful photo 20 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_30.webp",
-          "createdAt": new Date("2025-04-03T16:34:30.947Z"),
+          "createdAt": "2025-05-12T03:44:19.589Z",
           "metadata": {}
         }
       },
@@ -2187,15 +2187,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 21",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-21",
           "title": "Photo 21",
           "description": "Beautiful photo 21 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_33.webp",
-          "createdAt": new Date("2025-03-07T16:38:53.136Z"),
+          "createdAt": "2025-04-09T08:57:18.747Z",
           "metadata": {}
         }
       },
@@ -2208,15 +2208,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 22",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-22",
           "title": "Photo 22",
           "description": "Beautiful photo 22 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_34.webp",
-          "createdAt": new Date("2025-07-08T12:13:53.735Z"),
+          "createdAt": "2025-04-22T20:28:13.875Z",
           "metadata": {}
         }
       },
@@ -2229,15 +2229,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 23",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-23",
           "title": "Photo 23",
           "description": "Beautiful photo 23 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_36.webp",
-          "createdAt": new Date("2025-06-29T01:00:14.028Z"),
+          "createdAt": "2025-06-21T14:05:38.447Z",
           "metadata": {}
         }
       },
@@ -2250,15 +2250,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 24",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-24",
           "title": "Photo 24",
           "description": "Beautiful photo 24 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_44.webp",
-          "createdAt": new Date("2025-05-31T15:35:38.890Z"),
+          "createdAt": "2025-03-28T04:28:34.304Z",
           "metadata": {}
         }
       },
@@ -2271,15 +2271,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 25",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-25",
           "title": "Photo 25",
           "description": "Beautiful photo 25 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/photo_46.webp",
-          "createdAt": new Date("2025-02-27T18:55:33.380Z"),
+          "createdAt": "2025-07-25T00:55:45.497Z",
           "metadata": {}
         }
       },
@@ -2292,15 +2292,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 26",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-26",
           "title": "Photo 26",
           "description": "Beautiful photo 26 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_03.webp",
-          "createdAt": new Date("2025-07-15T18:25:03.467Z"),
+          "createdAt": "2025-07-17T17:21:20.457Z",
           "metadata": {}
         }
       },
@@ -2313,15 +2313,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 27",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-27",
           "title": "Photo 27",
           "description": "Beautiful photo 27 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_09.webp",
-          "createdAt": new Date("2025-03-04T08:49:09.307Z"),
+          "createdAt": "2025-07-18T07:05:42.962Z",
           "metadata": {}
         }
       },
@@ -2334,15 +2334,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 28",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-28",
           "title": "Photo 28",
           "description": "Beautiful photo 28 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_12.webp",
-          "createdAt": new Date("2025-04-17T02:29:05.997Z"),
+          "createdAt": "2025-04-03T19:13:18.537Z",
           "metadata": {}
         }
       },
@@ -2355,15 +2355,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 29",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-29",
           "title": "Photo 29",
           "description": "Beautiful photo 29 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_14.webp",
-          "createdAt": new Date("2025-05-23T18:50:42.181Z"),
+          "createdAt": "2025-03-11T00:17:22.797Z",
           "metadata": {}
         }
       },
@@ -2376,15 +2376,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 30",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-30",
           "title": "Photo 30",
           "description": "Beautiful photo 30 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_15.webp",
-          "createdAt": new Date("2025-07-03T01:42:54.183Z"),
+          "createdAt": "2025-03-22T10:13:49.317Z",
           "metadata": {}
         }
       },
@@ -2397,15 +2397,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 31",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-31",
           "title": "Photo 31",
           "description": "Beautiful photo 31 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_19.webp",
-          "createdAt": new Date("2025-03-10T21:11:37.318Z"),
+          "createdAt": "2025-06-18T07:41:41.298Z",
           "metadata": {}
         }
       },
@@ -2418,15 +2418,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 32",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-32",
           "title": "Photo 32",
           "description": "Beautiful photo 32 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_21.webp",
-          "createdAt": new Date("2025-04-01T21:12:33.673Z"),
+          "createdAt": "2025-05-22T06:22:52.440Z",
           "metadata": {}
         }
       },
@@ -2439,15 +2439,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 33",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-33",
           "title": "Photo 33",
           "description": "Beautiful photo 33 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_22.webp",
-          "createdAt": new Date("2025-08-04T04:37:19.939Z"),
+          "createdAt": "2025-07-10T08:48:52.447Z",
           "metadata": {}
         }
       },
@@ -2460,15 +2460,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 34",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-34",
           "title": "Photo 34",
           "description": "Beautiful photo 34 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_27.webp",
-          "createdAt": new Date("2025-05-13T17:19:59.580Z"),
+          "createdAt": "2025-07-30T08:17:38.488Z",
           "metadata": {}
         }
       },
@@ -2481,15 +2481,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 35",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-35",
           "title": "Photo 35",
           "description": "Beautiful photo 35 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_29.webp",
-          "createdAt": new Date("2025-06-03T19:17:04.840Z"),
+          "createdAt": "2025-05-23T07:10:47.851Z",
           "metadata": {}
         }
       },
@@ -2502,15 +2502,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 36",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-36",
           "title": "Photo 36",
           "description": "Beautiful photo 36 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_39.webp",
-          "createdAt": new Date("2025-03-13T07:59:18.412Z"),
+          "createdAt": "2025-06-16T21:07:32.726Z",
           "metadata": {}
         }
       },
@@ -2523,15 +2523,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 37",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-37",
           "title": "Photo 37",
           "description": "Beautiful photo 37 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_42.webp",
-          "createdAt": new Date("2025-06-20T03:44:43.580Z"),
+          "createdAt": "2025-04-19T17:17:19.639Z",
           "metadata": {}
         }
       },
@@ -2544,15 +2544,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 38",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-38",
           "title": "Photo 38",
           "description": "Beautiful photo 38 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_43.webp",
-          "createdAt": new Date("2025-06-13T23:46:17.078Z"),
+          "createdAt": "2025-08-22T18:22:00.443Z",
           "metadata": {}
         }
       },
@@ -2565,15 +2565,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 39",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-39",
           "title": "Photo 39",
           "description": "Beautiful photo 39 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_47.webp",
-          "createdAt": new Date("2025-03-03T17:38:47.396Z"),
+          "createdAt": "2025-04-08T00:44:02.866Z",
           "metadata": {}
         }
       },
@@ -2586,15 +2586,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 40",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-40",
           "title": "Photo 40",
           "description": "Beautiful photo 40 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_48.webp",
-          "createdAt": new Date("2025-07-28T12:49:09.455Z"),
+          "createdAt": "2025-05-09T20:58:23.500Z",
           "metadata": {}
         }
       },
@@ -2607,15 +2607,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 41",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-41",
           "title": "Photo 41",
           "description": "Beautiful photo 41 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/picture_50.webp",
-          "createdAt": new Date("2025-07-14T08:29:14.313Z"),
+          "createdAt": "2025-05-20T08:29:20.906Z",
           "metadata": {}
         }
       },
@@ -2628,15 +2628,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 42",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-42",
           "title": "Photo 42",
           "description": "Beautiful photo 42 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/shot_02.webp",
-          "createdAt": new Date("2025-03-25T17:14:37.003Z"),
+          "createdAt": "2025-07-02T23:25:49.754Z",
           "metadata": {}
         }
       },
@@ -2649,15 +2649,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 43",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-43",
           "title": "Photo 43",
           "description": "Beautiful photo 43 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/shot_06.webp",
-          "createdAt": new Date("2025-08-16T23:10:18.775Z"),
+          "createdAt": "2025-04-03T17:51:58.573Z",
           "metadata": {}
         }
       },
@@ -2670,15 +2670,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 44",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-44",
           "title": "Photo 44",
           "description": "Beautiful photo 44 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/shot_11.webp",
-          "createdAt": new Date("2025-03-25T18:50:24.349Z"),
+          "createdAt": "2025-04-07T23:07:19.723Z",
           "metadata": {}
         }
       },
@@ -2691,15 +2691,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 45",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-45",
           "title": "Photo 45",
           "description": "Beautiful photo 45 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/shot_17.webp",
-          "createdAt": new Date("2025-08-19T04:23:32.546Z"),
+          "createdAt": "2025-08-20T16:31:33.591Z",
           "metadata": {}
         }
       },
@@ -2712,15 +2712,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 46",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-46",
           "title": "Photo 46",
           "description": "Beautiful photo 46 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/shot_23.webp",
-          "createdAt": new Date("2025-08-14T04:37:47.005Z"),
+          "createdAt": "2025-07-30T11:01:33.641Z",
           "metadata": {}
         }
       },
@@ -2733,15 +2733,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 47",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-47",
           "title": "Photo 47",
           "description": "Beautiful photo 47 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/shot_31.webp",
-          "createdAt": new Date("2025-06-24T10:49:31.351Z"),
+          "createdAt": "2025-04-15T08:57:34.412Z",
           "metadata": {}
         }
       },
@@ -2754,15 +2754,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 48",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-48",
           "title": "Photo 48",
           "description": "Beautiful photo 48 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/shot_35.webp",
-          "createdAt": new Date("2025-04-07T12:19:23.121Z"),
+          "createdAt": "2025-07-07T09:47:49.633Z",
           "metadata": {}
         }
       },
@@ -2775,15 +2775,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 49",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-49",
           "title": "Photo 49",
           "description": "Beautiful photo 49 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/shot_37.webp",
-          "createdAt": new Date("2025-04-10T07:39:20.974Z"),
+          "createdAt": "2025-08-24T20:28:21.363Z",
           "metadata": {}
         }
       },
@@ -2796,15 +2796,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 50",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-03-30T05:39:39.569Z"),
-        "updatedAt": new Date("2025-03-30T05:39:39.569Z"),
+        "createdAt": "2025-07-10T14:11:04.275Z",
+        "updatedAt": "2025-07-10T14:11:04.275Z",
         "memory": {
           "id": "memory-large-gallery-50",
           "title": "Photo 50",
           "description": "Beautiful photo 50 from Large Collection",
           "type": "image",
           "url": "/mock/galleries/large-gallery/shot_40.webp",
-          "createdAt": new Date("2025-07-07T14:23:32.140Z"),
+          "createdAt": "2025-05-09T02:49:57.417Z",
           "metadata": {}
         }
       }
@@ -2817,8 +2817,8 @@ export const generatedGalleries: GalleryWithItems[] = [
     "title": "Broken Links Gallery",
     "description": "Testing fallback behavior with broken image links",
     "isPublic": true,
-    "createdAt": new Date("2025-05-20T08:21:04.159Z"),
-    "updatedAt": new Date("2025-05-20T08:21:04.159Z"),
+    "createdAt": "2025-07-14T09:36:06.214Z",
+    "updatedAt": "2025-07-14T09:36:06.214Z",
     "ownerId": "mock-user-1",
     "items": [
       {
@@ -2830,15 +2830,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 1",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-05-20T08:21:04.159Z"),
-        "updatedAt": new Date("2025-05-20T08:21:04.159Z"),
+        "createdAt": "2025-07-14T09:36:06.214Z",
+        "updatedAt": "2025-07-14T09:36:06.214Z",
         "memory": {
           "id": "memory-broken-gallery-1",
           "title": "Photo 1",
           "description": "Beautiful photo 1 from Broken Links Gallery",
           "type": "image",
           "url": "/mock/galleries/broken-gallery/broken_image_1.webp",
-          "createdAt": new Date("2025-08-09T16:29:17.577Z"),
+          "createdAt": "2025-05-22T09:56:41.867Z",
           "metadata": {}
         }
       },
@@ -2851,15 +2851,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 2",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-05-20T08:21:04.159Z"),
-        "updatedAt": new Date("2025-05-20T08:21:04.159Z"),
+        "createdAt": "2025-07-14T09:36:06.214Z",
+        "updatedAt": "2025-07-14T09:36:06.214Z",
         "memory": {
           "id": "memory-broken-gallery-2",
           "title": "Photo 2",
           "description": "Beautiful photo 2 from Broken Links Gallery",
           "type": "image",
           "url": "/mock/galleries/broken-gallery/missing_photo_2.webp",
-          "createdAt": new Date("2025-05-15T05:55:18.908Z"),
+          "createdAt": "2025-07-17T19:04:01.590Z",
           "metadata": {}
         }
       },
@@ -2872,15 +2872,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 3",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-05-20T08:21:04.159Z"),
-        "updatedAt": new Date("2025-05-20T08:21:04.159Z"),
+        "createdAt": "2025-07-14T09:36:06.214Z",
+        "updatedAt": "2025-07-14T09:36:06.214Z",
         "memory": {
           "id": "memory-broken-gallery-3",
           "title": "Photo 3",
           "description": "Beautiful photo 3 from Broken Links Gallery",
           "type": "image",
           "url": "/mock/galleries/broken-gallery/error_image_3.webp",
-          "createdAt": new Date("2025-07-22T11:07:23.075Z"),
+          "createdAt": "2025-03-02T10:00:32.611Z",
           "metadata": {}
         }
       },
@@ -2893,15 +2893,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 4",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-05-20T08:21:04.159Z"),
-        "updatedAt": new Date("2025-05-20T08:21:04.159Z"),
+        "createdAt": "2025-07-14T09:36:06.214Z",
+        "updatedAt": "2025-07-14T09:36:06.214Z",
         "memory": {
           "id": "memory-broken-gallery-4",
           "title": "Photo 4",
           "description": "Beautiful photo 4 from Broken Links Gallery",
           "type": "image",
           "url": "/mock/galleries/broken-gallery/not_found_4.webp",
-          "createdAt": new Date("2025-08-08T13:25:36.835Z"),
+          "createdAt": "2025-06-24T10:57:23.199Z",
           "metadata": {}
         }
       },
@@ -2914,15 +2914,15 @@ export const generatedGalleries: GalleryWithItems[] = [
         "caption": "Photo 5",
         "isFeatured": false,
         "metadata": {},
-        "createdAt": new Date("2025-05-20T08:21:04.159Z"),
-        "updatedAt": new Date("2025-05-20T08:21:04.159Z"),
+        "createdAt": "2025-07-14T09:36:06.214Z",
+        "updatedAt": "2025-07-14T09:36:06.214Z",
         "memory": {
           "id": "memory-broken-gallery-5",
           "title": "Photo 5",
           "description": "Beautiful photo 5 from Broken Links Gallery",
           "type": "image",
           "url": "/mock/galleries/broken-gallery/invalid_link_5.webp",
-          "createdAt": new Date("2025-05-16T05:15:27.351Z"),
+          "createdAt": "2025-04-22T03:58:46.573Z",
           "metadata": {}
         }
       }

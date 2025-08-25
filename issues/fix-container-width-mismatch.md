@@ -220,6 +220,59 @@ The header keeps shrinking but the image area sets a floor, so they fall out of 
 
 **Request:** Please paste the immediate children of the grid (one `<li>`/card HTML) to identify the precise class causing the ~515px lock.
 
+**Senior Developer Solution Applied:**
+
+**Changes Made to Gallery View (`src/app/[lang]/gallery/[id]/page.tsx`):**
+
+1. **Main Container**: Added `min-w-0` to photo grid container
+
+   ```jsx
+   <div className="container mx-auto px-6 py-8 min-w-0">
+   ```
+
+2. **Grid Container**: Added `min-w-0` to grid wrapper
+
+   ```jsx
+   <div className="grid min-w-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+   ```
+
+3. **Gallery Items**: Added `min-w-0` to each gallery card
+
+   ```jsx
+   <div className="min-w-0 aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity">
+   ```
+
+4. **Image Containers**: Added `min-w-0` to both image and fallback containers
+
+   ```jsx
+   <div className="w-full h-full relative min-w-0">
+   <div className="w-full h-full bg-muted flex items-center justify-center min-w-0">
+   ```
+
+5. **Images**: Added `block max-w-full` to images
+
+   ```jsx
+   <img className="block w-full h-full max-w-full object-cover">
+   ```
+
+6. **Text Elements**: Added `break-words` to text content
+
+   ```jsx
+   <span className="text-sm break-words">Photo {index + 1}</span>
+   <span className="text-xs text-muted-foreground/70 mt-1 break-words">Failed to load</span>
+   ```
+
+7. **Header Flex Containers**: Added `min-w-0` to all flex containers in header
+   ```jsx
+   <div className="container mx-auto px-6 py-4 min-w-0">
+   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 min-w-0">
+   <div className="flex-1 min-w-0">
+   <div className="flex items-center justify-between min-w-0">
+   <div className="flex items-center gap-2 flex-shrink-0 min-w-0">
+   ```
+
+**Status**: Applied all recommended fixes, but issue persists. Container still stops shrinking at ~515px.
+
 **Gallery Card HTML (from our code):**
 
 ```html

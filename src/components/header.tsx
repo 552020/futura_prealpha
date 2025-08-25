@@ -12,6 +12,7 @@ import { useInterface } from "@/contexts/interface-context";
 import { LanguageSwitcher } from "./language-switcher";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "./ui/sheet";
 import { Dictionary } from "@/utils/dictionaries";
+import { usePathname } from "next/navigation";
 
 // Define a proper type for the dictionary with optional fields
 type HeaderDictionary = Dictionary;
@@ -19,8 +20,16 @@ type HeaderDictionary = Dictionary;
 export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: string }) {
   //   const { data: session, status } = useSession();
   const { mode } = useInterface();
+  const pathname = usePathname();
   // Use the passed lang prop if available, otherwise get it from params
   const currentLang = lang || "en";
+
+  // Hide header on gallery preview pages
+  const isGalleryPreview = pathname.includes("/gallery/") && pathname.includes("/preview");
+
+  if (isGalleryPreview) {
+    return null;
+  }
 
   const handleShare = async () => {
     try {

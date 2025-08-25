@@ -18,7 +18,7 @@
   - Add track(event, props) analytics shim for future implementation
   - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-- [ ] 3. Implement GalleryPage component
+- [x] 3. Implement GalleryPage component
 
   - Create main gallery overview page at /[lang]/gallery route
   - Display user's own galleries in responsive grid layout
@@ -26,9 +26,9 @@
   - Implement loading states and error handling
   - _Requirements: 1.1, 1.2, 1.3, 1.4_
 
-- [ ] 4. Build GalleryCard component for gallery list display
+- [x] 4. Build GalleryCard component for gallery list display
 
-  - Create reusable gallery card using shadcn/ui Card component
+  - Create reusable gallery card using shadcn/ui Card component (integrated into GalleryPage)
   - Use shadcn/ui Badge for gallery stats (image count, privacy status)
   - Implement hover effects with shadcn/ui styling patterns
   - Handle missing cover images with placeholder logic (first positioned → latest → placeholder)

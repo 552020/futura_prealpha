@@ -23,8 +23,15 @@ export default function Sidebar({ dict }: SidebarProps) {
   // Helper function to construct full URLs with language
   const getFullHref = (baseHref: string) => `/${lang}${baseHref}`;
 
-  // Don't render sidebar in marketing mode
+  // Don't render sidebar in marketing mode or gallery preview pages
   if (mode === "marketing") {
+    return null;
+  }
+
+  // Hide sidebar on gallery preview pages
+  const isGalleryPreview = pathname.includes("/gallery/") && pathname.includes("/preview");
+
+  if (isGalleryPreview) {
     return null;
   }
 
