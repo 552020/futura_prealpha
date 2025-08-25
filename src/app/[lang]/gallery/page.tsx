@@ -5,9 +5,10 @@ import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Calendar, Image, Lock, Globe } from "lucide-react";
+import { Calendar, Image, Lock, Globe } from "lucide-react";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
+import { GalleryTopBar } from "@/components/gallery-top-bar";
 
 // Mock data flag for development
 const USE_MOCK_DATA = true;
@@ -16,6 +17,8 @@ export default function GalleryPage() {
   const { isAuthorized, isLoading: authLoading } = useAuthGuard();
 
   const [galleries, setGalleries] = useState<GalleryWithItems[]>([]);
+  const [filteredGalleries, setFilteredGalleries] = useState<GalleryWithItems[]>([]);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,6 +35,7 @@ export default function GalleryPage() {
 
       const result = await galleryService.listGalleries(USE_MOCK_DATA);
       setGalleries(result.galleries);
+      setFilteredGalleries(result.galleries);
     } catch (err) {
       console.error("Error loading galleries:", err);
       setError("Failed to load galleries");
@@ -48,6 +52,14 @@ export default function GalleryPage() {
   const handleCreateGallery = () => {
     // TODO: Open create gallery modal
     console.log("Open create gallery modal");
+  };
+
+  const handleFilteredGalleriesChange = (filtered: GalleryWithItems[]) => {
+    setFilteredGalleries(filtered);
+  };
+
+  const handleViewModeChange = (mode: "grid" | "list") => {
+    setViewMode(mode);
   };
 
   if (authLoading || isLoading) {
@@ -86,43 +98,31 @@ export default function GalleryPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-light">Galleries</h1>
-              <p className="text-muted-foreground mt-1">
-                {galleries.length === 0
-                  ? "No galleries yet"
-                  : `${galleries.length} ${galleries.length === 1 ? "collection" : "collections"}`}
-              </p>
-            </div>
-            <Button onClick={handleCreateGallery} className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Create Gallery
-            </Button>
-          </div>
-        </div>
+      {/* Top Bar */}
+      <div className="container mx-auto px-6 py-4">
+        <GalleryTopBar
+          galleries={galleries}
+          onFilteredGalleriesChange={handleFilteredGalleriesChange}
+          onCreateGallery={handleCreateGallery}
+          viewMode={viewMode}
+          onViewModeChange={handleViewModeChange}
+        />
       </div>
 
       {/* Gallery Grid */}
-      <div className="container mx-auto px-6 py-8">
-        {galleries.length === 0 ? (
+      <div className="container mx-auto px-6">
+        {filteredGalleries.length === 0 ? (
           <div className="text-center py-16">
             <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-6">
               <Image className="h-12 w-12 text-muted-foreground" aria-hidden="true" />
             </div>
             <h3 className="text-xl font-semibold mb-2">No galleries yet</h3>
             <p className="text-muted-foreground mb-6">Create your first gallery to start organizing your photos</p>
-            <Button onClick={handleCreateGallery} className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Create Gallery
-            </Button>
+            <Button onClick={handleCreateGallery}>Create Gallery</Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {galleries.map((gallery) => (
+            {filteredGalleries.map((gallery) => (
               <Card
                 key={gallery.id}
                 className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
