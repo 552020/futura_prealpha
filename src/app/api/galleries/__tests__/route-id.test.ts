@@ -123,7 +123,10 @@ describe("Individual Gallery Routes Logic", () => {
 
   describe("DELETE /api/galleries/[id] - Deletion Logic", () => {
     it("should validate gallery ownership for deletion", () => {
-      const validateGalleryOwnership = (gallery: { id: string; ownerId: string; title: string } | null, userId: string) => {
+      const validateGalleryOwnership = (
+        gallery: { id: string; ownerId: string; title: string } | null,
+        userId: string
+      ) => {
         if (!gallery) return { canDelete: false, reason: "Gallery not found" };
         if (gallery.ownerId !== userId) return { canDelete: false, reason: "Not authorized to delete this gallery" };
         return { canDelete: true, reason: "Owner can delete" };

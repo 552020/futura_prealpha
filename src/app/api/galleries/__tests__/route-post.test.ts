@@ -36,7 +36,11 @@ describe("POST /api/galleries - Gallery Creation Logic", () => {
   });
 
   it("should validate from-memories creation parameters", () => {
-          const validateFromMemoriesParams = (params: { type?: string; memories?: { id: string; type: string }[]; title?: string }) => {
+    const validateFromMemoriesParams = (params: {
+      type?: string;
+      memories?: { id: string; type: string }[];
+      title?: string;
+    }) => {
       if (!params.type) return { valid: false, error: "Type is required" };
       if (params.type !== "from-memories") return { valid: false, error: "Type must be 'from-memories'" };
       if (!params.memories || !Array.isArray(params.memories) || params.memories.length === 0) {
