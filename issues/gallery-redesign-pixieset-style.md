@@ -12,6 +12,54 @@ The gallery should be a **simple, elegant photo gallery** like Pixieset, not a p
 - Treating it like a dashboard for individual memories
 - Missing the core gallery experience
 
+## Requirements
+
+### Gallery Access & Navigation
+
+- Gallery tab in sidebar navigation (alongside Dashboard, Profile, etc.)
+- Users can access their galleries through the sidebar
+- Simple, clean navigation to gallery list and individual galleries
+
+### Gallery Creation
+
+- "Create Gallery" button in dashboard top bar (next to "Add File", "Add Folder")
+- Gallery creation only from folders initially
+- Gallery creation requires title and description
+
+### Gallery Content & Structure
+
+- Galleries contain only images (no videos, documents, etc.)
+- Each gallery has a title and description
+- Simple image grid layout within galleries
+- No search or filter functionality - focus purely on visual presentation
+
+### Gallery Privacy & Sharing
+
+- Private galleries (default)
+- Publishable galleries with privacy settings:
+  - Public (anyone with link can view)
+  - Shared (specific people only)
+- Gallery sharing functionality
+
+### Gallery Viewing Experience
+
+- Pixieset-style simple, elegant presentation
+- Individual image viewing capability
+- Minimal navigation (previous/next, back to gallery)
+- Focus on visual content over complex UI features
+- Responsive design for all devices
+
+### Technical Requirements
+
+- Reuse existing gallery API endpoints
+- Integrate with current sidebar navigation structure
+- Maintain authentication protection
+- Keep implementation simple and focused
+
+## Task
+
+## Design
+
 ## Requirements: Pixieset-Style Gallery
 
 ### Core Concept

@@ -3,5 +3,6 @@
     "activityBar.background": "#2F2F09",
     "titleBar.activeBackground": "#42420C",
     "titleBar.activeForeground": "#FBFBEA"
-  }
+  },
+  "kiroAgent.configureMCP": "Disabled"
 }
