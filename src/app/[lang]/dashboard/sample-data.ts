@@ -180,7 +180,7 @@ const generateFolder1Memories = (): DashboardMemory[] => {
       status: getRandomStatus(),
       metadata: {
         originalPath: `Family Album/family_photo_${i}.jpg`,
-        folderName: "Family Album",
+        folderName: "Family-Album",
       },
     });
     memoryIndex++;
@@ -198,7 +198,7 @@ const generateFolder1Memories = (): DashboardMemory[] => {
       status: getRandomStatus(),
       metadata: {
         originalPath: `Family Album/family_video_${i}.mp4`,
-        folderName: "Family Album",
+        folderName: "Family-Album",
       },
     });
     memoryIndex++;
@@ -216,7 +216,7 @@ const generateFolder1Memories = (): DashboardMemory[] => {
       status: getRandomStatus(),
       metadata: {
         originalPath: `Family Album/family_note_${i}.txt`,
-        folderName: "Family Album",
+        folderName: "Family-Album",
       },
     });
     memoryIndex++;
@@ -243,7 +243,7 @@ const generateFolder2Memories = (): DashboardMemory[] => {
       status: getRandomStatus(),
       metadata: {
         originalPath: `Project Files/project_image_${i}.jpg`,
-        folderName: "Project Files",
+        folderName: "Project-Files",
       },
     });
     memoryIndex++;
@@ -261,7 +261,7 @@ const generateFolder2Memories = (): DashboardMemory[] => {
       status: getRandomStatus(),
       metadata: {
         originalPath: `Project Files/project_video_${i}.mp4`,
-        folderName: "Project Files",
+        folderName: "Project-Files",
       },
     });
     memoryIndex++;
@@ -279,7 +279,7 @@ const generateFolder2Memories = (): DashboardMemory[] => {
       status: getRandomStatus(),
       metadata: {
         originalPath: `Project Files/project_document_${i}.md`,
-        folderName: "Project Files",
+        folderName: "Project-Files",
       },
     });
     memoryIndex++;
@@ -297,7 +297,7 @@ const generateFolder2Memories = (): DashboardMemory[] => {
       status: getRandomStatus(),
       metadata: {
         originalPath: `Project Files/project_note_${i}.txt`,
-        folderName: "Project Files",
+        folderName: "Project-Files",
       },
     });
     memoryIndex++;
@@ -315,7 +315,7 @@ const generateFolder2Memories = (): DashboardMemory[] => {
       status: getRandomStatus(),
       metadata: {
         originalPath: `Project Files/project_audio_${i}.mp3`,
-        folderName: "Project Files",
+        folderName: "Project-Files",
       },
     });
     memoryIndex++;

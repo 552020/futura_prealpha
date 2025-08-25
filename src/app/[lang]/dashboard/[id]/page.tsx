@@ -9,10 +9,14 @@ import { Loader2, Image as ImageIcon, Video, FileText, Music, ChevronLeft } from
 import { useAuthGuard } from "@/utils/authentication";
 import { format } from "date-fns";
 import { shortenTitle } from "@/lib/utils";
+import { sampleDashboardMemories } from "../sample-data";
+
+// Demo flag - set to true to use mock data for demo
+const USE_MOCK_DATA = true;
 
 interface Memory {
   id: string;
-  type: "image" | "video" | "note" | "audio";
+  type: "image" | "video" | "note" | "audio" | "document" | "folder";
   title: string;
   description?: string;
   createdAt: string;
@@ -20,10 +24,16 @@ interface Memory {
   content?: string;
   mimeType?: string;
   ownerId?: string;
+  thumbnail?: string;
+  metadata?: {
+    originalPath?: string;
+    folderName?: string;
+  };
 }
 
 export default function MemoryDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const params = useParams<{ id: string; lang: string }>();
+  const { id } = params;
   const router = useRouter();
   const { isAuthorized, isTemporaryUser, userId, redirectToSignIn } = useAuthGuard();
   const [memory, setMemory] = useState<Memory | null>(null);
@@ -32,6 +42,43 @@ export default function MemoryDetailPage() {
   const fetchMemory = useCallback(async () => {
     try {
       setIsLoading(true);
+
+      if (USE_MOCK_DATA) {
+        console.log("🎭 MOCK DATA - Using sample data for memory detail");
+        // Find the memory in the sample data
+        const mockMemory = sampleDashboardMemories.find((m) => m.id === id);
+
+        if (mockMemory) {
+          console.log("🔍 Found mock memory:", mockMemory);
+          const transformedMemory: Memory = {
+            id: mockMemory.id,
+            type: mockMemory.type,
+            title: mockMemory.title || "Untitled",
+            description: mockMemory.description,
+            createdAt: mockMemory.createdAt,
+            url: mockMemory.url,
+            thumbnail: mockMemory.thumbnail,
+            content:
+              mockMemory.type === "note" ? "This is a sample note content for demonstration purposes." : undefined,
+            mimeType:
+              mockMemory.type === "video"
+                ? "video/mp4"
+                : mockMemory.type === "audio"
+                ? "audio/mp3"
+                : mockMemory.type === "document"
+                ? "text/markdown"
+                : undefined,
+            ownerId: "mock-user-id",
+            metadata: mockMemory.metadata,
+          };
+          setMemory(transformedMemory);
+        } else {
+          console.log("❌ Mock memory not found:", id);
+          setMemory(null);
+        }
+        return;
+      }
+
       const response = await fetch(`/api/memories/${id}`);
 
       console.log("Memory API Response:", {
@@ -127,7 +174,7 @@ export default function MemoryDetailPage() {
           variant="ghost"
           size="icon"
           className="mb-6 w-10 h-10 rounded-full bg-black dark:bg-white hover:scale-105 transition-transform"
-          onClick={() => router.push("/dashboard")}
+          onClick={() => router.push(`/${params.lang}/dashboard`)}
         >
           <ChevronLeft className="h-6 w-6 text-white dark:text-black" />
         </Button>
@@ -167,7 +214,14 @@ export default function MemoryDetailPage() {
         variant="ghost"
         size="icon"
         className="mb-6 w-10 h-10 rounded-full bg-black dark:bg-white hover:scale-105 transition-transform"
-        onClick={() => router.push("/dashboard")}
+        onClick={() => {
+          // Check if the memory belongs to a folder and go back to the folder
+          if (memory?.metadata?.folderName) {
+            router.push(`/${params.lang}/dashboard/folder/${memory.metadata.folderName}`);
+          } else {
+            router.push(`/${params.lang}/dashboard`);
+          }
+        }}
       >
         <ChevronLeft className="h-6 w-6 text-white dark:text-black" />
       </Button>
@@ -203,7 +257,9 @@ export default function MemoryDetailPage() {
           <div className="flex items-center gap-4">
             {getIcon()}
             <div>
-              <h1 className="text-xl font-semibold sm:text-2xl md:text-3xl truncate min-w-0" title={displayTitle}>{shortTitle}</h1>
+              <h1 className="text-xl font-semibold sm:text-2xl md:text-3xl truncate min-w-0" title={displayTitle}>
+                {shortTitle}
+              </h1>
               <p className="text-sm text-muted-foreground">Saved on {format(new Date(memory.createdAt), "PPP")}</p>
             </div>
           </div>

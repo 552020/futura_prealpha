@@ -180,11 +180,20 @@ export default function VaultPage() {
   };
 
   const handleMemoryClick = (memory: Memory) => {
+    console.log("🔍 Memory clicked:", memory);
+    console.log("🔍 Memory type:", memory.type);
+    console.log("🔍 Memory ID:", memory.id);
+
     // Check if it's a folder item
     if (memory.type === "folder") {
-      router.push(`/${params.lang}/dashboard/folder/${memory.id}`);
+      // For folders, we need to extract the folder name from the ID
+      const folderName = memory.id.replace("folder-", "");
+      console.log("🔍 Extracted folder name:", folderName);
+      console.log("🔍 Navigating to folder:", folderName);
+      router.push(`/${params.lang}/dashboard/folder/${folderName}`);
     } else {
-      // Navigate to the memory detail page
+      // For individual memories, navigate to the memory detail page
+      console.log("🔍 Navigating to memory:", memory.id);
       router.push(`/${params.lang}/dashboard/${memory.id}`);
     }
   };

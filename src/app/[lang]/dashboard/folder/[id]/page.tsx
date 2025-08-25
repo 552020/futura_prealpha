@@ -17,6 +17,7 @@ import {
   type DashboardItem,
 } from "@/services/memories";
 import { Memory } from "@/types/memory";
+import { sampleDashboardMemories } from "../../sample-data";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -25,6 +26,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+
+// Demo flag - set to true to use mock data for demo
+const USE_MOCK_DATA = true;
 
 export default function FolderPage() {
   console.log("🔍 Folder page component rendered");
@@ -44,6 +48,33 @@ export default function FolderPage() {
 
   const fetchFolderMemories = useCallback(async () => {
     console.log("🚀 ENTERING fetchFolderMemories function");
+
+    if (USE_MOCK_DATA) {
+      console.log("🎭 MOCK DATA - Using sample data for folder");
+      console.log("🔍 Looking for folder:", folderId);
+      console.log("🔍 Available memories:", sampleDashboardMemories.length);
+      console.log("🔍 Sample memories with metadata:", sampleDashboardMemories.filter(m => m.metadata?.folderName).map(m => ({ id: m.id, folderName: m.metadata?.folderName })));
+      
+      // Filter mock memories by folder name
+      const folderMemories = sampleDashboardMemories.filter((memory) => memory.metadata?.folderName === folderId);
+
+      console.log("🔍 Mock folder memories found:", folderMemories.length);
+
+      if (folderMemories.length > 0) {
+        setFolderName(folderMemories[0].metadata?.folderName || folderId);
+        setMemories(folderMemories);
+      } else {
+        console.log("❌ No mock memories found for folder:", folderId);
+        toast({
+          title: "Folder not found",
+          description: "This folder doesn't exist or is empty.",
+          variant: "destructive",
+        });
+        router.push(`/${params.lang}/dashboard`);
+      }
+      setIsLoadingMemories(false);
+      return;
+    }
 
     try {
       // Get all memories and filter by folder
