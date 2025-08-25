@@ -119,4 +119,4 @@ export interface GalleryErrorBoundaryState {
 }
 
 // Analytics tracking function type
-export type TrackFunction = (event: string, props?: Record<string, any>) => void;
+export type TrackFunction = (event: string, props?: Record<string, unknown>) => void;

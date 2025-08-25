@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Share2, Edit, Globe, Lock, ImageIcon, Trash2, Eye, EyeOff } from "lucide-react";
+import { Share2, Edit, Globe, Lock, ImageIcon, Trash2, Eye, EyeOff, Maximize2 } from "lucide-react";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 
@@ -123,6 +123,10 @@ export default function GalleryViewPage() {
               {gallery.description && <p className="text-muted-foreground text-sm mt-1">{gallery.description}</p>}
             </div>
             <div className="flex items-center gap-2 flex-shrink-0 min-w-0">
+              <Button variant="outline" size="sm" onClick={handleFullScreenView}>
+                <Maximize2 className="h-4 w-4 mr-2" />
+                Preview
+              </Button>
               <Button variant="outline" size="sm">
                 <Share2 className="h-4 w-4 mr-2" />
                 Share
