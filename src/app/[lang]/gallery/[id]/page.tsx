@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Share2, Edit, Globe, Lock, ImageIcon } from "lucide-react";
+import { Share2, Edit, Globe, Lock, ImageIcon, Trash2, Maximize2, Eye, EyeOff } from "lucide-react";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 
@@ -40,10 +40,6 @@ export default function GalleryViewPage() {
     }
   };
 
-  const handleBack = () => {
-    window.history.back();
-  };
-
   const handleImageClick = (index: number) => {
     setSelectedImageIndex(index);
   };
@@ -67,6 +63,21 @@ export default function GalleryViewPage() {
   const handleImageError = useCallback((imageUrl: string) => {
     setFailedImages((prev) => new Set(prev).add(imageUrl));
   }, []);
+
+  const handleDeleteGallery = () => {
+    // TODO: Implement delete gallery functionality
+    console.log("Delete gallery:", gallery?.id);
+  };
+
+  const handleFullScreenView = () => {
+    // TODO: Implement full screen view functionality
+    console.log("Enter full screen view");
+  };
+
+  const handleTogglePrivacy = () => {
+    // TODO: Implement privacy toggle functionality
+    console.log("Toggle privacy for gallery:", gallery?.id);
+  };
 
   if (authLoading || isLoading) {
     return (
@@ -96,7 +107,6 @@ export default function GalleryViewPage() {
         <div className="text-center">
           <h2 className="text-2xl font-semibold mb-4">Gallery not found</h2>
           <p className="text-muted-foreground mb-6">{error || "This gallery doesn't exist"}</p>
-          <Button onClick={handleBack}>Go Back</Button>
         </div>
       </div>
     );
@@ -107,38 +117,55 @@ export default function GalleryViewPage() {
       {/* Header */}
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={handleBack} className="flex items-center gap-2">
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
-              <div>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-light">{gallery.title}</h1>
-                {gallery.description && <p className="text-muted-foreground text-sm mt-1">{gallery.description}</p>}
+                <Badge variant="outline" className="text-xs font-normal">
+                  {gallery.isPublic ? (
+                    <>
+                      <Globe className="h-3 w-3 mr-1" />
+                      Public
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-3 w-3 mr-1" />
+                      Private
+                    </>
+                  )}
+                </Badge>
               </div>
+              {gallery.description && <p className="text-muted-foreground text-sm mt-1">{gallery.description}</p>}
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant={gallery.isPublic ? "default" : "secondary"}>
-                {gallery.isPublic ? (
-                  <>
-                    <Globe className="h-3 w-3 mr-1" />
-                    Public
-                  </>
-                ) : (
-                  <>
-                    <Lock className="h-3 w-3 mr-1" />
-                    Private
-                  </>
-                )}
-              </Badge>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Button variant="outline" size="sm" onClick={handleFullScreenView}>
+                <Maximize2 className="h-4 w-4 mr-2" />
+                Preview
+              </Button>
               <Button variant="outline" size="sm">
                 <Share2 className="h-4 w-4 mr-2" />
                 Share
               </Button>
+              <Button variant="outline" size="sm" onClick={handleTogglePrivacy}>
+                {gallery.isPublic ? (
+                  <>
+                    <EyeOff className="h-4 w-4 mr-2" />
+                    Hide
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-4 w-4 mr-2" />
+                    Publish
+                  </>
+                )}
+              </Button>
               <Button variant="outline" size="sm">
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleDeleteGallery}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
               </Button>
             </div>
           </div>
