@@ -114,6 +114,7 @@ export default function GalleryPage() {
         {filteredGalleries.length === 0 ? (
           <div className="text-center py-16">
             <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-6">
+              {/* eslint-disable-next-line jsx-a11y/alt-text */}
               <Image className="h-12 w-12 text-muted-foreground" aria-hidden="true" />
             </div>
             <h3 className="text-xl font-semibold mb-2">No galleries yet</h3>
@@ -131,6 +132,7 @@ export default function GalleryPage() {
                 <div className="aspect-[4/3] bg-muted rounded-t-lg overflow-hidden">
                   {/* Cover image placeholder */}
                   <div className="w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
+                    {/* eslint-disable-next-line jsx-a11y/alt-text */}
                     <Image className="h-12 w-12 text-muted-foreground/50" aria-hidden="true" />
                   </div>
                 </div>
@@ -156,6 +158,7 @@ export default function GalleryPage() {
                   )}
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
+                      {/* eslint-disable-next-line jsx-a11y/alt-text */}
                       <Image className="h-4 w-4" aria-hidden="true" />
                       <span>{gallery.imageCount} images</span>
                     </div>

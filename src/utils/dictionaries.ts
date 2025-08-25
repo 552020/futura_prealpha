@@ -50,6 +50,7 @@ export type BaseDictionary = {
     shared?: string;
     contacts?: string;
     profile?: string;
+    icp?: string;
   };
   footer?: {
     tagline?: string;

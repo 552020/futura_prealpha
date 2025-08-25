@@ -5,7 +5,7 @@ export type NavItem = {
   href: string;
   icon: LucideIcon; // Lucide icon component
   label: string;
-  translationKey: "dashboard" | "gallery" | "feed" | "shared" | "contacts" | "profile";
+  translationKey: "dashboard" | "gallery" | "feed" | "shared" | "contacts" | "profile" | "icp";
 };
 
 // Helper function to get translated label

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,13 +22,7 @@ export default function GalleryViewPage() {
   const [error, setError] = useState<string | null>(null);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    if (isAuthorized && id) {
-      loadGallery();
-    }
-  }, [isAuthorized, id]);
-
-  const loadGallery = async () => {
+  const loadGallery = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -39,7 +34,13 @@ export default function GalleryViewPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (isAuthorized && id) {
+      loadGallery();
+    }
+  }, [isAuthorized, id, loadGallery]);
 
   const handleImageClick = (index: number) => {
     // TODO: Will be implemented in task 6 (ImageLightbox component)
@@ -169,11 +170,13 @@ export default function GalleryViewPage() {
               >
                 {item.memory.url && !failedImages.has(item.memory.url) ? (
                   <div className="w-full h-full relative min-w-0">
-                    <img
+                    <Image
                       src={item.memory.url}
                       alt={item.memory.title || `Photo ${index + 1}`}
-                      className="block w-full h-full max-w-full object-cover"
+                      fill
+                      className="object-cover"
                       onError={() => handleImageError(item.memory.url!)}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                     />
                   </div>
                 ) : (

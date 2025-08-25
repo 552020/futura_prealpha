@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import Image from "next/image";
 import { useAuthGuard } from "@/utils/authentication";
 import { Loader2 } from "lucide-react";
 
@@ -83,7 +84,17 @@ export default function FeedPage() {
           </div>
         );
       case "image":
-        return <img src={item.content} alt={item.title} className="w-full h-auto rounded-lg" />;
+        return (
+          <div className="relative w-full h-64">
+            <Image
+              src={item.content}
+              alt={item.title}
+              fill
+              className="rounded-lg object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+          </div>
+        );
       default:
         return null;
     }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
 import { X, ChevronLeft, ChevronRight, Download, Share2 } from "lucide-react";
@@ -22,11 +23,14 @@ function GalleryHeroCover({
     <div className="relative w-full h-screen bg-black">
       {/* Cover image */}
       {gallery.items[0]?.memory.url && !failedImages.has(gallery.items[0].memory.url) ? (
-        <img
+        <Image
           src={gallery.items[0].memory.url}
           alt={gallery.items[0].memory.title || "Gallery Cover"}
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
           onError={() => onImageError(gallery.items[0].memory.url!)}
+          sizes="100vw"
+          priority
         />
       ) : (
         <div className="w-full h-full bg-gray-800 flex items-center justify-center">
@@ -133,11 +137,13 @@ function GalleryGrid({
             >
               {item.memory.url && !failedImages.has(item.memory.url) ? (
                 <div className="w-full h-full relative">
-                  <img
+                  <Image
                     src={item.memory.url}
                     alt={item.memory.title || `Photo ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                     onError={() => onImageError(item.memory.url!)}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 </div>
               ) : (
@@ -179,12 +185,6 @@ export default function GalleryPreviewPage() {
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [showCover] = useState(true);
 
-  useEffect(() => {
-    if (isAuthorized && id) {
-      loadGallery();
-    }
-  }, [isAuthorized, id]);
-
   const loadGallery = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -199,33 +199,39 @@ export default function GalleryPreviewPage() {
     }
   }, [id]);
 
+  useEffect(() => {
+    if (isAuthorized && id) {
+      loadGallery();
+    }
+  }, [isAuthorized, id, loadGallery]);
+
   const handleImageClick = (index: number) => {
     setSelectedImageIndex(index);
   };
 
-  const handleCloseLightbox = () => {
+  const handleCloseLightbox = useCallback(() => {
     setSelectedImageIndex(null);
-  };
+  }, []);
 
-  const handlePreviousImage = () => {
+  const handlePreviousImage = useCallback(() => {
     if (selectedImageIndex !== null && gallery) {
       setSelectedImageIndex(selectedImageIndex > 0 ? selectedImageIndex - 1 : gallery.items.length - 1);
     }
-  };
+  }, [selectedImageIndex, gallery]);
 
-  const handleNextImage = () => {
+  const handleNextImage = useCallback(() => {
     if (selectedImageIndex !== null && gallery) {
       setSelectedImageIndex(selectedImageIndex < gallery.items.length - 1 ? selectedImageIndex + 1 : 0);
     }
-  };
+  }, [selectedImageIndex, gallery]);
 
   const handleImageError = useCallback((imageUrl: string) => {
     setFailedImages((prev) => new Set(prev).add(imageUrl));
   }, []);
 
-  const handleExitPreview = () => {
+  const handleExitPreview = useCallback(() => {
     router.push(`/gallery/${id}`);
-  };
+  }, [router, id]);
 
   const handleDownload = () => {
     // TODO: Implement download functionality
@@ -359,10 +365,13 @@ export default function GalleryPreviewPage() {
             <div className="max-w-5xl max-h-full p-8">
               {gallery.items[selectedImageIndex]?.memory.url &&
               !failedImages.has(gallery.items[selectedImageIndex].memory.url!) ? (
-                <img
+                <Image
                   src={gallery.items[selectedImageIndex].memory.url}
                   alt={gallery.items[selectedImageIndex].memory.title || `Photo ${selectedImageIndex + 1}`}
+                  width={1200}
+                  height={800}
                   className="max-w-full max-h-full object-contain"
+                  sizes="90vw"
                 />
               ) : (
                 <div className="bg-gray-800 rounded-lg p-8 text-center">

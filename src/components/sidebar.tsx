@@ -8,7 +8,7 @@ import UserButtonClient from "./user-button-client";
 import { mainNavItems, secondaryNavItems, getTranslatedLabel } from "@/utils/navigation";
 import { Dictionary } from "@/utils/dictionaries";
 import { Separator } from "@/components/ui/separator";
-import { Settings } from "lucide-react";
+import { Settings, Infinity } from "lucide-react";
 
 interface SidebarProps {
   dict: Dictionary;
@@ -138,6 +138,35 @@ export default function Sidebar({ dict }: SidebarProps) {
             />
             <Settings className="h-5 w-5" />
             <span>Settings</span>
+          </Link>
+        </div>
+
+        {/* Separator before ICP */}
+        <div className="mx-6">
+          <Separator className="my-4" />
+        </div>
+
+        {/* ICP */}
+        <div className="space-y-1">
+          <Link
+            href={`/${lang}/user/icp`}
+            aria-label="ICP"
+            className={cn(
+              "flex items-center gap-3 px-4 py-3 text-sm relative transition-colors",
+              pathname === `/${lang}/user/icp`
+                ? "text-primary bg-primary/10 hover:bg-primary/20"
+                : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+            )}
+          >
+            {/* Active indicator bar */}
+            <div
+              className={cn(
+                "absolute left-0 top-0 bottom-0 w-1 rounded-r-full transition-colors",
+                pathname === `/${lang}/user/icp` ? "bg-primary" : "bg-transparent"
+              )}
+            />
+            <Infinity className="h-5 w-5" />
+            <span>ICP</span>
           </Link>
         </div>
       </nav>
