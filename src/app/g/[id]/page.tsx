@@ -1,37 +1,40 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useAuthGuard } from "@/utils/authentication";
-import { Button } from "@/components/ui/button";
+import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { Share2, Edit, Globe, Lock, ImageIcon, Trash2, Eye, EyeOff } from "lucide-react";
+import { Globe, Lock, ImageIcon } from "lucide-react";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 
 // Mock data flag for development - same pattern as dashboard
 const USE_MOCK_DATA = true;
 
-export default function GalleryViewPage() {
+export default function PublicGalleryPage() {
   const { id } = useParams();
-  const router = useRouter();
-  const { isAuthorized, isLoading: authLoading } = useAuthGuard();
   const [gallery, setGallery] = useState<GalleryWithItems | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    if (isAuthorized && id) {
+    if (id) {
       loadGallery();
     }
-  }, [isAuthorized, id]);
+  }, [id]);
 
   const loadGallery = async () => {
     try {
       setIsLoading(true);
       setError(null);
       const result = await galleryService.getGallery(id as string, USE_MOCK_DATA);
+
+      // Check if gallery is public
+      if (!result.gallery.isPublic) {
+        setError("This gallery is private");
+        return;
+      }
+
       setGallery(result.gallery);
     } catch (err) {
       console.error("Error loading gallery:", err);
@@ -50,21 +53,7 @@ export default function GalleryViewPage() {
     setFailedImages((prev) => new Set(prev).add(imageUrl));
   }, []);
 
-  const handleDeleteGallery = () => {
-    // TODO: Implement delete gallery functionality
-    console.log("Delete gallery:", gallery?.id);
-  };
-
-  const handleFullScreenView = () => {
-    router.push(`/gallery/${id}/preview`);
-  };
-
-  const handleTogglePrivacy = () => {
-    // TODO: Implement privacy toggle functionality
-    console.log("Toggle privacy for gallery:", gallery?.id);
-  };
-
-  if (authLoading || isLoading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -75,23 +64,12 @@ export default function GalleryViewPage() {
     );
   }
 
-  if (!isAuthorized) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-4">Access Denied</h2>
-          <p className="text-muted-foreground mb-6">You need to be logged in to view this gallery</p>
-        </div>
-      </div>
-    );
-  }
-
   if (error || !gallery) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <h2 className="text-2xl font-semibold mb-4">Gallery not found</h2>
-          <p className="text-muted-foreground mb-6">{error || "This gallery doesn't exist"}</p>
+          <p className="text-muted-foreground mb-6">{error || "This gallery doesn't exist or is not public"}</p>
         </div>
       </div>
     );
@@ -107,47 +85,11 @@ export default function GalleryViewPage() {
               <div className="flex items-center justify-between min-w-0">
                 <h1 className="text-2xl font-light">{gallery.title}</h1>
                 <Badge variant="outline" className="text-xs font-normal">
-                  {gallery.isPublic ? (
-                    <>
-                      <Globe className="h-3 w-3 mr-1" />
-                      Public
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="h-3 w-3 mr-1" />
-                      Private
-                    </>
-                  )}
+                  <Globe className="h-3 w-3 mr-1" />
+                  Public Gallery
                 </Badge>
               </div>
               {gallery.description && <p className="text-muted-foreground text-sm mt-1">{gallery.description}</p>}
-            </div>
-            <div className="flex items-center gap-2 flex-shrink-0 min-w-0">
-              <Button variant="outline" size="sm">
-                <Share2 className="h-4 w-4 mr-2" />
-                Share
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleTogglePrivacy}>
-                {gallery.isPublic ? (
-                  <>
-                    <EyeOff className="h-4 w-4 mr-2" />
-                    Hide
-                  </>
-                ) : (
-                  <>
-                    <Eye className="h-4 w-4 mr-2" />
-                    Publish
-                  </>
-                )}
-              </Button>
-              <Button variant="outline" size="sm">
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleDeleteGallery}>
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete
-              </Button>
             </div>
           </div>
         </div>
@@ -188,8 +130,8 @@ export default function GalleryViewPage() {
           </div>
         ) : (
           <div className="text-center py-16">
-            <h3 className="text-xl font-semibold mb-2">No photos in this gallery yet</h3>
-            <p className="text-muted-foreground mb-6">Add photos to this gallery to see them here.</p>
+            <h3 className="text-xl font-semibold mb-2">No photos in this gallery</h3>
+            <p className="text-muted-foreground mb-6">This gallery is empty.</p>
           </div>
         )}
       </div>

@@ -35,14 +35,15 @@
   - Add gallery metadata display with consistent typography
   - _Requirements: 15.1, 15.2, 15.3_
 
-- [ ] 5. Create GalleryViewPage component for individual gallery viewing
+- [x] 5. Create GalleryViewPage component for individual gallery viewing
 
-  - Implement clean Pixieset-style image grid layout with CSS Grid or Masonry
-  - Use Next.js Image component with proper sizing, lazy loading, and known aspect ratios
-  - Remove search/filter/sort complexity from existing gallery page
+  - Use same mock data pattern as dashboard (const USE_MOCK_DATA = true at component level)
+  - Implement same top-bar component pattern as dashboard for consistent UI
+  - Use current grid layout (refinements can be added as later tasks)
   - Add basic edit/delete buttons for gallery owners
   - Handle public gallery access via /g/[id] route (no auth required)
   - Handle private gallery access via /[lang]/gallery/[id] route (auth required)
+  - Remove lightbox functionality (will be separate task 6)
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 14.1, 14.3, 14.5, 15.4, 15.5_
 
 - [ ] 6. Implement ImageLightbox component for full-screen viewing
