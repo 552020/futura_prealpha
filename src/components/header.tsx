@@ -45,7 +45,7 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-sm dark:bg-slate-950/80">
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className="flex h-16 items-center justify-between px-6">
         {/* Left: Logo section */}
         <section className="logo-section flex items-center">
           <Link href={`/${currentLang}`} className="transition-transform hover:scale-105">
