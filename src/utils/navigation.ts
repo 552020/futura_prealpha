@@ -16,7 +16,7 @@ export function getTranslatedLabel(item: NavItem, dict: Dictionary): string {
 // Group navigation items for better organization
 export const mainNavItems: NavItem[] = [
   { href: "/dashboard", icon: Vault, label: "Dashboard", translationKey: "dashboard" },
-  { href: "/gallery", icon: Grid, label: "Gallery", translationKey: "gallery" },
+  { href: "/gallery", icon: Grid, label: "Galleries", translationKey: "gallery" },
   { href: "/feed", icon: Newspaper, label: "Feed", translationKey: "feed" },
   { href: "/shared", icon: Share2, label: "Shared", translationKey: "shared" },
 ];
