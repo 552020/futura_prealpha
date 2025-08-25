@@ -1,6 +1,7 @@
 import React from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { LiveChatWrapper } from "@/components/livechat-wrapper";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -27,6 +28,9 @@ const ProfilePage = async (props: Props) => {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold">Hello, {session.user.name}! This is your profile page.</h1>
+
+      {/* LiveChat */}
+      <LiveChatWrapper />
     </div>
   );
 };

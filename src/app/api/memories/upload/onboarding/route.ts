@@ -67,10 +67,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create temporary user
-    console.log("👤 Creating temporary user...");
-    const { allUser } = await createTemporaryUserBase("inviter");
-    console.log("✅ Temporary user created:", { userId: allUser.id });
+    // Create temporary user or use existing one
+    let allUser;
+    const existingUserId = formData.get("existingUserId") as string;
+
+    if (existingUserId) {
+      console.log("👤 Using existing user:", existingUserId);
+      // TODO: Fetch existing user from database
+      allUser = { id: existingUserId };
+    } else {
+      console.log("👤 Creating temporary user...");
+      const result = await createTemporaryUserBase("inviter");
+      allUser = result.allUser;
+      console.log("✅ Temporary user created:", { userId: allUser.id });
+    }
 
     // Store in database
     try {

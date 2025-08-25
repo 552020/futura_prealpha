@@ -21,7 +21,8 @@
     "feed": "Feed"
   },
   "navigation": {
-    "vault": "Tresor",
+    "dashboard": "Dashboard",
+    "gallery": "Galerien",
     "feed": "Feed",
     "shared": "Geteilt",
     "contacts": "Kontakte",

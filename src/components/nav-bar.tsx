@@ -50,27 +50,6 @@ export default function NavBar({ mode, lang, dict, className }: NavBarProps) {
       ))}
     </>
   ) : (
-    <>
-      {(
-        [
-          { href: "/dashboard", label: dict.nav?.dashboard || "Dashboard" },
-          { href: "/settings", label: dict.nav?.settings || "Settings" },
-        ] as NavItem[]
-      ).map((item) => (
-        <Link
-          key={item.href}
-          href={`/${lang}${item.href}`}
-          className={cn(
-            "transition-all duration-200 ease-in-out px-2 py-2",
-            "hover:text-primary hover:bg-muted rounded-md",
-            "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-            className === "mobile" ? "text-lg w-full flex items-center" : "text-sm",
-            pathname === `/${lang}${item.href}` ? "font-semibold text-primary bg-muted" : "text-muted-foreground"
-          )}
-        >
-          {item.label}
-        </Link>
-      ))}
-    </>
+    <>{/* No navigation items in app mode - sidebar handles navigation */}</>
   );
 }

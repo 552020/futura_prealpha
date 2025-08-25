@@ -1,0 +1,198 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useAuthGuard } from "@/utils/authentication";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Share2, Edit, Globe, Lock, ImageIcon, Trash2, Eye, EyeOff } from "lucide-react";
+import { galleryService } from "@/services/gallery";
+import { GalleryWithItems } from "@/types/gallery";
+
+// Mock data flag for development - same pattern as dashboard
+const USE_MOCK_DATA = true;
+
+export default function GalleryViewPage() {
+  const { id } = useParams();
+  const router = useRouter();
+  const { isAuthorized, isLoading: authLoading } = useAuthGuard();
+  const [gallery, setGallery] = useState<GalleryWithItems | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (isAuthorized && id) {
+      loadGallery();
+    }
+  }, [isAuthorized, id]);
+
+  const loadGallery = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const result = await galleryService.getGallery(id as string, USE_MOCK_DATA);
+      setGallery(result.gallery);
+    } catch (err) {
+      console.error("Error loading gallery:", err);
+      setError("Failed to load gallery");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleImageClick = (index: number) => {
+    // TODO: Will be implemented in task 6 (ImageLightbox component)
+    console.log("Image clicked:", index);
+  };
+
+  const handleImageError = useCallback((imageUrl: string) => {
+    setFailedImages((prev) => new Set(prev).add(imageUrl));
+  }, []);
+
+  const handleDeleteGallery = () => {
+    // TODO: Implement delete gallery functionality
+    console.log("Delete gallery:", gallery?.id);
+  };
+
+  const handleFullScreenView = () => {
+    router.push(`/gallery/${id}/preview`);
+  };
+
+  const handleTogglePrivacy = () => {
+    // TODO: Implement privacy toggle functionality
+    console.log("Toggle privacy for gallery:", gallery?.id);
+  };
+
+  if (authLoading || isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading gallery...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold mb-4">Access Denied</h2>
+          <p className="text-muted-foreground mb-6">You need to be logged in to view this gallery</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !gallery) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold mb-4">Gallery not found</h2>
+          <p className="text-muted-foreground mb-6">{error || "This gallery doesn't exist"}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40">
+        <div className="container mx-auto px-6 py-4 min-w-0">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 min-w-0">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between min-w-0">
+                <h1 className="text-2xl font-light">{gallery.title}</h1>
+                <Badge variant="outline" className="text-xs font-normal">
+                  {gallery.isPublic ? (
+                    <>
+                      <Globe className="h-3 w-3 mr-1" />
+                      Public
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-3 w-3 mr-1" />
+                      Private
+                    </>
+                  )}
+                </Badge>
+              </div>
+              {gallery.description && <p className="text-muted-foreground text-sm mt-1">{gallery.description}</p>}
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0 min-w-0">
+              <Button variant="outline" size="sm">
+                <Share2 className="h-4 w-4 mr-2" />
+                Share
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleTogglePrivacy}>
+                {gallery.isPublic ? (
+                  <>
+                    <EyeOff className="h-4 w-4 mr-2" />
+                    Hide
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-4 w-4 mr-2" />
+                    Publish
+                  </>
+                )}
+              </Button>
+              <Button variant="outline" size="sm">
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleDeleteGallery}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Photo Grid */}
+      <div className="container mx-auto px-6 py-8 min-w-0">
+        {gallery.items && gallery.items.length > 0 ? (
+          <div className="grid min-w-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {gallery.items.map((item, index) => (
+              <div
+                key={item.id}
+                className="min-w-0 aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => handleImageClick(index)}
+              >
+                {item.memory.url && !failedImages.has(item.memory.url) ? (
+                  <div className="w-full h-full relative min-w-0">
+                    <img
+                      src={item.memory.url}
+                      alt={item.memory.title || `Photo ${index + 1}`}
+                      className="block w-full h-full max-w-full object-cover"
+                      onError={() => handleImageError(item.memory.url!)}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-full bg-muted flex items-center justify-center min-w-0">
+                    <div className="flex flex-col items-center justify-center text-muted-foreground">
+                      <ImageIcon className="h-16 w-16 mb-2" />
+                      <span className="text-sm break-words">Photo {index + 1}</span>
+                      {failedImages.has(item.memory.url!) && (
+                        <span className="text-xs text-muted-foreground/70 mt-1 break-words">Failed to load</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <h3 className="text-xl font-semibold mb-2">No photos in this gallery yet</h3>
+            <p className="text-muted-foreground mb-6">Add photos to this gallery to see them here.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

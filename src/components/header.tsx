@@ -5,12 +5,14 @@ import { Button } from "./ui/button";
 import { Menu, Share2, Twitter, Instagram, Facebook } from "lucide-react";
 // import { useSession } from "next-auth/react";
 import { ModeToggle } from "./mode-toggle";
+import { SettingsButton } from "./settings-button";
 import NavBar from "./nav-bar";
 import UserButtonClient from "./user-button-client";
 import { useInterface } from "@/contexts/interface-context";
 import { LanguageSwitcher } from "./language-switcher";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "./ui/sheet";
 import { Dictionary } from "@/utils/dictionaries";
+import { usePathname } from "next/navigation";
 
 // Define a proper type for the dictionary with optional fields
 type HeaderDictionary = Dictionary;
@@ -18,8 +20,16 @@ type HeaderDictionary = Dictionary;
 export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: string }) {
   //   const { data: session, status } = useSession();
   const { mode } = useInterface();
+  const pathname = usePathname();
   // Use the passed lang prop if available, otherwise get it from params
   const currentLang = lang || "en";
+
+  // Hide header on gallery preview pages
+  const isGalleryPreview = pathname.includes("/gallery/") && pathname.includes("/preview");
+
+  if (isGalleryPreview) {
+    return null;
+  }
 
   const handleShare = async () => {
     try {
@@ -44,7 +54,7 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-sm dark:bg-slate-950/80">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <div className="flex h-16 items-center justify-between px-6">
         {/* Left: Logo section */}
         <section className="logo-section flex items-center">
           <Link href={`/${currentLang}`} className="transition-transform hover:scale-105">
@@ -60,7 +70,7 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
         </nav>
 
         {/* Right User controls */}
-        <section className="user-controls-section flex items-center gap-4 sm:gap-6">
+        <section className="user-controls-section flex items-center gap-2 sm:gap-3">
           {/* Desktop-only user controls */}
           <div className="hidden md:block transition-opacity hover:opacity-80">
             <UserButtonClient lang={currentLang} />
@@ -73,6 +83,11 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
 
           <div className="transition-opacity hover:opacity-80">
             <ModeToggle />
+          </div>
+
+          {/* Settings button - always visible */}
+          <div className="transition-opacity hover:opacity-80">
+            <SettingsButton />
           </div>
 
           {/* Mobile: Burger menu - MOBILE ONLY */}
