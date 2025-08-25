@@ -5,39 +5,15 @@ import {
   GalleryListResponse,
   GalleryDetailResponse,
 } from "@/types/gallery";
+import { generatedGalleries, getGeneratedGallery } from "@/app/[lang]/gallery/generated-gallery-data";
 
 // Analytics tracking shim for future implementation
 const trackEvent = (event: string, properties?: Record<string, unknown>): void => {
   console.log("Gallery Analytics:", { event, properties, timestamp: new Date().toISOString() });
 };
 
-// Mock data for development
-const mockGalleries: GalleryWithItems[] = [
-  {
-    id: "mock-gallery-1",
-    title: "Wedding Photos",
-    description: "Beautiful moments from our special day",
-    isPublic: true,
-    createdAt: new Date("2024-01-15T10:00:00Z"),
-    updatedAt: new Date("2024-01-15T10:00:00Z"),
-    ownerId: "mock-user-1",
-    items: [],
-    imageCount: 25,
-    isOwner: true,
-  },
-  {
-    id: "mock-gallery-2",
-    title: "Family Vacation",
-    description: "Summer memories with the family",
-    isPublic: false,
-    createdAt: new Date("2024-01-10T14:30:00Z"),
-    updatedAt: new Date("2024-01-10T14:30:00Z"),
-    ownerId: "mock-user-1",
-    items: [],
-    imageCount: 12,
-    isOwner: true,
-  },
-];
+// Mock data for development - now using generated data
+const mockGalleries: GalleryWithItems[] = generatedGalleries;
 
 const mockFolders: FolderInfo[] = [
   {
@@ -83,13 +59,14 @@ export const galleryService = {
     trackEvent("gallery_viewed", { galleryId: id });
 
     if (useMockData) {
-      const gallery = mockGalleries.find((g) => g.id === id);
+      const gallery = getGeneratedGallery(id);
       if (!gallery) {
         throw new Error("Gallery not found");
       }
+
       return {
         gallery,
-        items: [],
+        items: gallery.items,
         itemsCount: gallery.imageCount,
       };
     }

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Share2, Edit, Globe, Lock } from "lucide-react";
+import { ArrowLeft, Share2, Edit, Globe, Lock, ImageIcon } from "lucide-react";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 
@@ -18,6 +18,7 @@ export default function GalleryViewPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (isAuthorized && id) {
@@ -62,6 +63,10 @@ export default function GalleryViewPage() {
       setSelectedImageIndex(selectedImageIndex < gallery.items.length - 1 ? selectedImageIndex + 1 : 0);
     }
   };
+
+  const handleImageError = useCallback((imageUrl: string) => {
+    setFailedImages((prev) => new Set(prev).add(imageUrl));
+  }, []);
 
   if (authLoading || isLoading) {
     return (
@@ -142,22 +147,43 @@ export default function GalleryViewPage() {
 
       {/* Photo Grid */}
       <div className="container mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {gallery.items.map((item, index) => (
-            <div
-              key={item.id}
-              className="aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => handleImageClick(index)}
-            >
-              <div className="w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-4xl mb-2">📷</div>
-                  <p className="text-sm text-muted-foreground">Photo {index + 1}</p>
-                </div>
+        {gallery.items && gallery.items.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {gallery.items.map((item, index) => (
+              <div
+                key={item.id}
+                className="aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => handleImageClick(index)}
+              >
+                {item.memory.url && !failedImages.has(item.memory.url) ? (
+                  <div className="w-full h-full relative">
+                    <img
+                      src={item.memory.url}
+                      alt={item.memory.title || `Photo ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      onError={() => handleImageError(item.memory.url!)}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-full bg-muted flex items-center justify-center">
+                    <div className="flex flex-col items-center justify-center text-muted-foreground">
+                      <ImageIcon className="h-16 w-16 mb-2" />
+                      <span className="text-sm">Photo {index + 1}</span>
+                      {failedImages.has(item.memory.url!) && (
+                        <span className="text-xs text-muted-foreground/70 mt-1">Failed to load</span>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <h3 className="text-xl font-semibold mb-2">No photos in this gallery yet</h3>
+            <p className="text-muted-foreground mb-6">Add photos to this gallery to see them here.</p>
+          </div>
+        )}
       </div>
 
       {/* Lightbox */}
@@ -189,8 +215,8 @@ export default function GalleryViewPage() {
             {/* Image */}
             <div className="max-w-4xl max-h-full p-8">
               <div className="bg-muted rounded-lg p-8 text-center">
-                <div className="text-8xl mb-4">📷</div>
-                <p className="text-white text-lg">
+                <ImageIcon className="h-32 w-32 mx-auto mb-4 text-muted-foreground" />
+                <p className="text-lg text-muted-foreground">
                   Photo {selectedImageIndex + 1} of {gallery.items.length}
                 </p>
               </div>
