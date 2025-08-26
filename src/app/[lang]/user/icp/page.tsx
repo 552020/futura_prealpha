@@ -9,6 +9,13 @@ export default function ICPPage() {
   const { isAuthorized, isLoading } = useAuthGuard();
   const [greeting, setGreeting] = useState("");
 
+  // Debug: Print environment variables
+  console.log("Environment variables:", {
+    CANISTER_ID_BACKEND: process.env.NEXT_PUBLIC_CANISTER_ID_BACKEND,
+    DFX_NETWORK: process.env.NEXT_PUBLIC_DFX_NETWORK,
+    CANISTER_ID_INTERNET_IDENTITY: process.env.NEXT_PUBLIC_CANISTER_ID_INTERNET_IDENTITY,
+  });
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
