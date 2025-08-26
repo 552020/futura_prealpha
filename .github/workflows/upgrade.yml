@@ -44,7 +44,7 @@ jobs:
         if: github.event.inputs.environment == 'development' || github.event_name == 'push'
         uses: junobuild/juno-action@v0.4.9
         with:
-          args: functions upgrade
+          args: functions upgrade --mode staging
         env:
           JUNO_SATELLITE_ID: 5yoof-ciaaa-aaaal-asevq-cai
           JUNO_TOKEN: ${{ secrets.JUNO_DEV_TOKEN }}
@@ -53,7 +53,7 @@ jobs:
         if: github.event.inputs.environment == 'production'
         uses: junobuild/juno-action@v0.4.9
         with:
-          args: functions upgrade
+          args: functions upgrade --mode production
         env:
           JUNO_SATELLITE_ID: uocd6-laaaa-aaaal-asfga-cai
           JUNO_TOKEN: ${{ secrets.JUNO_PROD_TOKEN }}
