@@ -1,22 +1,55 @@
-"use client";
+import { HttpAgent, type Identity } from "@dfinity/agent";
 
-import { HttpAgent } from "@dfinity/agent";
+const host =
+  process.env.NEXT_PUBLIC_IC_HOST ??
+  (process.env.NEXT_PUBLIC_DFX_NETWORK === "ic" ? "https://icp-api.io" : "http://127.0.0.1:4943");
 
-let cached: Promise<HttpAgent> | null = null;
+const agentCache = new Map<string, Promise<HttpAgent>>(); // key = principal or "anon"
 
-export function createAgent(): Promise<HttpAgent> {
-  if (!cached) {
-    const host =
-      process.env.NEXT_PUBLIC_IC_HOST ??
-      (process.env.NEXT_PUBLIC_DFX_NETWORK === "ic" ? "https://icp-api.io" : "http://127.0.0.1:4943");
-
-    cached = HttpAgent.create({
-      host,
-      shouldFetchRootKey: process.env.NEXT_PUBLIC_DFX_NETWORK !== "ic",
-    });
+export function createAgent(identity?: Identity): Promise<HttpAgent> {
+  const key = identity ? identity.getPrincipal().toText() : "anon";
+  if (!agentCache.has(key)) {
+    agentCache.set(
+      key,
+      (async () => {
+        const agent = await HttpAgent.create({ host, identity });
+        if (process.env.NEXT_PUBLIC_DFX_NETWORK !== "ic") {
+          // dev/local only
+          await agent.fetchRootKey();
+        }
+        return agent;
+      })()
+    );
   }
-  return cached;
+  return agentCache.get(key)!;
 }
+
+/**
+ * Clear the agent cache, typically called on logout to avoid stale sessions
+ */
+export function clearAgentCache(): void {
+  agentCache.clear();
+}
+
+// "use client";
+
+// import { HttpAgent } from "@dfinity/agent";
+
+// let cached: Promise<HttpAgent> | null = null;
+
+// export function createAgent(): Promise<HttpAgent> {
+//   if (!cached) {
+//     const host =
+//       process.env.NEXT_PUBLIC_IC_HOST ??
+//       (process.env.NEXT_PUBLIC_DFX_NETWORK === "ic" ? "https://icp-api.io" : "http://127.0.0.1:4943");
+
+//     cached = HttpAgent.create({
+//       host,
+//       shouldFetchRootKey: process.env.NEXT_PUBLIC_DFX_NETWORK !== "ic",
+//     });
+//   }
+//   return cached;
+// }
 
 /* ORIGINAL CODE form declarations/backend/index.js*/
 

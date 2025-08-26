@@ -4,44 +4,77 @@ import { useAuthGuard } from "@/utils/authentication";
 
 import { useState } from "react";
 import { backendActor } from "@/ic/backend";
+import type { BackendActor } from "@/ic/backend";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { AuthClient } from "@dfinity/auth-client";
+import { useToast } from "@/hooks/use-toast";
+
 export default function ICPPage() {
   const { isAuthorized, isLoading } = useAuthGuard();
   const [greeting, setGreeting] = useState("");
-
-
-
-  /**
-   * Handle form submission for ICP greeting.
-   *
-   * CHANGES FROM ORIGINAL:
-   * - Made function async because backendActor() now returns a Promise
-   * - Original: backend.greet(name).then(...) - used pre-configured actor
-   * - New: await backendActor() then await actor.greet(name) - creates actor on demand
-   *
-   * Why async? Our custom backendActor() function is async because:
-   * 1. Agent creation is async (HttpAgent.create() returns Promise)
-   * 2. We need to await the agent before creating the actor
-   * 3. This ensures proper initialization before making canister calls
-   */
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  // UX safety: prevents double-clicks and provides visual feedback
+  const [busy, setBusy] = useState(false);
+  const { toast } = useToast();
+  async function handleGreetSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("name") as string;
+    if (busy) return; // UX safety: prevent double-clicks
+    setBusy(true);
+    try {
+      const formData = new FormData(event.currentTarget);
+      const name = formData.get("name") as string;
 
-    // ORIGINAL CODE (commented out):
-    // backend.greet(name).then((greeting) => {
-    //   setGreeting(greeting);
-    // });
+      const actor: BackendActor = await backendActor();
 
-    // NEW CODE - Custom actor creation:
-    // 1. Create actor instance on demand (replaces pre-configured 'backend' export)
-    const actor = (await backendActor()) as { greet: (name: string) => Promise<string> };
+      const greeting = await actor.greet(name);
 
-    // 2. Call the canister method (same as before, but with our custom actor)
-    const greeting = await actor.greet(name);
+      setGreeting(greeting);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function handleLogin() {
+    if (busy) return; // UX safety: prevent double-clicks
+    setBusy(true);
+    try {
+      console.log("handleLogin");
+      const provider = process.env.NEXT_PUBLIC_II_URL || process.env.NEXT_PUBLIC_II_URL_FALLBACK;
+      if (!provider) throw new Error("II URL not configured");
 
-    // 3. Update UI (same as before)
-    setGreeting(greeting);
+      const authClient = await AuthClient.create();
+      await new Promise<void>((resolve, reject) => {
+        authClient.login({
+          identityProvider: provider,
+          onSuccess: resolve,
+          onError: reject,
+        });
+      });
+
+      // At this point we're authenticated, and we can get the identity from the auth client:
+      const identity = authClient.getIdentity();
+      console.log("identity", identity);
+      const authenticatedActor: BackendActor = await backendActor(identity);
+      console.log("AuthenticatedActor", authenticatedActor);
+      const greeting = await authenticatedActor.greet("John");
+      console.log("Greeting", greeting);
+      setGreeting(greeting);
+
+      toast({
+        title: "Login Successful",
+        description: "Successfully authenticated with Internet Identity!",
+      });
+    } catch (error) {
+      console.error("Login failed:", error);
+      toast({
+        title: "Login Failed",
+        description: "Failed to authenticate with Internet Identity. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setBusy(false);
+    }
   }
 
   if (!isAuthorized || isLoading) {
@@ -56,31 +89,30 @@ export default function ICPPage() {
     <div className="container mx-auto px-6 py-8">
       <h1 className="text-3xl font-bold mb-6">Hello ICP</h1>
 
-      <form onSubmit={handleSubmit} className="mb-6">
-        <label htmlFor="name" className="block text-sm font-medium mb-2">
-          Enter your name:
-        </label>
-        <div className="flex gap-2">
-          <input
-            id="name"
-            name="name"
-            type="text"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Your name"
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Click Me!
-          </button>
+      <div className="mb-6">
+        <Button onClick={handleLogin} id="login" className="mb-4" disabled={busy}>
+          Login!
+        </Button>
+      </div>
+
+      <form onSubmit={handleGreetSubmit} className="mb-6 space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="name">Enter your name:</Label>
+          <div className="flex gap-2">
+            <Input id="name" name="name" type="text" placeholder="Your name" className="w-64" />
+            <Button type="submit" disabled={busy}>
+              Click Me!
+            </Button>
+          </div>
         </div>
       </form>
 
       {greeting && (
-        <section className="p-4 bg-gray-100 dark:bg-gray-800 rounded-md">
-          <p className="text-gray-800 dark:text-gray-200">{greeting}</p>
-        </section>
+        <Card>
+          <CardContent className="pt-6">
+            <p>{greeting}</p>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
