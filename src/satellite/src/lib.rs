@@ -3,10 +3,7 @@ use candid::Nat;
 use ic_cdk::api::management_canister::http_request::{
     http_request as http_request_outcall, CanisterHttpRequestArgument, HttpHeader, HttpMethod,
 };
-use junobuild_macros::{
-    on_delete_asset, on_delete_doc, on_delete_many_assets, on_delete_many_docs, on_set_doc,
-    on_set_many_docs, on_upload_asset,
-};
+use junobuild_macros::on_set_doc;
 use junobuild_satellite::{
     include_satellite, OnDeleteAssetContext, OnDeleteDocContext,
     OnDeleteManyAssetsContext, OnDeleteManyDocsContext, OnSetDocContext, OnSetManyDocsContext,
@@ -127,36 +124,6 @@ async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
             Err(format!("HTTP request failed. RejectionCode: {:?}, Error: {}", r, m))
         }
     }
-}
-
-#[on_delete_doc]
-fn on_delete_doc(_context: OnDeleteDocContext) -> Result<(), String> {
-    Ok(())
-}
-
-#[on_delete_many_docs]
-fn on_delete_many_docs(_context: OnDeleteManyDocsContext) -> Result<(), String> {
-    Ok(())
-}
-
-#[on_upload_asset]
-fn on_upload_asset(_context: OnUploadAssetContext) -> Result<(), String> {
-    Ok(())
-}
-
-#[on_delete_asset]
-fn on_delete_asset(_context: OnDeleteAssetContext) -> Result<(), String> {
-    Ok(())
-}
-
-#[on_delete_many_assets]
-fn on_delete_many_assets(_context: OnDeleteManyAssetsContext) -> Result<(), String> {
-    Ok(())
-}
-
-#[on_set_many_docs]
-async fn on_set_many_docs(_context: OnSetManyDocsContext) -> Result<(), String> {
-    Ok(())
 }
 
 include_satellite!();
