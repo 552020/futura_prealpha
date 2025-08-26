@@ -10,16 +10,9 @@ const require = createRequire(import.meta.url);
 const root = process.cwd();
 const ICP_ENV_PATH = path.join(root, "..", "..", ".env");
 
-console.log("🔍 Next.js config - Checking for external .env file:");
-console.log("  Root directory:", root);
-console.log("  Looking for .env at:", ICP_ENV_PATH);
-console.log("  File exists:", fs.existsSync(ICP_ENV_PATH));
-
+// Check for external .env file for ICP environment variables
 if (fs.existsSync(ICP_ENV_PATH)) {
-  console.log("  ✅ Loading external .env file");
   dotenv.config({ path: ICP_ENV_PATH });
-} else {
-  console.log("  ❌ External .env file not found");
 }
 
 // Transform CANISTER_ and DFX_ variables to NEXT_PUBLIC_ for browser access
@@ -35,14 +28,7 @@ const passthroughEntries = Object.entries(process.env)
   .filter(([key]) => key.startsWith("NEXT_PUBLIC_"))
   .map(([key, val]) => [key, String(val ?? "")]);
 
-console.log("🔍 Next.js config - Environment variable processing:");
-console.log("  ICP prefixes:", ICP_PREFIXES);
-console.log(
-  "  Found ICP variables:",
-  Object.keys(process.env).filter((key) => ICP_PREFIXES.some((p) => key.startsWith(p)))
-);
-console.log("  Public env entries:", publicEnvEntries);
-console.log("  Passthrough entries:", passthroughEntries);
+// Process ICP environment variables for Next.js
 
 const env: Record<string, string> = Object.fromEntries([...passthroughEntries, ...publicEnvEntries]);
 
