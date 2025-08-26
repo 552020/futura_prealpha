@@ -5,12 +5,10 @@ import dotenv from "dotenv";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
-// Load external .env file from parent directory (hacky multi-repo setup for local development)
-// This reads canister addresses and DFX configuration from the ICP project's root .env
+// Load external .env from parent dir dfx multi repo hack
 const root = process.cwd();
 const ICP_ENV_PATH = path.join(root, "..", "..", ".env");
 
-// Check for external .env file for ICP environment variables
 if (fs.existsSync(ICP_ENV_PATH)) {
   dotenv.config({ path: ICP_ENV_PATH });
 }
@@ -28,6 +26,9 @@ const passthroughEntries = Object.entries(process.env)
   .filter(([key]) => key.startsWith("NEXT_PUBLIC_"))
   .map(([key, val]) => [key, String(val ?? "")]);
 
+console.log("publicEnvEntries:", publicEnvEntries);
+console.log("passthroughEntries:", passthroughEntries);
+
 // Process ICP environment variables for Next.js
 
 const env: Record<string, string> = Object.fromEntries([...passthroughEntries, ...publicEnvEntries]);
@@ -35,8 +36,19 @@ const env: Record<string, string> = Object.fromEntries([...passthroughEntries, .
 const POSTHOG_INGEST_DOMAIN = process.env.NEXT_PUBLIC_POSTHOG_INGEST || "https://eu.i.posthog.com";
 const POSTHOG_ASSETS_DOMAIN = process.env.NEXT_PUBLIC_POSTHOG_ASSETS || "https://eu-assets.i.posthog.com";
 
+const isLocal = process.env.NEXT_PUBLIC_DFX_NETWORK === "local" || process.env.NODE_ENV !== "production";
+
+if (isLocal && !env.NEXT_PUBLIC_CANISTER_ID_INTERNET_IDENTITY) {
+  console.warn("Missing NEXT_PUBLIC_CANISTER_ID_INTERNET_IDENTITY");
+}
+
 const nextConfig: NextConfig = {
-  env,
+  env: {
+    ...env,
+    NEXT_PUBLIC_II_URL:
+      env.NEXT_PUBLIC_CANISTER_ID_INTERNET_IDENTITY &&
+      (isLocal ? `http://${env.NEXT_PUBLIC_CANISTER_ID_INTERNET_IDENTITY}.localhost:4943/` : "https://id.ai"),
+  },
   experimental: {
     turbo: {
       resolveAlias: {
@@ -84,6 +96,11 @@ const nextConfig: NextConfig = {
       {
         source: "/static/:path*",
         destination: `${POSTHOG_ASSETS_DOMAIN}/static/:path*`,
+      },
+      // ICP API proxy for local development
+      {
+        source: "/api/v2/:path*",
+        destination: "http://127.0.0.1:4943/api/v2/:path*",
       },
     ];
   },
