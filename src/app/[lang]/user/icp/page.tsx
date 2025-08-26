@@ -3,22 +3,45 @@
 import { useAuthGuard } from "@/utils/authentication";
 
 import { useState } from "react";
-import { backend } from "@/ic/declarations/backend";
-
+import { backendActor } from "@/ic/backend";
 export default function ICPPage() {
   const { isAuthorized, isLoading } = useAuthGuard();
   const [greeting, setGreeting] = useState("");
 
-  // Debug: Print environment variables
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+
+  /**
+   * Handle form submission for ICP greeting.
+   *
+   * CHANGES FROM ORIGINAL:
+   * - Made function async because backendActor() now returns a Promise
+   * - Original: backend.greet(name).then(...) - used pre-configured actor
+   * - New: await backendActor() then await actor.greet(name) - creates actor on demand
+   *
+   * Why async? Our custom backendActor() function is async because:
+   * 1. Agent creation is async (HttpAgent.create() returns Promise)
+   * 2. We need to await the agent before creating the actor
+   * 3. This ensures proper initialization before making canister calls
+   */
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const name = formData.get("name") as string;
 
-    backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
+    // ORIGINAL CODE (commented out):
+    // backend.greet(name).then((greeting) => {
+    //   setGreeting(greeting);
+    // });
+
+    // NEW CODE - Custom actor creation:
+    // 1. Create actor instance on demand (replaces pre-configured 'backend' export)
+    const actor = (await backendActor()) as { greet: (name: string) => Promise<string> };
+
+    // 2. Call the canister method (same as before, but with our custom actor)
+    const greeting = await actor.greet(name);
+
+    // 3. Update UI (same as before)
+    setGreeting(greeting);
   }
 
   if (!isAuthorized || isLoading) {

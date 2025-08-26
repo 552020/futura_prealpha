@@ -141,18 +141,18 @@ This creates a routing challenge where we need to determine which backend should
 
 The original Vite setup was simpler because it only needed to communicate with ICP canisters, but our Next.js integration needs to support both traditional backend operations and ICP blockchain interactions.
 
-**Important Discovery**: After analyzing the actual frontend code, it was found that the ICP frontend **does not use HTTP API calls at all**. Instead, it uses **direct canister communication** through the `@dfinity/agent` library:
+**Important Discovery**: The ICP frontend uses **direct canister communication** through the `@dfinity/agent` library, but this communication happens **under the hood** via HTTP API calls:
 
 ```js
 import { futura_alpha_icp_backend } from "declarations/futura_alpha_icp_backend";
 
-// Direct canister call, not HTTP API
+// Direct canister call interface, but uses HTTP API under the hood
 futura_alpha_icp_backend.greet(name).then((greeting) => {
   setGreeting(greeting);
 });
 ```
 
-This means the proxy configuration in the Vite setup is **unused** and can be ignored for Next.js integration. The frontend communicates directly with ICP canisters from the browser, eliminating the need for complex routing between different backend systems. This significantly simplifies the integration strategy.
+The `@dfinity/agent` library handles the HTTP communication to the DFX server automatically. This means the proxy configuration in the Vite setup is **essential** for Next.js integration. The frontend communicates with ICP canisters through HTTP API calls to the DFX server, which requires proper proxy configuration.
 
 ## Frontend-Backend Communication Flow
 
