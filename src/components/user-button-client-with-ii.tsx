@@ -41,7 +41,10 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
   }
 
   const principal = (session.user as any).icpPrincipal as string | undefined;
-  const name = session.user.name || session.user.email || (principal ? `Principal ${principal.slice(0, 8)}…${principal.slice(-6)}` : "User");
+  const name =
+    session.user.name ||
+    session.user.email ||
+    (principal ? `Principal ${principal.slice(0, 8)}…${principal.slice(-6)}` : "User");
   const initials = name
     .split(" ")
     .map((n) => n[0])
@@ -50,11 +53,11 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
     .toUpperCase();
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 className="relative h-8 w-8 rounded-full hover:bg-muted dark:hover:bg-muted dark:hover:text-white"
@@ -72,34 +75,34 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
                   <AvatarFallback className="text-xs font-medium">{initials}</AvatarFallback>
                 </Avatar>
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal border-b pb-3">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{session.user.name}</p>
-                  <p className="text-muted-foreground text-xs leading-none">{session.user.email}</p>
-                </div>
-              </DropdownMenuLabel>
-              <div className="p-2">
-                <DropdownMenuItem asChild>
-                  <Link
-                    href={`/${lang}/user/${session.user.id}/profile`}
-                    className="w-full flex items-center justify-center py-2 cursor-pointer hover:bg-muted focus:bg-muted"
-                  >
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer hover:bg-muted focus:bg-muted py-2 text-red-600 dark:text-red-400">
-                  <SignOut />
-                </DropdownMenuItem>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{principal ? `Principal: ${principal}` : name}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{principal ? `Principal: ${principal}` : name}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal border-b pb-3">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{session.user.name}</p>
+            <p className="text-muted-foreground text-xs leading-none">{session.user.email}</p>
+          </div>
+        </DropdownMenuLabel>
+        <div className="p-2">
+          <DropdownMenuItem asChild>
+            <Link
+              href={`/${lang}/user/${session.user.id}/profile`}
+              className="w-full flex items-center justify-center py-2 cursor-pointer hover:bg-muted focus:bg-muted"
+            >
+              Profile
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer hover:bg-muted focus:bg-muted py-2 text-red-600 dark:text-red-400">
+            <SignOut />
+          </DropdownMenuItem>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
