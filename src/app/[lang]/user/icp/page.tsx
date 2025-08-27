@@ -4,15 +4,14 @@ import { useAuthGuard } from "@/utils/authentication";
 
 import { useState, useEffect, useRef } from "react";
 import { backendActor } from "@/ic/backend";
-import { clearAgentCache } from "@/ic/agent";
 import type { BackendActor } from "@/ic/backend";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy } from "lucide-react";
-import { AuthClient } from "@dfinity/auth-client";
 import { useToast } from "@/hooks/use-toast";
+import { getAuthClient as getIiAuthClient, loginWithII, clearIiSession } from "@/ic/ii";
 
 export default function ICPPage() {
   const { isAuthorized, isLoading } = useAuthGuard();
@@ -45,20 +44,11 @@ export default function ICPPage() {
    * The AuthClient.create() still reads the stored identity from IndexedDB,
    * but we only do this expensive operation once instead of 4+ times.
    */
-  const authClientRef = useRef<AuthClient | null>(null);
-
   // Cache authenticated actor to avoid recreating it for each backend call
   const authenticatedActorRef = useRef<BackendActor | null>(null);
 
-  // Helper function to get or create AuthClient (creates once, reuses thereafter)
-  const getAuthClient = async (): Promise<AuthClient> => {
-    if (!authClientRef.current) {
-      // This is the only place we call AuthClient.create() - expensive IndexedDB read happens here
-      authClientRef.current = await AuthClient.create();
-    }
-    // All subsequent calls return the cached instance - no IndexedDB reads
-    return authClientRef.current;
-  };
+  // Helper to obtain the shared II AuthClient instance
+  const getAuthClient = async () => getIiAuthClient();
 
   // Helper function to get or create authenticated actor
   const getAuthenticatedActor = async (): Promise<BackendActor> => {
@@ -161,50 +151,11 @@ export default function ICPPage() {
     if (busy) return; // UX safety: prevent double-clicks
     setBusy(true);
     try {
-      console.log("handleLogin");
-      const provider = process.env.NEXT_PUBLIC_II_URL || process.env.NEXT_PUBLIC_II_URL_FALLBACK;
-      if (!provider) throw new Error("II URL not configured");
-
-      // Session TTL Configuration
-      // Default: 8 hours (good balance of security vs UX)
-      // Can be overridden via NEXT_PUBLIC_II_SESSION_TTL_HOURS env var
-      const sessionTtlHours = parseInt(process.env.NEXT_PUBLIC_II_SESSION_TTL_HOURS || "8");
-      const maxTimeToLiveNs = BigInt(sessionTtlHours * 60 * 60 * 1000 * 1000 * 1000); // Convert hours to nanoseconds
-
-      const authClient = await getAuthClient();
-      await new Promise<void>((resolve, reject) => {
-        authClient.login({
-          identityProvider: provider,
-          /**
-           * maxTimeToLive: Sets delegation expiry time in nanoseconds.
-           *
-           * Why this matters:
-           * - Without TTL: Sessions can persist indefinitely (security risk)
-           * - With TTL: Forces re-authentication after specified time
-           * - IC delegation chain respects this TTL for all canister calls
-           *
-           * Current setting: ${sessionTtlHours} hours
-           * After this time, all authenticated calls will fail and user must re-login.
-           */
-          maxTimeToLive: maxTimeToLiveNs,
-          onSuccess: resolve,
-          onError: reject,
-        });
-      });
-
-      // At this point we're authenticated, and we can get the identity from the auth client:
-      const identity = authClient.getIdentity();
-      console.log("identity", identity);
-
-      // Get the user's principal ID directly from the identity
-      const principal = identity.getPrincipal();
-      console.log("Principal", principal);
+      const { identity, principal } = await loginWithII();
 
       // Create and cache the authenticated actor
       const authenticatedActor: BackendActor = await backendActor(identity);
       authenticatedActorRef.current = authenticatedActor; // Cache it for future use
-      console.log("AuthenticatedActor", authenticatedActor);
-
       setPrincipalId(principal.toString());
       setGreeting("Successfully authenticated with Internet Identity!");
       setIsAuthenticated(true);
@@ -283,11 +234,8 @@ export default function ICPPage() {
     if (busy) return;
     setBusy(true);
     try {
-      const authClient = await getAuthClient();
-      await authClient.logout();
-
-      // Clear all cached instances for clean logout
-      clearAgentCache(); // Clear agent cache (agents are cached by principal)
+      await clearIiSession();
+      // Clear our cached actor
       clearAuthenticatedActor(); // Clear our cached actor
 
       setIsAuthenticated(false);
