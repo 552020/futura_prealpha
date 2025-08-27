@@ -64,7 +64,7 @@ function Hero({ dict, lang }: HeroProps) {
   const TITLE_VW = 73.5; // base vw numerator for title
   const SUBTITLE_VW = 85; // base vw numerator for subtitle
   const TITLE_SCALE = 1.4; // >1 increases size
-  const SUBTITLE_SCALE = 1.6; // >1 increases size
+  const SUBTITLE_SCALE = 2.25; // >1 increases size (subtitle a bit bigger)
   // Controls for mobile overlay paddings (rem units)
   const BOX_PAD_X_REM = 0.5; // left/right padding
   const BOX_PAD_Y_REM = 1.0; // top/bottom padding
@@ -136,7 +136,7 @@ function Hero({ dict, lang }: HeroProps) {
                   offsetRem={TITLE_OFFSET_REM}
                 />
                 <p
-                  className="font-normal tracking-wide m-0 mt-3 leading-snug"
+                  className="font-medium tracking-wide m-0 mt-3 leading-snug text-left ml-2 mb-[-0.5rem]"
                   style={{
                     fontSize: `calc(${(SUBTITLE_VW * SUBTITLE_SCALE).toFixed(1)}vw / ${
                       "Your Gallery. Forever.".length
