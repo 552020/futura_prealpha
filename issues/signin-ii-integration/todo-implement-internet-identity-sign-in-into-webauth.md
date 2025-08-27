@@ -16,7 +16,7 @@ Reference: `src/nextjs/issues/implement-internet-identity-sign-in-into-webauth.m
        3.7) [x] Close behavior: navigate back or to home when dismissed
        3.8) [x] Error states: show provider/credentials errors inline
        3.9) [x] Styling: match existing UI (use shadcn/ui components)
-4. [ ] Update header "Sign In" to navigate to the custom sign-in page
+4. [x] Update header "Sign In" to navigate to the custom sign-in page
        4.1) [x] Update `src/nextjs/src/components/user-button-client-with-ii.tsx` unauthenticated state to navigate to `/${lang}/signin` (do not use the default NextAuth page; keep it only as reference)
        4.2) [x] Preserve `lang` param and optional `callbackUrl`
        4.3) [x] Keep fallback link to default NextAuth page for safety during rollout
@@ -36,8 +36,8 @@ Reference: `src/nextjs/issues/implement-internet-identity-sign-in-into-webauth.m
        6.4) [ ] Ensure mobile menu also shows a single button and routes to the custom page
        6.5) [ ] (moved) – see task 13
 7. [x] Add NextAuth Credentials provider `ii` with principal-based `authorize`
-       7.1) [ ] Implement II authorize() to find-or-create user and link account in Drizzle
-8. [ ] Expose `icpPrincipal` in JWT/session during callbacks
+       7.1) [x] Implement II authorize() to find-or-create user and link account in Drizzle
+8. [x] Expose `icpPrincipal` in JWT/session during callbacks
 9. [ ] Extract and reuse `allUsers` promotion logic for II user creation
 10. [ ] QA: verify all providers + II end-to-end and DB writes
 11. [ ] Cleanup: consolidate to single user button or custom sign-in page
