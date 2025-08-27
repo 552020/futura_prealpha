@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { Menu, Share2, Twitter, Instagram, Facebook } from "lucide-react";
-// import { useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { ModeToggle } from "./mode-toggle";
 import { SettingsButton } from "./settings-button";
 import NavBar from "./nav-bar";
@@ -19,7 +19,7 @@ import { usePathname } from "next/navigation";
 type HeaderDictionary = Dictionary;
 
 export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: string }) {
-  //   const { data: session, status } = useSession();
+  const { data: session, status } = useSession();
   const { mode } = useInterface();
   const pathname = usePathname();
   // Use the passed lang prop if available, otherwise get it from params
@@ -78,6 +78,11 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
             {/* <UserButtonClient lang={currentLang} /> */}
           </div>
 
+          {/* Mobile-only sign in button (keep visible, not hidden in menu) */}
+          <div className="flex md:hidden items-center gap-2 transition-opacity hover:opacity-80">
+            <UserButtonClientWithII lang={currentLang} />
+          </div>
+
           {/* Always visible controls */}
           <div className="transition-opacity hover:opacity-80">
             <LanguageSwitcher />
@@ -87,9 +92,9 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
             <ModeToggle />
           </div>
 
-          {/* Settings button - always visible */}
-          <div className="transition-opacity hover:opacity-80">
-            <SettingsButton />
+          {/* Settings button - hide on mobile, and hide when unauthenticated */}
+          <div className="hidden md:block transition-opacity hover:opacity-80">
+            {status === "authenticated" && session?.user ? <SettingsButton /> : null}
           </div>
 
           {/* Mobile: Burger menu - MOBILE ONLY */}
@@ -110,35 +115,39 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
                     <NavBar mode={mode} lang={currentLang} dict={dict} className="mobile" />
                   </nav>
 
-                  <div className="border-t pt-4 flex items-center gap-2">
-                    <UserButtonClientWithII lang={currentLang} />
-                    {/* <UserButtonClient lang={currentLang} /> */}
-                  </div>
+                  {/* Removed sign-in from mobile menu; sign-in stays in mobile header */}
+
+                  {/* Settings inside mobile menu (only when authenticated) */}
+                  {status === "authenticated" && session?.user ? (
+                    <div className="border-t pt-4">
+                      <SettingsButton />
+                    </div>
+                  ) : null}
 
                   {/* Footer Links in Mobile Menu */}
                   <div className="border-t pt-4">
                     <div className="flex flex-col space-y-2">
                       <Link
                         href={`/${currentLang}/terms`}
-                        className="text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                        className="transition-all duration-200 ease-in-out px-2 py-2 hover:text-primary hover:bg-muted rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 text-lg w-full flex items-center text-muted-foreground"
                       >
                         {dict?.footer?.terms || "Terms"}
                       </Link>
                       <Link
                         href={`/${currentLang}/privacy`}
-                        className="text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                        className="transition-all duration-200 ease-in-out px-2 py-2 hover:text-primary hover:bg-muted rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 text-lg w-full flex items-center text-muted-foreground"
                       >
                         {dict?.footer?.privacy || "Privacy"}
                       </Link>
                       <Link
                         href={`/${currentLang}/contact`}
-                        className="text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                        className="transition-all duration-200 ease-in-out px-2 py-2 hover:text-primary hover:bg-muted rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 text-lg w-full flex items-center text-muted-foreground"
                       >
                         {dict?.footer?.contact || "Contact"}
                       </Link>
                       <button
                         onClick={handleShare}
-                        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                        className="transition-all duration-200 ease-in-out px-2 py-2 hover:text-primary hover:bg-muted rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 text-lg w-full flex items-center gap-2 text-muted-foreground"
                       >
                         <Share2 className="h-4 w-4" />
                         <span>{dict?.footer?.share || "Share"}</span>
@@ -146,12 +155,12 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
                     </div>
 
                     {/* Social Links */}
-                    <div className="flex items-center gap-4 mt-4">
+                    <div className="flex items-center gap-4 mt-4 text-muted-foreground">
                       <a
                         href="https://twitter.com/futura"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                        className="transition-colors hover:text-primary"
                         aria-label="Twitter"
                       >
                         <Twitter className="h-4 w-4" />
@@ -160,7 +169,7 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
                         href="https://instagram.com/futura"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                        className="transition-colors hover:text-primary"
                         aria-label="Instagram"
                       >
                         <Instagram className="h-4 w-4" />
@@ -169,7 +178,7 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
                         href="https://facebook.com/futura"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                        className="transition-colors hover:text-primary"
                         aria-label="Facebook"
                       >
                         <Facebook className="h-4 w-4" />
