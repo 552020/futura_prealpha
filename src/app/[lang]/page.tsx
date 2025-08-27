@@ -32,10 +32,16 @@ export default async function LangPage({ params }: PageProps) {
   // Get dictionary for the language WITH the preferred segment
   const dict = await getDictionary(resolvedParams.lang, { segment });
 
+  const heroMode = process.env.NEXT_PUBLIC_HERO;
+  const showVault = heroMode === "vault";
+
   return (
     <main className="bg-white dark:bg-[#0A0A0B]">
-      <Hero dict={dict} lang={resolvedParams.lang} />
-      <HeroDemo dict={dict} lang={resolvedParams.lang} />
+      {showVault ? (
+        <Hero dict={dict} lang={resolvedParams.lang} />
+      ) : (
+        <HeroDemo dict={dict} lang={resolvedParams.lang} />
+      )}
       {/* <ValueJourney dict={dict} lang={resolvedParams.lang} segment={segment} /> */}
     </main>
   );

@@ -16,9 +16,9 @@ function Hero({ dict, lang }: HeroProps) {
 
   return (
     <div className="w-full flex items-center justify-center min-h-[calc(100vh-4rem)]">
-      <div className="w-[90%] md:w-[85%] lg:w-[80%] mx-auto px-4 flex flex-col lg:flex-row items-center gap-8 lg:gap-12 bg-background rounded-lg relative">
+      <div className="w-full lg:w-[80%] mx-auto px-0 lg:px-4 flex flex-col lg:flex-row items-center gap-0 lg:gap-12 bg-background lg:rounded-lg relative">
         {/* Left Column - Text Content */}
-        <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left bg-red-100 dark:bg-red-900/20 p-4 rounded">
+        <div className="hidden lg:flex w-full lg:w-1/2 flex-col items-center lg:items-start text-center lg:text-left bg-red-100 dark:bg-red-900/20 p-4 rounded">
           {/* Title */}
           <div className="pt-32 lg:pt-0">
             <h1
@@ -34,24 +34,37 @@ function Hero({ dict, lang }: HeroProps) {
           <div className="pb-15 lg:pb-8">
             <p
               className="font-normal text-foreground"
-              style={{ fontSize: `calc(80vw / ${"Your Wedding. Forever.".length})` }}
+              style={{ fontSize: `calc(80vw / ${"Your Gallery. Forever.".length})` }}
             >
-              Your Wedding. Forever.
+              Your Gallery. Forever.
             </p>
           </div>
         </div>
 
         {/* Right Column - Image */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center bg-blue-100 dark:bg-blue-900/20 p-4 rounded">
-          <div className="relative w-full max-w-md lg:max-w-lg min-h-[300px] lg:min-h-[400px] bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-0 lg:p-4">
+          <div className="relative w-screen lg:w-full lg:max-w-lg min-h-[calc(100vh-4rem)] lg:min-h-[400px] bg-gray-100 dark:bg-gray-800 rounded-none lg:rounded-lg flex items-center justify-center">
             <Image
-              src="/hero/abstract-1.jpg"
+              src="/hero/diana_charles.jpg"
               alt="Futura Hero Image"
-              width={500}
-              height={500}
-              className="w-full h-full rounded-lg shadow-lg object-cover"
+              fill
+              sizes="100vw"
+              className="w-full h-full rounded-none lg:rounded-lg shadow-none lg:shadow-lg object-cover lg:object-center"
+              style={{ objectPosition: "80% center" }}
               priority
             />
+            {/* Mobile overlay text */}
+            <div className="absolute inset-x-0 top-24 px-6 text-center text-white drop-shadow-lg lg:hidden">
+              <h1
+                className="font-black leading-none"
+                style={{ fontSize: `calc(73.5vw / ${(dict?.hero?.title || "Futura").length})` }}
+              >
+                {dict?.hero?.title || "Futura"}
+              </h1>
+              <p className="mt-2 font-normal" style={{ fontSize: `calc(80vw / ${"Your Gallery. Forever.".length})` }}>
+                Your Gallery. Forever.
+              </p>
+            </div>
           </div>
         </div>
 
