@@ -80,8 +80,8 @@ function Hero({ dict, lang }: HeroProps) {
 
   return (
     <div className="w-full flex items-center justify-center min-h-[calc(100vh-4rem)]">
-      {/* Mobile & small screens layout */}
-      <div className="block lg:hidden w-full lg:w-[80%] mx-auto px-0 lg:px-4 flex flex-col lg:flex-row items-center gap-0 lg:gap-12 bg-background lg:rounded-lg relative">
+      {/* Mobile-only layout (<480px) */}
+      <div className="block min-[480px]:hidden w-full lg:w-[80%] mx-auto px-0 lg:px-4 flex flex-col lg:flex-row items-center gap-0 lg:gap-12 bg-background lg:rounded-lg relative">
         {/* Left Column - Text Content */}
         <div className="hidden lg:flex w-full lg:w-1/2 flex-col items-center lg:items-start text-center lg:text-left bg-red-100 dark:bg-red-900/20 p-4 rounded">
           {/* Title */}
@@ -151,6 +151,21 @@ function Hero({ dict, lang }: HeroProps) {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Mid-range hero (>=480px and <lg): image only, same framing as desktop */}
+      <div className="hidden min-[480px]:block lg:hidden w-full">
+        <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden">
+          <Image
+            src="/hero/diana_charles.jpg"
+            alt="Futura Hero Image"
+            fill
+            sizes="100vw"
+            className="w-full h-full shadow-lg object-cover object-center"
+            priority
+            style={{ objectPosition: "center 10%" }}
+          />
         </div>
       </div>
 
