@@ -45,7 +45,7 @@ export default function Footer({ dict, lang }: { dict?: Dictionary; lang?: strin
   };
 
   return (
-    <footer className="border-t border-gray-200 dark:border-gray-800">
+    <footer className="hidden md:block border-t border-gray-200 dark:border-gray-800">
       <div className="max-w-7xl mx-auto py-4 sm:py-8 px-4">
         <div className="flex flex-col items-center gap-2 sm:gap-4">
           {/* Links */}

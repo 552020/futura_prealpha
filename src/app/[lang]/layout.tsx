@@ -14,6 +14,7 @@ import Sidebar from "@/components/sidebar";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "@/components/ui/toaster";
+import Footer from "@/components/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -97,6 +98,7 @@ export default async function RootLayout({
                       <main className="flex-1">{children}</main>
                     </div>
                   </div>
+                  <Footer dict={dict} lang={lang} />
                   <Toaster />
                 </OnboardingProvider>
               </InterfaceProvider>
