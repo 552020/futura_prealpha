@@ -70,8 +70,13 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal border-b pb-3">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{session.user.name}</p>
-            <p className="text-muted-foreground text-xs leading-none">{session.user.email}</p>
+            <p className="text-sm font-medium leading-none">{name}</p>
+            {session.user.email && (
+              <p className="text-muted-foreground text-xs leading-none">{session.user.email}</p>
+            )}
+            {principal && (
+              <p className="text-muted-foreground text-xs leading-none break-all">{principal}</p>
+            )}
           </div>
         </DropdownMenuLabel>
         <div className="p-2">
