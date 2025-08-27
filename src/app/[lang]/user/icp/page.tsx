@@ -22,6 +22,7 @@ export default function ICPPage() {
   const [principalId, setPrincipalId] = useState("");
   // UX safety: prevents double-clicks and provides visual feedback
   const [busy, setBusy] = useState(false);
+  const [isRehydrating, setIsRehydrating] = useState(true);
   const { toast } = useToast();
 
   /**
@@ -119,10 +120,21 @@ export default function ICPPage() {
           const principal = identity.getPrincipal();
           setPrincipalId(principal.toString());
           setGreeting("You are signed in!");
+
+          // Rehydrate actor so "Test Backend" works immediately after refresh
+          try {
+            const actor = await backendActor(identity);
+            authenticatedActorRef.current = actor;
+          } catch (error) {
+            console.error("Failed to rehydrate actor:", error);
+            // Don't break the flow if actor creation fails
+          }
         }
       } catch (error) {
         console.error("Failed to check auth state:", error);
         // Don't show toast on mount errors - just log them
+      } finally {
+        setIsRehydrating(false);
       }
     }
 
@@ -237,6 +249,26 @@ export default function ICPPage() {
     } catch (error) {
       console.error("Whoami failed:", error);
       const errorMessage = error instanceof Error ? error.message : String(error);
+
+      // Handle expired/invalid delegation
+      if (
+        errorMessage.includes("Invalid delegation") ||
+        errorMessage.includes("expired") ||
+        errorMessage.includes("401")
+      ) {
+        console.log("Delegation expired, prompting re-login");
+        setIsAuthenticated(false);
+        setPrincipalId("");
+        setGreeting("");
+        clearAuthenticatedActor();
+        toast({
+          title: "Session Expired",
+          description: "Your session has expired. Please sign in again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       toast({
         title: "Whoami Failed",
         description: `Failed to get principal from backend: ${errorMessage}`,
@@ -295,7 +327,7 @@ export default function ICPPage() {
         <Button onClick={isAuthenticated ? handleSignOut : handleLogin} id="login" disabled={busy}>
           {isAuthenticated ? "Sign Out" : "Continue with Internet Identity"}
         </Button>
-        <Button onClick={handleWhoami} disabled={busy || !isAuthenticated}>
+        <Button onClick={handleWhoami} disabled={busy || !isAuthenticated || isRehydrating}>
           Test Backend Connection
         </Button>
       </div>
