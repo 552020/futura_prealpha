@@ -156,20 +156,42 @@ function Hero({ dict, lang }: HeroProps) {
 
       {/* Desktop-only layout: full image with centered black box in bottom half */}
       <div className="hidden lg:block w-full">
-        <div className="relative w-full min-h-[calc(100vh-4rem)]">
+        <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden">
           <Image
             src="/hero/diana_charles.jpg"
             alt="Futura Hero Image"
             fill
             sizes="100vw"
-            className="w-full h-full rounded-lg shadow-lg object-cover object-center"
+            className="w-full h-full shadow-lg object-cover object-center"
             priority
+            style={{ objectPosition: "center 10%" }}
           />
-          <div className="absolute inset-x-0 bottom-[10%] px-0 flex items-end justify-center">
-            <div className="bg-black text-white text-center px-6 py-4 rounded-sm max-w-[40vw]">
-              <div className="font-black text-white text-6xl leading-none">Futura</div>
-              <div className="mt-2 text-white/90 text-xl">Your Gallery. Forever.</div>
+          {/* Desktop left-half overlay area with inner black container */}
+          <div className="absolute inset-0 z-[1] flex">
+            {/* Left half */}
+            <div className="relative w-1/2 h-full">
+              {/* Semi-transparent overlay */}
+              <div className="absolute inset-0 bg-black/30" />
+              {/* Black container sized to left-half with margins */}
+              <div className="absolute top-6 left-6 right-6 bottom-6">
+                <div
+                  className="bg-black text-white h-full w-full flex flex-col justify-start items-start px-6 py-4 text-left"
+                  style={{ containerType: "inline-size" }}
+                >
+                  <div
+                    className="font-black text-white leading-none w-full"
+                    style={{ fontSize: "clamp(4rem, 9vw, 14rem)" }}
+                  >
+                    Futura
+                  </div>
+                  <div className="mt-2 text-white/90 w-full" style={{ fontSize: "clamp(2rem, 3vw, 6rem)" }}>
+                    Your Gallery. Forever.
+                  </div>
+                </div>
+              </div>
             </div>
+            {/* Right half (empty) */}
+            <div className="w-1/2 h-full" />
           </div>
         </div>
       </div>
