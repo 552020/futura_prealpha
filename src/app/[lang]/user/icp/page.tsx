@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAuthClient as getIiAuthClient, loginWithII, clearIiSession } from "@/ic/ii";
+import RequireAuth from "@/components/require-auth";
 
 export default function ICPPage() {
   const { isAuthorized, isLoading } = useAuthGuard();
@@ -260,11 +261,17 @@ export default function ICPPage() {
   }
 
   if (!isAuthorized || isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-gray-800 dark:border-gray-700 dark:border-t-gray-200" />
-      </div>
-    );
+    // Show loading spinner only while status is loading
+    if (isLoading) {
+      return (
+        <div className="flex h-screen items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-gray-800 dark:border-gray-700 dark:border-t-gray-200" />
+        </div>
+      );
+    }
+
+    // Show access denied for unauthenticated users
+    return <RequireAuth />;
   }
 
   return (

@@ -2,6 +2,7 @@
 
 import { useAuthGuard } from "@/utils/authentication";
 import { Loader2 } from "lucide-react";
+import RequireAuth from "@/components/require-auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -14,11 +15,17 @@ export default function SettingsPage() {
   const { isAdmin, devMode, setDevMode, isAtLeastDeveloper } = useInterface();
 
   if (!isAuthorized || isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+    // Show loading spinner only while status is loading
+    if (isLoading) {
+      return (
+        <div className="flex h-screen items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      );
+    }
+
+    // Show access denied for unauthenticated users
+    return <RequireAuth />;
   }
 
   return (

@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import { useAuthGuard } from "@/utils/authentication";
 import { Loader2 } from "lucide-react";
+import RequireAuth from "@/components/require-auth";
 
 interface FeedItem {
   id: string;
@@ -43,11 +44,7 @@ export default function FeedPage() {
     []
   );
 
-  useEffect(() => {
-    if (!isAuthorized) {
-      redirectToSignIn();
-    }
-  }, [isAuthorized, redirectToSignIn]);
+  // Removed automatic redirect - now handled by RequireAuth component in render
 
   useEffect(() => {
     if (isAuthorized && userId) {
@@ -101,11 +98,17 @@ export default function FeedPage() {
   };
 
   if (!isAuthorized || isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+    // Show loading spinner only while status is loading
+    if (isLoading) {
+      return (
+        <div className="flex h-screen items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      );
+    }
+
+    // Show access denied for unauthenticated users
+    return <RequireAuth />;
   }
 
   return (

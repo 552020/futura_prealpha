@@ -18,7 +18,7 @@ const ProfilePage = async (props: Props) => {
   const session = await auth();
 
   if (!session) {
-    redirect("/auth/signin");
+    redirect("/en/signin");
   }
 
   if (session.user.id !== resolvedParams.id) {

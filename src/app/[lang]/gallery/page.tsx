@@ -9,6 +9,7 @@ import { Calendar, Image, Lock, Globe } from "lucide-react";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 import { GalleryTopBar } from "@/components/gallery-top-bar";
+import RequireAuth from "@/components/require-auth";
 
 // Mock data flag for development
 const USE_MOCK_DATA = true;
@@ -62,23 +63,29 @@ export default function GalleryPage() {
     setViewMode(mode);
   };
 
-  if (authLoading || isLoading) {
+  if (!isAuthorized || authLoading) {
+    // Show loading spinner only while status is loading
+    if (authLoading) {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Show access denied for unauthenticated users
+    return <RequireAuth />;
+  }
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading galleries...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthorized) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-4">Please sign in</h2>
-          <p className="text-muted-foreground">You need to be logged in to view your galleries.</p>
         </div>
       </div>
     );

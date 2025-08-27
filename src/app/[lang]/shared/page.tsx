@@ -9,6 +9,7 @@ import { normalizeMemories } from "@/utils/normalizeMemories";
 import { Memory } from "@/types/memory";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import RequireAuth from "@/components/require-auth";
 
 export default function SharedMemoriesPage({ params }: { params: Promise<{ lang: string }> }) {
   // Unwrap params using React.use()
@@ -85,11 +86,7 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
     }
   }, [currentPage, toast]);
 
-  useEffect(() => {
-    if (!isAuthorized) {
-      redirectToSignIn();
-    }
-  }, [isAuthorized, redirectToSignIn]);
+  // Removed automatic redirect - now handled by RequireAuth component in render
 
   useEffect(() => {
     if (isAuthorized && userId) {
@@ -143,11 +140,17 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
   };
 
   if (!isAuthorized || isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
+    // Show loading spinner only while status is loading
+    if (isLoading) {
+      return (
+        <div className="flex h-screen items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      );
+    }
+
+    // Show access denied for unauthenticated users
+    return <RequireAuth />;
   }
 
   return (
