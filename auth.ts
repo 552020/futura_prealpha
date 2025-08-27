@@ -11,8 +11,8 @@ import { compare } from "bcrypt"; // make sure bcrypt is installed
 import { allUsers, temporaryUsers, users, accounts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
-// console.log("--------------------------------");
-// console.log("auth.ts");
+console.log("--------------------------------");
+console.log("auth.ts");
 // console.log("--------------------------------");
 // console.log("NODE_ENV:", process.env.NODE_ENV);
 
@@ -117,6 +117,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         const principal = credentials?.principal;
+        console.log("[II] authorize:start", { principal });
         if (!principal || typeof principal !== "string" || principal.length < 5) {
           return null;
         }
@@ -131,11 +132,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             where: (u, { eq }) => eq(u.id, existingAccount.userId),
           });
           if (existingUser) {
+            console.log("[II] authorize:found-existing", { userId: existingUser.id, principal });
             return {
               id: existingUser.id,
               email: existingUser.email,
               name: existingUser.name,
               role: existingUser.role,
+              icpPrincipal: principal,
             };
           }
         }
@@ -149,7 +152,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         await db.insert(accounts).values({
           userId: newUser.id,
-          type: "credentials",
+          type: "oidc",
           provider: "internet-identity",
           providerAccountId: principal,
         });
@@ -157,11 +160,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Ensure allUsers entry exists for business linkage
         await db.insert(allUsers).values({ type: "user", userId: newUser.id }).onConflictDoNothing?.();
 
+        console.log("[II] authorize:created", { userId: newUser.id, principal });
+
         return {
           id: newUser.id,
           email: newUser.email,
           name: newUser.name,
           role: newUser.role,
+          icpPrincipal: principal,
         };
       },
     }),
@@ -228,6 +234,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role = user.role;
         // console.log("Added role to JWT from user object:", token.role);
       }
+      // Propagate II principal on first sign-in (when present on user)
+      const userAny = user as unknown as { icpPrincipal?: string } | undefined;
+      if (userAny?.icpPrincipal && typeof userAny.icpPrincipal === "string") {
+        (token as unknown as { icpPrincipal?: string }).icpPrincipal = userAny.icpPrincipal;
+        console.log("[II][JWT] set from user", { icpPrincipal: token.icpPrincipal });
+      }
       //   if (user) {
       //     token.role = user.role;
       //     console.log("Added role to JWT:", token.role);
@@ -244,6 +256,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         } else {
           token.role = "user";
           // console.log("Fallback role set to 'user'");
+        }
+      }
+
+      // Backfill icpPrincipal from accounts mapping when missing
+      if (!("icpPrincipal" in (token as unknown as Record<string, unknown>)) && token.sub) {
+        try {
+          const iiAccount = await db.query.accounts.findFirst({
+            where: (a, { and, eq }) => and(eq(a.userId, token.sub as string), eq(a.provider, "internet-identity")),
+            columns: { providerAccountId: true },
+          });
+          if (iiAccount?.providerAccountId) {
+            (token as unknown as { icpPrincipal?: string }).icpPrincipal = iiAccount.providerAccountId;
+            console.log("[II][JWT] backfilled from accounts", { icpPrincipal: iiAccount.providerAccountId });
+          }
+        } catch (error) {
+          console.warn("[II][JWT] failed to backfill icpPrincipal", error);
         }
       }
 
@@ -284,6 +312,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Add business user ID
         if (token.businessUserId && typeof token.businessUserId === "string") {
           (session.user as { businessUserId?: string }).businessUserId = token.businessUserId;
+        }
+        // Add icpPrincipal when present
+        const tokenAny = token as unknown as { icpPrincipal?: string };
+        if (typeof tokenAny.icpPrincipal === "string") {
+          (session.user as unknown as { icpPrincipal?: string }).icpPrincipal = tokenAny.icpPrincipal;
         }
       }
       if (token.accessToken) {

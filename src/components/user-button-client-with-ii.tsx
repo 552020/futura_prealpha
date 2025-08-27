@@ -40,7 +40,8 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
     );
   }
 
-  const name = session.user.name || session.user.email || "User";
+  const principal = (session.user as any).icpPrincipal as string | undefined;
+  const name = session.user.name || session.user.email || (principal ? `Principal ${principal.slice(0, 8)}…${principal.slice(-6)}` : "User");
   const initials = name
     .split(" ")
     .map((n) => n[0])
@@ -96,7 +97,7 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
           </DropdownMenu>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{name}</p>
+          <p>{principal ? `Principal: ${principal}` : name}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
