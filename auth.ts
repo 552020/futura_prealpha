@@ -8,7 +8,7 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/db/db";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt"; // make sure bcrypt is installed
-import { allUsers, temporaryUsers } from "@/db/schema";
+import { allUsers, temporaryUsers, users, accounts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 // console.log("--------------------------------");
@@ -106,6 +106,62 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           name: user.name,
           role: user.role,
+        };
+      },
+    }),
+    CredentialsProvider({
+      id: "ii",
+      name: "Internet Identity",
+      credentials: {
+        principal: { label: "Principal", type: "text" },
+      },
+      async authorize(credentials) {
+        const principal = credentials?.principal;
+        if (!principal || typeof principal !== "string" || principal.length < 5) {
+          return null;
+        }
+
+        // Try to find an existing II account mapping
+        const existingAccount = await db.query.accounts.findFirst({
+          where: (a, { and, eq }) => and(eq(a.provider, "internet-identity"), eq(a.providerAccountId, principal)),
+        });
+
+        if (existingAccount) {
+          const existingUser = await db.query.users.findFirst({
+            where: (u, { eq }) => eq(u.id, existingAccount.userId),
+          });
+          if (existingUser) {
+            return {
+              id: existingUser.id,
+              email: existingUser.email,
+              name: existingUser.name,
+              role: existingUser.role,
+            };
+          }
+        }
+
+        // Create a new user and account mapping
+        const insertedUsers = await db
+          .insert(users)
+          .values({})
+          .returning({ id: users.id, email: users.email, name: users.name, role: users.role });
+        const newUser = insertedUsers[0];
+
+        await db.insert(accounts).values({
+          userId: newUser.id,
+          type: "credentials",
+          provider: "internet-identity",
+          providerAccountId: principal,
+        });
+
+        // Ensure allUsers entry exists for business linkage
+        await db.insert(allUsers).values({ type: "user", userId: newUser.id }).onConflictDoNothing?.();
+
+        return {
+          id: newUser.id,
+          email: newUser.email,
+          name: newUser.name,
+          role: newUser.role,
         };
       },
     }),
