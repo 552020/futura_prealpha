@@ -7,7 +7,7 @@ import { Menu, Share2, Twitter, Instagram, Facebook } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
 import { SettingsButton } from "./settings-button";
 import NavBar from "./nav-bar";
-import UserButtonClient from "./user-button-client";
+// import UserButtonClient from "./user-button-client";
 import UserButtonClientWithII from "./user-button-client-with-ii";
 import { useInterface } from "@/contexts/interface-context";
 import { LanguageSwitcher } from "./language-switcher";
@@ -75,7 +75,7 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
           {/* Desktop-only user controls */}
           <div className="hidden md:flex items-center gap-2 transition-opacity hover:opacity-80">
             <UserButtonClientWithII lang={currentLang} />
-            <UserButtonClient lang={currentLang} />
+            {/* <UserButtonClient lang={currentLang} /> */}
           </div>
 
           {/* Always visible controls */}
@@ -112,7 +112,7 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
 
                   <div className="border-t pt-4 flex items-center gap-2">
                     <UserButtonClientWithII lang={currentLang} />
-                    <UserButtonClient lang={currentLang} />
+                    {/* <UserButtonClient lang={currentLang} /> */}
                   </div>
 
                   {/* Footer Links in Mobile Menu */}
