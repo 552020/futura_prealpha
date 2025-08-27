@@ -11,7 +11,7 @@ import NavBar from "./nav-bar";
 import UserButtonClientWithII from "./user-button-client-with-ii";
 import { useInterface } from "@/contexts/interface-context";
 import { LanguageSwitcher } from "./language-switcher";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "./ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader, SheetClose } from "./ui/sheet";
 import { Dictionary } from "@/utils/dictionaries";
 import { usePathname } from "next/navigation";
 
@@ -112,7 +112,7 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
                 </SheetHeader>
                 <div className="flex flex-col space-y-4">
                   <nav className="flex flex-col">
-                    <NavBar mode={mode} lang={currentLang} dict={dict} className="mobile" />
+                    <NavBar mode={mode} lang={currentLang} dict={dict} className="mobile" closeOnClick />
                   </nav>
 
                   {/* Removed sign-in from mobile menu; sign-in stays in mobile header */}
@@ -127,62 +127,77 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
                   {/* Footer Links in Mobile Menu */}
                   <div className="border-t pt-4">
                     <div className="flex flex-col space-y-2">
-                      <Link
-                        href={`/${currentLang}/terms`}
-                        className="transition-all duration-200 ease-in-out px-2 py-2 hover:text-primary hover:bg-muted rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 text-lg w-full flex items-center text-muted-foreground"
-                      >
-                        {dict?.footer?.terms || "Terms"}
-                      </Link>
-                      <Link
-                        href={`/${currentLang}/privacy`}
-                        className="transition-all duration-200 ease-in-out px-2 py-2 hover:text-primary hover:bg-muted rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 text-lg w-full flex items-center text-muted-foreground"
-                      >
-                        {dict?.footer?.privacy || "Privacy"}
-                      </Link>
-                      <Link
-                        href={`/${currentLang}/contact`}
-                        className="transition-all duration-200 ease-in-out px-2 py-2 hover:text-primary hover:bg-muted rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 text-lg w-full flex items-center text-muted-foreground"
-                      >
-                        {dict?.footer?.contact || "Contact"}
-                      </Link>
-                      <button
-                        onClick={handleShare}
-                        className="transition-all duration-200 ease-in-out px-2 py-2 hover:text-primary hover:bg-muted rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 text-lg w-full flex items-center gap-2 text-muted-foreground"
-                      >
-                        <Share2 className="h-4 w-4" />
-                        <span>{dict?.footer?.share || "Share"}</span>
-                      </button>
+                      <SheetClose asChild>
+                        <Link
+                          href={`/${currentLang}/terms`}
+                          className="transition-all duration-200 ease-in-out px-4 py-3 hover:text-primary hover:bg-muted rounded-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 text-base w-full flex items-center text-muted-foreground"
+                        >
+                          {dict?.footer?.terms || "Terms"}
+                        </Link>
+                      </SheetClose>
+                      <SheetClose asChild>
+                        <Link
+                          href={`/${currentLang}/privacy`}
+                          className="transition-all duration-200 ease-in-out px-4 py-3 hover:text-primary hover:bg-muted rounded-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 text-base w-full flex items-center text-muted-foreground"
+                        >
+                          {dict?.footer?.privacy || "Privacy"}
+                        </Link>
+                      </SheetClose>
+                      <SheetClose asChild>
+                        <Link
+                          href={`/${currentLang}/contact`}
+                          className="transition-all duration-200 ease-in-out px-4 py-3 hover:text-primary hover:bg-muted rounded-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 text-base w-full flex items-center text-muted-foreground"
+                        >
+                          {dict?.footer?.contact || "Contact"}
+                        </Link>
+                      </SheetClose>
+                      <SheetClose asChild>
+                        <button
+                          onClick={handleShare}
+                          tabIndex={-1}
+                          className="transition-all duration-200 ease-in-out px-4 py-3 hover:text-primary hover:bg-muted rounded-none focus:outline-none focus:ring-0 focus:bg-transparent text-base w-full flex items-center gap-2 text-muted-foreground"
+                        >
+                          <Share2 className="h-4 w-4" />
+                          <span>{dict?.footer?.share || "Share"}</span>
+                        </button>
+                      </SheetClose>
                     </div>
 
                     {/* Social Links */}
-                    <div className="flex items-center gap-4 mt-4 text-muted-foreground">
-                      <a
-                        href="https://twitter.com/futura"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="transition-colors hover:text-primary"
-                        aria-label="Twitter"
-                      >
-                        <Twitter className="h-4 w-4" />
-                      </a>
-                      <a
-                        href="https://instagram.com/futura"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="transition-colors hover:text-primary"
-                        aria-label="Instagram"
-                      >
-                        <Instagram className="h-4 w-4" />
-                      </a>
-                      <a
-                        href="https://facebook.com/futura"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="transition-colors hover:text-primary"
-                        aria-label="Facebook"
-                      >
-                        <Facebook className="h-4 w-4" />
-                      </a>
+                    <div className="w-full px-4 py-3 rounded-none flex items-center gap-4 text-muted-foreground transition-colors hover:bg-muted">
+                      <SheetClose asChild>
+                        <a
+                          href="https://twitter.com/futura"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="transition-colors hover:text-primary"
+                          aria-label="Twitter"
+                        >
+                          <Twitter className="h-4 w-4" />
+                        </a>
+                      </SheetClose>
+                      <SheetClose asChild>
+                        <a
+                          href="https://instagram.com/futura"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="transition-colors hover:text-primary"
+                          aria-label="Instagram"
+                        >
+                          <Instagram className="h-4 w-4" />
+                        </a>
+                      </SheetClose>
+                      <SheetClose asChild>
+                        <a
+                          href="https://facebook.com/futura"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="transition-colors hover:text-primary"
+                          aria-label="Facebook"
+                        >
+                          <Facebook className="h-4 w-4" />
+                        </a>
+                      </SheetClose>
                     </div>
                   </div>
                 </div>
