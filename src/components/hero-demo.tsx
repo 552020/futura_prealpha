@@ -10,6 +10,52 @@ interface HeroProps {
   lang: string;
 }
 
+type TitleVariant = "transform-overflow" | "negative-margins" | "flow-margin";
+
+function HeroTitle({
+  text,
+  fontSize,
+  variant = "transform-overflow",
+  offsetRem = 3,
+}: {
+  text: string;
+  fontSize: string;
+  variant?: TitleVariant;
+  /** Vertical offset from the top of the black box (in rem). */
+  offsetRem?: number;
+}) {
+  if (variant === "flow-margin") {
+    // Stays in normal flow; position with marginTop and scale only
+    return (
+      <h1
+        className="font-black leading-none tracking-wider m-0 text-white relative z-10 pointer-events-none transform-gpu origin-top scale-[1.45] mb-8 mr-3"
+        style={{ fontSize, marginTop: `${offsetRem}rem`, textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
+      >
+        {text}
+      </h1>
+    );
+  }
+  if (variant === "negative-margins") {
+    return (
+      <h1
+        className="font-black leading-none tracking-wider m-0 -mx-2 text-white"
+        style={{ fontSize, marginTop: `${offsetRem}rem` }}
+      >
+        {text}
+      </h1>
+    );
+  }
+  // transform-overflow (default)
+  return (
+    <h1
+      className="font-black leading-none tracking-wider m-0 text-white relative z-10 pointer-events-none transform-gpu origin-bottom scale-[1.45] -translate-y-2.5"
+      style={{ fontSize, textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
+    >
+      {text}
+    </h1>
+  );
+}
+
 function Hero({ dict, lang }: HeroProps) {
   // Validate translations using the helper function
   validateTranslations(dict, lang, "hero");
@@ -25,6 +71,10 @@ function Hero({ dict, lang }: HeroProps) {
   // Controls for mobile overlay margins (rem units)
   const BOX_MARGIN_X_REM = 0.75; // left/right margin (was mx-3 -> 0.75rem)
   const BOX_MARGIN_Y_REM = 9.0; // top/bottom margin (was my-36 -> 9rem)
+  // Title variant flag (env): transform-overflow | negative-margins
+  const TITLE_VARIANT: TitleVariant = (process.env.NEXT_PUBLIC_HERO_TITLE as TitleVariant) || "transform-overflow";
+  // Manual vertical offset for the title within the black box (rem)
+  const TITLE_OFFSET_REM = -1.6;
 
   return (
     <div className="w-full flex items-center justify-center min-h-[calc(100vh-4rem)]">
@@ -66,25 +116,25 @@ function Hero({ dict, lang }: HeroProps) {
               priority
             />
             {/* Mobile overlay text */}
-            <div className="absolute inset-x-0 bottom-0 px-0 lg:hidden flex items-end justify-center">
+            <div className="absolute inset-x-0 bottom-0 px-0 lg:hidden flex items-end justify-center overflow-visible">
               <div
-                className="bg-black text-white text-center"
+                className="bg-black text-white text-center relative overflow-visible box-border"
                 style={{
                   padding: `${BOX_PAD_Y_REM}rem ${BOX_PAD_X_REM}rem`,
                   margin: `${BOX_MARGIN_Y_REM}rem ${BOX_MARGIN_X_REM}rem`,
                   width: `calc(100% - ${BOX_MARGIN_X_REM * 2}rem)`,
                 }}
               >
-                <h1
-                  className="font-black leading-none tracking-wider m-0"
-                  style={{
-                    fontSize: `calc(${(TITLE_VW * TITLE_SCALE).toFixed(1)}vw / ${
-                      (dict?.hero?.title || "Futura").length
-                    })`,
-                  }}
-                >
-                  {dict?.hero?.title || "Futura"}
-                </h1>
+                <HeroTitle
+                  text={dict?.hero?.title || "Futura"}
+                  fontSize={`calc(${(TITLE_VW * TITLE_SCALE).toFixed(1)}vw / ${
+                    (dict?.hero?.title || "Futura").length
+                  })`}
+                  //   variant={TITLE_VARIANT}
+                  //   variant="transform-overflow"
+                  variant="flow-margin"
+                  offsetRem={TITLE_OFFSET_REM}
+                />
                 <p
                   className="font-normal tracking-wide m-0 mt-3 leading-snug"
                   style={{
