@@ -2,22 +2,132 @@
 
 import { useAuthGuard } from "@/utils/authentication";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { backendActor } from "@/ic/backend";
+import { clearAgentCache } from "@/ic/agent";
 import type { BackendActor } from "@/ic/backend";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Copy } from "lucide-react";
 import { AuthClient } from "@dfinity/auth-client";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ICPPage() {
   const { isAuthorized, isLoading } = useAuthGuard();
   const [greeting, setGreeting] = useState("");
+  const [whoamiResult, setWhoamiResult] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [principalId, setPrincipalId] = useState("");
   // UX safety: prevents double-clicks and provides visual feedback
   const [busy, setBusy] = useState(false);
   const { toast } = useToast();
+
+  /**
+   * AuthClient Persistence Optimization
+   *
+   * Problem: AuthClient.create() reads from IndexedDB every time it's called.
+   * When called multiple times (login, whoami, logout, auth check), this causes:
+   * - Multiple expensive IndexedDB reads
+   * - Potential race conditions with concurrent reads
+   * - Popup conflicts when multiple AuthClient instances exist
+   *
+   * Solution: Create AuthClient once and reuse the same instance.
+   * The AuthClient internally manages the IndexedDB state and identity,
+   * so we only need one instance per component lifecycle.
+   *
+   * What we're persisting:
+   * - The AuthClient object (in React component memory via useRef)
+   * - NOT the identity itself (that's still stored in browser IndexedDB by AuthClient)
+   *
+   * The AuthClient.create() still reads the stored identity from IndexedDB,
+   * but we only do this expensive operation once instead of 4+ times.
+   */
+  const authClientRef = useRef<AuthClient | null>(null);
+
+  // Cache authenticated actor to avoid recreating it for each backend call
+  const authenticatedActorRef = useRef<BackendActor | null>(null);
+
+  // Helper function to get or create AuthClient (creates once, reuses thereafter)
+  const getAuthClient = async (): Promise<AuthClient> => {
+    if (!authClientRef.current) {
+      // This is the only place we call AuthClient.create() - expensive IndexedDB read happens here
+      authClientRef.current = await AuthClient.create();
+    }
+    // All subsequent calls return the cached instance - no IndexedDB reads
+    return authClientRef.current;
+  };
+
+  // Helper function to get or create authenticated actor
+  const getAuthenticatedActor = async (): Promise<BackendActor> => {
+    const authClient = await getAuthClient();
+    const isAuth = await authClient.isAuthenticated();
+
+    if (!isAuth) {
+      throw new Error("Not authenticated - please login first");
+    }
+
+    // If we have a cached actor, return it
+    if (authenticatedActorRef.current) {
+      return authenticatedActorRef.current;
+    }
+
+    // Create and cache new authenticated actor
+    const identity = authClient.getIdentity();
+    authenticatedActorRef.current = await backendActor(identity);
+    return authenticatedActorRef.current;
+  };
+
+  // Clear cached actor when user signs out
+  const clearAuthenticatedActor = () => {
+    authenticatedActorRef.current = null;
+  };
+
+  // Copy principal ID to clipboard
+  const copyPrincipalToClipboard = async () => {
+    if (principalId) {
+      try {
+        await navigator.clipboard.writeText(principalId);
+        toast({
+          title: "Copied!",
+          description: "Principal ID copied to clipboard",
+        });
+      } catch (error) {
+        console.error("Failed to copy:", error);
+        toast({
+          title: "Copy Failed",
+          description: "Failed to copy principal ID to clipboard",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  // Check authentication state on mount to persist across page reloads
+  useEffect(() => {
+    async function checkAuthState() {
+      try {
+        const authClient = await getAuthClient();
+        const isAuth = await authClient.isAuthenticated();
+
+        if (isAuth) {
+          setIsAuthenticated(true);
+
+          // Get the user's principal
+          const identity = authClient.getIdentity();
+          const principal = identity.getPrincipal();
+          setPrincipalId(principal.toString());
+          setGreeting("You are signed in!");
+        }
+      } catch (error) {
+        console.error("Failed to check auth state:", error);
+        // Don't show toast on mount errors - just log them
+      }
+    }
+
+    checkAuthState();
+  }, []);
   async function handleGreetSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return; // UX safety: prevent double-clicks
@@ -43,10 +153,28 @@ export default function ICPPage() {
       const provider = process.env.NEXT_PUBLIC_II_URL || process.env.NEXT_PUBLIC_II_URL_FALLBACK;
       if (!provider) throw new Error("II URL not configured");
 
-      const authClient = await AuthClient.create();
+      // Session TTL Configuration
+      // Default: 8 hours (good balance of security vs UX)
+      // Can be overridden via NEXT_PUBLIC_II_SESSION_TTL_HOURS env var
+      const sessionTtlHours = parseInt(process.env.NEXT_PUBLIC_II_SESSION_TTL_HOURS || "8");
+      const maxTimeToLiveNs = BigInt(sessionTtlHours * 60 * 60 * 1000 * 1000 * 1000); // Convert hours to nanoseconds
+
+      const authClient = await getAuthClient();
       await new Promise<void>((resolve, reject) => {
         authClient.login({
           identityProvider: provider,
+          /**
+           * maxTimeToLive: Sets delegation expiry time in nanoseconds.
+           *
+           * Why this matters:
+           * - Without TTL: Sessions can persist indefinitely (security risk)
+           * - With TTL: Forces re-authentication after specified time
+           * - IC delegation chain respects this TTL for all canister calls
+           *
+           * Current setting: ${sessionTtlHours} hours
+           * After this time, all authenticated calls will fail and user must re-login.
+           */
+          maxTimeToLive: maxTimeToLiveNs,
           onSuccess: resolve,
           onError: reject,
         });
@@ -55,11 +183,19 @@ export default function ICPPage() {
       // At this point we're authenticated, and we can get the identity from the auth client:
       const identity = authClient.getIdentity();
       console.log("identity", identity);
+
+      // Get the user's principal ID directly from the identity
+      const principal = identity.getPrincipal();
+      console.log("Principal", principal);
+
+      // Create and cache the authenticated actor
       const authenticatedActor: BackendActor = await backendActor(identity);
+      authenticatedActorRef.current = authenticatedActor; // Cache it for future use
       console.log("AuthenticatedActor", authenticatedActor);
-      const greeting = await authenticatedActor.greet("John");
-      console.log("Greeting", greeting);
-      setGreeting(greeting);
+
+      setPrincipalId(principal.toString());
+      setGreeting("Successfully authenticated with Internet Identity!");
+      setIsAuthenticated(true);
 
       toast({
         title: "Login Successful",
@@ -67,9 +203,75 @@ export default function ICPPage() {
       });
     } catch (error) {
       console.error("Login failed:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       toast({
         title: "Login Failed",
-        description: "Failed to authenticate with Internet Identity. Please try again.",
+        description: `Failed to authenticate with Internet Identity: ${errorMessage}`,
+        variant: "destructive",
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleWhoami() {
+    if (busy) return; // UX safety: prevent double-clicks
+    setBusy(true);
+    try {
+      const authClient = await getAuthClient();
+      const isAuthenticated = await authClient.isAuthenticated();
+
+      if (!isAuthenticated) {
+        toast({
+          title: "Not Authenticated",
+          description: "Please login first to call whoami",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Use cached authenticated actor
+      const authenticatedActor = await getAuthenticatedActor();
+      const backendPrincipal = await authenticatedActor.whoami();
+      setWhoamiResult(`Backend whoami result: ${backendPrincipal.toString()}`);
+    } catch (error) {
+      console.error("Whoami failed:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      toast({
+        title: "Whoami Failed",
+        description: `Failed to get principal from backend: ${errorMessage}`,
+        variant: "destructive",
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleSignOut() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const authClient = await getAuthClient();
+      await authClient.logout();
+
+      // Clear all cached instances for clean logout
+      clearAgentCache(); // Clear agent cache (agents are cached by principal)
+      clearAuthenticatedActor(); // Clear our cached actor
+
+      setIsAuthenticated(false);
+      setPrincipalId("");
+      setGreeting("");
+      setWhoamiResult("");
+      toast({
+        title: "Signed Out",
+        description: "Successfully signed out",
+      });
+    } catch (error) {
+      console.error("Sign out failed:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      toast({
+        title: "Sign Out Failed",
+        description: `Failed to sign out: ${errorMessage}`,
         variant: "destructive",
       });
     } finally {
@@ -89,28 +291,67 @@ export default function ICPPage() {
     <div className="container mx-auto px-6 py-8">
       <h1 className="text-3xl font-bold mb-6">Hello ICP</h1>
 
-      <div className="mb-6">
-        <Button onClick={handleLogin} id="login" className="mb-4" disabled={busy}>
-          Login!
+      <div className="mb-6 flex gap-4">
+        <Button onClick={isAuthenticated ? handleSignOut : handleLogin} id="login" disabled={busy}>
+          {isAuthenticated ? "Sign Out" : "Continue with Internet Identity"}
+        </Button>
+        <Button onClick={handleWhoami} disabled={busy || !isAuthenticated}>
+          Test Backend Connection
         </Button>
       </div>
+
+      {/* Principal ID Display */}
+      {isAuthenticated && principalId && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium">Your Internet Identity Principal</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2">
+              <Input
+                value={principalId}
+                readOnly
+                className="font-mono text-sm"
+                onClick={(e) => e.currentTarget.select()}
+              />
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={copyPrincipalToClipboard}
+                disabled={busy}
+                title="Copy to clipboard"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <form onSubmit={handleGreetSubmit} className="mb-6 space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">Enter your name:</Label>
-          <div className="flex gap-2">
+          <div className="flex gap-4">
             <Input id="name" name="name" type="text" placeholder="Your name" className="w-64" />
             <Button type="submit" disabled={busy}>
-              Click Me!
+              Send Greeting
             </Button>
           </div>
         </div>
       </form>
 
       {greeting && (
-        <Card>
+        <Card className="mb-4">
           <CardContent className="pt-6">
             <p>{greeting}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {whoamiResult && (
+        <Card>
+          <CardContent className="pt-6">
+            <p>{whoamiResult}</p>
           </CardContent>
         </Card>
       )}
