@@ -23,6 +23,7 @@ export default function SignInPage() {
   const [iiBusy, setIiBusy] = useState(false);
 
   async function handleCredentialsSignIn(e: React.FormEvent) {
+    console.log("handleCredentialsSignIn", email, password);
     e.preventDefault();
     if (busy) return;
     setBusy(true);
@@ -38,6 +39,8 @@ export default function SignInPage() {
         setError("Invalid email or password");
         return;
       }
+      console.log("handleCredentialsSignIn", res);
+
       // Navigate after successful credentials sign-in
       router.push(callbackUrl);
     } catch (err) {
@@ -56,12 +59,17 @@ export default function SignInPage() {
   }
 
   async function handleInternetIdentity() {
+    console.log("handleInternetIdentity", iiBusy, busy);
     if (iiBusy || busy) return;
     setError(null);
     setIiBusy(true);
     try {
+      console.log("handleInternetIdentity", "before loginWithII");
       const { principal } = await loginWithII();
+      console.log("handleInternetIdentity", "after loginWithII", principal);
+      console.log("handleInternetIdentity", "before signIn", principal, callbackUrl);
       await signIn("ii", { principal, redirect: true, callbackUrl });
+      console.log("handleInternetIdentity", "after signIn");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       setError(`Internet Identity sign-in failed: ${msg}`);

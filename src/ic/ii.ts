@@ -21,11 +21,13 @@ export function getSessionTtlNs(): bigint | undefined {
 }
 
 export async function loginWithII(): Promise<{ identity: Identity; principal: string }> {
+  console.log("loginWithII");
   const provider = process.env.NEXT_PUBLIC_II_URL || process.env.NEXT_PUBLIC_II_URL_FALLBACK;
   if (!provider) throw new Error("II URL not configured");
-
+  console.log("loginWithII", "provider", provider);
   const authClient = await getAuthClient();
   const maxTimeToLive = getSessionTtlNs();
+  console.log("authClient", authClient);
 
   await new Promise<void>((resolve, reject) =>
     authClient.login({
@@ -35,9 +37,11 @@ export async function loginWithII(): Promise<{ identity: Identity; principal: st
       onError: reject,
     })
   );
-
+  console.log("loginWithII");
   const identity = authClient.getIdentity();
+  console.log("identity", identity);
   const principal = identity.getPrincipal().toString();
+  console.log("principal", principal);
   return { identity, principal };
 }
 
