@@ -12,7 +12,7 @@ import {
 } from "./ui/dropdown-menu";
 import { SignOut } from "./auth-components";
 import Link from "next/link";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+// Removed tooltip to avoid click interception; using native title on button instead
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
@@ -55,32 +55,24 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full hover:bg-muted dark:hover:bg-muted dark:hover:text-white"
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage
-                    src={
-                      session.user.image ||
-                      `https://api.dicebear.com/9.x/thumbs/svg?seed=${Math.floor(
-                        Math.random() * 100000 + 1
-                      )}&randomizeIds=true`
-                    }
-                    alt={name}
-                  />
-                  <AvatarFallback className="text-xs font-medium">{initials}</AvatarFallback>
-                </Avatar>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{principal ? `Principal: ${principal}` : name}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Button
+          variant="ghost"
+          className="relative h-8 w-8 rounded-full hover:bg-muted dark:hover:bg-muted dark:hover:text-white"
+          title={principal ? `Principal: ${principal}` : name}
+        >
+          <Avatar className="h-8 w-8">
+            <AvatarImage
+              src={
+                session.user.image ||
+                `https://api.dicebear.com/9.x/thumbs/svg?seed=${Math.floor(
+                  Math.random() * 100000 + 1
+                )}&randomizeIds=true`
+              }
+              alt={name}
+            />
+            <AvatarFallback className="text-xs font-medium">{initials}</AvatarFallback>
+          </Avatar>
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal border-b pb-3">
