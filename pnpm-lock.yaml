@@ -24,8 +24,8 @@ importers:
         specifier: ^0.6.1
         version: 0.6.1
       '@junobuild/config':
-        specifier: ^0.1.8
-        version: 0.1.8(zod@3.25.76)
+        specifier: ^2.1.0
+        version: 2.1.0(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(zod@3.25.76)
       '@junobuild/core':
         specifier: ^1.1.1
         version: 1.1.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/auth-client@2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/identity@2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/identity@2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1)(@dfinity/utils@2.14.0(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))
@@ -34,7 +34,7 @@ importers:
         version: 0.1.17(6c8ae97e004b27830b4cf3b1dceaf52f)
       '@junobuild/nextjs-plugin':
         specifier: ^4.1.4
-        version: 4.1.4(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(@junobuild/config-loader@0.4.1(@babel/core@7.28.3)(@babel/plugin-transform-modules-commonjs@7.27.1(@babel/core@7.28.3))(@babel/preset-typescript@7.27.1(@babel/core@7.28.3))(@junobuild/config@0.1.8(zod@3.25.76)))(next@15.4.6(@babel/core@7.28.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(zod@3.25.76)
+        version: 4.1.4(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(@junobuild/config-loader@0.4.1(@babel/core@7.28.3)(@babel/plugin-transform-modules-commonjs@7.27.1(@babel/core@7.28.3))(@babel/preset-typescript@7.27.1(@babel/core@7.28.3))(@junobuild/config@2.1.0(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(zod@3.25.76)))(next@15.4.6(@babel/core@7.28.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(zod@3.25.76)
       '@neondatabase/serverless':
         specifier: ^0.10.4
         version: 0.10.4
@@ -842,13 +842,14 @@ packages:
       '@babel/preset-typescript': ^7.27.1
       '@junobuild/config': '*'
 
-  '@junobuild/config@0.1.8':
-    resolution: {integrity: sha512-25FN9nh0X4cauAQx9JlnUAbC4ZIdAoAtqBhYLBORrGXybFRT+48ber7LoXpws4BF5N8//tH4PwCuvl+aRaOWAQ==}
-    peerDependencies:
-      zod: ^3
-
   '@junobuild/config@1.1.3':
     resolution: {integrity: sha512-LgCzKv8E7SY4QhhlPI9RKiBgsxiXPgi4tWmfcBI2kP0gL17bO27IC9XQMtgYase47Ylv42VF2jd6GGS1igzLOg==}
+    peerDependencies:
+      '@dfinity/zod-schemas': ^1.1.0
+      zod: ^3.25
+
+  '@junobuild/config@2.1.0':
+    resolution: {integrity: sha512-FNeRpnxcIm6iNCGHWWCoH0ZKm5nfbCvBXkfE0U90HCJnyJi4jfKSbfOcn7SrujyKkNyKQum9R9kEspc9JBv2sQ==}
     peerDependencies:
       '@dfinity/zod-schemas': ^1.1.0
       zod: ^3.25
@@ -4446,18 +4447,19 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@junobuild/config-loader@0.4.1(@babel/core@7.28.3)(@babel/plugin-transform-modules-commonjs@7.27.1(@babel/core@7.28.3))(@babel/preset-typescript@7.27.1(@babel/core@7.28.3))(@junobuild/config@0.1.8(zod@3.25.76))':
+  '@junobuild/config-loader@0.4.1(@babel/core@7.28.3)(@babel/plugin-transform-modules-commonjs@7.27.1(@babel/core@7.28.3))(@babel/preset-typescript@7.27.1(@babel/core@7.28.3))(@junobuild/config@2.1.0(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(zod@3.25.76))':
     dependencies:
       '@babel/core': 7.28.3
       '@babel/plugin-transform-modules-commonjs': 7.27.1(@babel/core@7.28.3)
       '@babel/preset-typescript': 7.27.1(@babel/core@7.28.3)
-      '@junobuild/config': 0.1.8(zod@3.25.76)
-
-  '@junobuild/config@0.1.8(zod@3.25.76)':
-    dependencies:
-      zod: 3.25.76
+      '@junobuild/config': 2.1.0(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(zod@3.25.76)
 
   '@junobuild/config@1.1.3(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(zod@3.25.76)':
+    dependencies:
+      '@dfinity/zod-schemas': 1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76)
+      zod: 3.25.76
+
+  '@junobuild/config@2.1.0(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(zod@3.25.76)':
     dependencies:
       '@dfinity/zod-schemas': 1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76)
       zod: 3.25.76
@@ -4497,19 +4499,19 @@ snapshots:
       '@dfinity/identity': 2.4.1(@dfinity/agent@2.4.1(@dfinity/candid@2.4.1(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1))(@dfinity/principal@2.4.1)
       '@dfinity/principal': 2.4.1
 
-  '@junobuild/nextjs-plugin@4.1.4(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(@junobuild/config-loader@0.4.1(@babel/core@7.28.3)(@babel/plugin-transform-modules-commonjs@7.27.1(@babel/core@7.28.3))(@babel/preset-typescript@7.27.1(@babel/core@7.28.3))(@junobuild/config@0.1.8(zod@3.25.76)))(next@15.4.6(@babel/core@7.28.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(zod@3.25.76)':
+  '@junobuild/nextjs-plugin@4.1.4(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(@junobuild/config-loader@0.4.1(@babel/core@7.28.3)(@babel/plugin-transform-modules-commonjs@7.27.1(@babel/core@7.28.3))(@babel/preset-typescript@7.27.1(@babel/core@7.28.3))(@junobuild/config@2.1.0(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(zod@3.25.76)))(next@15.4.6(@babel/core@7.28.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(zod@3.25.76)':
     dependencies:
-      '@junobuild/plugin-tools': 4.1.3(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(@junobuild/config-loader@0.4.1(@babel/core@7.28.3)(@babel/plugin-transform-modules-commonjs@7.27.1(@babel/core@7.28.3))(@babel/preset-typescript@7.27.1(@babel/core@7.28.3))(@junobuild/config@0.1.8(zod@3.25.76)))(zod@3.25.76)
+      '@junobuild/plugin-tools': 4.1.3(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(@junobuild/config-loader@0.4.1(@babel/core@7.28.3)(@babel/plugin-transform-modules-commonjs@7.27.1(@babel/core@7.28.3))(@babel/preset-typescript@7.27.1(@babel/core@7.28.3))(@junobuild/config@2.1.0(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(zod@3.25.76)))(zod@3.25.76)
       next: 15.4.6(@babel/core@7.28.3)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
     transitivePeerDependencies:
       - '@dfinity/zod-schemas'
       - '@junobuild/config-loader'
       - zod
 
-  '@junobuild/plugin-tools@4.1.3(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(@junobuild/config-loader@0.4.1(@babel/core@7.28.3)(@babel/plugin-transform-modules-commonjs@7.27.1(@babel/core@7.28.3))(@babel/preset-typescript@7.27.1(@babel/core@7.28.3))(@junobuild/config@0.1.8(zod@3.25.76)))(zod@3.25.76)':
+  '@junobuild/plugin-tools@4.1.3(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(@junobuild/config-loader@0.4.1(@babel/core@7.28.3)(@babel/plugin-transform-modules-commonjs@7.27.1(@babel/core@7.28.3))(@babel/preset-typescript@7.27.1(@babel/core@7.28.3))(@junobuild/config@2.1.0(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(zod@3.25.76)))(zod@3.25.76)':
     dependencies:
       '@junobuild/config': 1.1.3(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(zod@3.25.76)
-      '@junobuild/config-loader': 0.4.1(@babel/core@7.28.3)(@babel/plugin-transform-modules-commonjs@7.27.1(@babel/core@7.28.3))(@babel/preset-typescript@7.27.1(@babel/core@7.28.3))(@junobuild/config@0.1.8(zod@3.25.76))
+      '@junobuild/config-loader': 0.4.1(@babel/core@7.28.3)(@babel/plugin-transform-modules-commonjs@7.27.1(@babel/core@7.28.3))(@babel/preset-typescript@7.27.1(@babel/core@7.28.3))(@junobuild/config@2.1.0(@dfinity/zod-schemas@1.1.0(@dfinity/principal@2.4.1)(zod@3.25.76))(zod@3.25.76))
     transitivePeerDependencies:
       - '@dfinity/zod-schemas'
       - zod
