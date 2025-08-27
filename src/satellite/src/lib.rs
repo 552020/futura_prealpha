@@ -1,13 +1,13 @@
 use candid::Nat;
+use candid::Principal;
 
 use ic_cdk::api::management_canister::http_request::{
     http_request as http_request_outcall, CanisterHttpRequestArgument, HttpHeader, HttpMethod,
 };
 use junobuild_macros::on_set_doc;
 use junobuild_satellite::{
-    include_satellite, OnDeleteAssetContext, OnDeleteDocContext,
-    OnDeleteManyAssetsContext, OnDeleteManyDocsContext, OnSetDocContext, OnSetManyDocsContext,
-    OnUploadAssetContext,
+    include_satellite, OnSetDocContext,
+    get_doc_store,
 };
 use junobuild_utils::decode_doc_data;
 use serde::{Deserialize, Serialize};
@@ -30,10 +30,44 @@ struct EmailPayload {
     text: String,
 }
 
+#[derive(Serialize, Deserialize)]
+struct EnvVars {
+    NOTIFICATIONS_TOKEN: String,
+}
+
+fn get_notifications_token() -> Result<String, String> {
+    let prod_id = "xX_CHt9f1p35fO6a75snN"; // production doc id
+    let dev_id = "-emAGTKnxk_4IUG4ycgs6";   // development doc id
+
+    // Attempt to get prod doc
+    match get_doc_store(ic_cdk::caller(), "ENV_VARS".to_string(), prod_id.to_string()) {
+        Ok(Some(doc)) => {
+            match decode_doc_data::<EnvVars>(&doc.data) {
+                Ok(env) => Ok(env.NOTIFICATIONS_TOKEN),
+                Err(e) => Err(format!("Failed to decode prod ENV_VARS: {}", e)),
+            }
+        }
+        _ => {
+            ic_cdk::println!("⚠️ Prod token not found, falling back to dev...");
+            // Attempt to get dev doc
+            match get_doc_store(ic_cdk::caller(), "ENV_VARS".to_string(), dev_id.to_string()) {
+                Ok(Some(doc)) => {
+                    match decode_doc_data::<EnvVars>(&doc.data) {
+                        Ok(env) => Ok(env.NOTIFICATIONS_TOKEN),
+                        Err(e) => Err(format!("Failed to decode dev ENV_VARS: {}", e)),
+                    }
+                }
+                Err(e) => Err(format!("Failed to retrieve NOTIFICATIONS_TOKEN: {:?}", e)),
+                Ok(None) => Err("No dev ENV_VARS found".to_string()),
+            }
+        }
+    }
+}
+
 #[on_set_doc(collections = ["email_requests"])]
 async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
     ic_cdk::println!("📧 Email function triggered for document key: {}", context.data.key);
-    
+
     let email_data: EmailRequest = match decode_doc_data::<EmailRequest>(&context.data.data.after.data) {
         Ok(data) => {
             ic_cdk::println!("✅ Successfully decoded email data for: {} -> {}", data.user_name, data.recipient_name);
@@ -44,9 +78,9 @@ async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
             return Err(format!("Failed to decode email data: {}", e));
         }
     };
-    
+
     let email_payload = EmailPayload {
-        from: email_data.from.clone(), 
+        from: email_data.from.clone(),
         to: email_data.to.clone(),
         subject: email_data.subject.clone(),
         text: format!(
@@ -55,10 +89,12 @@ async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
             email_data.user_name
         ),
     };
-    
-    ic_cdk::print(format!("Email payload created - From: {}, To: {}, Subject: {}", 
-                         email_payload.from, email_payload.to, email_payload.subject));
-    
+
+    ic_cdk::print(format!(
+        "Email payload created - From: {}, To: {}, Subject: {}",
+        email_payload.from, email_payload.to, email_payload.subject
+    ));
+
     let json_body = match serde_json::to_string(&email_payload) {
         Ok(json) => {
             ic_cdk::print(format!("Email payload serialized successfully, length: {} bytes", json.len()));
@@ -71,9 +107,15 @@ async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
         }
     };
 
-    let auth_token = std::env::var("NOTIFICATIONS_TOKEN").unwrap_or_default();
+    let auth_token = match get_notifications_token() {
+        Ok(token) => token,
+        Err(e) => {
+            ic_cdk::println!("❌ Could not fetch NOTIFICATIONS_TOKEN: {}", e);
+            return Err(e);
+        }
+    };
     ic_cdk::print(format!("Auth token present: {}", if auth_token.is_empty() { "NO" } else { "YES" }));
-    
+
     let request_headers = vec![
         HttpHeader {
             name: "Content-Type".to_string(),
@@ -88,12 +130,12 @@ async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
             value: format!("futura-{}", context.data.key),
         },
     ];
-    
+
     ic_cdk::println!("📡 Prepared {} headers for HTTP request", request_headers.len());
 
     let url = "https://observatory-7kdhmtcbfq-oa.a.run.app/notifications/email";
     ic_cdk::println!("🌐 Making HTTP POST request to: {}", url);
-    
+
     let request = CanisterHttpRequestArgument {
         url: url.to_string(),
         method: HttpMethod::POST,
@@ -104,12 +146,12 @@ async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
     };
 
     ic_cdk::println!("⏳ Initiating HTTP outcall with 5s timeout...");
-    
+
     match http_request_outcall(request, 5_000_000_000).await {
         Ok((response,)) => {
-            ic_cdk::println!("📨 HTTP response received - Status: {}, Body length: {} bytes", 
-                           response.status, response.body.len());
-            
+            ic_cdk::println!("📨 HTTP response received - Status: {}, Body length: {} bytes",
+                             response.status, response.body.len());
+
             if response.status >= Nat::from(200u32) && response.status < Nat::from(300u32) {
                 ic_cdk::println!("✅ Email sent successfully to {}", email_data.to);
                 Ok(())
