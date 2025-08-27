@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, signIn } from "next-auth/react";
-import { Avatar, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -33,6 +33,14 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
     );
   }
 
+  const name = session.user.name || session.user.email || "User";
+  const initials = name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -51,8 +59,9 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
                         Math.random() * 100000 + 1
                       )}&randomizeIds=true`
                     }
-                    alt={session.user.name || "Avatar"}
+                    alt={name}
                   />
+                  <AvatarFallback className="text-xs font-medium">{initials}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -80,7 +89,7 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
           </DropdownMenu>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{session.user.name}</p>
+          <p>{name}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
