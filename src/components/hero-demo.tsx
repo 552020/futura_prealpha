@@ -14,6 +14,18 @@ function Hero({ dict, lang }: HeroProps) {
   // Validate translations using the helper function
   validateTranslations(dict, lang, "hero");
 
+  // Controls for mobile overlay typography (adjust to taste)
+  const TITLE_VW = 73.5; // base vw numerator for title
+  const SUBTITLE_VW = 85; // base vw numerator for subtitle
+  const TITLE_SCALE = 1.4; // >1 increases size
+  const SUBTITLE_SCALE = 1.6; // >1 increases size
+  // Controls for mobile overlay paddings (rem units)
+  const BOX_PAD_X_REM = 0.5; // left/right padding
+  const BOX_PAD_Y_REM = 1.0; // top/bottom padding
+  // Controls for mobile overlay margins (rem units)
+  const BOX_MARGIN_X_REM = 0.75; // left/right margin (was mx-3 -> 0.75rem)
+  const BOX_MARGIN_Y_REM = 9.0; // top/bottom margin (was my-36 -> 9rem)
+
   return (
     <div className="w-full flex items-center justify-center min-h-[calc(100vh-4rem)]">
       <div className="w-full lg:w-[80%] mx-auto px-0 lg:px-4 flex flex-col lg:flex-row items-center gap-0 lg:gap-12 bg-background lg:rounded-lg relative">
@@ -54,16 +66,36 @@ function Hero({ dict, lang }: HeroProps) {
               priority
             />
             {/* Mobile overlay text */}
-            <div className="absolute inset-x-0 top-24 px-6 text-center text-white drop-shadow-lg lg:hidden">
-              <h1
-                className="font-black leading-none"
-                style={{ fontSize: `calc(73.5vw / ${(dict?.hero?.title || "Futura").length})` }}
+            <div className="absolute inset-x-0 bottom-0 px-0 lg:hidden flex items-end justify-center">
+              <div
+                className="bg-black text-white text-center"
+                style={{
+                  padding: `${BOX_PAD_Y_REM}rem ${BOX_PAD_X_REM}rem`,
+                  margin: `${BOX_MARGIN_Y_REM}rem ${BOX_MARGIN_X_REM}rem`,
+                  width: `calc(100% - ${BOX_MARGIN_X_REM * 2}rem)`,
+                }}
               >
-                {dict?.hero?.title || "Futura"}
-              </h1>
-              <p className="mt-2 font-normal" style={{ fontSize: `calc(80vw / ${"Your Gallery. Forever.".length})` }}>
-                Your Gallery. Forever.
-              </p>
+                <h1
+                  className="font-black leading-none tracking-wider m-0"
+                  style={{
+                    fontSize: `calc(${(TITLE_VW * TITLE_SCALE).toFixed(1)}vw / ${
+                      (dict?.hero?.title || "Futura").length
+                    })`,
+                  }}
+                >
+                  {dict?.hero?.title || "Futura"}
+                </h1>
+                <p
+                  className="font-normal tracking-wide m-0 mt-3 leading-snug"
+                  style={{
+                    fontSize: `calc(${(SUBTITLE_VW * SUBTITLE_SCALE).toFixed(1)}vw / ${
+                      "Your Gallery. Forever.".length
+                    })`,
+                  }}
+                >
+                  Your Gallery. Forever.
+                </p>
+              </div>
             </div>
           </div>
         </div>
