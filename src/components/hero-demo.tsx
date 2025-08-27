@@ -80,7 +80,8 @@ function Hero({ dict, lang }: HeroProps) {
 
   return (
     <div className="w-full flex items-center justify-center min-h-[calc(100vh-4rem)]">
-      <div className="w-full lg:w-[80%] mx-auto px-0 lg:px-4 flex flex-col lg:flex-row items-center gap-0 lg:gap-12 bg-background lg:rounded-lg relative">
+      {/* Mobile & small screens layout */}
+      <div className="block lg:hidden w-full lg:w-[80%] mx-auto px-0 lg:px-4 flex flex-col lg:flex-row items-center gap-0 lg:gap-12 bg-background lg:rounded-lg relative">
         {/* Left Column - Text Content */}
         <div className="hidden lg:flex w-full lg:w-1/2 flex-col items-center lg:items-start text-center lg:text-left bg-red-100 dark:bg-red-900/20 p-4 rounded">
           {/* Title */}
@@ -151,20 +152,40 @@ function Hero({ dict, lang }: HeroProps) {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Arrow button - positioned in the bottom-right (mobile and desktop) */}
-        <div className="absolute bottom-3 right-3 md:bottom-10 md:right-10 z-10">
-          <div className="relative">
-            <div className="absolute -inset-1 w-[104px] h-[104px] rounded-full bg-neutral-900 dark:bg-white animate-pulse-scale" />
-            <Link
-              href={`/${lang}/onboarding/items-upload`}
-              className="relative w-24 h-24 rounded-full flex items-center justify-center cursor-pointer text-neutral-900 border-2 border-transparent transition-all text-4xl font-bold"
-              style={{ backgroundColor: CTA_BG_COLOR }}
-              aria-label={dict?.hero?.startNow || "Start Now"}
-            >
-              {dict?.hero?.arrowSymbol || "→"}
-            </Link>
+      {/* Desktop-only layout: full image with centered black box in bottom half */}
+      <div className="hidden lg:block w-full">
+        <div className="relative w-full min-h-[calc(100vh-4rem)]">
+          <Image
+            src="/hero/diana_charles.jpg"
+            alt="Futura Hero Image"
+            fill
+            sizes="100vw"
+            className="w-full h-full rounded-lg shadow-lg object-cover object-center"
+            priority
+          />
+          <div className="absolute inset-x-0 bottom-[10%] px-0 flex items-end justify-center">
+            <div className="bg-black text-white text-center px-6 py-4 rounded-sm max-w-[40vw]">
+              <div className="font-black text-white text-6xl leading-none">Futura</div>
+              <div className="mt-2 text-white/90 text-xl">Your Gallery. Forever.</div>
+            </div>
           </div>
+        </div>
+      </div>
+
+      {/* Arrow button - positioned in the bottom-right (mobile and desktop) */}
+      <div className="absolute bottom-3 right-3 md:bottom-10 md:right-10 z-10">
+        <div className="relative">
+          <div className="absolute -inset-1 w-[104px] h-[104px] rounded-full bg-neutral-900 dark:bg-white animate-pulse-scale" />
+          <Link
+            href={`/${lang}/onboarding/items-upload`}
+            className="relative w-24 h-24 rounded-full flex items-center justify-center cursor-pointer text-neutral-900 border-2 border-transparent transition-all text-4xl font-bold"
+            style={{ backgroundColor: CTA_BG_COLOR }}
+            aria-label={dict?.hero?.startNow || "Start Now"}
+          >
+            {dict?.hero?.arrowSymbol || "→"}
+          </Link>
         </div>
       </div>
     </div>
