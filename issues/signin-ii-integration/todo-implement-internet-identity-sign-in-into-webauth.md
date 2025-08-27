@@ -36,6 +36,7 @@ Reference: `src/nextjs/issues/implement-internet-identity-sign-in-into-webauth.m
        6.4) [ ] Ensure mobile menu also shows a single button and routes to the custom page
        6.5) [ ] (moved) – see task 13
 7. [x] Add NextAuth Credentials provider `ii` with principal-based `authorize`
+       7.1) [ ] Implement II authorize() to find-or-create user and link account in Drizzle
 8. [ ] Expose `icpPrincipal` in JWT/session during callbacks
 9. [ ] Extract and reuse `allUsers` promotion logic for II user creation
 10. [ ] QA: verify all providers + II end-to-end and DB writes
