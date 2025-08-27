@@ -8,6 +8,7 @@ import { ModeToggle } from "./mode-toggle";
 import { SettingsButton } from "./settings-button";
 import NavBar from "./nav-bar";
 import UserButtonClient from "./user-button-client";
+import UserButtonClientWithII from "./user-button-client-with-ii";
 import { useInterface } from "@/contexts/interface-context";
 import { LanguageSwitcher } from "./language-switcher";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "./ui/sheet";
@@ -72,7 +73,8 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
         {/* Right User controls */}
         <section className="user-controls-section flex items-center gap-2 sm:gap-3">
           {/* Desktop-only user controls */}
-          <div className="hidden md:block transition-opacity hover:opacity-80">
+          <div className="hidden md:flex items-center gap-2 transition-opacity hover:opacity-80">
+            <UserButtonClientWithII lang={currentLang} />
             <UserButtonClient lang={currentLang} />
           </div>
 
@@ -108,7 +110,8 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
                     <NavBar mode={mode} lang={currentLang} dict={dict} className="mobile" />
                   </nav>
 
-                  <div className="border-t pt-4">
+                  <div className="border-t pt-4 flex items-center gap-2">
+                    <UserButtonClientWithII lang={currentLang} />
                     <UserButtonClient lang={currentLang} />
                   </div>
 
