@@ -28,21 +28,35 @@ Reference: `src/nextjs/issues/implement-internet-identity-sign-in-into-webauth.m
        5.1.4) [x] Create `clearIiSession()` utility to logout and clear caches (`clearAgentCache`, cached actor)
        5.1.5) [x] Provide inline feedback (button label/message) instead of toasts inside modal
        5.1.6) [x] Handle expired/invalid delegation with inline "Session expired" message and redirect to `/{lang}/signin`
-       5.1.7) [ ] Refactor `ICPPage` to use shared helpers (`getAuthClient`, `loginWithII`, `clearIiSession`)
+       5.1.7) [x] Refactor `ICPPage` to use shared helpers (`getAuthClient`, `loginWithII`, `clearIiSession`)
        5.1.8) [x] Update `SignOut` to call `clearIiSession()` so NextAuth sign-out also clears II
 6. [ ] Unify header sign-in to a single button that routes to `/{lang}/signin`
-       6.1) [ ] For now, keep both buttons for testing; the long-term goal is ONE button
-       6.2) [ ] Update `src/nextjs/src/components/user-button-client.tsx` unauthenticated state to navigate to `/{lang}/signin?callbackUrl=...`
+       6.1) [x] For now, keep both buttons for testing; the long-term goal is ONE button
+       6.2) [x] Update `src/nextjs/src/components/user-button-client.tsx` unauthenticated state to navigate to `/{lang}/signin?callbackUrl=...`
        6.4) [ ] Ensure mobile menu also shows a single button and routes to the custom page
        6.5) [ ] (moved) – see task 13
 7. [x] Add NextAuth Credentials provider `ii` with principal-based `authorize`
        7.1) [x] Implement II authorize() to find-or-create user and link account in Drizzle
+       7.2) [x] Fix `accounts.type` to a valid value (e.g., `oidc`) for II account rows
 8. [x] Expose `icpPrincipal` in JWT/session during callbacks
+       8.1) [x] Extend NextAuth types with `icpPrincipal` (`src/nextjs/src/types/next-auth.d.ts`)
 9. [ ] Extract and reuse `allUsers` promotion logic for II user creation
 10. [ ] QA: verify all providers + II end-to-end and DB writes
 11. [ ] Cleanup: consolidate to single user button or custom sign-in page
 12. [ ] After testing, remove `UserButtonClientWithII` and keep only `UserButtonClient` (was 6.3)
 13. [ ] Finalize: Keep II as a placeholder only on the custom sign-in page (no direct II from header) (was 6.5)
+
+14. [ ] Optional: Account linking UX (link II to existing user)
+        14.1) [ ] Add UI in `Settings` to "Link Internet Identity"
+        14.2) [ ] Server route to attach II principal to the logged-in user (create `accounts` row)
+        14.3) [ ] Handle unlink (with safeguards if last login method)
+
+15. [ ] Post-MVP hardening (canister-first proof)
+        15.1) [ ] Add API: `POST /api/auth/ii/nonce` (issue nonce) and `POST /api/auth/ii/verify` (verify proof)
+        15.2) [ ] Canister method: record `principal X proved nonce Y`
+        15.3) [ ] Client: obtain nonce from web2, call canister with II, then sign in
+        15.4) [ ] Bind NextAuth session issuance to verified proof
+        15.5) [ ] Add audit logs and short TTL single-use nonces
 
 ## Notes
 

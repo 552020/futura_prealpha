@@ -15,7 +15,7 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
   // Unwrap params using React.use()
   const { lang } = use(params);
 
-  const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
+  const { isAuthorized, isTemporaryUser, userId, isLoading } = useAuthGuard();
   const router = useRouter();
   const { toast } = useToast();
   const [memories, setMemories] = useState<

@@ -33,7 +33,7 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
     );
   }
 
-  const principal = (session.user as any).icpPrincipal as string | undefined;
+  const principal = (session.user as { icpPrincipal?: string }).icpPrincipal;
   const name =
     session.user.name ||
     session.user.email ||

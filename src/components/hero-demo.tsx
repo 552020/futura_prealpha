@@ -71,8 +71,8 @@ function Hero({ dict, lang }: HeroProps) {
   // Controls for mobile overlay margins (rem units)
   const BOX_MARGIN_X_REM = 0.75; // left/right margin (was mx-3 -> 0.75rem)
   const BOX_MARGIN_Y_REM = 9.0; // top/bottom margin (was my-36 -> 9rem)
-  // Title variant flag (env): transform-overflow | negative-margins
-  const TITLE_VARIANT: TitleVariant = (process.env.NEXT_PUBLIC_HERO_TITLE as TitleVariant) || "transform-overflow";
+  // Title variant flag (env): transform-overflow | negative-margins (currently unused but kept for future customization)
+  // const TITLE_VARIANT: TitleVariant = (process.env.NEXT_PUBLIC_HERO_TITLE as TitleVariant) || "transform-overflow";
   // Manual vertical offset for the title within the black box (rem)
   const TITLE_OFFSET_REM = -1.6;
   // CTA button background color flag for demo (e.g., "#dedce9" or "white")

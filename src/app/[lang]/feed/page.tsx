@@ -16,7 +16,7 @@ interface FeedItem {
 }
 
 export default function FeedPage() {
-  const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
+  const { isAuthorized, isTemporaryUser, userId, isLoading } = useAuthGuard();
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [isLoadingFeed, setIsLoadingFeed] = useState(true);
 

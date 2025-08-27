@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginWithII } from "@/ic/ii";
 
-export default function SignInPage() {
+function SignInPageInternal() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -43,7 +43,7 @@ export default function SignInPage() {
 
       // Navigate after successful credentials sign-in
       router.push(callbackUrl);
-    } catch (err) {
+    } catch {
       setError("Sign in failed. Please try again.");
     } finally {
       setBusy(false);
@@ -154,5 +154,13 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <SignInPageInternal />
+    </Suspense>
   );
 }

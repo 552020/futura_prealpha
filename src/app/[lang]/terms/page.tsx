@@ -1,5 +1,5 @@
-export default function TermsOfServicePage({ params }: { params: { lang: string } }) {
-  const { lang } = params;
+export default async function TermsOfServicePage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
   return (
     <main className="container mx-auto px-6 py-12 max-w-3xl">
       <h1 className="text-3xl font-bold tracking-tight mb-6">Terms of Service</h1>
@@ -7,8 +7,9 @@ export default function TermsOfServicePage({ params }: { params: { lang: string 
 
       <section className="space-y-4">
         <p>
-          Welcome to Futura. By accessing or using our website, applications, or services (collectively, the "Service"),
-          you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the Service.
+          Welcome to Futura. By accessing or using our website, applications, or services (collectively, the
+          &quot;Service&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;). If you do not
+          agree, do not use the Service.
         </p>
 
         <h2 className="text-xl font-semibold mt-8">1. Eligibility</h2>
@@ -43,8 +44,8 @@ export default function TermsOfServicePage({ params }: { params: { lang: string 
 
         <h2 className="text-xl font-semibold mt-8">6. Disclaimers</h2>
         <p>
-          The Service is provided "as is" without warranties of any kind. We disclaim all warranties, express or
-          implied, including merchantability, fitness for a particular purpose, and non-infringement.
+          The Service is provided &quot;as is&quot; without warranties of any kind. We disclaim all warranties, express
+          or implied, including merchantability, fitness for a particular purpose, and non-infringement.
         </p>
 
         <h2 className="text-xl font-semibold mt-8">7. Limitation of Liability</h2>

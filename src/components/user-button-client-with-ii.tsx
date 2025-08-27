@@ -14,8 +14,9 @@ import { SignOut } from "./auth-components";
 import Link from "next/link";
 // Removed tooltip to avoid click interception; using native title on button instead
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
+function UserButtonClientInternal({ lang = "en" }: { lang?: string }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -40,7 +41,7 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
     );
   }
 
-  const principal = (session.user as any).icpPrincipal as string | undefined;
+  const principal = (session.user as { icpPrincipal?: string }).icpPrincipal;
   const name =
     session.user.name ||
     session.user.email ||
@@ -97,5 +98,19 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
+  return (
+    <Suspense
+      fallback={
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full" disabled>
+          Loading...
+        </Button>
+      }
+    >
+      <UserButtonClientInternal lang={lang} />
+    </Suspense>
   );
 }

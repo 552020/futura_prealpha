@@ -1,5 +1,5 @@
-export default function PrivacyPolicyPage({ params }: { params: { lang: string } }) {
-  const { lang } = params;
+export default async function PrivacyPolicyPage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
   return (
     <main className="container mx-auto px-6 py-12 max-w-3xl">
       <h1 className="text-3xl font-bold tracking-tight mb-6">Privacy Policy</h1>
@@ -7,8 +7,8 @@ export default function PrivacyPolicyPage({ params }: { params: { lang: string }
 
       <section className="space-y-4">
         <p>
-          This Privacy Policy explains how Futura ("we", "us", or "our") collects, uses, and shares information when you
-          use our website, applications, and services (the "Service").
+          This Privacy Policy explains how Futura (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) collects, uses,
+          and shares information when you use our website, applications, and services (the &quot;Service&quot;).
         </p>
 
         <h2 className="text-xl font-semibold mt-8">1. Information We Collect</h2>

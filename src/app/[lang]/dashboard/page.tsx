@@ -36,7 +36,7 @@ const USE_MOCK_DATA = true;
 
 export default function VaultPage() {
   // console.log("🔍 Dashboard component rendered");
-  const { isAuthorized, isTemporaryUser, userId, redirectToSignIn, isLoading } = useAuthGuard();
+  const { isAuthorized, isTemporaryUser, userId, isLoading } = useAuthGuard();
   // console.log("🔍 Dashboard auth state:", { isAuthorized, isTemporaryUser, userId, isLoading });
   const router = useRouter();
   const { toast } = useToast();
