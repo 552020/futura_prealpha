@@ -24,15 +24,14 @@ Implement secure Internet Identity (II) authentication that:
 - **Future-Proof**: Can change Web2 implementation without affecting Web3
 - **Clean Architecture**: Each system has a single, clear responsibility
 
-## High-Level Flow (Revised)
+## High-Level Flow (Revised - Canister-Backed Proof)
 
 1. **Frontend**: Ensure II identity via Internet Identity (`AuthClient.login` → principal/delegation available)
 2. **Frontend → Web2**: `POST /api/ii/challenge` to get `{ nonceId, nonce, ttlSeconds }` (Web2-minted, short-TTL, single-use)
-3. **Frontend → Web3** (Optional): Call `register()` on canister (idempotent, no nonce needed)
-4. **Frontend**: Sign the nonce with the delegated key to create `signature`
-5. **Frontend → Web2**: `signIn('internet-identity', { principal, nonceId, signature, chain, callbackUrl })`
-6. **Web2**: Verify delegation chain + signature over nonce, create/link user + account, issue session
-7. **Frontend → Web3** (Optional): Call `mark_bound()` to signal successful Web2 binding
+3. **Frontend → Web3**: Call `register_with_nonce(nonce)` on canister (registers user + proves nonce in one call)
+4. **Frontend → Web2**: `signIn('internet-identity', { principal, nonceId })` (no signature needed)
+5. **Web2**: Call canister `verify_nonce(nonce)` to get principal who proved it, create/link user + account, issue session
+6. **Frontend → Web3** (Optional): Call `mark_bound()` to signal successful Web2 binding
 
 ## Components and Changes
 
@@ -53,19 +52,23 @@ Implement secure Internet Identity (II) authentication that:
 
 ### Web3 Canister - Stays Simple and Independent
 
-- **State**: `principal → { registered_at: nat64, last_activity_at: nat64, bound: bool }`
+- **State**:
+  - `principal → { registered_at: u64, last_activity_at: u64, bound: bool }` (capsule-based)
+  - `nonce → (principal, timestamp)` (nonce proof storage)
 - **Methods**:
-  - `register()`: Idempotent upsert by `caller` principal. No nonce parameters.
+  - `register_with_nonce(nonce)`: Register user + prove nonce in one call (optimized for II auth)
+  - `register()`: Idempotent upsert by `caller` principal (for other use cases)
+  - `prove_nonce(nonce)`: Store nonce proof with caller's principal and timestamp (backward compatibility)
+  - `verify_nonce(nonce)`: Return principal who proved this nonce
   - `mark_bound()` (Optional): Sets `bound=true` for UX/metrics convenience
-  - No proof tables, no nonce verification, no Web2 dependencies
+  - No complex verification logic, leverages II's authenticated canister calls
 
 ### Frontend (Sign-in Page)
 
 - Ensure II identity with `AuthClient.login`
 - Fetch challenge from Web2: `{ nonceId, nonce }`
-- (Optional) Call canister `register()` - works independently
-- Sign nonce with delegated key to create signature
-- Call `signIn('internet-identity', { principal, nonceId, signature, chain, callbackUrl })`
+- Call canister `register_with_nonce(nonce)` (registers user + proves nonce in one call)
+- Call `signIn('internet-identity', { principal, nonceId })` (no signature needed)
 - (Optional) After success, call `mark_bound()` on canister
 
 ## API Contracts
@@ -85,47 +88,48 @@ POST /api/ii/challenge
 }
 ```
 
-### Canister Methods (Web3)
+### Canister Methods (Web3 - Rust)
 
-```motoko
-// Idempotent registration - no nonce needed
-public shared({ caller }) func register() : async Bool {
-  let principal = Principal.toText(caller);
-  let now = Time.now();
+```rust
+// Register user and prove nonce in one call (optimized for II auth flow)
+#[ic_cdk::update]
+pub fn register_with_nonce(nonce: String) -> bool {
+    let caller = ic_cdk::api::msg_caller();
+    let timestamp = ic_cdk::api::time();
 
-  switch (users.get(principal)) {
-    case (?existing) {
-      users.put(principal, {
-        registered_at = existing.registered_at;
-        last_activity_at = now;
-        bound = existing.bound;
-      });
-    };
-    case null {
-      users.put(principal, {
-        registered_at = now;
-        last_activity_at = now;
-        bound = false;
-      });
-    };
-  };
-  true
+    // Register the user
+    capsule::register();
+
+    // Store nonce proof
+    memory::store_nonce_proof(nonce, caller, timestamp);
+
+    true
+}
+
+// Idempotent registration - no nonce needed (for other use cases)
+#[ic_cdk::update]
+pub fn register() -> bool {
+    capsule::register()
+}
+
+// Nonce proof for II authentication (backward compatibility)
+#[ic_cdk::update]
+pub fn prove_nonce(nonce: String) -> bool {
+    let caller = ic_cdk::api::msg_caller();
+    let timestamp = ic_cdk::api::time();
+    memory::store_nonce_proof(nonce, caller, timestamp)
+}
+
+// Verify nonce proof
+#[ic_cdk::query]
+pub fn verify_nonce(nonce: String) -> Option<Principal> {
+    memory::get_nonce_proof(nonce)
 }
 
 // Optional binding signal from Web2
-public shared({ caller }) func mark_bound() : async Bool {
-  let principal = Principal.toText(caller);
-  switch (users.get(principal)) {
-    case (?existing) {
-      users.put(principal, {
-        registered_at = existing.registered_at;
-        last_activity_at = existing.last_activity_at;
-        bound = true;
-      });
-      true
-    };
-    case null { false }; // Must register first
-  };
+#[ic_cdk::update]
+pub fn mark_bound() -> bool {
+    capsule::mark_bound()
 }
 ```
 
@@ -133,25 +137,18 @@ public shared({ caller }) func mark_bound() : async Bool {
 
 ```typescript
 // Pseudocode inside authorize(credentials)
-const { principal, nonceId, signature, chain } = credentials;
+const { principal, nonceId } = credentials;
 
-// 1. Validate nonce
-const nonceValidation = await validateNonce(nonceId, nonce);
+// 1. Validate nonce exists, unexpired, unused
+const nonceValidation = await validateNonce(nonceId);
 if (!nonceValidation.valid) return null;
 
-// 2. Verify delegation chain
-const chainValid = verifyDelegationChain(chain, {
-  origin: process.env.NEXTAUTH_URL,
-  targets: [process.env.NEXT_PUBLIC_CANISTER_ID_BACKEND],
-});
-if (!chainValid) return null;
+// 2. Call canister to verify nonce proof
+const canisterActor = await backendActor();
+const provedPrincipal = await canisterActor.verify_nonce(nonceValidation.nonce);
+if (!provedPrincipal || provedPrincipal.toString() !== principal) return null;
 
-// 3. Verify signature over nonce
-const publicKey = extractPublicKeyFromChain(chain);
-const signatureValid = verifySignature(nonce, signature, publicKey);
-if (!signatureValid) return null;
-
-// 4. Atomic DB transaction
+// 3. Atomic DB transaction
 await db.transaction(async (tx) => {
   await consumeNonce(nonceId);
   const user = await findOrCreateUser(principal);
@@ -160,7 +157,7 @@ await db.transaction(async (tx) => {
 });
 ```
 
-## Implementation TODOs (Revised)
+## Implementation TODOs (Revised - Canister-Backed Proof)
 
 ### 1. **Web2: nonce storage** ✅ COMPLETED
 
@@ -172,32 +169,33 @@ await db.transaction(async (tx) => {
 - ✅ 2.1 `POST /api/ii/challenge` → returns `{ nonceId, nonce, ttlSeconds }`
 - ✅ 2.2 Persist nonce with context: `{ callbackUrl, ip/user-agent (optional) }`
 
-### 3. **Canister: keep it independent** (simplified)
+### 3. **Canister: keep it independent** ✅ COMPLETED
 
-- [ ] 3.1 `register()` (idempotent): upsert by `caller` principal; fields `{ registered_at, last_activity_at, bound: bool }`
-- [ ] 3.2 Optional: `mark_bound()` (caller = principal) → sets `bound=true`
-- [ ] 3.3 No nonce parameters, no proof tables, no Web2 dependencies
+- [x] ~~3.1 `register_with_nonce(nonce)`: Register user + prove nonce in one call~~ ✅ DONE
+- [x] ~~3.2 `register()` (idempotent): upsert by `caller` principal (for other use cases)~~ ✅ DONE
+- [x] ~~3.3 `prove_nonce(nonce)`: Store nonce proof with caller's principal (backward compatibility)~~ ✅ DONE
+- [x] ~~3.4 `verify_nonce(nonce)`: Return principal who proved this nonce~~ ✅ DONE
+- [x] ~~3.5 Optional: `mark_bound()` (caller = principal) → sets `bound=true`~~ ✅ DONE
 
-### 4. **Frontend (signin page)**
+### 4. **Frontend (signin page)** ✅ COMPLETED
 
-- [ ] 4.1 Ensure II identity with `AuthClient.login`
-- [ ] 4.2 Fetch challenge → get `{ nonceId, nonce }`
-- [ ] 4.3 (Optional) Call `register()` on the canister - no nonce needed
-- [ ] 4.4 Sign nonce with delegated key to create signature
-- [ ] 4.5 Call `signIn('internet-identity', { principal, nonceId, signature, chain, callbackUrl })`
+- [x] ~~4.1 Ensure II identity with `AuthClient.login`~~ ✅ DONE
+- [x] ~~4.2 Fetch challenge → get `{ nonceId, nonce }`~~ ✅ DONE
+- [x] ~~4.3 Call `register_with_nonce(nonce)` on canister (registers user + proves nonce)~~ ✅ DONE
+- [x] ~~4.4 Call `signIn('internet-identity', { principal, nonceId })` (no signature needed)~~ ✅ DONE
 
-### 5. **NextAuth authorize (Web2)**
+### 5. **NextAuth authorize (Web2)** ✅ COMPLETED
 
-- [ ] 5.1 Validate inputs: `principal`, `nonceId`, `signature`, `chain`
-- [ ] 5.2 Check nonce exists, unexpired, unused
-- [ ] 5.3 Verify delegation chain (origin/targets, notBefore/notAfter)
-- [ ] 5.4 Verify signature over nonce using delegated public key
-- [ ] 5.5 In single transaction: mark nonce used, create/link user + account, issue session
-- [ ] 5.6 (Optional) After success, frontend calls `mark_bound()` on canister
+- [x] ~~5.1 Validate inputs: `principal`, `nonceId`~~ ✅ DONE
+- [x] ~~5.2 Check nonce exists, unexpired, unused~~ ✅ DONE
+- [x] ~~5.3 Call canister `verify_nonce(nonce)` to get principal who proved it~~ ✅ DONE
+- [x] ~~5.4 Verify the principal matches the claimed principal~~ ✅ DONE
+- [x] ~~5.5 In single transaction: mark nonce used, create/link user + account, issue session~~ ✅ DONE
+- [x] ~~5.6 (Optional) After success, frontend calls `mark_bound()` on canister~~ ✅ DONE
 
 ### 6. **Error handling & logging**
 
-- [ ] 6.1 Clear error messages for stale/missing proof and re-auth prompts
+- [x] ~~6.1 Clear error messages for stale/missing proof and re-auth prompts~~ ✅ DONE
 - [ ] 6.2 Structured logs for challenge, signature verify, account link
 
 ### 7. **Feature flags & config**
@@ -215,7 +213,7 @@ await db.transaction(async (tx) => {
 
 ## Acceptance Criteria
 
-- **Web2 Security**: Session only issued after valid delegation chain + signature over fresh nonce
+- **Web2 Security**: Session only issued after valid canister-backed nonce proof
 - **Web3 Independence**: Canister functions completely independently, no Web2 dependencies
 - **Nonce Protection**: Single-use nonces prevent replay attacks
 - **User Experience**: Seamless login flow, first-time creates account, returning users reuse existing
@@ -232,9 +230,9 @@ await db.transaction(async (tx) => {
 
 ### Security Benefits
 
-- **Strong Proof-of-Possession**: Web2 cryptographically verifies user controls the key
+- **Strong Proof-of-Possession**: Web2 verifies user controls the key via canister-backed proof
 - **Fresh Challenges**: Nonces prevent replay attacks
-- **Delegation Verification**: Full IC delegation chain validation
+- **II Authentication**: Leverages II's authenticated canister calls
 - **No Shared Secrets**: Each system maintains its own security boundaries
 
 ### Operational Benefits
@@ -248,8 +246,9 @@ await db.transaction(async (tx) => {
 
 - Keep current principal-only MVP behind dev flag during implementation
 - Web2 nonce table is new addition, doesn't affect existing schema
-- Canister methods are simplified (remove nonce complexity from original plan)
-- Frontend needs to handle signature generation and delegation chain extraction
+- Canister methods use Rust (not Motoko) with capsule-based architecture
+- Frontend uses canister-backed proof instead of signature generation
+- Leverages II's authenticated canister calls for security
 
 ---
 
@@ -261,14 +260,14 @@ await db.transaction(async (tx) => {
 - **Purpose**: Proves user controls II delegation at this moment (freshness + anti-replay)
 - **Lifecycle**: Issue → store → sign → verify → consume
 
-### Delegation Chain
+### Canister-Backed Proof
 
-- **Definition**: Cryptographic proof from Internet Identity that authorizes a session key
-- **Contents**: Principal, targets, expiry, signatures
-- **Verification**: Check origin, targets, expiry, signature validity
+- **Definition**: Proof of nonce possession stored in canister via authenticated II call
+- **Process**: User calls `prove_nonce(nonce)` with II identity, canister stores proof
+- **Verification**: Web2 calls `verify_nonce(nonce)` to get principal who proved it
 
 ### Decoupling
 
 - **Definition**: Systems operate independently with minimal dependencies
 - **Benefit**: Each system remains functional and testable in isolation
-- **Implementation**: Web3 trusts only IC delegation, Web2 trusts only its own nonce proof
+- **Implementation**: Web3 trusts only IC delegation, Web2 trusts canister as proof oracle
