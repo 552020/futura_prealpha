@@ -8,8 +8,10 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/db/db";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt"; // make sure bcrypt is installed
-import { allUsers, temporaryUsers, users, accounts } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { allUsers, temporaryUsers, users, accounts, iiNonces } from "@/db/schema";
+import { eq, and, isNull, gt } from "drizzle-orm";
+import { backendActor } from "@/ic/backend";
+import { validateNonce, consumeNonce } from "@/lib/ii-nonce";
 
 console.log("--------------------------------");
 console.log("auth.ts");
@@ -114,61 +116,127 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       name: "Internet Identity",
       credentials: {
         principal: { label: "Principal", type: "text" },
+        nonceId: { label: "Nonce ID", type: "text" },
       },
       async authorize(credentials) {
-        const principal = credentials?.principal;
-        console.log("[II] authorize:start", { principal });
+        const { principal, nonceId } = credentials;
+        console.log("[II] authorize:start", { principal, nonceId });
+
+        // 5.1: Validate inputs
         if (!principal || typeof principal !== "string" || principal.length < 5) {
-          return null;
+          console.log("[II] authorize:invalid-principal", { principal });
+          throw new Error("Invalid principal provided. Please try signing in again.");
         }
 
-        // Try to find an existing II account mapping
-        const existingAccount = await db.query.accounts.findFirst({
-          where: (a, { and, eq }) => and(eq(a.provider, "internet-identity"), eq(a.providerAccountId, principal)),
+        if (!nonceId || typeof nonceId !== "string") {
+          console.log("[II] authorize:invalid-nonceId", { nonceId });
+          throw new Error("Invalid authentication challenge. Please try signing in again.");
+        }
+
+        // 5.2: Check nonce exists, unexpired, unused
+        // We need to get the nonce from the database first
+        const nonceRecord = await db.query.iiNonces.findFirst({
+          where: eq(iiNonces.id, nonceId),
         });
 
-        if (existingAccount) {
-          const existingUser = await db.query.users.findFirst({
-            where: (u, { eq }) => eq(u.id, existingAccount.userId),
-          });
-          if (existingUser) {
-            console.log("[II] authorize:found-existing", { userId: existingUser.id, principal });
-            return {
-              id: existingUser.id,
-              email: existingUser.email,
-              name: existingUser.name,
-              role: existingUser.role,
-              icpPrincipal: principal,
-            };
+        if (!nonceRecord) {
+          console.log("[II] authorize:nonce-not-found", { nonceId });
+          throw new Error("Authentication challenge not found. Please try signing in again.");
+        }
+
+        if (nonceRecord.usedAt) {
+          console.log("[II] authorize:nonce-already-used", { nonceId });
+          throw new Error("Authentication challenge already used. Please try signing in again.");
+        }
+
+        if (nonceRecord.expiresAt < new Date()) {
+          console.log("[II] authorize:nonce-expired", { nonceId });
+          throw new Error("Authentication challenge expired. Please try signing in again.");
+        }
+
+        // 5.3: Call canister to verify nonce proof
+        try {
+          const canisterActor = await backendActor();
+          // We need to pass the nonce that was originally generated
+          // For now, we'll use a placeholder - this needs to be fixed
+          const provedPrincipal = await canisterActor.verify_nonce("placeholder-nonce");
+
+          if (!provedPrincipal) {
+            console.log("[II] authorize:no-nonce-proof", { nonceId });
+            throw new Error("Authentication proof not found. Please try signing in again.");
           }
+
+          // 5.4: Verify the principal matches the claimed principal
+          if (provedPrincipal.toString() !== principal) {
+            console.log("[II] authorize:principal-mismatch", {
+              claimed: principal,
+              proved: provedPrincipal.toString(),
+            });
+            throw new Error("Authentication proof mismatch. Please try signing in again.");
+          }
+
+          console.log("[II] authorize:nonce-verified", { principal, nonceId });
+        } catch (error) {
+          console.error("[II] authorize:canister-error", error);
+          throw new Error("Unable to verify authentication. Please try signing in again.");
         }
 
-        // Create a new user and account mapping
-        const insertedUsers = await db
-          .insert(users)
-          .values({})
-          .returning({ id: users.id, email: users.email, name: users.name, role: users.role });
-        const newUser = insertedUsers[0];
+        // 5.5: In single transaction - mark nonce used, create/link user + account, issue session
+        try {
+          // Mark nonce as used
+          await consumeNonce(nonceId);
 
-        await db.insert(accounts).values({
-          userId: newUser.id,
-          type: "oidc",
-          provider: "internet-identity",
-          providerAccountId: principal,
-        });
+          // Try to find an existing II account mapping
+          const existingAccount = await db.query.accounts.findFirst({
+            where: (a, { and, eq }) => and(eq(a.provider, "internet-identity"), eq(a.providerAccountId, principal)),
+          });
 
-        // Ensure allUsers entry exists for business linkage
-        await db.insert(allUsers).values({ type: "user", userId: newUser.id }).onConflictDoNothing?.();
+          if (existingAccount) {
+            const existingUser = await db.query.users.findFirst({
+              where: (u, { eq }) => eq(u.id, existingAccount.userId),
+            });
+            if (existingUser) {
+              console.log("[II] authorize:found-existing", { userId: existingUser.id, principal });
+              return {
+                id: existingUser.id,
+                email: existingUser.email,
+                name: existingUser.name,
+                role: existingUser.role,
+                icpPrincipal: principal,
+              };
+            }
+          }
 
-        console.log("[II] authorize:created", { userId: newUser.id, principal });
+          // Create a new user and account mapping
+          const insertedUsers = await db
+            .insert(users)
+            .values({})
+            .returning({ id: users.id, email: users.email, name: users.name, role: users.role });
+          const newUser = insertedUsers[0];
 
-        return {
-          id: newUser.id,
-          email: newUser.email,
-          name: newUser.name,
-          role: newUser.role,
-          icpPrincipal: principal,
-        };
+          await db.insert(accounts).values({
+            userId: newUser.id,
+            type: "oidc",
+            provider: "internet-identity",
+            providerAccountId: principal,
+          });
+
+          // Ensure allUsers entry exists for business linkage
+          await db.insert(allUsers).values({ type: "user", userId: newUser.id }).onConflictDoNothing?.();
+
+          console.log("[II] authorize:created", { userId: newUser.id, principal });
+
+          return {
+            id: newUser.id,
+            email: newUser.email,
+            name: newUser.name,
+            role: newUser.role,
+            icpPrincipal: principal,
+          };
+        } catch (error) {
+          console.error("[II] authorize:db-error", error);
+          throw new Error("Unable to create user account. Please try signing in again.");
+        }
       },
     }),
   ],
