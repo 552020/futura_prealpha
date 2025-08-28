@@ -1,4 +1,163 @@
+type AccessEvent = variant {
+  CapsuleMaturity : nat32;
+  Graduation;
+  AfterDeath;
+  Wedding;
+  Birthday : nat32;
+  Custom : text;
+  ConnectionCount : nat32;
+  Anniversary : nat32;
+};
+type AudioMetadata = record {
+  duration : opt nat32;
+  base : MemoryMetadataBase;
+  channels : opt nat8;
+  sample_rate : opt nat32;
+  bitrate : opt nat32;
+  format : opt text;
+};
+type BlobRef = record {
+  locator : text;
+  hash : opt blob;
+  kind : MemoryBlobKind;
+};
+type Capsule = record {
+  id : text;
+  updated_at : nat64;
+  controllers : vec record { PersonRef; ControllerState };
+  subject : PersonRef;
+  owners : vec record { PersonRef; OwnerState };
+  created_at : nat64;
+  connection_groups : vec record { text; ConnectionGroup };
+  connections : vec record { PersonRef; Connection };
+  memories : vec record { text; Memory };
+  bound_to_web2 : bool;
+};
+type CapsuleCreationResult = record {
+  capsule_id : opt text;
+  message : text;
+  success : bool;
+};
+type CapsuleHeader = record {
+  id : text;
+  updated_at : nat64;
+  subject : PersonRef;
+  owner_count : nat32;
+  created_at : nat64;
+  controller_count : nat32;
+  memory_count : nat32;
+};
+type CapsuleInfo = record {
+  updated_at : nat64;
+  subject : PersonRef;
+  capsule_id : text;
+  is_owner : bool;
+  created_at : nat64;
+  bound_to_web2 : bool;
+  is_self_capsule : bool;
+  is_controller : bool;
+};
+type CapsuleRegistrationResult = record {
+  capsule_id : opt text;
+  is_new : bool;
+  message : text;
+  success : bool;
+};
+type Connection = record {
+  status : ConnectionStatus;
+  updated_at : nat64;
+  peer : PersonRef;
+  created_at : nat64;
+};
+type ConnectionGroup = record {
+  id : text;
+  updated_at : nat64;
+  members : vec PersonRef;
+  name : text;
+  description : opt text;
+  created_at : nat64;
+};
+type ConnectionStatus = variant { Blocked; Accepted; Revoked; Pending };
+type ControllerState = record { granted_at : nat64; granted_by : PersonRef };
+type DocumentMetadata = record { base : MemoryMetadataBase };
+type ImageMetadata = record {
+  base : MemoryMetadataBase;
+  dimensions : opt record { nat32; nat32 };
+};
+type Memory = record {
+  id : text;
+  access : MemoryAccess;
+  metadata : MemoryMetadata;
+  data : MemoryData;
+  info : MemoryInfo;
+};
+type MemoryAccess = variant {
+  Private;
+  Custom : record { groups : vec text; individuals : vec PersonRef };
+  EventTriggered : record {
+    access : MemoryAccess;
+    trigger_event : AccessEvent;
+  };
+  Public;
+  Scheduled : record { access : MemoryAccess; accessible_after : nat64 };
+};
+type MemoryBlobKind = variant { MemoryBlobKindExternal; ICPCapsule };
+type MemoryData = record { data : opt blob; blob_ref : BlobRef };
+type MemoryInfo = record {
+  updated_at : nat64;
+  date_of_memory : opt nat64;
+  memory_type : MemoryType;
+  name : text;
+  content_type : text;
+  created_at : nat64;
+  uploaded_at : nat64;
+};
+type MemoryMetadata = variant {
+  Note : NoteMetadata;
+  Image : ImageMetadata;
+  Document : DocumentMetadata;
+  Audio : AudioMetadata;
+  Video : VideoMetadata;
+};
+type MemoryMetadataBase = record {
+  date_of_memory : opt text;
+  size : nat64;
+  people_in_memory : opt vec text;
+  mime_type : text;
+  original_name : text;
+  uploaded_at : text;
+  format : opt text;
+};
+type MemoryType = variant { Note; Image; Document; Audio; Video };
+type NoteMetadata = record { base : MemoryMetadataBase; tags : opt vec text };
+type OwnerState = record { last_activity_at : nat64; since : nat64 };
+type PersonRef = variant { Opaque : text; Principal : principal };
+type VideoMetadata = record {
+  height : opt nat32;
+  duration : opt nat32;
+  thumbnail : opt text;
+  base : MemoryMetadataBase;
+  width : opt nat32;
+};
 service : () -> {
+  add_admin : (principal) -> (bool);
+  create_capsule : (PersonRef) -> (CapsuleCreationResult);
+  get_capsule : (text) -> (opt Capsule) query;
+  get_user : () -> (opt CapsuleInfo) query;
+  get_user_by_principal : (principal) -> (opt CapsuleInfo) query;
   greet : (text) -> (text) query;
+  list_admins : () -> (vec principal) query;
+  list_my_capsules : () -> (vec CapsuleHeader) query;
+  list_superadmins : () -> (vec principal) query;
+  list_users : () -> (vec CapsuleHeader) query;
+  mark_bound : () -> (bool);
+  mark_capsule_bound_to_web2 : () -> (bool);
+  prove_nonce : (text) -> (bool);
+  register : () -> (CapsuleRegistrationResult);
+  register_capsule : () -> (CapsuleRegistrationResult);
+  register_with_nonce : (text) -> (bool);
+  remove_admin : (principal) -> (bool);
+  user_stats : () -> (vec record { text; nat64 }) query;
+  verify_nonce : (text) -> (opt principal) query;
   whoami : () -> (principal) query;
 }
