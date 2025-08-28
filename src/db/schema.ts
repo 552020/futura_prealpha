@@ -740,6 +740,12 @@ export const iiNonces = pgTable(
     index("ii_nonces_hash_idx").on(table.nonceHash),
     // Index for cleanup of expired nonces
     index("ii_nonces_expires_idx").on(table.expiresAt),
+    // Index for stats queries on usedAt
+    index("ii_nonces_used_idx").on(table.usedAt),
+    // Composite index for active nonce lookups (usedAt IS NULL AND expiresAt > now)
+    index("ii_nonces_active_idx").on(table.usedAt, table.expiresAt),
+    // Index for rate limiting queries on createdAt
+    index("ii_nonces_created_idx").on(table.createdAt),
   ]
 );
 
