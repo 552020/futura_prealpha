@@ -7,7 +7,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { loginWithII } from "@/ic/ii";
+// ICP imports moved to dynamic imports inside functions
+
+// Prevent static generation of this page
+export const dynamic = "force-dynamic";
 
 function SignInPageInternal() {
   const params = useParams();
@@ -64,9 +67,69 @@ function SignInPageInternal() {
     setError(null);
     setIiBusy(true);
     try {
+      // 4.1: Ensure II identity with AuthClient.login ✅ DONE
       console.log("handleInternetIdentity", "before loginWithII");
-      const { principal } = await loginWithII();
+      const { loginWithII } = await import("@/ic/ii");
+      const { principal, identity } = await loginWithII();
       console.log("handleInternetIdentity", "after loginWithII", principal);
+
+      // 4.2: Fetch challenge → get { nonceId, nonce } ✅ DONE
+      console.log("handleInternetIdentity", "before fetchChallenge");
+      const { fetchChallenge } = await import("@/lib/ii-client");
+      const challenge = await fetchChallenge(callbackUrl);
+      console.log("handleInternetIdentity", "after fetchChallenge", challenge);
+
+      // 4.3-4.4: Register user and prove nonce in one call ✅ DONE
+      console.log("handleInternetIdentity", "before registerWithNonce");
+      const { registerWithNonce } = await import("@/lib/ii-client");
+      const registration = await registerWithNonce(challenge.nonce, identity);
+      console.log("handleInternetIdentity", "after registerWithNonce", registration);
+
+      // 4.5: Call signIn with principal + nonceId (no signature needed)
+      console.log("handleInternetIdentity", "before signIn", principal, challenge.nonceId);
+      const signInResult = await signIn("ii", { principal, nonceId: challenge.nonceId, redirect: false, callbackUrl });
+      console.log("handleInternetIdentity", "after signIn", signInResult);
+
+      // 5.6: (Optional) After success, call mark_bound() on canister
+      if (signInResult?.ok) {
+        console.log("handleInternetIdentity", "before markBoundOnCanister");
+        try {
+          const { markBoundOnCanister } = await import("@/lib/ii-client");
+          await markBoundOnCanister(identity);
+          console.log("handleInternetIdentity", "after markBoundOnCanister - success");
+        } catch (error) {
+          console.warn("handleInternetIdentity", "markBoundOnCanister failed", error);
+          // Don't fail the auth flow if this optional step fails
+        }
+
+        // Redirect manually after successful authentication
+        router.push(callbackUrl);
+      } else {
+        console.error("handleInternetIdentity", "signIn failed", signInResult?.error);
+
+        // Provide user-friendly error messages
+        let errorMessage = "Authentication failed. Please try again.";
+
+        if (signInResult?.error) {
+          if (signInResult.error.includes("challenge expired")) {
+            errorMessage = "Authentication session expired. Please try signing in again.";
+          } else if (signInResult.error.includes("challenge already used")) {
+            errorMessage = "Authentication session already used. Please try signing in again.";
+          } else if (signInResult.error.includes("proof not found")) {
+            errorMessage = "Authentication verification failed. Please try signing in again.";
+          } else if (signInResult.error.includes("proof mismatch")) {
+            errorMessage = "Authentication verification failed. Please try signing in again.";
+          } else if (signInResult.error.includes("Unable to verify")) {
+            errorMessage = "Authentication verification failed. Please try signing in again.";
+          } else if (signInResult.error.includes("Unable to create user")) {
+            errorMessage = "Unable to create account. Please try signing in again.";
+          }
+        }
+
+        setError(errorMessage);
+      }
+
+      // Current implementation (needs updating)
       console.log("handleInternetIdentity", "before signIn", principal, callbackUrl);
       await signIn("ii", { principal, redirect: true, callbackUrl });
       console.log("handleInternetIdentity", "after signIn");

@@ -3,8 +3,10 @@
 import { useAuthGuard } from "@/utils/authentication";
 
 import { useState, useEffect, useRef } from "react";
-import { backendActor } from "@/ic/backend";
 import type { BackendActor } from "@/ic/backend";
+
+// Prevent static generation of this page
+export const dynamic = 'force-dynamic';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -67,6 +69,7 @@ export default function ICPPage() {
 
     // Create and cache new authenticated actor
     const identity = authClient.getIdentity();
+    const { backendActor } = await import("@/ic/backend");
     authenticatedActorRef.current = await backendActor(identity);
     return authenticatedActorRef.current;
   };
@@ -114,6 +117,7 @@ export default function ICPPage() {
 
           // Rehydrate actor so "Test Backend" works immediately after refresh
           try {
+            const { backendActor } = await import("@/ic/backend");
             const actor = await backendActor(identity);
             authenticatedActorRef.current = actor;
           } catch (error) {
@@ -139,6 +143,7 @@ export default function ICPPage() {
       const formData = new FormData(event.currentTarget);
       const name = formData.get("name") as string;
 
+      const { backendActor } = await import("@/ic/backend");
       const actor: BackendActor = await backendActor();
 
       const greeting = await actor.greet(name);
@@ -155,6 +160,7 @@ export default function ICPPage() {
       const { identity, principal } = await loginWithII();
 
       // Create and cache the authenticated actor
+      const { backendActor } = await import("@/ic/backend");
       const authenticatedActor: BackendActor = await backendActor(identity);
       authenticatedActorRef.current = authenticatedActor; // Cache it for future use
       setPrincipalId(principal.toString());
