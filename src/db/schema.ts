@@ -715,6 +715,37 @@ export type NewDBGalleryItem = typeof galleryItems.$inferInsert;
 export type DBGalleryShare = typeof galleryShares.$inferSelect;
 export type NewDBGalleryShare = typeof galleryShares.$inferInsert;
 
+// Internet Identity nonce table for canister-first signup
+export const iiNonces = pgTable(
+  "ii_nonce",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    nonceHash: text("nonce_hash").notNull(), // SHA-256 hash of the actual nonce
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
+    usedAt: timestamp("used_at", { mode: "date" }), // null = unused, timestamp = used
+    context: json("context")
+      .$type<{
+        callbackUrl?: string;
+        userAgent?: string;
+        ipAddress?: string;
+        sessionId?: string;
+      }>()
+      .default({}),
+  },
+  (table) => [
+    // Index for fast lookup by hash
+    index("ii_nonces_hash_idx").on(table.nonceHash),
+    // Index for cleanup of expired nonces
+    index("ii_nonces_expires_idx").on(table.expiresAt),
+  ]
+);
+
+export type DBIINonce = typeof iiNonces.$inferSelect;
+export type NewDBIINonce = typeof iiNonces.$inferInsert;
+
 // Type helpers for the enums
 export type MemoryType = (typeof MEMORY_TYPES)[number];
 export type AccessLevel = (typeof ACCESS_LEVELS)[number];
