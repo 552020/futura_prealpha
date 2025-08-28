@@ -128,37 +128,51 @@ markNonceUsed(credentials.nonceId);
 
 ## Implementation TODOs (practical steps)
 
-- [ ] Web2: design nonce storage
-  - [ ] Create `ii_nonces` table (id, nonceHash, createdAt, expiresAt, usedAt, context JSON)
-  - [ ] Add helper to hash and compare nonce values
-- [ ] Web2: implement challenge endpoint
-  - [ ] `POST /api/ii/challenge` → returns `{ nonceId, nonce, ttlSeconds }`
-  - [ ] Persist nonce with context: `{ callbackUrl, ip/user-agent (optional) }`
-- [ ] Canister: add proof methods
-  - [ ] `prove_signup(nonce: text) -> bool` (record caller principal + nonceId)
-  - [ ] `verify_proof(nonceId: text) -> opt { principal; provedAt; used }`
-  - [ ] Optional: `consume_proof(nonceId: text)`
-- [ ] Frontend (signin page)
-  - [ ] Ensure II identity with `AuthClient.login`
-  - [ ] Fetch challenge → get `{ nonceId, nonce }`
-  - [ ] Call canister `prove_signup(nonce)` using II identity
-  - [ ] Call `signIn('ii', { principal, nonceId, redirect: false, callbackUrl })`
-- [ ] NextAuth authorize (Web2)
-  - [ ] Validate `principal` + `nonceId`
-  - [ ] Check nonce exists, unexpired, unused
-  - [ ] Query canister `verify_proof(nonceId)`; assert principal matches and not used
-  - [ ] In a single transaction: mark nonce used, create/link user + account, issue session
-- [ ] Error handling & logging
-  - [ ] Clear error messages for stale/missing proof and re‑auth prompts
-  - [ ] Structured logs for challenge, proof verify, account link
-- [ ] Feature flags & config
-  - [ ] Gate principal‑only path behind dev flag; enforce proof in prod
-  - [ ] TTL, rate‑limit, size limits via env
-- [ ] QA
-  - [ ] First‑time II login creates user + account
-  - [ ] Returning II login reuses same user (no duplicates)
-  - [ ] Replay attempts with used/expired nonce are rejected
-  - [ ] CallbackUrl respected; sign‑out clears sessions
+1. **Web2: design nonce storage**
+
+   - [ ] 1.1 Create `ii_nonces` table (id, nonceHash, createdAt, expiresAt, usedAt, context JSON)
+   - [ ] 1.2 Add helper to hash and compare nonce values
+
+2. **Web2: implement challenge endpoint**
+
+   - [ ] 2.1 `POST /api/ii/challenge` → returns `{ nonceId, nonce, ttlSeconds }`
+   - [ ] 2.2 Persist nonce with context: `{ callbackUrl, ip/user-agent (optional) }`
+
+3. **Canister: add proof methods**
+
+   - [ ] 3.1 `prove_signup(nonce: text) -> bool` (record caller principal + nonceId)
+   - [ ] 3.2 `verify_proof(nonceId: text) -> opt { principal; provedAt; used }`
+   - [ ] 3.3 Optional: `consume_proof(nonceId: text)`
+
+4. **Frontend (signin page)**
+
+   - [ ] 4.1 Ensure II identity with `AuthClient.login`
+   - [ ] 4.2 Fetch challenge → get `{ nonceId, nonce }`
+   - [ ] 4.3 Call canister `prove_signup(nonce)` using II identity
+   - [ ] 4.4 Call `signIn('ii', { principal, nonceId, redirect: false, callbackUrl })`
+
+5. **NextAuth authorize (Web2)**
+
+   - [ ] 5.1 Validate `principal` + `nonceId`
+   - [ ] 5.2 Check nonce exists, unexpired, unused
+   - [ ] 5.3 Query canister `verify_proof(nonceId)`; assert principal matches and not used
+   - [ ] 5.4 In a single transaction: mark nonce used, create/link user + account, issue session
+
+6. **Error handling & logging**
+
+   - [ ] 6.1 Clear error messages for stale/missing proof and re‑auth prompts
+   - [ ] 6.2 Structured logs for challenge, proof verify, account link
+
+7. **Feature flags & config**
+
+   - [ ] 7.1 Gate principal‑only path behind dev flag; enforce proof in prod
+   - [ ] 7.2 TTL, rate‑limit, size limits via env
+
+8. **QA**
+   - [ ] 8.1 First‑time II login creates user + account
+   - [ ] 8.2 Returning II login reuses same user (no duplicates)
+   - [ ] 8.3 Replay attempts with used/expired nonce are rejected
+   - [ ] 8.4 CallbackUrl respected; sign‑out clears sessions
 
 ## Notes
 

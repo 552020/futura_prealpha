@@ -375,3 +375,4 @@ function isValidPrincipal(principal: string): boolean {
 5. **Production deployment** and monitoring
 
 The Internet Identity provider integration is designed to be **additive** - it slots into the existing NextAuth architecture without breaking existing functionality or requiring database migrations.
+
