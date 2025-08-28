@@ -14,6 +14,7 @@ const eslintConfig = [
   {
     ignores: [
       "src/ic/declarations/**/*", // Auto-generated ICP declarations - no linting needed
+      "**/ic/declarations/**/*", // Alternative path pattern
     ],
   },
 ];
