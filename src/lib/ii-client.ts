@@ -15,6 +15,10 @@ export interface IIChallengeResponse {
  * Fetch a challenge nonce from the Web2 backend
  */
 export async function fetchChallenge(callbackUrl?: string): Promise<IIChallengeResponse> {
+  // Debug logging
+  console.log("DEBUG: fetchChallenge called with callbackUrl:", callbackUrl);
+  console.log("DEBUG: fetchChallenge using fallback:", callbackUrl || "/en/dashboard");
+
   const response = await fetch("/api/ii/challenge", {
     method: "POST",
     headers: {
@@ -47,6 +51,10 @@ export async function registerOnCanister(identity: Identity) {
  * This combines steps 4.3 and 4.4 in the II integration flow
  */
 export async function registerWithNonce(nonce: string, identity: Identity) {
+  // Debug logging
+  console.log("DEBUG: registerWithNonce called with nonce length:", nonce.length);
+  console.log("DEBUG: registerWithNonce nonce preview:", nonce.substring(0, 10) + "...");
+
   const actor = await backendActor(identity);
   return actor.register_with_nonce(nonce);
 }
