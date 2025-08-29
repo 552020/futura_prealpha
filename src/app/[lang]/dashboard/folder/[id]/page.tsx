@@ -29,7 +29,7 @@ import {
 
 // Demo flag - set to true to use mock data for demo
 // const USE_MOCK_DATA = true;
-const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_DASHBOARD === "true";
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_FOLDER === "true";
 
 export default function FolderPage() {
   console.log("🔍 Folder page component rendered");

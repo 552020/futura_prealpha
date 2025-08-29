@@ -11,7 +11,8 @@ import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 
 // Mock data flag for development - same pattern as dashboard
-const USE_MOCK_DATA = true;
+// const USE_MOCK_DATA = true;
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_GALLERY === "true";
 
 export default function GalleryViewPage() {
   const { id } = useParams();

@@ -12,7 +12,7 @@ import { GalleryTopBar } from "@/components/gallery-top-bar";
 import RequireAuth from "@/components/require-auth";
 
 // Mock data flag for development
-const USE_MOCK_DATA = true;
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_GALLERY === "true";
 
 export default function GalleryPage() {
   const { isAuthorized, isLoading: authLoading } = useAuthGuard();
@@ -34,7 +34,7 @@ export default function GalleryPage() {
       setIsLoading(true);
       setError(null);
 
-      const result = await galleryService.listGalleries(USE_MOCK_DATA);
+      const result = await galleryService.listGalleries(1, 12, USE_MOCK_DATA);
       setGalleries(result.galleries);
       setFilteredGalleries(result.galleries);
     } catch (err) {
