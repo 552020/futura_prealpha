@@ -9,12 +9,14 @@ When a user uploads a folder and tries to access it, they get an error "this fol
 From the console logs, the issue is clear:
 
 ### 1. Dashboard Uses Real Data (Correct)
+
 ```
 🔍 fetchMemories called with: {currentPage: 1, USE_MOCK_DATA: false, timestamp: '2025-08-29T11:54:54.809Z'}
 🔄 FETCH MEMORIES - Starting fetch: {page: 1, timestamp: '2025-08-29T11:54:54.809Z'}
 ```
 
 ### 2. Folder Page Uses Mock Data (Incorrect)
+
 ```
 🎭 MOCK DATA - Using sample data for folder
 🔍 Looking for folder: wedding_small
@@ -33,12 +35,14 @@ From the console logs, the issue is clear:
 ## Evidence from Logs
 
 ### Dashboard (Working - Real Data)
+
 - `USE_MOCK_DATA: false`
 - Fetches from `/api/memories?page=1`
 - Shows folder `wedding_small` with 3 items
 - User can click on folder
 
 ### Folder Page (Broken - Mock Data)
+
 - `🎭 MOCK DATA - Using sample data for folder`
 - Looks for `wedding_small` in mock data
 - Mock data has 26 memories but none match `wedding_small`
@@ -64,7 +68,8 @@ const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_FOLDER === "true";
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_DASHBOARD === "true";
 ```
 
-**Issue**: 
+**Issue**:
+
 - Dashboard uses `NEXT_PUBLIC_USE_MOCK_DATA_DASHBOARD` environment variable
 - Folder page was using `NEXT_PUBLIC_USE_MOCK_DATA_FOLDER` (different variable)
 - This creates a mismatch when environment variable is set to `true`
@@ -79,7 +84,8 @@ const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_DASHBOARD === "true"
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_DASHBOARD === "true";
 ```
 
-**Result**: 
+**Result**:
+
 - Both dashboard and folder page now use `NEXT_PUBLIC_USE_MOCK_DATA_DASHBOARD`
 - Single environment variable controls both pages
 - Consistent behavior across the application
@@ -87,6 +93,7 @@ const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_DASHBOARD === "true"
 ## Expected Behavior
 
 Both dashboard and folder page should use the same data source:
+
 - If `NEXT_PUBLIC_USE_MOCK_DATA_DASHBOARD=true` → Both use mock data
 - If `NEXT_PUBLIC_USE_MOCK_DATA_DASHBOARD=false` → Both use real data
 
