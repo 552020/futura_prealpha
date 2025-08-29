@@ -273,16 +273,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (isLoginFlow) {
         // Extract language from URL if available, default to 'en'
         let lang = "en"; // default fallback
+        let urlParseSuccess = false;
+        
         try {
           const urlObj = new URL(url);
           lang = urlObj.searchParams.get("lang") || "en";
+          urlParseSuccess = true;
+          console.log("[NextAuth] Successfully parsed URL:", { url, lang });
         } catch (error) {
-          console.warn("[NextAuth] Invalid URL in redirect callback:", url, error);
+          console.warn("[NextAuth] Invalid URL in redirect callback - using fallback:", {
+            invalidUrl: url,
+            error: error instanceof Error ? error.message : String(error),
+            fallbackLang: "en",
+            baseUrl
+          });
           // Fallback to default language if URL is invalid
           lang = "en";
         }
+        
         const redirectTo = `${baseUrl}/${lang}/dashboard`;
-        console.log("[NextAuth] Redirecting after login:", redirectTo);
+        console.log("[NextAuth] Redirecting after login:", {
+          redirectTo,
+          urlParseSuccess,
+          originalUrl: url,
+          baseUrl,
+          lang
+        });
         return redirectTo;
       }
 
