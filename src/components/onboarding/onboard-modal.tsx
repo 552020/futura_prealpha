@@ -109,7 +109,7 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
               doc: {
                 key: crypto.randomUUID(),
                 data: {
-                  from: "noreply@futura.app",
+                  from: "noreply@futura.now",
                   to: userData.recipientEmail,
                   subject: `${userData.name} has shared files with you on Futura`,
                   text: "Placeholder text - will be replaced by serverless function",

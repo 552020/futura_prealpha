@@ -84,7 +84,7 @@ async fn on_set_doc(context: OnSetDocContext) -> Result<(), String> {
         to: email_data.to.clone(),
         subject: email_data.subject.clone(),
         text: format!(
-            "Hello {},\n\n{} has shared some files with you through Futura.\n\nYou can access your shared files at: https://futura.app\n\nBest regards,\nThe Futura Team",
+            "Hello {},\n\n{} has shared some files with you through Futura.\n\nYou can access your shared files at: https://futura.now\n\nBest regards,\nThe Futura Team",
             email_data.recipient_name,
             email_data.user_name
         ),
