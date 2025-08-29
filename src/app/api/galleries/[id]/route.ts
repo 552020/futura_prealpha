@@ -197,10 +197,63 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       accessibleItems: accessibleItems.length,
     });
 
+    // Get the actual memory data for each item
+    const itemsWithMemories = [];
+    for (const item of accessibleItems) {
+      let memory = null;
+      
+      switch (item.memoryType) {
+        case "image":
+          memory = await db.query.images.findFirst({
+            where: eq(images.id, item.memoryId),
+          });
+          break;
+        case "video":
+          memory = await db.query.videos.findFirst({
+            where: eq(videos.id, item.memoryId),
+          });
+          break;
+        case "document":
+          memory = await db.query.documents.findFirst({
+            where: eq(documents.id, item.memoryId),
+          });
+          break;
+        case "note":
+          memory = await db.query.notes.findFirst({
+            where: eq(notes.id, item.memoryId),
+          });
+          break;
+        case "audio":
+          memory = await db.query.audio.findFirst({
+            where: eq(audio.id, item.memoryId),
+          });
+          break;
+      }
+      
+      if (memory) {
+        itemsWithMemories.push({
+          ...item,
+          memory,
+        });
+      }
+    }
+
+    // Create the gallery with items in the expected format
+    const galleryWithItems = {
+      ...accessibleGallery,
+      items: itemsWithMemories,
+      imageCount: itemsWithMemories.length,
+      isOwner: accessibleGallery.ownerId === allUserRecord.id,
+    };
+
+    console.log("Returning gallery with items:", {
+      galleryId,
+      itemsCount: itemsWithMemories.length,
+      isOwner: galleryWithItems.isOwner,
+    });
+
     return NextResponse.json({
-      gallery: accessibleGallery,
-      items: accessibleItems,
-      itemsCount: accessibleItems.length,
+      gallery: galleryWithItems,
     });
   } catch (error) {
     console.error("Error fetching gallery:", error);

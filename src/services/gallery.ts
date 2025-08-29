@@ -145,6 +145,7 @@ export const galleryService = {
 
       const result = await handleApiResponse(response);
       console.log("API response result:", result);
+      console.log("Gallery items count:", result.gallery?.items?.length || 0);
       return result.gallery;
     } catch (error) {
       console.error("Error creating gallery from folder:", error);

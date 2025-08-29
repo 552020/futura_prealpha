@@ -192,11 +192,19 @@ export default function FolderPage() {
     router.push(`/${params.lang}/dashboard`);
   };
 
-  const handleGalleryCreated = () => {
+  const handleGalleryCreated = (galleryId?: string) => {
     toast({
       title: "Success",
       description: "Gallery created successfully!",
     });
+    
+    // Navigate to the newly created gallery if we have the ID
+    if (galleryId) {
+      router.push(`/${params.lang}/gallery/${galleryId}`);
+    } else {
+      // Fallback: navigate to galleries list
+      router.push(`/${params.lang}/gallery`);
+    }
   };
 
   if (!isAuthorized || isLoading) {

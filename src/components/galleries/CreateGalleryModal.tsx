@@ -197,11 +197,9 @@ export function CreateGalleryModal({
                 <FormField
                   control={form.control}
                   name="folderName"
-                  render={({ field }) => (
-                    <input type="hidden" {...field} value={prefillFolderName} />
-                  )}
+                  render={({ field }) => <input type="hidden" {...field} value={prefillFolderName} />}
                 />
-                
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Selected Folder</label>
                   <div className="p-3 bg-muted rounded-md border">

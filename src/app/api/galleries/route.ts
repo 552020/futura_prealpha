@@ -171,6 +171,7 @@ export async function POST(request: NextRequest) {
       folderName,
       galleryId: gallery.id,
       memoriesCount: galleryMemories.length,
+      galleryItemsData: galleryItemsData,
     });
 
     return NextResponse.json(
