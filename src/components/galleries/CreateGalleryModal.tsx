@@ -14,15 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -143,8 +135,8 @@ export function CreateGalleryModal({
         <DialogHeader>
           <DialogTitle>Create Gallery from Folder</DialogTitle>
           <DialogDescription>
-            Create a new gallery from an existing folder of memories. The gallery will include all
-            items from the selected folder.
+            Create a new gallery from an existing folder of memories. The gallery will include all items from the
+            selected folder.
           </DialogDescription>
         </DialogHeader>
 
@@ -207,9 +199,7 @@ export function CreateGalleryModal({
                   <FormControl>
                     <Input placeholder="Enter gallery description..." {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Add a description to provide more context about this gallery.
-                  </FormDescription>
+                  <FormDescription>Add a description to provide more context about this gallery.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -224,27 +214,18 @@ export function CreateGalleryModal({
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">Public Gallery</FormLabel>
                     <FormDescription>
-                      Make this gallery visible to other users. Private galleries are only visible to
-                      you.
+                      Make this gallery visible to other users. Private galleries are only visible to you.
                     </FormDescription>
                   </div>
                   <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
                 </FormItem>
               )}
             />
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setOpen(false)}
-                disabled={isLoading}
-              >
+              <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isLoading}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isLoading || isLoadingFolders}>
