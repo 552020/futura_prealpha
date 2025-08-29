@@ -38,6 +38,7 @@ interface CreateGalleryModalProps {
   onGalleryCreated?: (galleryId: string) => void;
   prefillFolderName?: string;
   className?: string;
+  hideFolderSelection?: boolean;
 }
 
 export function CreateGalleryModal({
@@ -45,6 +46,7 @@ export function CreateGalleryModal({
   onGalleryCreated,
   prefillFolderName,
   className,
+  hideFolderSelection = false,
 }: CreateGalleryModalProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -62,10 +64,10 @@ export function CreateGalleryModal({
     },
   });
 
-  // Load folders when modal opens
+  // Load folders when modal opens (only if folder selection is not hidden)
   const handleOpenChange = async (newOpen: boolean) => {
     setOpen(newOpen);
-    if (newOpen && folders.length === 0) {
+    if (newOpen && folders.length === 0 && !hideFolderSelection) {
       await loadFolders();
     }
     if (!newOpen) {
@@ -150,26 +152,41 @@ export function CreateGalleryModal({
               </Alert>
             )}
 
-            {/* Folder Selection */}
-            <FormField
-              control={form.control}
-              name="folderName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select Folder</FormLabel>
-                  <FormControl>
-                    <FolderSelector
-                      folders={folders}
-                      isLoading={isLoadingFolders}
-                      selectedFolder={field.value}
-                      onFolderSelect={handleFolderSelect}
-                      onRefresh={loadFolders}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Folder Selection - Hidden if prefillFolderName is provided */}
+            {!hideFolderSelection && (
+              <FormField
+                control={form.control}
+                name="folderName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Folder</FormLabel>
+                    <FormControl>
+                      <FolderSelector
+                        folders={folders}
+                        isLoading={isLoadingFolders}
+                        selectedFolder={field.value}
+                        onFolderSelect={handleFolderSelect}
+                        onRefresh={loadFolders}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {/* Show selected folder info when folder selection is hidden */}
+            {hideFolderSelection && prefillFolderName && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Selected Folder</label>
+                <div className="p-3 bg-muted rounded-md border">
+                  <p className="text-sm font-medium">{prefillFolderName}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Gallery will be created from this folder
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Gallery Title */}
             <FormField

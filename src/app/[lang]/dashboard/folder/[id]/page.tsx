@@ -8,7 +8,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
 import { Button } from "@/components/ui/button";
-import { DashboardTopBar } from "@/components/dashboard-top-bar";
+import { FolderTopBar } from "@/components/folder-top-bar";
 import { TawkChat } from "@/components/tawk-chat";
 import {
   fetchAndNormalizeMemories,
@@ -43,6 +43,7 @@ export default function FolderPage() {
   const [isLoadingMemories, setIsLoadingMemories] = useState(true);
   const [folderName, setFolderName] = useState<string>("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
 
   const folderId = params.id as string;
   console.log("🔍 Folder ID:", folderId);
@@ -187,6 +188,13 @@ export default function FolderPage() {
     router.push(`/${params.lang}/dashboard`);
   };
 
+  const handleGalleryCreated = () => {
+    toast({
+      title: "Success",
+      description: "Gallery created successfully!",
+    });
+  };
+
   if (!isAuthorized || isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -214,16 +222,15 @@ export default function FolderPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      {/* DashboardTopBar Component */}
-      <DashboardTopBar
+      {/* FolderTopBar Component */}
+      <FolderTopBar
         memories={memories}
         onFilteredMemoriesChange={() => {}} // No filtering needed for folder view
         showViewToggle={true}
         onViewModeChange={setViewMode}
         viewMode={viewMode}
-        showUploadButtons={true}
-        onUploadSuccess={handleUploadSuccess}
-        onUploadError={handleUploadError}
+        folderName={folderName}
+        onCreateGallery={handleGalleryCreated}
       />
 
       {memories.length === 0 && !isLoadingMemories ? (
@@ -251,6 +258,8 @@ export default function FolderPage() {
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
       )}
+
+
 
       {/* Tawk.to Chat */}
       <TawkChat />

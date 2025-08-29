@@ -98,10 +98,12 @@ function StickyHeader({
               {isPublishing ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                  {gallery.isPublic ? 'Hiding...' : 'Publishing...'}
+                  {gallery.isPublic ? "Hiding..." : "Publishing..."}
                 </>
+              ) : gallery.isPublic ? (
+                "Hide"
               ) : (
-                gallery.isPublic ? 'Hide' : 'Publish'
+                "Publish"
               )}
             </Button>
           </div>
@@ -276,18 +278,18 @@ export default function GalleryPreviewPage() {
 
   const handlePublish = async () => {
     if (!gallery) return;
-    
+
     try {
       setIsPublishing(true);
       await galleryService.updateGallery(gallery.id, { isPublic: !gallery.isPublic });
-      
+
       // Update local state
-      setGallery(prev => prev ? { ...prev, isPublic: !prev.isPublic } : null);
-      
+      setGallery((prev) => (prev ? { ...prev, isPublic: !prev.isPublic } : null));
+
       // Show success message (you can add toast notification here)
-      console.log(`Gallery ${gallery.isPublic ? 'hidden' : 'published'} successfully`);
+      console.log(`Gallery ${gallery.isPublic ? "hidden" : "published"} successfully`);
     } catch (error) {
-      console.error('Failed to update gallery:', error);
+      console.error("Failed to update gallery:", error);
       // Show error message (you can add toast notification here)
     } finally {
       setIsPublishing(false);
@@ -296,13 +298,13 @@ export default function GalleryPreviewPage() {
 
   const handleDownload = async () => {
     if (!gallery || selectedImageIndex === null) return;
-    
+
     try {
       setIsDownloading(true);
       const currentImage = gallery.items[selectedImageIndex];
       if (currentImage?.memory.url) {
         // Create a temporary link and trigger download
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = currentImage.memory.url;
         link.download = currentImage.memory.title || `gallery-image-${selectedImageIndex + 1}.jpg`;
         document.body.appendChild(link);
@@ -310,7 +312,7 @@ export default function GalleryPreviewPage() {
         document.body.removeChild(link);
       }
     } catch (error) {
-      console.error('Failed to download image:', error);
+      console.error("Failed to download image:", error);
     } finally {
       setIsDownloading(false);
     }
@@ -318,18 +320,18 @@ export default function GalleryPreviewPage() {
 
   const handleShare = async () => {
     if (!gallery) return;
-    
+
     try {
       setIsSharing(true);
       await galleryService.shareGallery(gallery.id, {
-        sharedWithType: 'public',
-        sharedWithId: 'public'
+        sharedWithType: "public",
+        sharedWithId: "public",
       });
-      
+
       // Show success message (you can add toast notification here)
-      console.log('Gallery shared successfully');
+      console.log("Gallery shared successfully");
     } catch (error) {
-      console.error('Failed to share gallery:', error);
+      console.error("Failed to share gallery:", error);
       // Show error message (you can add toast notification here)
     } finally {
       setIsSharing(false);
