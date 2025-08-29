@@ -1,0 +1,59 @@
+name: Upgrade Satellite Container
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to upgrade'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - production
+  push:
+    branches:
+      - lmangallon/icp-383-implement-serverless-rust-function-for-email-proxy-call
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Functions
+        uses: junobuild/juno-action@v0.4.9
+        with:
+          args: functions build
+
+      - name: Upgrade Development Container
+        if: github.event.inputs.environment == 'development' || github.event_name == 'push'
+        uses: junobuild/juno-action@v0.4.9
+        with:
+          args: functions upgrade --mode staging
+        env:
+          JUNO_SATELLITE_ID: 5yoof-ciaaa-aaaal-asevq-cai
+          JUNO_TOKEN: ${{ secrets.JUNO_DEV_TOKEN }}
+
+      - name: Upgrade Production Container
+        if: github.event.inputs.environment == 'production'
+        uses: junobuild/juno-action@v0.4.9
+        with:
+          args: functions upgrade --mode production
+        env:
+          JUNO_SATELLITE_ID: uocd6-laaaa-aaaal-asfga-cai
+          JUNO_TOKEN: ${{ secrets.JUNO_PROD_TOKEN }}

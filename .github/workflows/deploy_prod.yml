@@ -30,4 +30,6 @@ jobs:
         with:
           args: deploy --mode production
         env:
+          JUNO_SATELLITE_ID: uocd6-laaaa-aaaal-asfga-cai
           JUNO_TOKEN: ${{ secrets.JUNO_PROD_TOKEN }}
+          NOTIFICATIONS_TOKEN: ${{ secrets.NOTIFICATIONS_TOKEN }}

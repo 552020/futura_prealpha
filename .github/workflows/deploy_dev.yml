@@ -3,7 +3,7 @@ name: Deploy to Development
 on:
   push:
     branches:
-      - lmangallon/icp-179-finish-website-structure
+      - lmangallon/icp-383-implement-serverless-rust-function-for-email-proxy-call
 
 concurrency:
   group: juno-deploy-dev-${{ github.ref }}
@@ -29,7 +29,7 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Test JUNO_TOKEN availability
+      - name: Test secrets availability
         run: |
           if [ -z "$JUNO_DEV_TOKEN" ]; then
             echo "❌ JUNO_DEV_TOKEN is not set"
@@ -37,12 +37,23 @@ jobs:
           else
             echo "✅ JUNO_DEV_TOKEN is available (length: ${#JUNO_DEV_TOKEN})"
           fi
+
+          if [ -z "$NOTIFICATIONS_TOKEN" ]; then
+            echo "❌ NOTIFICATIONS_TOKEN is not set"
+            exit 1
+          else
+            echo "✅ NOTIFICATIONS_TOKEN is available (length: ${#NOTIFICATIONS_TOKEN})"
+          fi
         env:
+          JUNO_SATELLITE_ID: 5yoof-ciaaa-aaaal-asevq-cai
           JUNO_DEV_TOKEN: ${{ secrets.JUNO_DEV_TOKEN }}
+          NOTIFICATIONS_TOKEN: ${{ secrets.NOTIFICATIONS_TOKEN }}
 
       - name: Deploy to Development Satellite
         uses: junobuild/juno-action@v0.4.9
         with:
           args: deploy --mode staging
         env:
+          JUNO_SATELLITE_ID: 5yoof-ciaaa-aaaal-asevq-cai
           JUNO_TOKEN: ${{ secrets.JUNO_DEV_TOKEN }}
+          NOTIFICATIONS_TOKEN: ${{ secrets.NOTIFICATIONS_TOKEN }}

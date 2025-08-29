@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useOnboarding } from "@/contexts/onboarding-context";
 import { useToast } from "@/hooks/use-toast";
+import { setDoc, initSatellite } from "@junobuild/core-peer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,6 +48,19 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
+  // Initialize Juno satellite when component mounts
+  // manual init from env var set in yml
+  useEffect(() => {
+    (async () => {
+      try {
+        console.log('Initializing Juno satellite with ID:', process.env.NEXT_PUBLIC_JUNO_SATELLITE_ID);
+        await initSatellite({ satelliteId: process.env.NEXT_PUBLIC_JUNO_SATELLITE_ID });
+      } catch (error) {
+        console.error("Failed to initialize Juno satellite:", error);
+      }
+    })();
+  }, []);
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -88,8 +102,37 @@ export function OnboardModal({ isOpen, onClose }: OnboardModalProps) {
           break;
 
         case "share":
-          // Simulate sharing process
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          // Send email through Juno serverless function
+          try {
+            await setDoc({
+              collection: "email_requests",
+              doc: {
+                key: crypto.randomUUID(),
+                data: {
+                  from: "noreply@futura.now",
+                  to: userData.recipientEmail,
+                  subject: `${userData.name} has shared files with you on Futura`,
+                  text: "Placeholder text - will be replaced by serverless function",
+                  user_name: userData.name,
+                  recipient_name: userData.recipientName,
+                }
+              }
+            });
+            
+            toast({
+              title: "Email Sent!",
+              description: `Sharing notification sent to ${userData.recipientName}`,
+            });
+          } catch (error) {
+            console.error("Failed to send email:", error);
+            toast({
+              variant: "destructive",
+              title: "Email Failed",
+              description: "Failed to send sharing notification. Please try again.",
+            });
+            return;
+          }
+          
           setCurrentStep("complete");
           setOnboardingStatus("completed");
           break;
