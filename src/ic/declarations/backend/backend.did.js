@@ -183,11 +183,6 @@ export const idlFactory = ({ IDL }) => {
     'create_capsule' : IDL.Func([PersonRef], [CapsuleCreationResult], []),
     'get_capsule' : IDL.Func([IDL.Text], [IDL.Opt(Capsule)], ['query']),
     'get_user' : IDL.Func([], [IDL.Opt(CapsuleInfo)], ['query']),
-    'get_user_by_principal' : IDL.Func(
-        [IDL.Principal],
-        [IDL.Opt(CapsuleInfo)],
-        ['query'],
-      ),
     'greet' : IDL.Func([IDL.Text], [IDL.Text], ['query']),
     'list_admins' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
     'list_my_capsules' : IDL.Func([], [IDL.Vec(CapsuleHeader)], ['query']),
@@ -196,15 +191,10 @@ export const idlFactory = ({ IDL }) => {
     'mark_bound' : IDL.Func([], [IDL.Bool], []),
     'mark_capsule_bound_to_web2' : IDL.Func([], [IDL.Bool], []),
     'prove_nonce' : IDL.Func([IDL.Text], [IDL.Bool], []),
-    'register' : IDL.Func([], [CapsuleRegistrationResult], []),
+    'register' : IDL.Func([], [IDL.Bool], []),
     'register_capsule' : IDL.Func([], [CapsuleRegistrationResult], []),
     'register_with_nonce' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'remove_admin' : IDL.Func([IDL.Principal], [IDL.Bool], []),
-    'user_stats' : IDL.Func(
-        [],
-        [IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat64))],
-        ['query'],
-      ),
     'verify_nonce' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Principal)], ['query']),
     'whoami' : IDL.Func([], [IDL.Principal], ['query']),
   });
