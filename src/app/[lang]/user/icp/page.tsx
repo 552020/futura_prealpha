@@ -4,9 +4,10 @@ import { useAuthGuard } from "@/utils/authentication";
 
 import { useState, useEffect, useRef } from "react";
 import type { BackendActor } from "@/ic/backend";
+import type { CapsuleInfo } from "@/ic/declarations/backend/backend.did";
 
 // Prevent static generation of this page
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +23,7 @@ export default function ICPPage() {
   const [whoamiResult, setWhoamiResult] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [principalId, setPrincipalId] = useState("");
+  const [capsuleInfo, setCapsuleInfo] = useState<CapsuleInfo | null>(null);
   // UX safety: prevents double-clicks and provides visual feedback
   const [busy, setBusy] = useState(false);
   const [isRehydrating, setIsRehydrating] = useState(true);
@@ -167,6 +169,18 @@ export default function ICPPage() {
       setGreeting("Successfully authenticated with Internet Identity!");
       setIsAuthenticated(true);
 
+      // Automatically fetch capsule info after successful login
+      try {
+        console.log("Fetching capsule info after login...");
+        const capsuleData = await authenticatedActor.get_user();
+        console.log("Capsule data received:", capsuleData);
+        setCapsuleInfo(capsuleData[0] || null);
+        console.log("Capsule info set to:", capsuleData[0] || null);
+      } catch (error) {
+        console.warn("Failed to fetch capsule info on login:", error);
+        // Don't fail the login if capsule info fetch fails
+      }
+
       toast({
         title: "Login Successful",
         description: "Successfully authenticated with Internet Identity!",
@@ -237,6 +251,72 @@ export default function ICPPage() {
     }
   }
 
+  async function handleGetCapsuleInfo() {
+    if (busy) return; // UX safety: prevent double-clicks
+    setBusy(true);
+    try {
+      const authClient = await getAuthClient();
+      const isAuthenticated = await authClient.isAuthenticated();
+
+      if (!isAuthenticated) {
+        toast({
+          title: "Not Authenticated",
+          description: "Please login first to get capsule info",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Use cached authenticated actor
+      const authenticatedActor = await getAuthenticatedActor();
+      const capsuleData = await authenticatedActor.get_user();
+      setCapsuleInfo(capsuleData[0] || null);
+
+      if (capsuleData) {
+        toast({
+          title: "Capsule Info Retrieved",
+          description: "Successfully fetched your capsule information",
+        });
+      } else {
+        toast({
+          title: "No Capsule Found",
+          description: "You don't have a capsule yet. Register to create one.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Get capsule info failed:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
+      // Handle expired/invalid delegation
+      if (
+        errorMessage.includes("Invalid delegation") ||
+        errorMessage.includes("expired") ||
+        errorMessage.includes("401")
+      ) {
+        console.log("Delegation expired, prompting re-login");
+        setIsAuthenticated(false);
+        setPrincipalId("");
+        setGreeting("");
+        clearAuthenticatedActor();
+        toast({
+          title: "Session Expired",
+          description: "Your session has expired. Please sign in again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Get Capsule Info Failed",
+        description: `Failed to get capsule info: ${errorMessage}`,
+        variant: "destructive",
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function handleSignOut() {
     if (busy) return;
     setBusy(true);
@@ -249,6 +329,7 @@ export default function ICPPage() {
       setPrincipalId("");
       setGreeting("");
       setWhoamiResult("");
+      setCapsuleInfo(null);
       toast({
         title: "Signed Out",
         description: "Successfully signed out",
@@ -280,6 +361,9 @@ export default function ICPPage() {
     return <RequireAuth />;
   }
 
+  // Debug logging
+  console.log("Rendering ICP page, capsuleInfo:", capsuleInfo);
+
   return (
     <div className="container mx-auto px-6 py-8">
       <h1 className="text-3xl font-bold mb-6">Hello ICP</h1>
@@ -290,6 +374,9 @@ export default function ICPPage() {
         </Button>
         <Button onClick={handleWhoami} disabled={busy || !isAuthenticated || isRehydrating}>
           Test Backend Connection
+        </Button>
+        <Button onClick={handleGetCapsuleInfo} disabled={busy || !isAuthenticated || isRehydrating}>
+          Get Capsule Info
         </Button>
       </div>
 
@@ -348,6 +435,71 @@ export default function ICPPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Capsule Information Display */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Your Capsule Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {capsuleInfo ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium">Capsule ID</Label>
+                  <p className="text-sm text-muted-foreground font-mono">{capsuleInfo.capsule_id}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Subject</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {"Principal" in capsuleInfo.subject
+                      ? `Principal: ${capsuleInfo.subject.Principal}`
+                      : `Opaque: ${capsuleInfo.subject.Opaque}`}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Is Owner</Label>
+                  <p className="text-sm text-muted-foreground">{capsuleInfo.is_owner ? "Yes" : "No"}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Is Controller</Label>
+                  <p className="text-sm text-muted-foreground">{capsuleInfo.is_controller ? "Yes" : "No"}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Is Self Capsule</Label>
+                  <p className="text-sm text-muted-foreground">{capsuleInfo.is_self_capsule ? "Yes" : "No"}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Bound to Web2</Label>
+                  <p className="text-sm text-muted-foreground">{capsuleInfo.bound_to_web2 ? "Yes" : "No"}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium">Created At</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(Number(capsuleInfo.created_at) / 1000000).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Updated At</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(Number(capsuleInfo.updated_at) / 1000000).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <p className="text-muted-foreground">
+                {isAuthenticated
+                  ? "No capsule found. You may need to register first."
+                  : "Please sign in to view your capsule information."}
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
