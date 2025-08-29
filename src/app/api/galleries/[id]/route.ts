@@ -44,33 +44,44 @@ async function checkMemoryAccess(
   }
 
   // Check individual memory access (fallback)
-  let memory: typeof images.$inferSelect | typeof videos.$inferSelect | typeof documents.$inferSelect | typeof notes.$inferSelect | typeof audio.$inferSelect | null = null;
+  let memory:
+    | typeof images.$inferSelect
+    | typeof videos.$inferSelect
+    | typeof documents.$inferSelect
+    | typeof notes.$inferSelect
+    | typeof audio.$inferSelect
+    | null = null;
 
   switch (memoryType) {
     case "image":
-      memory = await db.query.images.findFirst({
-        where: eq(images.id, memoryId),
-      }) || null;
+      memory =
+        (await db.query.images.findFirst({
+          where: eq(images.id, memoryId),
+        })) || null;
       break;
     case "video":
-      memory = await db.query.videos.findFirst({
-        where: eq(videos.id, memoryId),
-      }) || null;
+      memory =
+        (await db.query.videos.findFirst({
+          where: eq(videos.id, memoryId),
+        })) || null;
       break;
     case "document":
-      memory = await db.query.documents.findFirst({
-        where: eq(documents.id, memoryId),
-      }) || null;
+      memory =
+        (await db.query.documents.findFirst({
+          where: eq(documents.id, memoryId),
+        })) || null;
       break;
     case "note":
-      memory = await db.query.notes.findFirst({
-        where: eq(notes.id, memoryId),
-      }) || null;
+      memory =
+        (await db.query.notes.findFirst({
+          where: eq(notes.id, memoryId),
+        })) || null;
       break;
     case "audio":
-      memory = await db.query.audio.findFirst({
-        where: eq(audio.id, memoryId),
-      }) || null;
+      memory =
+        (await db.query.audio.findFirst({
+          where: eq(audio.id, memoryId),
+        })) || null;
       break;
   }
 
@@ -200,41 +211,47 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // Get the actual memory data for each item
     const itemsWithMemories = [];
     for (const item of accessibleItems) {
-      let memory = null;
-      
-      switch (item.memoryType) {
-        case "image":
-          memory = await db.query.images.findFirst({
-            where: eq(images.id, item.memoryId),
+      try {
+        let memory = null;
+
+        switch (item.memoryType) {
+          case "image":
+            memory = await db.query.images.findFirst({
+              where: eq(images.id, item.memoryId),
+            });
+            break;
+          case "video":
+            memory = await db.query.videos.findFirst({
+              where: eq(videos.id, item.memoryId),
+            });
+            break;
+          case "document":
+            memory = await db.query.documents.findFirst({
+              where: eq(documents.id, item.memoryId),
+            });
+            break;
+          case "note":
+            memory = await db.query.notes.findFirst({
+              where: eq(notes.id, item.memoryId),
+            });
+            break;
+          case "audio":
+            memory = await db.query.audio.findFirst({
+              where: eq(audio.id, item.memoryId),
+            });
+            break;
+        }
+
+        if (memory) {
+          itemsWithMemories.push({
+            ...item,
+            memory,
           });
-          break;
-        case "video":
-          memory = await db.query.videos.findFirst({
-            where: eq(videos.id, item.memoryId),
-          });
-          break;
-        case "document":
-          memory = await db.query.documents.findFirst({
-            where: eq(documents.id, item.memoryId),
-          });
-          break;
-        case "note":
-          memory = await db.query.notes.findFirst({
-            where: eq(notes.id, item.memoryId),
-          });
-          break;
-        case "audio":
-          memory = await db.query.audio.findFirst({
-            where: eq(audio.id, item.memoryId),
-          });
-          break;
-      }
-      
-      if (memory) {
-        itemsWithMemories.push({
-          ...item,
-          memory,
-        });
+        } else {
+          console.warn(`Memory not found for item: ${item.memoryId} (type: ${item.memoryType})`);
+        }
+      } catch (itemError) {
+        console.error(`Error fetching memory for item ${item.memoryId}:`, itemError);
       }
     }
 
@@ -257,6 +274,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     });
   } catch (error) {
     console.error("Error fetching gallery:", error);
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json({ error: "Failed to fetch gallery" }, { status: 500 });
   }
 }
