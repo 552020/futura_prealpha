@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -57,7 +57,7 @@ export function CreateGalleryModal({
   const form = useForm<CreateGalleryFormData>({
     resolver: zodResolver(createGallerySchema),
     defaultValues: {
-      title: "",
+      title: prefillFolderName ? `Gallery from ${prefillFolderName}` : "",
       description: "",
       folderName: prefillFolderName || "",
       isPublic: false,
@@ -77,6 +77,17 @@ export function CreateGalleryModal({
     }
   };
 
+  // Set form values when modal opens with pre-filled folder
+  useEffect(() => {
+    if (open && hideFolderSelection && prefillFolderName) {
+      form.setValue("folderName", prefillFolderName);
+      // Auto-generate title if not provided
+      if (!form.getValues("title")) {
+        form.setValue("title", `Gallery from ${prefillFolderName}`);
+      }
+    }
+  }, [open, hideFolderSelection, prefillFolderName, form]);
+
   const loadFolders = async () => {
     try {
       setIsLoadingFolders(true);
@@ -95,6 +106,8 @@ export function CreateGalleryModal({
       setIsLoading(true);
       setError(null);
 
+      console.log("Creating gallery with data:", data);
+
       const gallery = await galleryService.createGalleryFromFolder(
         data.folderName,
         data.title,
@@ -102,6 +115,8 @@ export function CreateGalleryModal({
         data.isPublic,
         false // Use real data
       );
+
+      console.log("Gallery created successfully:", gallery);
 
       // Success - close modal and notify parent
       setOpen(false);
@@ -177,15 +192,24 @@ export function CreateGalleryModal({
 
             {/* Show selected folder info when folder selection is hidden */}
             {hideFolderSelection && prefillFolderName && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Selected Folder</label>
-                <div className="p-3 bg-muted rounded-md border">
-                  <p className="text-sm font-medium">{prefillFolderName}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Gallery will be created from this folder
-                  </p>
+              <>
+                {/* Hidden form field to maintain form state */}
+                <FormField
+                  control={form.control}
+                  name="folderName"
+                  render={({ field }) => (
+                    <input type="hidden" {...field} value={prefillFolderName} />
+                  )}
+                />
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Selected Folder</label>
+                  <div className="p-3 bg-muted rounded-md border">
+                    <p className="text-sm font-medium">{prefillFolderName}</p>
+                    <p className="text-xs text-muted-foreground mt-1">Gallery will be created from this folder</p>
+                  </div>
                 </div>
-              </div>
+              </>
             )}
 
             {/* Gallery Title */}

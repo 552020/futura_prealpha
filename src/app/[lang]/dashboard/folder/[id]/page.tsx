@@ -44,7 +44,6 @@ export default function FolderPage() {
   const [folderName, setFolderName] = useState<string>("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-
   const folderId = params.id as string;
   console.log("🔍 Folder ID:", folderId);
 
@@ -91,9 +90,14 @@ export default function FolderPage() {
       );
 
       console.log("🔍 Folder memories found:", folderMemories.length);
+      console.log("🔍 Folder ID:", folderId);
+      console.log("🔍 Cleaned folder ID:", folderId.replace("folder-", ""));
+      console.log("🔍 First memory folder name:", folderMemories[0]?.metadata?.folderName);
 
       if (folderMemories.length > 0) {
-        setFolderName(folderMemories[0].metadata?.folderName || folderId);
+        const actualFolderName = folderMemories[0].metadata?.folderName || folderId;
+        console.log("🔍 Setting folder name to:", actualFolderName);
+        setFolderName(actualFolderName);
         setMemories(folderMemories);
       } else {
         console.log("❌ No memories found for folder:", folderId);
@@ -258,8 +262,6 @@ export default function FolderPage() {
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
       )}
-
-
 
       {/* Tawk.to Chat */}
       <TawkChat />

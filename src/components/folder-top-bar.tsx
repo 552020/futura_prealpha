@@ -94,11 +94,7 @@ export function FolderTopBar({
             onGalleryCreated={onCreateGallery}
             hideFolderSelection={true}
             trigger={
-              <Button
-                variant="default"
-                size="sm"
-                className="h-9 px-4 py-1 text-sm whitespace-nowrap"
-              >
+              <Button variant="default" size="sm" className="h-9 px-4 py-1 text-sm whitespace-nowrap">
                 <ImageIcon className="h-4 w-4 mr-2" />
                 Create Gallery from &quot;{folderName}&quot;
               </Button>

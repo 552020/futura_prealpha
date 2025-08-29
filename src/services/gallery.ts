@@ -133,13 +133,18 @@ export const galleryService = {
         isPublic,
       };
 
+      console.log("Sending request to API:", request);
+
       const response = await fetch("/api/galleries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
       });
 
+      console.log("API response status:", response.status);
+
       const result = await handleApiResponse(response);
+      console.log("API response result:", result);
       return result.gallery;
     } catch (error) {
       console.error("Error creating gallery from folder:", error);
