@@ -51,13 +51,23 @@ function GalleryHeroCover({
 function StickyHeader({
   gallery,
   onExitPreview,
+  onPublish,
   onDownload,
   onShare,
+  isPublishing,
+  isDownloading,
+  isSharing,
+  selectedImageIndex,
 }: {
   gallery: GalleryWithItems;
   onExitPreview: () => void;
+  onPublish: () => void;
   onDownload: () => void;
   onShare: () => void;
+  isPublishing: boolean;
+  isDownloading: boolean;
+  isSharing: boolean;
+  selectedImageIndex: number | null;
 }) {
   return (
     <div className="sticky top-0 -mt-16 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur border-b border-gray-200 dark:border-gray-800">
@@ -81,10 +91,18 @@ function StickyHeader({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => console.log("Publish gallery")}
+              onClick={onPublish}
+              disabled={isPublishing}
               className="text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
-              Publish
+              {isPublishing ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                  {gallery.isPublic ? 'Hiding...' : 'Publishing...'}
+                </>
+              ) : (
+                gallery.isPublic ? 'Hide' : 'Publish'
+              )}
             </Button>
           </div>
         </div>
@@ -93,19 +111,39 @@ function StickyHeader({
             variant="ghost"
             size="sm"
             onClick={onDownload}
+            disabled={isDownloading || selectedImageIndex === null}
             className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
           >
-            <Download className="h-4 w-4 mr-2" />
-            Download
+            {isDownloading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                Downloading...
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4 mr-2" />
+                Download
+              </>
+            )}
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={onShare}
+            disabled={isSharing}
             className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
           >
-            <Share2 className="h-4 w-4 mr-2" />
-            Share
+            {isSharing ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                Sharing...
+              </>
+            ) : (
+              <>
+                <Share2 className="h-4 w-4 mr-2" />
+                Share
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -172,7 +210,7 @@ function GalleryGrid({
   );
 }
 
-const USE_MOCK_DATA = true;
+const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_GALLERY === "true";
 
 export default function GalleryPreviewPage() {
   const { id } = useParams();
@@ -184,6 +222,9 @@ export default function GalleryPreviewPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [showCover] = useState(true);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
 
   const loadGallery = useCallback(async () => {
     try {
@@ -233,14 +274,66 @@ export default function GalleryPreviewPage() {
     router.push(`/gallery/${id}`);
   }, [router, id]);
 
-  const handleDownload = () => {
-    // TODO: Implement download functionality
-    console.log("Download current image");
+  const handlePublish = async () => {
+    if (!gallery) return;
+    
+    try {
+      setIsPublishing(true);
+      await galleryService.updateGallery(gallery.id, { isPublic: !gallery.isPublic });
+      
+      // Update local state
+      setGallery(prev => prev ? { ...prev, isPublic: !prev.isPublic } : null);
+      
+      // Show success message (you can add toast notification here)
+      console.log(`Gallery ${gallery.isPublic ? 'hidden' : 'published'} successfully`);
+    } catch (error) {
+      console.error('Failed to update gallery:', error);
+      // Show error message (you can add toast notification here)
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
-  const handleShare = () => {
-    // TODO: Implement share functionality
-    console.log("Share current image");
+  const handleDownload = async () => {
+    if (!gallery || selectedImageIndex === null) return;
+    
+    try {
+      setIsDownloading(true);
+      const currentImage = gallery.items[selectedImageIndex];
+      if (currentImage?.memory.url) {
+        // Create a temporary link and trigger download
+        const link = document.createElement('a');
+        link.href = currentImage.memory.url;
+        link.download = currentImage.memory.title || `gallery-image-${selectedImageIndex + 1}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (error) {
+      console.error('Failed to download image:', error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!gallery) return;
+    
+    try {
+      setIsSharing(true);
+      await galleryService.shareGallery(gallery.id, {
+        sharedWithType: 'public',
+        sharedWithId: 'public'
+      });
+      
+      // Show success message (you can add toast notification here)
+      console.log('Gallery shared successfully');
+    } catch (error) {
+      console.error('Failed to share gallery:', error);
+      // Show error message (you can add toast notification here)
+    } finally {
+      setIsSharing(false);
+    }
   };
 
   // Handle keyboard navigation
@@ -321,8 +414,13 @@ export default function GalleryPreviewPage() {
       <StickyHeader
         gallery={gallery}
         onExitPreview={handleExitPreview}
+        onPublish={handlePublish}
         onDownload={handleDownload}
         onShare={handleShare}
+        isPublishing={isPublishing}
+        isDownloading={isDownloading}
+        isSharing={isSharing}
+        selectedImageIndex={selectedImageIndex}
       />
 
       {/* Photo Grid */}
