@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, signIn } from "next-auth/react";
-import { Avatar, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -12,7 +12,7 @@ import {
 } from "./ui/dropdown-menu";
 import { SignOut } from "./auth-components";
 import Link from "next/link";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+// Removed tooltip to avoid click interception; using native title on button instead
 
 export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
   const { data: session, status } = useSession();
@@ -33,59 +33,62 @@ export default function UserButtonClient({ lang = "en" }: { lang?: string }) {
     );
   }
 
+  const principal = (session.user as { icpPrincipal?: string }).icpPrincipal;
+  const name =
+    session.user.name ||
+    session.user.email ||
+    (principal ? `Principal ${principal.slice(0, 8)}…${principal.slice(-6)}` : "User");
+  const initials = name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
   return (
-    <div className="flex items-center gap-2">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="hidden text-sm sm:inline-flex cursor-help">{session.user.name}</span>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{session.user.email}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="relative h-8 w-8 rounded-full hover:bg-muted dark:hover:bg-muted dark:hover:text-white"
-          >
-            <Avatar className="h-8 w-8">
-              <AvatarImage
-                src={
-                  session.user.image ||
-                  `https://api.dicebear.com/9.x/thumbs/svg?seed=${Math.floor(
-                    Math.random() * 100000 + 1
-                  )}&randomizeIds=true`
-                }
-                alt={session.user.name || "Avatar"}
-              />
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
-          <DropdownMenuLabel className="font-normal border-b pb-3">
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{session.user.name}</p>
-              <p className="text-muted-foreground text-xs leading-none">{session.user.email}</p>
-            </div>
-          </DropdownMenuLabel>
-          <div className="p-2">
-            <DropdownMenuItem asChild>
-              <Link
-                href={`/${lang}/user/${session.user.id}/profile`}
-                className="w-full flex items-center justify-center py-2 cursor-pointer hover:bg-muted focus:bg-muted"
-              >
-                Profile
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer hover:bg-muted focus:bg-muted py-2 text-red-600 dark:text-red-400">
-              <SignOut />
-            </DropdownMenuItem>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className="relative h-8 w-8 rounded-full hover:bg-muted dark:hover:bg-muted dark:hover:text-white"
+          title={principal ? `Principal: ${principal}` : name}
+        >
+          <Avatar className="h-8 w-8">
+            <AvatarImage
+              src={
+                session.user.image ||
+                `https://api.dicebear.com/9.x/thumbs/svg?seed=${Math.floor(
+                  Math.random() * 100000 + 1
+                )}&randomizeIds=true`
+              }
+              alt={name}
+            />
+            <AvatarFallback className="text-xs font-medium">{initials}</AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal border-b pb-3">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{name}</p>
+            {session.user.email && <p className="text-muted-foreground text-xs leading-none">{session.user.email}</p>}
+            {principal && <p className="text-muted-foreground text-xs leading-none break-all">{principal}</p>}
           </div>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+        </DropdownMenuLabel>
+        <div className="p-2">
+          <DropdownMenuItem asChild>
+            <Link
+              href={`/${lang}/user/${session.user.id}/profile`}
+              className="w-full flex items-center justify-center py-2 cursor-pointer hover:bg-muted focus:bg-muted"
+            >
+              Profile
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer hover:bg-muted focus:bg-muted py-2 text-red-600 dark:text-red-400">
+            <SignOut />
+          </DropdownMenuItem>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

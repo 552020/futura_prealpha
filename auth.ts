@@ -8,11 +8,13 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/db/db";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt"; // make sure bcrypt is installed
-import { allUsers, temporaryUsers } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { allUsers, temporaryUsers, users, accounts, iiNonces } from "@/db/schema";
+import { eq, and, isNull, gt } from "drizzle-orm";
+import { backendActor } from "@/ic/backend";
+import { validateNonce, consumeNonce } from "@/lib/ii-nonce";
 
-// console.log("--------------------------------");
-// console.log("auth.ts");
+console.log("--------------------------------");
+console.log("auth.ts");
 // console.log("--------------------------------");
 // console.log("NODE_ENV:", process.env.NODE_ENV);
 
@@ -24,6 +26,7 @@ declare module "next-auth" {
     accessToken?: string;
     user: User & {
       id: string;
+      businessUserId?: string;
     } & DefaultSession["user"];
   }
 }
@@ -32,6 +35,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     /** Add role to JWT */
     role?: string;
+    businessUserId?: string;
   }
 }
 
@@ -107,6 +111,153 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         };
       },
     }),
+    CredentialsProvider({
+      id: "ii",
+      name: "Internet Identity",
+      credentials: {
+        principal: { label: "Principal", type: "text" },
+        nonceId: { label: "Nonce ID", type: "text" },
+        nonce: { label: "Nonce", type: "text" },
+      },
+      async authorize(credentials) {
+        const { principal, nonceId, nonce } = credentials;
+        console.log("[II] authorize:start", { principal, nonceId });
+
+        // Validate inputs
+        if (!principal || typeof principal !== "string" || principal.length < 5) {
+          console.log("[II] authorize:invalid-principal", { principal });
+          throw new Error("Invalid principal provided. Please try signing in again.");
+        }
+
+        if (!nonceId || typeof nonceId !== "string") {
+          console.log("[II] authorize:invalid-nonceId", { nonceId });
+          throw new Error("Invalid authentication challenge. Please try signing in again.");
+        }
+
+        // 5.2: Check nonce exists, unexpired, unused
+        // We need to get the nonce from the database first
+        const nonceRecord = await db.query.iiNonces.findFirst({
+          where: eq(iiNonces.id, nonceId),
+        });
+
+        if (!nonceRecord) {
+          console.log("[II] authorize:nonce-not-found", { nonceId });
+          throw new Error("Authentication challenge not found. Please try signing in again.");
+        }
+
+        if (nonceRecord.usedAt) {
+          console.log("[II] authorize:nonce-already-used", { nonceId });
+          throw new Error("Authentication challenge already used. Please try signing in again.");
+        }
+
+        if (nonceRecord.expiresAt < new Date()) {
+          console.log("[II] authorize:nonce-expired", { nonceId });
+          throw new Error("Authentication challenge expired. Please try signing in again.");
+        }
+
+        // 5.3: Call API route to verify nonce proof
+        try {
+          if (!nonce) {
+            console.log("[II] authorize:no-nonce-provided", { nonceId, principal });
+            throw new Error("Authentication nonce not provided. Please try signing in again.");
+          }
+
+          const nonceStr = nonce as string;
+          console.log("[II] authorize:verifying-nonce", { nonceId, principal, nonceLength: nonceStr.length });
+
+          // Call our API route to verify the nonce
+          const baseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+          const response = await fetch(`${baseUrl}/api/ii/verify-nonce`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nonce: nonceStr }),
+          });
+
+          if (!response.ok) {
+            console.error("[II] authorize:api-error", { status: response.status, statusText: response.statusText });
+            throw new Error("Authentication verification service unavailable. Please try signing in again.");
+          }
+
+          const result = await response.json();
+
+          if (!result.success) {
+            console.log("[II] authorize:verification-failed", { error: result.error });
+            throw new Error("Authentication proof verification failed. Please try signing in again.");
+          }
+
+          const provedPrincipal = result.principal;
+          if (provedPrincipal !== principal) {
+            console.log("[II] authorize:principal-mismatch", {
+              claimed: principal,
+              proved: provedPrincipal,
+            });
+            throw new Error("Authentication proof mismatch. Please try signing in again.");
+          }
+
+          console.log("[II] authorize:nonce-verified", { principal, nonceId });
+        } catch (error) {
+          console.error("[II] authorize:verification-error", error);
+          throw new Error("Unable to verify authentication. Please try signing in again.");
+        }
+
+        // 5.5: In single transaction - mark nonce used, create/link user + account, issue session
+        try {
+          // Mark nonce as used
+          await consumeNonce(nonceId);
+
+          // Try to find an existing II account mapping
+          const existingAccount = await db.query.accounts.findFirst({
+            where: (a, { and, eq }) => and(eq(a.provider, "internet-identity"), eq(a.providerAccountId, principal)),
+          });
+
+          if (existingAccount) {
+            const existingUser = await db.query.users.findFirst({
+              where: (u, { eq }) => eq(u.id, existingAccount.userId),
+            });
+            if (existingUser) {
+              console.log("[II] authorize:found-existing", { userId: existingUser.id, principal });
+              return {
+                id: existingUser.id,
+                email: existingUser.email,
+                name: existingUser.name,
+                role: existingUser.role,
+                icpPrincipal: principal,
+              };
+            }
+          }
+
+          // Create a new user and account mapping
+          const insertedUsers = await db
+            .insert(users)
+            .values({})
+            .returning({ id: users.id, email: users.email, name: users.name, role: users.role });
+          const newUser = insertedUsers[0];
+
+          await db.insert(accounts).values({
+            userId: newUser.id,
+            type: "oidc",
+            provider: "internet-identity",
+            providerAccountId: principal,
+          });
+
+          // Ensure allUsers entry exists for business linkage
+          await db.insert(allUsers).values({ type: "user", userId: newUser.id }).onConflictDoNothing?.();
+
+          console.log("[II] authorize:created", { userId: newUser.id, principal });
+
+          return {
+            id: newUser.id,
+            email: newUser.email,
+            name: newUser.name,
+            role: newUser.role,
+            icpPrincipal: principal,
+          };
+        } catch (error) {
+          console.error("[II] authorize:db-error", error);
+          throw new Error("Unable to create user account. Please try signing in again.");
+        }
+      },
+    }),
   ],
   callbacks: {
     // async redirect({ url, baseUrl }) {
@@ -120,8 +271,34 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const isLoginFlow = url.includes("/api/auth/signin") || url.includes("/api/auth/callback");
 
       if (isLoginFlow) {
-        const redirectTo = `${baseUrl}/user/profile`;
-        // console.log("[NextAuth] Redirecting after login:", redirectTo);
+        // Extract language from URL if available, default to 'en'
+        let lang = "en"; // default fallback
+        let urlParseSuccess = false;
+
+        try {
+          const urlObj = new URL(url);
+          lang = urlObj.searchParams.get("lang") || "en";
+          urlParseSuccess = true;
+          console.log("[NextAuth] Successfully parsed URL:", { url, lang });
+        } catch (error) {
+          console.warn("[NextAuth] Invalid URL in redirect callback - using fallback:", {
+            invalidUrl: url,
+            error: error instanceof Error ? error.message : String(error),
+            fallbackLang: "en",
+            baseUrl,
+          });
+          // Fallback to default language if URL is invalid
+          lang = "en";
+        }
+
+        const redirectTo = `${baseUrl}/${lang}/dashboard`;
+        console.log("[NextAuth] Redirecting after login:", {
+          redirectTo,
+          urlParseSuccess,
+          originalUrl: url,
+          baseUrl,
+          lang,
+        });
         return redirectTo;
       }
 
@@ -167,6 +344,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role = user.role;
         // console.log("Added role to JWT from user object:", token.role);
       }
+      // Propagate II principal on first sign-in (when present on user)
+      const userAny = user as unknown as { icpPrincipal?: string } | undefined;
+      if (userAny?.icpPrincipal && typeof userAny.icpPrincipal === "string") {
+        (token as unknown as { icpPrincipal?: string }).icpPrincipal = userAny.icpPrincipal;
+        console.log("[II][JWT] set from user", { icpPrincipal: token.icpPrincipal });
+      }
       //   if (user) {
       //     token.role = user.role;
       //     console.log("Added role to JWT:", token.role);
@@ -185,6 +368,44 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           // console.log("Fallback role set to 'user'");
         }
       }
+
+      // Backfill icpPrincipal from accounts mapping when missing
+      if (!("icpPrincipal" in (token as unknown as Record<string, unknown>)) && token.sub) {
+        try {
+          const iiAccount = await db.query.accounts.findFirst({
+            where: (a, { and, eq }) => and(eq(a.userId, token.sub as string), eq(a.provider, "internet-identity")),
+            columns: { providerAccountId: true },
+          });
+          if (iiAccount?.providerAccountId) {
+            (token as unknown as { icpPrincipal?: string }).icpPrincipal = iiAccount.providerAccountId;
+            console.log("[II][JWT] backfilled from accounts", { icpPrincipal: iiAccount.providerAccountId });
+          }
+        } catch (error) {
+          console.warn("[II][JWT] failed to backfill icpPrincipal", error);
+        }
+      }
+
+      // Add business user ID lookup
+      if (user?.id && !token.businessUserId) {
+        try {
+          const allUser = await db.query.allUsers.findFirst({
+            where: (allUsers, { eq }) => eq(allUsers.userId, user.id!),
+            columns: { id: true },
+          });
+          if (allUser?.id) {
+            token.businessUserId = allUser.id;
+            console.log("[Auth] ✅ Business user ID added to token:", {
+              authUserId: user.id,
+              businessUserId: allUser.id,
+            });
+          } else {
+            console.warn("[Auth] ⚠️ No allUsers entry found for Auth.js user:", user.id);
+          }
+        } catch (error) {
+          console.error("[Auth] ❌ Error looking up business user ID:", error);
+        }
+      }
+
       return token;
     },
 
@@ -197,6 +418,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.role = token.role as string;
         session.user.id = token.sub as string;
+
+        // Add business user ID
+        if (token.businessUserId && typeof token.businessUserId === "string") {
+          (session.user as { businessUserId?: string }).businessUserId = token.businessUserId;
+        }
+        // Add icpPrincipal when present
+        const tokenAny = token as unknown as { icpPrincipal?: string };
+        if (typeof tokenAny.icpPrincipal === "string") {
+          (session.user as unknown as { icpPrincipal?: string }).icpPrincipal = tokenAny.icpPrincipal;
+        }
       }
       if (token.accessToken) {
         session.accessToken = token.accessToken as string;

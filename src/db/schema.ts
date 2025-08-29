@@ -8,9 +8,11 @@ import {
   integer,
   uniqueIndex,
   foreignKey,
+  index,
   //   IndexBuilder,
 } from "drizzle-orm/pg-core";
-import type { DefaultSession } from "next-auth";
+import { sql } from "drizzle-orm";
+
 // import type { AdapterAccount } from "@auth/core/adapters";
 import type { AdapterAccount } from "next-auth/adapters";
 // Users table - Core user data - required for auth.js
@@ -66,10 +68,10 @@ export const users = pgTable(
       .default({}),
   },
   (table) => [
-    // Define the self-referencing foreign key separately
+    // Define the foreign key to allUsers
     foreignKey({
       columns: [table.invitedByAllUserId],
-      foreignColumns: [table.id],
+      foreignColumns: [allUsers.id],
       name: "user_invited_by_fk",
     }),
     // Self-referencing Foreign Key
@@ -94,23 +96,13 @@ export const allUsers = pgTable(
     temporaryUserId: text("temporary_user_id"), // FK defined below
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
-  }
-  //   (table): (ReturnType<typeof foreignKey> | IndexBuilder)[] => [
-  // ✅ Optional FK to permanent users - fixed to reference users table
-  // foreignKey({
-  //   columns: [table.userId],
-  //   foreignColumns: [users.id],
-  //   name: "all_users_user_fk",
-  // }),
-  // ✅ Optional FK to temporary users
-  // foreignKey({
-  //   columns: [table.temporaryUserId],
-  //   foreignColumns: [temporaryUsers.id],
-  //   name: "all_users_temporary_user_fk",
-  // }),
-  // ✅ Ensure a user can't be both permanent and temporary
-  // uniqueIndex("one_user_type_check").on(table.userId, table.temporaryUserId),
-  //   ]
+  },
+  (table) => [
+    // Ensure exactly one of userId or temporaryUserId is set
+    uniqueIndex("all_users_one_ref_guard").on(table.id) // dummy index anchor
+      .where(sql`(CASE WHEN ${table.userId} IS NOT NULL THEN 1 ELSE 0 END +
+                   CASE WHEN ${table.temporaryUserId} IS NOT NULL THEN 1 ELSE 0 END) = 1`),
+  ]
 );
 
 export const temporaryUsers = pgTable(
@@ -258,14 +250,18 @@ export const images = pgTable("image", {
   url: text("url").notNull(),
   caption: text("caption"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  isPublic: boolean("is_public").default(false),
+  isPublic: boolean("is_public").default(false).notNull(),
   title: text("title"),
   description: text("description"),
   ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
+  // Tiny seam for future folder implementation
+  parentFolderId: text("parent_folder_id"), // Will reference folders.id when implemented
   metadata: json("metadata")
     .$type<
       ImageMetadata & {
         custom?: CustomMetadata; // For flexible user-defined annotations
+        originalPath?: string; // For folder uploads
+        folderName?: string; // For folder grouping
       }
     >()
     .default({
@@ -292,13 +288,16 @@ export const videos = pgTable("video", {
   ownerSecureCode: text("owner_secure_code").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  isPublic: boolean("is_public").default(false),
+  isPublic: boolean("is_public").default(false).notNull(),
+  parentFolderId: text("parent_folder_id"), // Tiny seam for future folder implementation
   metadata: json("metadata")
     .$type<{
       width?: number;
       height?: number;
       format?: string;
       thumbnail?: string;
+      originalPath?: string; // For folder uploads
+      folderName?: string; // For folder grouping
     }>()
     .default({}),
 });
@@ -314,8 +313,9 @@ export const notes = pgTable("note", {
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  isPublic: boolean("is_public").default(false),
+  isPublic: boolean("is_public").default(false).notNull(),
   ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
+  parentFolderId: text("parent_folder_id"), // Tiny seam for future folder implementation
   metadata: json("metadata")
     .$type<{
       tags?: string[];
@@ -325,6 +325,8 @@ export const notes = pgTable("note", {
       recipients?: string[];
       unlockDate?: string;
       custom?: CustomMetadata; // For flexible user-defined annotations
+      originalPath?: string; // For folder uploads
+      folderName?: string; // For folder grouping
     }>()
     .default({}),
 });
@@ -342,12 +344,15 @@ export const documents = pgTable("document", {
   mimeType: text("mime_type").notNull(),
   size: text("size").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  isPublic: boolean("is_public").default(false),
+  isPublic: boolean("is_public").default(false).notNull(),
   ownerSecureCode: text("owner_secure_code").notNull(), // For owner to manage the memory
+  parentFolderId: text("parent_folder_id"), // Tiny seam for future folder implementation
   metadata: json("metadata")
     .$type<
       CommonFileMetadata & {
         custom?: CustomMetadata; // For flexible user-defined annotations
+        originalPath?: string; // For folder uploads
+        folderName?: string; // For folder grouping
       }
     >()
     .default({
@@ -358,7 +363,38 @@ export const documents = pgTable("document", {
     }),
 });
 
-export const MEMORY_TYPES = ["image", "document", "note", "video"] as const;
+export const audio = pgTable("audio", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  ownerId: text("owner_id")
+    .notNull()
+    .references(() => allUsers.id, { onDelete: "cascade" }),
+  url: text("url").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  duration: integer("duration"), // Duration in seconds
+  mimeType: text("mime_type").notNull(),
+  size: text("size").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  isPublic: boolean("is_public").default(false).notNull(),
+  ownerSecureCode: text("owner_secure_code").notNull(),
+  parentFolderId: text("parent_folder_id"), // Tiny seam for future folder implementation
+  metadata: json("metadata")
+    .$type<{
+      format?: string;
+      bitrate?: number;
+      sampleRate?: number;
+      channels?: number;
+      custom?: CustomMetadata;
+      originalPath?: string; // For folder uploads
+      folderName?: string; // For folder grouping
+    }>()
+    .default({}),
+});
+
+export const MEMORY_TYPES = ["image", "document", "note", "video", "audio"] as const;
 export const ACCESS_LEVELS = ["read", "write"] as const;
 export const MEMBER_ROLES = ["admin", "member"] as const;
 
@@ -559,14 +595,48 @@ export const familyMember = pgTable(
   ]
 );
 
-// Type definitions for Auth.js
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-    } & DefaultSession["user"];
-  }
-}
+// Gallery tables for gallery functionality
+export const galleries = pgTable("gallery", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  ownerId: text("owner_id")
+    .notNull()
+    .references(() => allUsers.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  description: text("description"),
+  isPublic: boolean("is_public").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const galleryItems = pgTable(
+  "gallery_item",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    galleryId: text("gallery_id")
+      .notNull()
+      .references(() => galleries.id, { onDelete: "cascade" }),
+    memoryId: text("memory_id").notNull(),
+    memoryType: text("memory_type", { enum: MEMORY_TYPES }).notNull(), // 'image' | 'video' | 'document' | 'note' | 'audio'
+    position: integer("position").notNull(),
+    caption: text("caption"),
+    isFeatured: boolean("is_featured").default(false).notNull(),
+    metadata: json("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => [
+    // Fast ordering inside a gallery
+    index("gallery_items_gallery_position_idx").on(t.galleryId, t.position),
+    // Prevent duplicates of same memory in the same gallery
+    uniqueIndex("gallery_items_gallery_memory_uq").on(t.galleryId, t.memoryId, t.memoryType),
+    // Quickly find all galleries for a memory
+    index("gallery_items_by_memory_idx").on(t.memoryId, t.memoryType),
+  ]
+);
 
 // Type inference helpers
 export type DBUser = typeof users.$inferSelect;
@@ -604,6 +674,83 @@ export type NewDBGroupMember = typeof groupMember.$inferInsert;
 
 export type DBVideo = typeof videos.$inferSelect;
 export type NewDBVideo = typeof videos.$inferInsert;
+
+export type DBGallery = typeof galleries.$inferSelect;
+export type NewDBGallery = typeof galleries.$inferInsert;
+
+// Gallery sharing table - similar to memoryShares but for galleries
+export const galleryShares = pgTable("gallery_share", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  galleryId: text("gallery_id")
+    .notNull()
+    .references(() => galleries.id, { onDelete: "cascade" }),
+  ownerId: text("owner_id") // The user who owns the gallery
+    .notNull()
+    .references(() => allUsers.id, { onDelete: "cascade" }),
+
+  sharedWithType: text("shared_with_type", {
+    enum: ["user", "group", "relationship"],
+  }).notNull(),
+
+  sharedWithId: text("shared_with_id") // For direct user sharing
+    .references(() => allUsers.id, { onDelete: "cascade" }),
+  groupId: text("group_id") // For group sharing
+    .references(() => group.id, { onDelete: "cascade" }),
+  sharedRelationshipType: text("shared_relationship_type", {
+    // For relationship-based sharing
+    enum: SHARING_RELATIONSHIP_TYPES,
+  }),
+
+  accessLevel: text("access_level", { enum: ACCESS_LEVELS }).default("read").notNull(),
+  inviteeSecureCode: text("invitee_secure_code").notNull(), // For invitee to access the gallery
+  inviteeSecureCodeCreatedAt: timestamp("secure_code_created_at", { mode: "date" }).notNull().defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type DBGalleryItem = typeof galleryItems.$inferSelect;
+export type NewDBGalleryItem = typeof galleryItems.$inferInsert;
+
+export type DBGalleryShare = typeof galleryShares.$inferSelect;
+export type NewDBGalleryShare = typeof galleryShares.$inferInsert;
+
+// Internet Identity nonce table for canister-first signup
+export const iiNonces = pgTable(
+  "ii_nonce",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    nonceHash: text("nonce_hash").notNull(), // SHA-256 hash of the actual nonce
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
+    usedAt: timestamp("used_at", { mode: "date" }), // null = unused, timestamp = used
+    context: json("context")
+      .$type<{
+        callbackUrl?: string;
+        userAgent?: string;
+        ipAddress?: string;
+        sessionId?: string;
+      }>()
+      .default({}),
+  },
+  (table) => [
+    // Index for fast lookup by hash
+    index("ii_nonces_hash_idx").on(table.nonceHash),
+    // Index for cleanup of expired nonces
+    index("ii_nonces_expires_idx").on(table.expiresAt),
+    // Index for stats queries on usedAt
+    index("ii_nonces_used_idx").on(table.usedAt),
+    // Composite index for active nonce lookups (usedAt IS NULL AND expiresAt > now)
+    index("ii_nonces_active_idx").on(table.usedAt, table.expiresAt),
+    // Index for rate limiting queries on createdAt
+    index("ii_nonces_created_idx").on(table.createdAt),
+  ]
+);
+
+export type DBIINonce = typeof iiNonces.$inferSelect;
+export type NewDBIINonce = typeof iiNonces.$inferInsert;
 
 // Type helpers for the enums
 export type MemoryType = (typeof MEMORY_TYPES)[number];

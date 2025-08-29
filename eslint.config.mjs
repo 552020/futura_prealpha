@@ -11,6 +11,12 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    ignores: [
+      "src/ic/declarations/**/*", // Auto-generated ICP declarations - no linting needed
+      "**/ic/declarations/**/*", // Alternative path pattern
+    ],
+  },
 ];
 
 export default eslintConfig;
