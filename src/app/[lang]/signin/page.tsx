@@ -70,25 +70,25 @@ function SignInPageInternal() {
     setError(null);
     setIiBusy(true);
     try {
-      // 4.1: Ensure II identity with AuthClient.login ✅ DONE
+      // 1. Ensure II identity with AuthClient.login
       console.log("handleInternetIdentity", "before loginWithII");
       const { loginWithII } = await import("@/ic/ii");
       const { principal, identity } = await loginWithII();
       console.log("handleInternetIdentity", "after loginWithII", principal);
 
-      // 4.2: Fetch challenge → get { nonceId, nonce } ✅ DONE
+      // Fetch challenge → get { nonceId, nonce }
       console.log("handleInternetIdentity", "before fetchChallenge");
       const { fetchChallenge } = await import("@/lib/ii-client");
       const challenge = await fetchChallenge(safeCallbackUrl);
       console.log("handleInternetIdentity", "after fetchChallenge", challenge);
 
-      // 4.3-4.4: Register user and prove nonce in one call ✅ DONE
+      // Register user and prove nonce in one call
       console.log("handleInternetIdentity", "before registerWithNonce");
       const { registerWithNonce } = await import("@/lib/ii-client");
       const registration = await registerWithNonce(challenge.nonce, identity);
       console.log("handleInternetIdentity", "after registerWithNonce", registration);
 
-      // 4.5: Call signIn with principal + nonceId + actual nonce (without callbackUrl to avoid URL construction error)
+      // Call signIn with principal + nonceId + actual nonce (without callbackUrl to avoid URL construction error)
       console.log("handleInternetIdentity", "before signIn", principal, challenge.nonceId);
       const signInResult = await signIn("ii", {
         principal,
@@ -99,7 +99,7 @@ function SignInPageInternal() {
       });
       console.log("handleInternetIdentity", "after signIn", signInResult);
 
-      // 5.6: (Optional) After success, call mark_bound() on canister
+      // (Optional) After success, call mark_bound() on canister
       if (signInResult?.ok) {
         console.log("handleInternetIdentity", "before markBoundOnCanister");
         try {

@@ -123,7 +123,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const { principal, nonceId, nonce } = credentials;
         console.log("[II] authorize:start", { principal, nonceId });
 
-        // 5.1: Validate inputs
+        // Validate inputs
         if (!principal || typeof principal !== "string" || principal.length < 5) {
           console.log("[II] authorize:invalid-principal", { principal });
           throw new Error("Invalid principal provided. Please try signing in again.");
@@ -274,7 +274,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Extract language from URL if available, default to 'en'
         let lang = "en"; // default fallback
         let urlParseSuccess = false;
-        
+
         try {
           const urlObj = new URL(url);
           lang = urlObj.searchParams.get("lang") || "en";
@@ -285,19 +285,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             invalidUrl: url,
             error: error instanceof Error ? error.message : String(error),
             fallbackLang: "en",
-            baseUrl
+            baseUrl,
           });
           // Fallback to default language if URL is invalid
           lang = "en";
         }
-        
+
         const redirectTo = `${baseUrl}/${lang}/dashboard`;
         console.log("[NextAuth] Redirecting after login:", {
           redirectTo,
           urlParseSuccess,
           originalUrl: url,
           baseUrl,
-          lang
+          lang,
         });
         return redirectTo;
       }

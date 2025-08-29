@@ -29,69 +29,53 @@ Error: Invalid character: "."
 - `src/nextjs/src/app/[lang]/user/icp/page.tsx`
 - Any other pages that import ICP modules
 
-## Attempted Solutions
+## Solution Implemented ✅
 
-### 1. Dynamic Export (Partially Working)
+### Dynamic Imports Inside Functions
 
-```typescript
-export const dynamic = "force-dynamic";
-```
-
-- **Status**: Applied to both pages
-- **Result**: Still failing - Next.js still attempts prerendering
-
-### 2. Dynamic Imports (Working)
+The key solution was to move **all ICP-related imports** from static imports at the top of files to **dynamic imports inside functions**:
 
 ```typescript
-// Instead of: import { backendActor } from "@/ic/backend";
-const { backendActor } = await import("@/ic/backend");
+// ❌ BEFORE: Static imports at top level (causes build errors)
+import { backendActor } from "@/ic/backend";
+import { loginWithII } from "@/ic/ii";
+import { fetchChallenge } from "@/lib/ii-client";
+
+// ✅ AFTER: Dynamic imports inside functions (prevents build errors)
+async function handleInternetIdentity() {
+  const { loginWithII } = await import("@/ic/ii");
+  const { fetchChallenge } = await import("@/lib/ii-client");
+  const { registerWithNonce } = await import("@/lib/ii-client");
+
+  // Use the imported functions...
+}
 ```
 
-- **Status**: Applied to `/user/icp/page.tsx`
-- **Result**: Fixed the ICP page, but signin page still has issues
+### Additional Measures
 
-## Remaining Issues
+1. **`"use client"` directive**: Ensures the component runs only on the client side
+2. **`export const dynamic = "force-dynamic"`**: Prevents static generation (but not sufficient alone)
+3. **Dynamic imports**: The actual solution that prevents ICP code from being evaluated during build
 
-### Signin Page
+## Why This Works
 
-The signin page still fails even with:
+- **Build Time**: No ICP code is evaluated during Next.js build/prerendering
+- **Runtime**: ICP modules are only loaded when the functions are actually called
+- **Client Only**: Ensures ICP actors are only created in browser environment
+- **Lazy Loading**: Improves initial page load performance
 
-- `export const dynamic = 'force-dynamic'`
-- Dynamic imports for ICP modules
+## Files Modified
 
-### Possible Causes
+- ✅ `src/nextjs/src/app/[lang]/signin/page.tsx` - All ICP imports moved to dynamic imports
+- ✅ `src/nextjs/src/app/[lang]/user/icp/page.tsx` - All ICP imports moved to dynamic imports
 
-1. **NextAuth Integration**: The signin page uses NextAuth which might be triggering static generation
-2. **Import Chain**: Some imported module might be causing the issue
-3. **Build Configuration**: Next.js build settings might be forcing static generation
+## Current Status
 
-## Next Steps
+- ✅ Build errors resolved
+- ✅ ICP functionality working in runtime
+- ✅ No more "Invalid character: '.'" errors
+- ✅ Pages load correctly in browser
 
-### Immediate Actions
+## Key Takeaway
 
-1. **Apply Dynamic Imports**: Move all ICP imports to dynamic imports in signin page
-2. **Check Import Chain**: Audit all imports in signin page for ICP-related modules
-3. **NextAuth Configuration**: Check if NextAuth is configured to allow dynamic pages
-
-### Investigation Needed
-
-1. **Build Configuration**: Review `next.config.js` for static generation settings
-2. **Module Analysis**: Identify which specific import is causing the actor creation
-3. **NextAuth Integration**: Check if NextAuth provider configuration affects page generation
-
-### Alternative Solutions
-
-1. **Client-Only Pages**: Move ICP functionality to client-only components
-2. **Build Exclusions**: Configure Next.js to exclude ICP pages from static generation
-3. **Runtime Checks**: Add runtime checks to prevent ICP code execution in server environment
-
-## Related Files
-
-- `src/nextjs/src/ic/backend.ts` - ICP actor creation
-- `src/nextjs/src/lib/ii-client.ts` - II integration functions
-- `src/nextjs/src/app/[lang]/signin/page.tsx` - Failing signin page
-- `src/nextjs/next.config.js` - Next.js configuration
-
-## Priority
-
-**High** - This blocks successful builds and deployment
+The solution was **not** just adding `export const dynamic = "force-dynamic"` (which we tried first), but rather **moving all ICP imports to dynamic imports inside functions**. This prevents any ICP code from being evaluated during the build process while still allowing full functionality at runtime.

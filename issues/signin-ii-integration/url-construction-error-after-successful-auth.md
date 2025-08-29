@@ -87,28 +87,59 @@ redirect({ url, baseUrl }) {
 ### The Fix:
 
 ```typescript
-// auth.ts - Fixed with proper error handling
+// auth.ts - Fixed with proper error handling and enhanced logging
 redirect({ url, baseUrl }) {
   const isLoginFlow = url.includes("/api/auth/signin") || url.includes("/api/auth/callback");
 
   if (isLoginFlow) {
     // ✅ Added try-catch to handle invalid URLs gracefully
     let lang = "en"; // default fallback
+    let urlParseSuccess = false;
+
     try {
       const urlObj = new URL(url);
       lang = urlObj.searchParams.get("lang") || "en";
+      urlParseSuccess = true;
+      console.log("[NextAuth] Successfully parsed URL:", { url, lang });
     } catch (error) {
-      console.warn("[NextAuth] Invalid URL in redirect callback:", url, error);
+      console.warn("[NextAuth] Invalid URL in redirect callback - using fallback:", {
+        invalidUrl: url,
+        error: error instanceof Error ? error.message : String(error),
+        fallbackLang: "en",
+        baseUrl
+      });
       // Fallback to default language if URL is invalid
       lang = "en";
     }
+
     const redirectTo = `${baseUrl}/${lang}/dashboard`;
-    console.log("[NextAuth] Redirecting after login:", redirectTo);
+    console.log("[NextAuth] Redirecting after login:", {
+      redirectTo,
+      urlParseSuccess,
+      originalUrl: url,
+      baseUrl,
+      lang
+    });
     return redirectTo;
   }
   return url;
 }
 ```
+
+### Enhanced Logging:
+
+We now have comprehensive logging that will help track these non-critical errors:
+
+1. **Success Logging**: When URL parsing succeeds
+2. **Warning Logging**: When URL parsing fails (with detailed error info)
+3. **Redirect Logging**: Complete redirect information including success/failure status
+
+This ensures that:
+
+- ✅ **Non-critical errors are visible** - We'll see warnings when URL construction fails
+- ✅ **Fallback behavior is logged** - We know when the system uses safe defaults
+- ✅ **Debug information is available** - Full context for troubleshooting
+- ✅ **User experience is preserved** - Errors are handled gracefully without breaking the flow
 
 ### Why This Happened:
 
@@ -120,6 +151,51 @@ redirect({ url, baseUrl }) {
 ### Files Modified:
 
 - ✅ `src/nextjs/auth.ts` - Added try-catch around `new URL(url)` in redirect callback
+
+### Files Affected/Involved:
+
+- **`src/nextjs/auth.ts`** - NextAuth configuration with redirect callback (primary fix)
+- **`src/nextjs/src/app/[lang]/signin/page.tsx`** - Sign-in page with II authentication flow
+- **`src/nextjs/src/lib/ii-client.ts`** - II client functions for challenge and registration
+- **`src/nextjs/src/app/api/ii/challenge/route.ts`** - Challenge generation API endpoint
+- **`src/nextjs/src/app/api/ii/verify-nonce/route.ts`** - Nonce verification API endpoint
+
+### Code Changes Made:
+
+1. **NextAuth Redirect Callback Fix** (`auth.ts`):
+
+   - Added try-catch around `new URL(url)` to handle invalid URLs gracefully
+   - Added fallback to default language "en" when URL parsing fails
+
+2. **Sign-in Page Improvements** (`signin/page.tsx`):
+
+   - **Introduced `safeCallbackUrl` variable** to ensure valid relative URLs
+   - Removed `callbackUrl` from `signIn` call to avoid NextAuth URL construction
+   - Added manual redirect after successful authentication
+   - Improved error handling and debug logging
+
+3. **II Client Enhancements** (`ii-client.ts`):
+   - Added debug logging for challenge and registration functions
+   - Improved error handling and logging
+
+### The `safeCallbackUrl` Variable:
+
+Yes, we introduced the `safeCallbackUrl` variable in the signin page as part of the solution:
+
+```typescript
+// Before: Direct use of callbackUrl (could be invalid)
+const callbackUrl = searchParams.get("callbackUrl") || `/${lang}/dashboard`;
+
+// After: Safe callbackUrl with validation
+const callbackUrl = searchParams.get("callbackUrl") || `/${lang}/dashboard`;
+const safeCallbackUrl = callbackUrl?.startsWith("/") ? callbackUrl : `/${lang}/dashboard`;
+```
+
+This ensures that:
+
+- All callback URLs are valid relative URLs
+- Fallback to dashboard if callbackUrl is invalid
+- Prevents URL construction errors in NextAuth
 
 ### Commit:
 
