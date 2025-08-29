@@ -19,6 +19,9 @@ function SignInPageInternal() {
   const lang = (params?.lang as string) || "en";
   const callbackUrl = searchParams.get("callbackUrl") || `/${lang}/dashboard`;
 
+  // Ensure callbackUrl is always a valid relative URL
+  const safeCallbackUrl = callbackUrl?.startsWith("/") ? callbackUrl : `/${lang}/dashboard`;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -36,7 +39,7 @@ function SignInPageInternal() {
         email,
         password,
         redirect: false,
-        callbackUrl,
+        callbackUrl: safeCallbackUrl,
       });
       if (res?.error) {
         setError("Invalid email or password");
@@ -45,7 +48,7 @@ function SignInPageInternal() {
       console.log("handleCredentialsSignIn", res);
 
       // Navigate after successful credentials sign-in
-      router.push(callbackUrl);
+      router.push(safeCallbackUrl);
     } catch {
       setError("Sign in failed. Please try again.");
     } finally {
@@ -58,7 +61,7 @@ function SignInPageInternal() {
     setBusy(true);
     // Provider flows use NextAuth redirects; NextAuth redirect callback will land on /{lang}/dashboard
     // but we pass callbackUrl to be explicit.
-    void signIn(provider, { callbackUrl }).finally(() => setBusy(false));
+    void signIn(provider, { callbackUrl: safeCallbackUrl }).finally(() => setBusy(false));
   }
 
   async function handleInternetIdentity() {
@@ -76,7 +79,7 @@ function SignInPageInternal() {
       // 4.2: Fetch challenge → get { nonceId, nonce } ✅ DONE
       console.log("handleInternetIdentity", "before fetchChallenge");
       const { fetchChallenge } = await import("@/lib/ii-client");
-      const challenge = await fetchChallenge(callbackUrl);
+      const challenge = await fetchChallenge(safeCallbackUrl);
       console.log("handleInternetIdentity", "after fetchChallenge", challenge);
 
       // 4.3-4.4: Register user and prove nonce in one call ✅ DONE
@@ -85,9 +88,15 @@ function SignInPageInternal() {
       const registration = await registerWithNonce(challenge.nonce, identity);
       console.log("handleInternetIdentity", "after registerWithNonce", registration);
 
-      // 4.5: Call signIn with principal + nonceId (no signature needed)
+      // 4.5: Call signIn with principal + nonceId + actual nonce (without callbackUrl to avoid URL construction error)
       console.log("handleInternetIdentity", "before signIn", principal, challenge.nonceId);
-      const signInResult = await signIn("ii", { principal, nonceId: challenge.nonceId, redirect: false, callbackUrl });
+      const signInResult = await signIn("ii", {
+        principal,
+        nonceId: challenge.nonceId,
+        nonce: challenge.nonce, // Pass the actual nonce for verification
+        redirect: false,
+        // Remove callbackUrl to avoid NextAuth URL construction error
+      });
       console.log("handleInternetIdentity", "after signIn", signInResult);
 
       // 5.6: (Optional) After success, call mark_bound() on canister
@@ -102,38 +111,20 @@ function SignInPageInternal() {
           // Don't fail the auth flow if this optional step fails
         }
 
-        // Redirect manually after successful authentication
-        router.push(callbackUrl);
+        // Redirect manually after successful authentication (fixes the URL construction error)
+        console.log("DEBUG: About to redirect to:", safeCallbackUrl);
+        console.log(
+          "DEBUG: Current window.location:",
+          typeof window !== "undefined" ? window.location.href : "server-side"
+        );
+        router.push(safeCallbackUrl);
       } else {
         console.error("handleInternetIdentity", "signIn failed", signInResult?.error);
-
-        // Provide user-friendly error messages
-        let errorMessage = "Authentication failed. Please try again.";
-
-        if (signInResult?.error) {
-          if (signInResult.error.includes("challenge expired")) {
-            errorMessage = "Authentication session expired. Please try signing in again.";
-          } else if (signInResult.error.includes("challenge already used")) {
-            errorMessage = "Authentication session already used. Please try signing in again.";
-          } else if (signInResult.error.includes("proof not found")) {
-            errorMessage = "Authentication verification failed. Please try signing in again.";
-          } else if (signInResult.error.includes("proof mismatch")) {
-            errorMessage = "Authentication verification failed. Please try signing in again.";
-          } else if (signInResult.error.includes("Unable to verify")) {
-            errorMessage = "Authentication verification failed. Please try signing in again.";
-          } else if (signInResult.error.includes("Unable to create user")) {
-            errorMessage = "Unable to create account. Please try signing in again.";
-          }
-        }
-
-        setError(errorMessage);
+        setError(`Authentication failed: ${signInResult?.error || "Unknown error"}`);
       }
-
-      // Current implementation (needs updating)
-      console.log("handleInternetIdentity", "before signIn", principal, callbackUrl);
-      await signIn("ii", { principal, redirect: true, callbackUrl });
-      console.log("handleInternetIdentity", "after signIn");
     } catch (e) {
+      console.error("DEBUG: II authentication error:", e);
+      console.error("DEBUG: Error stack:", e instanceof Error ? e.stack : "No stack trace");
       const msg = e instanceof Error ? e.message : String(e);
       setError(`Internet Identity sign-in failed: ${msg}`);
     } finally {
