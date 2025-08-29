@@ -22,6 +22,8 @@ export default function GalleryViewPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const loadGallery = useCallback(async () => {
     try {
@@ -44,26 +46,62 @@ export default function GalleryViewPage() {
   }, [isAuthorized, id, loadGallery]);
 
   const handleImageClick = (index: number) => {
-    // TODO: Will be implemented in task 6 (ImageLightbox component)
-    console.log("Image clicked:", index);
+    // Navigate to preview page with the specific image index
+    router.push(`/gallery/${id}/preview?image=${index}`);
   };
 
   const handleImageError = useCallback((imageUrl: string) => {
     setFailedImages((prev) => new Set(prev).add(imageUrl));
   }, []);
 
-  const handleDeleteGallery = () => {
-    // TODO: Implement delete gallery functionality
-    console.log("Delete gallery:", gallery?.id);
+  const handleDeleteGallery = async () => {
+    if (!gallery || !confirm("Are you sure you want to delete this gallery? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await galleryService.deleteGallery(gallery.id, USE_MOCK_DATA);
+      router.push("/gallery");
+    } catch (err) {
+      console.error("Error deleting gallery:", err);
+      setError("Failed to delete gallery");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleFullScreenView = () => {
     router.push(`/gallery/${id}/preview`);
   };
 
-  const handleTogglePrivacy = () => {
-    // TODO: Implement privacy toggle functionality
-    console.log("Toggle privacy for gallery:", gallery?.id);
+  const handleTogglePrivacy = async () => {
+    if (!gallery) return;
+
+    try {
+      setIsUpdating(true);
+      const updatedGallery = await galleryService.updateGallery(
+        gallery.id,
+        { isPublic: !gallery.isPublic },
+        USE_MOCK_DATA
+      );
+      setGallery(updatedGallery);
+    } catch (err) {
+      console.error("Error updating gallery privacy:", err);
+      setError("Failed to update gallery privacy");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleEditGallery = () => {
+    // TODO: Navigate to edit page or open edit modal
+    console.log("Edit gallery:", gallery?.id);
+  };
+
+  const handleShareGallery = () => {
+    // TODO: Implement share functionality
+    console.log("Share gallery:", gallery?.id);
   };
 
   if (authLoading || isLoading) {
@@ -129,12 +167,17 @@ export default function GalleryViewPage() {
                 <Maximize2 className="h-4 w-4 mr-2" />
                 Preview
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleShareGallery}>
                 <Share2 className="h-4 w-4 mr-2" />
                 Share
               </Button>
-              <Button variant="outline" size="sm" onClick={handleTogglePrivacy}>
-                {gallery.isPublic ? (
+              <Button variant="outline" size="sm" onClick={handleTogglePrivacy} disabled={isUpdating}>
+                {isUpdating ? (
+                  <>
+                    <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    Updating...
+                  </>
+                ) : gallery.isPublic ? (
                   <>
                     <EyeOff className="h-4 w-4 mr-2" />
                     Hide
@@ -146,13 +189,22 @@ export default function GalleryViewPage() {
                   </>
                 )}
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleEditGallery}>
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </Button>
-              <Button variant="outline" size="sm" onClick={handleDeleteGallery}>
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete
+              <Button variant="outline" size="sm" onClick={handleDeleteGallery} disabled={isDeleting}>
+                {isDeleting ? (
+                  <>
+                    <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </>
+                )}
               </Button>
             </div>
           </div>

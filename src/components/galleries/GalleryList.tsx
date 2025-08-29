@@ -37,28 +37,31 @@ export function GalleryList({
   const [hasMore, setHasMore] = useState(true);
   const [currentPage, setCurrentPage] = useState(page);
 
-  const loadGalleries = useCallback(async (pageNum: number = 1, append: boolean = false) => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  const loadGalleries = useCallback(
+    async (pageNum: number = 1, append: boolean = false) => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      const result = await galleryService.listGalleries(pageNum, limit, useMockData);
-      
-      if (append) {
-        setGalleries(prev => [...prev, ...result.galleries]);
-      } else {
-        setGalleries(result.galleries);
+        const result = await galleryService.listGalleries(pageNum, limit, useMockData);
+
+        if (append) {
+          setGalleries((prev) => [...prev, ...result.galleries]);
+        } else {
+          setGalleries(result.galleries);
+        }
+
+        setHasMore(result.galleries.length === limit);
+        setCurrentPage(pageNum);
+      } catch (err) {
+        console.error("Error loading galleries:", err);
+        setError(err instanceof Error ? err.message : "Failed to load galleries");
+      } finally {
+        setIsLoading(false);
       }
-      
-      setHasMore(result.galleries.length === limit);
-      setCurrentPage(pageNum);
-    } catch (err) {
-      console.error("Error loading galleries:", err);
-      setError(err instanceof Error ? err.message : "Failed to load galleries");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [limit, useMockData]);
+    },
+    [limit, useMockData]
+  );
 
   const handleLoadMore = () => {
     if (!isLoading && hasMore) {
@@ -125,9 +128,7 @@ export function GalleryList({
               </div>
               <div>
                 <h3 className="text-lg font-semibold">No galleries yet</h3>
-                <p className="text-muted-foreground">
-                  Create your first gallery to start organizing your memories.
-                </p>
+                <p className="text-muted-foreground">Create your first gallery to start organizing your memories.</p>
               </div>
               {showCreateButton && (
                 <Button onClick={onCreateGallery} className="mt-4">
@@ -167,23 +168,14 @@ export function GalleryList({
       {/* Gallery Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {galleries.map((gallery) => (
-          <GalleryCard
-            key={gallery.id}
-            gallery={gallery}
-            onClick={() => onGalleryClick?.(gallery)}
-          />
+          <GalleryCard key={gallery.id} gallery={gallery} onClick={() => onGalleryClick?.(gallery)} />
         ))}
       </div>
 
       {/* Load More */}
       {hasMore && (
         <div className="flex justify-center pt-6">
-          <Button
-            onClick={handleLoadMore}
-            disabled={isLoading}
-            variant="outline"
-            size="lg"
-          >
+          <Button onClick={handleLoadMore} disabled={isLoading} variant="outline" size="lg">
             {isLoading ? (
               <>
                 <RefreshCw className="h-4 w-4 mr-2 animate-spin" />

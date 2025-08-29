@@ -6,16 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { GalleryWithItems } from "@/types/gallery";
 import { formatDistanceToNow } from "date-fns";
-import {
-  Eye,
-  Edit,
-  Share2,
-  Image as ImageIcon,
-  Lock,
-  Globe,
-  Calendar,
-  User,
-} from "lucide-react";
+import { Eye, Edit, Share2, Image as ImageIcon, Lock, Globe, Calendar, User } from "lucide-react";
 
 interface GalleryCardProps {
   gallery: GalleryWithItems;
@@ -26,26 +17,19 @@ interface GalleryCardProps {
   className?: string;
 }
 
-export function GalleryCard({
-  gallery,
-  onClick,
-  onEdit,
-  onShare,
-  onView,
-  className = "",
-}: GalleryCardProps) {
+export function GalleryCard({ gallery, onClick, onEdit, onShare, onView, className = "" }: GalleryCardProps) {
   // Get thumbnail from first gallery item
   const thumbnail = gallery.items?.[0]?.memory?.url || gallery.items?.[0]?.memory?.thumbnail;
-  
+
   // Format date
   const formattedDate = formatDistanceToNow(new Date(gallery.createdAt), { addSuffix: true });
-  
+
   // Get item count
   const itemCount = gallery.items?.length || gallery.imageCount || 0;
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Don't trigger card click if clicking on action buttons
-    if ((e.target as HTMLElement).closest('[data-action-button]')) {
+    if ((e.target as HTMLElement).closest("[data-action-button]")) {
       return;
     }
     onClick?.();
@@ -68,7 +52,7 @@ export function GalleryCard({
 
   return (
     <TooltipProvider>
-      <Card 
+      <Card
         className={`group cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${className}`}
         onClick={handleCardClick}
       >
@@ -86,7 +70,7 @@ export function GalleryCard({
                 <ImageIcon className="h-12 w-12 text-muted-foreground" />
               </div>
             )}
-            
+
             {/* Overlay with action buttons */}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
               <div className="flex items-center space-x-2">
@@ -104,7 +88,7 @@ export function GalleryCard({
                   </TooltipTrigger>
                   <TooltipContent>View Gallery</TooltipContent>
                 </Tooltip>
-                
+
                 {gallery.isOwner && (
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -121,7 +105,7 @@ export function GalleryCard({
                     <TooltipContent>Edit Gallery</TooltipContent>
                   </Tooltip>
                 )}
-                
+
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -173,9 +157,7 @@ export function GalleryCard({
               {gallery.title}
             </h3>
             {gallery.description && (
-              <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                {gallery.description}
-              </p>
+              <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{gallery.description}</p>
             )}
           </div>
 
