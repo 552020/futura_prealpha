@@ -117,9 +117,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         principal: { label: "Principal", type: "text" },
         nonceId: { label: "Nonce ID", type: "text" },
+        nonce: { label: "Nonce", type: "text" },
       },
       async authorize(credentials) {
-        const { principal, nonceId } = credentials;
+        const { principal, nonceId, nonce } = credentials;
         console.log("[II] authorize:start", { principal, nonceId });
 
         // 5.1: Validate inputs
@@ -154,30 +155,48 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new Error("Authentication challenge expired. Please try signing in again.");
         }
 
-        // 5.3: Call canister to verify nonce proof
+        // 5.3: Call API route to verify nonce proof
         try {
-          const canisterActor = await backendActor();
-          // We need to pass the nonce that was originally generated
-          // For now, we'll use a placeholder - this needs to be fixed
-          const provedPrincipal = await canisterActor.verify_nonce("placeholder-nonce");
-
-          if (!provedPrincipal) {
-            console.log("[II] authorize:no-nonce-proof", { nonceId });
-            throw new Error("Authentication proof not found. Please try signing in again.");
+          if (!nonce) {
+            console.log("[II] authorize:no-nonce-provided", { nonceId, principal });
+            throw new Error("Authentication nonce not provided. Please try signing in again.");
           }
 
-          // 5.4: Verify the principal matches the claimed principal
-          if (provedPrincipal.toString() !== principal) {
+          const nonceStr = nonce as string;
+          console.log("[II] authorize:verifying-nonce", { nonceId, principal, nonceLength: nonceStr.length });
+
+          // Call our API route to verify the nonce
+          const baseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+          const response = await fetch(`${baseUrl}/api/ii/verify-nonce`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nonce: nonceStr }),
+          });
+
+          if (!response.ok) {
+            console.error("[II] authorize:api-error", { status: response.status, statusText: response.statusText });
+            throw new Error("Authentication verification service unavailable. Please try signing in again.");
+          }
+
+          const result = await response.json();
+
+          if (!result.success) {
+            console.log("[II] authorize:verification-failed", { error: result.error });
+            throw new Error("Authentication proof verification failed. Please try signing in again.");
+          }
+
+          const provedPrincipal = result.principal;
+          if (provedPrincipal !== principal) {
             console.log("[II] authorize:principal-mismatch", {
               claimed: principal,
-              proved: provedPrincipal.toString(),
+              proved: provedPrincipal,
             });
             throw new Error("Authentication proof mismatch. Please try signing in again.");
           }
 
           console.log("[II] authorize:nonce-verified", { principal, nonceId });
         } catch (error) {
-          console.error("[II] authorize:canister-error", error);
+          console.error("[II] authorize:verification-error", error);
           throw new Error("Unable to verify authentication. Please try signing in again.");
         }
 
@@ -253,10 +272,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       if (isLoginFlow) {
         // Extract language from URL if available, default to 'en'
-        const urlObj = new URL(url);
-        const lang = urlObj.searchParams.get("lang") || "en";
+        let lang = "en"; // default fallback
+        try {
+          const urlObj = new URL(url);
+          lang = urlObj.searchParams.get("lang") || "en";
+        } catch (error) {
+          console.warn("[NextAuth] Invalid URL in redirect callback:", url, error);
+          // Fallback to default language if URL is invalid
+          lang = "en";
+        }
         const redirectTo = `${baseUrl}/${lang}/dashboard`;
-        // console.log("[NextAuth] Redirecting after login:", redirectTo);
+        console.log("[NextAuth] Redirecting after login:", redirectTo);
         return redirectTo;
       }
 
