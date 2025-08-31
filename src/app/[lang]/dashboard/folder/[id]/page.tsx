@@ -13,6 +13,7 @@ import { TawkChat } from "@/components/tawk-chat";
 import {
   fetchAndNormalizeMemories,
   deleteMemory,
+  deleteAllMemories,
   type NormalizedMemory,
   type DashboardItem,
 } from "@/services/memories";
@@ -197,7 +198,7 @@ export default function FolderPage() {
       title: "Success",
       description: "Gallery created successfully!",
     });
-    
+
     // Navigate to the newly created gallery if we have the ID
     if (galleryId) {
       router.push(`/${params.lang}/gallery/${galleryId}`);

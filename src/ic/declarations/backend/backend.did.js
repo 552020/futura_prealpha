@@ -404,7 +404,7 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     'add_admin' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'add_memory_to_capsule' : IDL.Func(
-        [MemoryData],
+        [IDL.Text, MemoryData],
         [MemoryOperationResponse],
         [],
       ),

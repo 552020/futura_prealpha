@@ -374,7 +374,10 @@ export interface VideoMetadata {
 }
 export interface _SERVICE {
   'add_admin' : ActorMethod<[Principal], boolean>,
-  'add_memory_to_capsule' : ActorMethod<[MemoryData], MemoryOperationResponse>,
+  'add_memory_to_capsule' : ActorMethod<
+    [string, MemoryData],
+    MemoryOperationResponse
+  >,
   'begin_asset_upload' : ActorMethod<
     [string, string, number, bigint],
     ICPResult

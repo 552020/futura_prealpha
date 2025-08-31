@@ -109,17 +109,34 @@ export default function SharedMemoriesPage({ params }: { params: Promise<{ lang:
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`/api/memories/${id}`, {
-        method: "DELETE",
-      });
+      // Check if this is a folder item
+      if (id.startsWith("folder-")) {
+        const folderName = id.replace("folder-", "");
+        const response = await fetch(`/api/memories?folder=${encodeURIComponent(folderName)}`, {
+          method: "DELETE",
+        });
 
-      if (!response.ok) throw new Error("Failed to delete memory");
+        if (!response.ok) throw new Error("Failed to delete folder");
 
-      setMemories((prev) => prev.filter((memory) => memory.id !== id));
-      toast({
-        title: "Success",
-        description: "Memory deleted successfully.",
-      });
+        setMemories((prev) => prev.filter((memory) => memory.id !== id));
+        toast({
+          title: "Success",
+          description: `Folder "${folderName}" and all its contents deleted successfully.`,
+        });
+      } else {
+        // Handle individual memory deletion
+        const response = await fetch(`/api/memories/${id}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) throw new Error("Failed to delete memory");
+
+        setMemories((prev) => prev.filter((memory) => memory.id !== id));
+        toast({
+          title: "Success",
+          description: "Memory deleted successfully.",
+        });
+      }
     } catch (error) {
       console.error("Error deleting memory:", error);
       toast({

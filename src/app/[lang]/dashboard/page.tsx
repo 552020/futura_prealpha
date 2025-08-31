@@ -145,12 +145,24 @@ export default function VaultPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteMemory(id);
-      setMemories((prev) => prev.filter((memory) => memory.id !== id));
-      toast({
-        title: "Success",
-        description: "Memory deleted successfully.",
-      });
+      // Check if this is a folder item
+      if (id.startsWith("folder-")) {
+        const folderName = id.replace("folder-", "");
+        const result = await deleteAllMemories({ folder: folderName });
+        setMemories((prev) => prev.filter((memory) => memory.id !== id));
+        toast({
+          title: "Success",
+          description: `Folder "${folderName}" and all its contents deleted successfully.`,
+        });
+      } else {
+        // Handle individual memory deletion
+        await deleteMemory(id);
+        setMemories((prev) => prev.filter((memory) => memory.id !== id));
+        toast({
+          title: "Success",
+          description: "Memory deleted successfully.",
+        });
+      }
     } catch (error) {
       console.error("Error deleting memory:", error);
       toast({
