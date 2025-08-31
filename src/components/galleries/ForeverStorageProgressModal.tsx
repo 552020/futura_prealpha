@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -159,7 +159,7 @@ export function ForeverStorageProgressModal({
     if (isOpen && currentStep === "idle") {
       handleStartStorage();
     }
-  }, [isOpen, currentStep, handleStartStorage]);
+  }, [isOpen, currentStep]);
 
   const handleRetry = () => {
     setCurrentStep("idle");
@@ -193,7 +193,7 @@ export function ForeverStorageProgressModal({
       // Continue the flow from the beginning; it will pass auth now
       handleStartStorage();
     }
-  }, [isOpen, currentStep, hasIIPrincipal, handleStartStorage]);
+  }, [isOpen, currentStep, hasIIPrincipal]);
 
   const handleClose = () => {
     if (currentStep === "success") {
@@ -274,7 +274,7 @@ export function ForeverStorageProgressModal({
             {getStepIcon(currentStep)}
             Store Gallery Forever
           </DialogTitle>
-          <p className="text-sm text-muted-foreground">Gallery: {gallery.title}</p>
+          <DialogDescription>Gallery: {gallery.title}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
