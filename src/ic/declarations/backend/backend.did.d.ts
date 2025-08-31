@@ -218,8 +218,7 @@ export type MemoryType = { 'Note' : null } |
 export interface MemoryUpdateData {
   'access' : [] | [MemoryAccess],
   'metadata' : [] | [MemoryMetadata],
-  'data' : [] | [MemoryData],
-  'info' : [] | [MemoryInfo],
+  'name' : [] | [string],
 }
 export interface NoteMetadata {
   'base' : MemoryMetadataBase,

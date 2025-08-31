@@ -292,8 +292,7 @@ export const idlFactory = ({ IDL }) => {
   const MemoryUpdateData = IDL.Record({
     'access' : IDL.Opt(MemoryAccess),
     'metadata' : IDL.Opt(MemoryMetadata),
-    'data' : IDL.Opt(MemoryData),
-    'info' : IDL.Opt(MemoryInfo),
+    'name' : IDL.Opt(IDL.Text),
   });
   return IDL.Service({
     'add_admin' : IDL.Func([IDL.Principal], [IDL.Bool], []),
