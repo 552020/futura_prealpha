@@ -66,6 +66,21 @@ export interface CapsuleRegistrationResult {
   'message' : string,
   'success' : boolean,
 }
+export interface ChunkResponse {
+  'chunk_index' : number,
+  'error' : [] | [ICPErrorCode],
+  'message' : string,
+  'bytes_received' : number,
+  'success' : boolean,
+}
+export interface CommitResponse {
+  'total_bytes' : bigint,
+  'memory_id' : string,
+  'error' : [] | [ICPErrorCode],
+  'message' : string,
+  'final_hash' : string,
+  'success' : boolean,
+}
 export interface Connection {
   'status' : ConnectionStatus,
   'updated_at' : bigint,
@@ -148,6 +163,46 @@ export interface GalleryUpdateData {
   'memory_entries' : [] | [Array<GalleryMemoryEntry>],
   'description' : [] | [string],
 }
+export type ICPErrorCode = { 'Internal' : string } |
+  { 'NotFound' : null } |
+  { 'InvalidHash' : null } |
+  { 'Unauthorized' : null } |
+  { 'AlreadyExists' : null };
+export interface ICPResult {
+  'data' : [] | [UploadSessionResponse],
+  'error' : [] | [ICPErrorCode],
+  'success' : boolean,
+}
+export interface ICPResult_1 {
+  'data' : [] | [null],
+  'error' : [] | [ICPErrorCode],
+  'success' : boolean,
+}
+export interface ICPResult_2 {
+  'data' : [] | [CommitResponse],
+  'error' : [] | [ICPErrorCode],
+  'success' : boolean,
+}
+export interface ICPResult_3 {
+  'data' : [] | [MemoryListPresenceResponse],
+  'error' : [] | [ICPErrorCode],
+  'success' : boolean,
+}
+export interface ICPResult_4 {
+  'data' : [] | [MemoryPresenceResponse],
+  'error' : [] | [ICPErrorCode],
+  'success' : boolean,
+}
+export interface ICPResult_5 {
+  'data' : [] | [ChunkResponse],
+  'error' : [] | [ICPErrorCode],
+  'success' : boolean,
+}
+export interface ICPResult_6 {
+  'data' : [] | [MetadataResponse],
+  'error' : [] | [ICPErrorCode],
+  'success' : boolean,
+}
 export interface ImageMetadata {
   'base' : MemoryMetadataBase,
   'dimensions' : [] | [[number, number]],
@@ -186,6 +241,13 @@ export interface MemoryInfo {
   'created_at' : bigint,
   'uploaded_at' : bigint,
 }
+export interface MemoryListPresenceResponse {
+  'cursor' : [] | [string],
+  'results' : Array<MemoryPresenceResult>,
+  'error' : [] | [ICPErrorCode],
+  'success' : boolean,
+  'has_more' : boolean,
+}
 export interface MemoryListResponse {
   'memories' : Array<Memory>,
   'message' : string,
@@ -210,6 +272,17 @@ export interface MemoryOperationResponse {
   'message' : string,
   'success' : boolean,
 }
+export interface MemoryPresenceResponse {
+  'metadata_present' : boolean,
+  'error' : [] | [ICPErrorCode],
+  'success' : boolean,
+  'asset_present' : boolean,
+}
+export interface MemoryPresenceResult {
+  'metadata_present' : boolean,
+  'memory_id' : string,
+  'asset_present' : boolean,
+}
 export type MemoryType = { 'Note' : null } |
   { 'Image' : null } |
   { 'Document' : null } |
@@ -219,6 +292,12 @@ export interface MemoryUpdateData {
   'access' : [] | [MemoryAccess],
   'metadata' : [] | [MemoryMetadata],
   'name' : [] | [string],
+}
+export interface MetadataResponse {
+  'memory_id' : [] | [string],
+  'error' : [] | [ICPErrorCode],
+  'message' : string,
+  'success' : boolean,
 }
 export interface NoteMetadata {
   'base' : MemoryMetadataBase,
@@ -248,6 +327,16 @@ export type Result_3 = { 'Ok' : [] | [DetailedCreationStatus] } |
   { 'Err' : string };
 export type Result_4 = { 'Ok' : null } |
   { 'Err' : string };
+export interface SimpleMemoryMetadata {
+  'title' : [] | [string],
+  'updated_at' : bigint,
+  'size' : [] | [bigint],
+  'tags' : Array<string>,
+  'content_type' : [] | [string],
+  'description' : [] | [string],
+  'created_at' : bigint,
+  'custom_fields' : Array<[string, string]>,
+}
 export interface StoreGalleryResponse {
   'gallery_id' : [] | [string],
   'message' : string,
@@ -260,6 +349,22 @@ export interface UpdateGalleryResponse {
   'success' : boolean,
   'gallery' : [] | [Gallery],
 }
+export interface UploadSession {
+  'session_id' : string,
+  'chunks_received' : Array<boolean>,
+  'created_at' : bigint,
+  'memory_id' : string,
+  'expected_hash' : string,
+  'total_size' : bigint,
+  'chunk_count' : number,
+  'bytes_received' : bigint,
+}
+export interface UploadSessionResponse {
+  'error' : [] | [ICPErrorCode],
+  'session' : [] | [UploadSession],
+  'message' : string,
+  'success' : boolean,
+}
 export interface VideoMetadata {
   'height' : [] | [number],
   'duration' : [] | [number],
@@ -270,8 +375,14 @@ export interface VideoMetadata {
 export interface _SERVICE {
   'add_admin' : ActorMethod<[Principal], boolean>,
   'add_memory_to_capsule' : ActorMethod<[MemoryData], MemoryOperationResponse>,
+  'begin_asset_upload' : ActorMethod<
+    [string, string, number, bigint],
+    ICPResult
+  >,
+  'cancel_upload' : ActorMethod<[string], ICPResult_1>,
   'clear_creation_state' : ActorMethod<[Principal], Result>,
   'clear_migration_state' : ActorMethod<[Principal], Result>,
+  'commit_asset' : ActorMethod<[string, string], ICPResult_2>,
   'create_capsule' : ActorMethod<[PersonRef], CapsuleCreationResult>,
   'create_personal_canister' : ActorMethod<
     [],
@@ -293,6 +404,11 @@ export interface _SERVICE {
   >,
   'get_gallery_by_id' : ActorMethod<[string], [] | [Gallery]>,
   'get_memory_from_capsule' : ActorMethod<[string], [] | [Memory]>,
+  'get_memory_list_presence_icp' : ActorMethod<
+    [Array<string>, [] | [string], number],
+    ICPResult_3
+  >,
+  'get_memory_presence_icp' : ActorMethod<[string], ICPResult_4>,
   'get_migration_states_by_status' : ActorMethod<[CreationStatus], Result_1>,
   'get_migration_stats' : ActorMethod<[], Result_2>,
   'get_migration_status' : ActorMethod<[], [] | [CreationStatusResponse]>,
@@ -318,6 +434,10 @@ export interface _SERVICE {
   'mark_capsule_bound_to_web2' : ActorMethod<[], boolean>,
   'migrate_capsule' : ActorMethod<[], PersonalCanisterCreationResponse>,
   'prove_nonce' : ActorMethod<[string], boolean>,
+  'put_chunk' : ActorMethod<
+    [string, number, Uint8Array | number[]],
+    ICPResult_5
+  >,
   'register' : ActorMethod<[], boolean>,
   'register_capsule' : ActorMethod<[], CapsuleRegistrationResult>,
   'register_with_nonce' : ActorMethod<[string], boolean>,
@@ -332,6 +452,10 @@ export interface _SERVICE {
   'update_memory_in_capsule' : ActorMethod<
     [string, MemoryUpdateData],
     MemoryOperationResponse
+  >,
+  'upsert_metadata' : ActorMethod<
+    [string, MemoryType, SimpleMemoryMetadata, string],
+    ICPResult_6
   >,
   'verify_nonce' : ActorMethod<[string], [] | [Principal]>,
   'whoami' : ActorMethod<[], Principal>,

@@ -105,6 +105,8 @@ export async function storeInDatabase(params: {
   // Generate a secure code for the owner
   const ownerSecureCode = crypto.randomUUID();
 
+  let memoryData: { id: string; ownerId: string };
+
   if (type === "image") {
     const [image] = await db
       .insert(images)
@@ -117,7 +119,7 @@ export async function storeInDatabase(params: {
         ownerSecureCode,
       })
       .returning();
-    return { type: "image", data: image };
+    memoryData = image;
   } else if (type === "video") {
     const [video] = await db
       .insert(videos)
@@ -137,7 +139,7 @@ export async function storeInDatabase(params: {
         },
       })
       .returning();
-    return { type: "video", data: video };
+    memoryData = video;
   } else {
     const [document] = await db
       .insert(documents)
@@ -152,8 +154,23 @@ export async function storeInDatabase(params: {
         ownerSecureCode,
       })
       .returning();
-    return { type: "document", data: document };
+    memoryData = document;
   }
+
+  // Create storage edges for the newly created memory
+  const storageEdgeResult = await createStorageEdgesForMemory({
+    memoryId: memoryData.id,
+    memoryType: type,
+    url,
+    size: metadata.size,
+  });
+
+  if (!storageEdgeResult.success) {
+    console.warn("⚠️ Failed to create storage edges for memory:", memoryData.id, storageEdgeResult.error);
+    // Don't fail the upload if storage edge creation fails
+  }
+
+  return { type, data: memoryData };
 }
 
 export type FileValidationResult = {
@@ -209,6 +226,78 @@ export async function validateFile(file: File): Promise<{ isValid: boolean; erro
   }
 
   return { isValid: true, buffer };
+}
+
+/**
+ * Create storage edges for a newly created memory
+ * This function creates the necessary storage edge records to track where the memory is stored
+ */
+export async function createStorageEdgesForMemory(params: {
+  memoryId: string;
+  memoryType: "image" | "video" | "note" | "document" | "audio";
+  url: string;
+  size: number;
+  contentHash?: string;
+}) {
+  const { memoryId, memoryType, url, size, contentHash } = params;
+
+  try {
+    console.log("🔗 Creating storage edges for memory:", { memoryId, memoryType });
+
+    // Create metadata edge for neon-db (always present when memory is created)
+    const metadataEdge = {
+      memoryId,
+      memoryType,
+      artifact: "metadata" as const,
+      backend: "neon-db" as const,
+      present: true,
+      location: null, // Metadata is stored in the main memory table
+      contentHash: null,
+      sizeBytes: null, // Metadata size is negligible
+      syncState: "idle" as const,
+      syncError: null,
+    };
+
+    // Create asset edge for vercel-blob (present when file is uploaded)
+    const assetEdge = {
+      memoryId,
+      memoryType,
+      artifact: "asset" as const,
+      backend: "vercel-blob" as const,
+      present: true,
+      location: url, // The blob URL
+      contentHash: contentHash || null,
+      sizeBytes: size,
+      syncState: "idle" as const,
+      syncError: null,
+    };
+
+    // Import the storage edges table
+    const { storageEdges } = await import("@/db/schema");
+
+    // Insert both edges
+    const [metadataResult, assetResult] = await Promise.all([
+      db.insert(storageEdges).values(metadataEdge).returning(),
+      db.insert(storageEdges).values(assetEdge).returning(),
+    ]);
+
+    console.log("✅ Storage edges created successfully:", {
+      metadataEdgeId: metadataResult[0]?.id,
+      assetEdgeId: assetResult[0]?.id,
+    });
+
+    return {
+      success: true,
+      metadataEdge: metadataResult[0],
+      assetEdge: assetResult[0],
+    };
+  } catch (error) {
+    console.error("❌ Error creating storage edges:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
 }
 
 // ============================================================================

@@ -10,6 +10,7 @@ import {
   validateFileType,
   validateFileWithErrorHandling,
   uploadFileToStorageWithErrorHandling,
+  createStorageEdgesForMemory,
 } from "../utils";
 import { isAcceptedMimeType, validateFile, uploadFileToStorage, getMemoryType } from "../utils";
 import { auth } from "@/auth";
@@ -338,6 +339,41 @@ export async function POST(request: NextRequest) {
     });
 
     console.log(`✅ Batch inserted ${insertedIds.length} files into database`);
+
+    // Create storage edges for all successfully inserted memories
+    console.log("🔗 Creating storage edges for batch upload...");
+    const storageEdgePromises = uploadResults
+      .filter((result) => result.success && result.memoryId)
+      .map(async (result, index) => {
+        const file = files[index];
+        const memoryType = getMemoryType(
+          file.type as
+            | "image/jpeg"
+            | "image/png"
+            | "image/gif"
+            | "image/webp"
+            | "video/mp4"
+            | "video/webm"
+            | "application/pdf"
+            | "application/msword"
+            | "text/plain"
+            | "text/markdown"
+        );
+
+        return createStorageEdgesForMemory({
+          memoryId: result.memoryId!,
+          memoryType,
+          url: result.url,
+          size: file.size,
+        });
+      });
+
+    const storageEdgeResults = await Promise.allSettled(storageEdgePromises);
+    const successfulStorageEdges = storageEdgeResults.filter(
+      (result) => result.status === "fulfilled" && result.value.success
+    ).length;
+
+    console.log(`✅ Created storage edges for ${successfulStorageEdges}/${uploadResults.length} memories`);
 
     const endTime = Date.now();
     const totalTime = (endTime - startTime) / 1000;

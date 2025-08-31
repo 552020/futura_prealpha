@@ -18,7 +18,53 @@ export const idlFactory = ({ IDL }) => {
     'message' : IDL.Text,
     'success' : IDL.Bool,
   });
+  const ICPErrorCode = IDL.Variant({
+    'Internal' : IDL.Text,
+    'NotFound' : IDL.Null,
+    'InvalidHash' : IDL.Null,
+    'Unauthorized' : IDL.Null,
+    'AlreadyExists' : IDL.Null,
+  });
+  const UploadSession = IDL.Record({
+    'session_id' : IDL.Text,
+    'chunks_received' : IDL.Vec(IDL.Bool),
+    'created_at' : IDL.Nat64,
+    'memory_id' : IDL.Text,
+    'expected_hash' : IDL.Text,
+    'total_size' : IDL.Nat64,
+    'chunk_count' : IDL.Nat32,
+    'bytes_received' : IDL.Nat64,
+  });
+  const UploadSessionResponse = IDL.Record({
+    'error' : IDL.Opt(ICPErrorCode),
+    'session' : IDL.Opt(UploadSession),
+    'message' : IDL.Text,
+    'success' : IDL.Bool,
+  });
+  const ICPResult = IDL.Record({
+    'data' : IDL.Opt(UploadSessionResponse),
+    'error' : IDL.Opt(ICPErrorCode),
+    'success' : IDL.Bool,
+  });
+  const ICPResult_1 = IDL.Record({
+    'data' : IDL.Opt(IDL.Null),
+    'error' : IDL.Opt(ICPErrorCode),
+    'success' : IDL.Bool,
+  });
   const Result = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
+  const CommitResponse = IDL.Record({
+    'total_bytes' : IDL.Nat64,
+    'memory_id' : IDL.Text,
+    'error' : IDL.Opt(ICPErrorCode),
+    'message' : IDL.Text,
+    'final_hash' : IDL.Text,
+    'success' : IDL.Bool,
+  });
+  const ICPResult_2 = IDL.Record({
+    'data' : IDL.Opt(CommitResponse),
+    'error' : IDL.Opt(ICPErrorCode),
+    'success' : IDL.Bool,
+  });
   const PersonRef = IDL.Variant({
     'Opaque' : IDL.Text,
     'Principal' : IDL.Principal,
@@ -222,6 +268,34 @@ export const idlFactory = ({ IDL }) => {
     'canister_id' : IDL.Opt(IDL.Principal),
     'message' : IDL.Opt(IDL.Text),
   });
+  const MemoryPresenceResult = IDL.Record({
+    'metadata_present' : IDL.Bool,
+    'memory_id' : IDL.Text,
+    'asset_present' : IDL.Bool,
+  });
+  const MemoryListPresenceResponse = IDL.Record({
+    'cursor' : IDL.Opt(IDL.Text),
+    'results' : IDL.Vec(MemoryPresenceResult),
+    'error' : IDL.Opt(ICPErrorCode),
+    'success' : IDL.Bool,
+    'has_more' : IDL.Bool,
+  });
+  const ICPResult_3 = IDL.Record({
+    'data' : IDL.Opt(MemoryListPresenceResponse),
+    'error' : IDL.Opt(ICPErrorCode),
+    'success' : IDL.Bool,
+  });
+  const MemoryPresenceResponse = IDL.Record({
+    'metadata_present' : IDL.Bool,
+    'error' : IDL.Opt(ICPErrorCode),
+    'success' : IDL.Bool,
+    'asset_present' : IDL.Bool,
+  });
+  const ICPResult_4 = IDL.Record({
+    'data' : IDL.Opt(MemoryPresenceResponse),
+    'error' : IDL.Opt(ICPErrorCode),
+    'success' : IDL.Bool,
+  });
   const PersonalCanisterCreationStats = IDL.Record({
     'total_successes' : IDL.Nat64,
     'total_failures' : IDL.Nat64,
@@ -260,6 +334,18 @@ export const idlFactory = ({ IDL }) => {
     'controller_count' : IDL.Nat32,
     'memory_count' : IDL.Nat32,
   });
+  const ChunkResponse = IDL.Record({
+    'chunk_index' : IDL.Nat32,
+    'error' : IDL.Opt(ICPErrorCode),
+    'message' : IDL.Text,
+    'bytes_received' : IDL.Nat32,
+    'success' : IDL.Bool,
+  });
+  const ICPResult_5 = IDL.Record({
+    'data' : IDL.Opt(ChunkResponse),
+    'error' : IDL.Opt(ICPErrorCode),
+    'success' : IDL.Bool,
+  });
   const CapsuleRegistrationResult = IDL.Record({
     'capsule_id' : IDL.Opt(IDL.Text),
     'is_new' : IDL.Bool,
@@ -294,6 +380,27 @@ export const idlFactory = ({ IDL }) => {
     'metadata' : IDL.Opt(MemoryMetadata),
     'name' : IDL.Opt(IDL.Text),
   });
+  const SimpleMemoryMetadata = IDL.Record({
+    'title' : IDL.Opt(IDL.Text),
+    'updated_at' : IDL.Nat64,
+    'size' : IDL.Opt(IDL.Nat64),
+    'tags' : IDL.Vec(IDL.Text),
+    'content_type' : IDL.Opt(IDL.Text),
+    'description' : IDL.Opt(IDL.Text),
+    'created_at' : IDL.Nat64,
+    'custom_fields' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+  });
+  const MetadataResponse = IDL.Record({
+    'memory_id' : IDL.Opt(IDL.Text),
+    'error' : IDL.Opt(ICPErrorCode),
+    'message' : IDL.Text,
+    'success' : IDL.Bool,
+  });
+  const ICPResult_6 = IDL.Record({
+    'data' : IDL.Opt(MetadataResponse),
+    'error' : IDL.Opt(ICPErrorCode),
+    'success' : IDL.Bool,
+  });
   return IDL.Service({
     'add_admin' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'add_memory_to_capsule' : IDL.Func(
@@ -301,8 +408,15 @@ export const idlFactory = ({ IDL }) => {
         [MemoryOperationResponse],
         [],
       ),
+    'begin_asset_upload' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Nat32, IDL.Nat64],
+        [ICPResult],
+        [],
+      ),
+    'cancel_upload' : IDL.Func([IDL.Text], [ICPResult_1], []),
     'clear_creation_state' : IDL.Func([IDL.Principal], [Result], []),
     'clear_migration_state' : IDL.Func([IDL.Principal], [Result], []),
+    'commit_asset' : IDL.Func([IDL.Text, IDL.Text], [ICPResult_2], []),
     'create_capsule' : IDL.Func([PersonRef], [CapsuleCreationResult], []),
     'create_personal_canister' : IDL.Func(
         [],
@@ -343,6 +457,12 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(Memory)],
         ['query'],
       ),
+    'get_memory_list_presence_icp' : IDL.Func(
+        [IDL.Vec(IDL.Text), IDL.Opt(IDL.Text), IDL.Nat32],
+        [ICPResult_3],
+        ['query'],
+      ),
+    'get_memory_presence_icp' : IDL.Func([IDL.Text], [ICPResult_4], ['query']),
     'get_migration_states_by_status' : IDL.Func(
         [CreationStatus],
         [Result_1],
@@ -404,6 +524,11 @@ export const idlFactory = ({ IDL }) => {
     'mark_capsule_bound_to_web2' : IDL.Func([], [IDL.Bool], []),
     'migrate_capsule' : IDL.Func([], [PersonalCanisterCreationResponse], []),
     'prove_nonce' : IDL.Func([IDL.Text], [IDL.Bool], []),
+    'put_chunk' : IDL.Func(
+        [IDL.Text, IDL.Nat32, IDL.Vec(IDL.Nat8)],
+        [ICPResult_5],
+        [],
+      ),
     'register' : IDL.Func([], [IDL.Bool], []),
     'register_capsule' : IDL.Func([], [CapsuleRegistrationResult], []),
     'register_with_nonce' : IDL.Func([IDL.Text], [IDL.Bool], []),
@@ -427,6 +552,11 @@ export const idlFactory = ({ IDL }) => {
     'update_memory_in_capsule' : IDL.Func(
         [IDL.Text, MemoryUpdateData],
         [MemoryOperationResponse],
+        [],
+      ),
+    'upsert_metadata' : IDL.Func(
+        [IDL.Text, MemoryType, SimpleMemoryMetadata, IDL.Text],
+        [ICPResult_6],
         [],
       ),
     'verify_nonce' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Principal)], ['query']),
