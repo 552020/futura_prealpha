@@ -210,8 +210,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     // Get the actual memory data for each item
     const itemsWithMemories = [];
+    console.log("Processing accessible items:", accessibleItems.length);
+
     for (const item of accessibleItems) {
       try {
+        console.log(`Processing item: ${item.memoryId} (type: ${item.memoryType})`);
         let memory = null;
 
         switch (item.memoryType) {
@@ -243,6 +246,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         }
 
         if (memory) {
+          console.log(`Found memory for item ${item.memoryId}`);
           itemsWithMemories.push({
             ...item,
             memory,
