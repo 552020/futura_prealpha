@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useAuthGuard } from "@/utils/authentication";
@@ -565,4 +565,8 @@ function GalleryPreviewContent() {
       )}
     </div>
   );
+}
+
+export default function GalleryPreviewPage() {
+  return <GalleryPreviewContent />;
 }

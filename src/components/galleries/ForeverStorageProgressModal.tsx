@@ -159,7 +159,7 @@ export function ForeverStorageProgressModal({
     if (isOpen && currentStep === "idle") {
       handleStartStorage();
     }
-  }, [isOpen, currentStep]);
+  }, [isOpen, currentStep, handleStartStorage]);
 
   const handleRetry = () => {
     setCurrentStep("idle");
@@ -193,7 +193,7 @@ export function ForeverStorageProgressModal({
       // Continue the flow from the beginning; it will pass auth now
       handleStartStorage();
     }
-  }, [isOpen, currentStep, hasIIPrincipal]);
+  }, [isOpen, currentStep, hasIIPrincipal, handleStartStorage]);
 
   const handleClose = () => {
     if (currentStep === "success") {

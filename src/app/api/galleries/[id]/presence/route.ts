@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/db";
-import { getGalleryPresenceById } from "@/db/schema";
+import { getGalleryPresenceById, DBGalleryPresence } from "@/db/schema";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "Gallery not found or no presence data available" }, { status: 404 });
     }
 
-    const presenceData = rows[0] as Record<string, unknown>;
+    const presenceData = rows[0] as DBGalleryPresence;
 
     return NextResponse.json({
       success: true,

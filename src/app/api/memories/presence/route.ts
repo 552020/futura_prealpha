@@ -8,7 +8,11 @@ export async function GET(request: NextRequest) {
     const memoryType = searchParams.get("type");
     const memoryId = searchParams.get("id");
 
-    // Validate UUID format for memoryId
+    // Validate memoryId exists and has valid UUID format
+    if (!memoryId) {
+      return NextResponse.json({ error: "Missing required parameter: id" }, { status: 400 });
+    }
+
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(memoryId)) {
       return NextResponse.json({ error: "Invalid memoryId format. Must be a valid UUID" }, { status: 400 });

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -60,10 +61,12 @@ export function GalleryCard({ gallery, onClick, onEdit, onShare, onView, classNa
         <CardHeader className="p-0 relative">
           <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
             {thumbnail ? (
-              <img
+              <Image
                 src={thumbnail}
                 alt={gallery.title}
-                className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                fill
+                className="object-cover transition-transform duration-200 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             ) : (
               <div className="h-full w-full bg-muted flex items-center justify-center">

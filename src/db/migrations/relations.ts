@@ -34,9 +34,6 @@ export const allUserRelations = relations(allUser, ({many}) => ({
 	familyMembers_userId: many(familyMember, {
 		relationName: "familyMember_userId_allUser_id"
 	}),
-	familyMembers_userId: many(familyMember, {
-		relationName: "familyMember_userId_allUser_id"
-	}),
 	galleryShares_ownerId: many(galleryShare, {
 		relationName: "galleryShare_ownerId_allUser_id"
 	}),
@@ -97,11 +94,6 @@ export const familyMemberRelations = relations(familyMember, ({one}) => ({
 		fields: [familyMember.ownerId],
 		references: [allUser.id],
 		relationName: "familyMember_ownerId_allUser_id"
-	}),
-	allUser_userId: one(allUser, {
-		fields: [familyMember.userId],
-		references: [allUser.id],
-		relationName: "familyMember_userId_allUser_id"
 	}),
 	allUser_userId: one(allUser, {
 		fields: [familyMember.userId],
