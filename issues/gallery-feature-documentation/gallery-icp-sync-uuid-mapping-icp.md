@@ -681,3 +681,235 @@ Key changes:
 5. **Idempotent operations** - Safe retry mechanisms
 
 This approach aligns with the UUID mapping plan while maintaining clean architecture boundaries and avoiding data drift between systems.
+
+---
+
+## Final Implementation-Ready Candid Interface
+
+### Production-Ready Types with Error Handling
+
+```candid
+// Core types
+type ArtifactType = variant { Metadata; Asset };
+
+// Error handling with structured results
+type ErrorCode = variant {
+  Unauthorized;
+  AlreadyExists;
+  NotFound;
+  InvalidHash;
+  UploadExpired;
+  InsufficientCycles;
+  Internal;
+};
+
+type Result<T> = variant { Ok : T; Err : ErrorCode };
+
+// Idempotency and pagination
+type IdempotencyKey = text; // Format: "<memory_id>:<artifact>:<hash>"
+type PaginationCursor = text; // Opaque cursor for pagination
+type PaginationLimit = nat32; // Max items per page
+
+// Upload protocol
+type UploadSession = record {
+  upload_id : text;
+  memory_id : text;
+  memory_type : MemoryType;
+  content_hash : text;
+  size_bytes : nat64;
+  created_at_ns : nat64; // nanoseconds since Unix epoch
+  expires_at_ns : nat64; // nanoseconds since Unix epoch
+  chunk_count : nat32;
+  received_chunks : nat32;
+};
+
+type BeginUploadRequest = record {
+  memory_id : text;
+  memory_type : MemoryType;
+  content_hash : text;
+  size_bytes : nat64;
+  idempotency_key : IdempotencyKey;
+};
+
+type BeginUploadResponse = record {
+  upload_id : text;
+  expires_at_ns : nat64;
+  chunk_count : nat32;
+  max_chunk_size : nat32; // bytes per chunk
+};
+
+type PutChunkRequest = record {
+  upload_id : text;
+  chunk_index : nat32;
+  data : blob;
+};
+
+type CommitAssetResponse = record {
+  location : text; // ICP storage location
+  content_hash : text;
+  size_bytes : nat64;
+};
+
+// ICP presence tracking
+type IcpArtifactPresence = record {
+  memory_id : text;
+  memory_type : MemoryType;
+  artifact : ArtifactType;
+  present : bool;
+  content_hash : opt text;
+  size_bytes : opt nat64;
+  created_at_ns : nat64; // nanoseconds since Unix epoch
+  updated_at_ns : nat64; // nanoseconds since Unix epoch
+};
+
+type MemoryPresenceIcp = record {
+  meta_icp : bool;
+  asset_icp : bool;
+  meta_hash : opt text;
+  asset_hash : opt text;
+  size_bytes : opt nat64;
+};
+
+// Gallery presence with pagination
+type GalleryPresencePage = record {
+  artifacts : vec IcpArtifactPresence;
+  next_cursor : opt PaginationCursor;
+  has_more : bool;
+};
+
+// Metadata operations
+type UpsertMetadataRequest = record {
+  memory_id : text;
+  memory_type : MemoryType;
+  serialized_metadata : blob;
+  content_hash : opt text;
+  idempotency_key : IdempotencyKey;
+};
+
+// Asset retrieval with explicit error handling
+type GetArtifactResponse = variant {
+  Found : record { data : blob; content_hash : text; size_bytes : nat64 };
+  NotFound;
+  Unauthorized;
+};
+
+// Quotas and limits
+type UserQuota = record {
+  max_uploads_per_day : nat32;
+  max_total_bytes : nat64;
+  current_uploads_today : nat32;
+  current_total_bytes : nat64;
+};
+
+type QuotaResponse = record {
+  quota : UserQuota;
+  can_upload : bool;
+  reason_if_blocked : opt text;
+};
+```
+
+### Production-Ready Service Interface
+
+```candid
+service : () -> {
+  // Existing methods...
+
+  // === UPLOAD PROTOCOL ===
+  // Start chunked upload with idempotency
+  begin_asset_upload : (BeginUploadRequest) -> (Result<BeginUploadResponse>);
+
+  // Stream chunks (max 2MB per chunk, 100MB total)
+  put_chunk : (PutChunkRequest) -> (Result<bool>);
+
+  // Commit upload and make artifact present
+  commit_asset : (text) -> (Result<CommitAssetResponse>);
+
+  // === METADATA OPERATIONS ===
+  // Upsert metadata with idempotency
+  upsert_metadata : (UpsertMetadataRequest) -> (Result<bool>);
+
+  // === PRESENCE QUERIES ===
+  // Get ICP presence for a single memory
+  get_memory_presence_icp : (text, MemoryType) -> (MemoryPresenceIcp) query;
+
+  // Get ICP presence for gallery memories (paginated)
+  list_gallery_memory_presence_icp : (text, opt PaginationCursor, PaginationLimit) -> (GalleryPresencePage) query;
+
+  // Get ICP presence for specific memory list (Web2 passes memory IDs)
+  get_memory_list_presence_icp : (vec record { text; MemoryType }) -> (vec IcpArtifactPresence) query;
+
+  // === ASSET RETRIEVAL ===
+  // Get artifact data with explicit error handling
+  get_memory_artifact_icp : (text, MemoryType, ArtifactType) -> (GetArtifactResponse) query;
+
+  // === GALLERY OPERATIONS ===
+  // Store gallery artifacts on ICP (Web2 passes memory list)
+  store_gallery_artifacts_icp : (text, vec record { text; MemoryType }) -> (Result<text>);
+
+  // === QUOTA MANAGEMENT ===
+  // Check user upload quotas
+  get_user_quota : () -> (QuotaResponse) query;
+
+  // === ADMIN OPERATIONS ===
+  // Admin: clear expired upload sessions
+  admin_clear_expired_sessions : () -> (Result<nat32>);
+
+  // Admin: get upload session info
+  admin_get_upload_session : (text) -> (opt UploadSession) query;
+
+  // === AUDIT LOGGING ===
+  // Get recent operations for audit (admin only)
+  admin_get_recent_operations : (nat32) -> (vec record { principal; text; nat64 }) query;
+}
+```
+
+### Implementation Notes
+
+#### 1. **Gallery Membership Source**
+
+- **Option B (Simpler)**: Web2 passes memory list to ICP
+- `store_gallery_artifacts_icp(gallery_id, memory_list)`
+- `get_memory_list_presence_icp(memory_list)`
+- No gallery membership tracking in ICP
+
+#### 2. **Upload Limits & Chunking**
+
+- **Max chunk size**: 2MB per chunk
+- **Max total size**: 100MB per upload
+- **Idle timeout**: 1 hour (3600 seconds)
+- **Max chunks**: 50 per upload
+
+#### 3. **Stable Data Layout**
+
+- Store chunks in stable memory as they arrive
+- Use `ic-stable-structures::Vec` for chunk storage
+- Keep only metadata + pointers in main canister
+
+#### 4. **Security Model**
+
+- **User writes**: Must be done by II principal (memory owner)
+- **Server writes**: Use delegated capability pattern
+- **Admin operations**: Restricted to admin principals
+- **Audit logging**: All mutating calls logged with caller + memory_id
+
+#### 5. **Consistency with Web2**
+
+- Web2 calls `commit_asset` → waits for success
+- Web2 calls `get_memory_presence_icp` → confirms presence
+- Web2 updates `storage_edges.present = true` only after confirmation
+- This prevents drift between systems
+
+#### 6. **Candid Enum Alignment**
+
+```candid
+// Must match Web2 exactly
+type MemoryType = variant {
+  Image;    // maps to "image"
+  Video;    // maps to "video"
+  Note;     // maps to "note"
+  Document; // maps to "document"
+  Audio;    // maps to "audio"
+};
+```
+
+This production-ready interface addresses all the tactical refinements and provides a robust foundation for the ICP backend implementation.

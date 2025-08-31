@@ -791,6 +791,66 @@ export const storageEdges = pgTable(
 export type DBStorageEdge = typeof storageEdges.$inferSelect;
 export type NewDBStorageEdge = typeof storageEdges.$inferInsert;
 
+// NOTE: Views are created/updated ONLY via SQL migrations.
+// These helpers are read-only projections for typing & autocompletion.
+
+// Memory Presence View Types
+export type DBMemoryPresence = {
+  memory_id: string;
+  memory_type: "image" | "video" | "note" | "document" | "audio";
+  meta_neon: boolean;
+  asset_blob: boolean;
+  meta_icp: boolean;
+  asset_icp: boolean;
+};
+
+export type DBGalleryPresence = {
+  gallery_id: string;
+  total_memories: number;
+  icp_complete_memories: number;
+  icp_complete: boolean;
+  icp_any: boolean;
+};
+
+export type DBSyncStatus = {
+  memory_id: string;
+  memory_type: "image" | "video" | "note" | "document" | "audio";
+  artifact: "metadata" | "asset";
+  backend: "neon-db" | "vercel-blob" | "icp-canister";
+  sync_state: "idle" | "migrating" | "failed";
+  sync_error: string | null;
+  last_synced_at: Date | null;
+  created_at: Date;
+  updated_at: Date;
+  sync_duration_seconds: number | null;
+  is_stuck: boolean;
+};
+
+// Read-only bindings for views (defined in migrations):
+// These are NOT DDL; just typed selectors for application code.
+export const memoryPresence = sql<DBMemoryPresence>`SELECT * FROM memory_presence`.as("memory_presence");
+
+export const galleryPresence = sql<DBGalleryPresence>`SELECT * FROM gallery_presence`.as("gallery_presence");
+
+export const syncStatus = sql<DBSyncStatus>`SELECT * FROM sync_status`.as("sync_status");
+
+// Helper functions for common queries
+export const getMemoryPresenceById = (memoryId: string, memoryType: string) =>
+  sql<DBMemoryPresence>`SELECT * FROM memory_presence WHERE memory_id = ${memoryId} AND memory_type = ${memoryType}`;
+
+export const getGalleryPresenceById = (galleryId: string) =>
+  sql<DBGalleryPresence>`SELECT * FROM gallery_presence WHERE gallery_id = ${galleryId}`;
+
+export const getSyncStatusByState = (syncState: "migrating" | "failed") =>
+  sql<DBSyncStatus>`SELECT * FROM sync_status WHERE sync_state = ${syncState}`;
+
+export const getStuckSyncs = () => sql<DBSyncStatus>`SELECT * FROM sync_status WHERE is_stuck = true`;
+
+export const getSyncStatusByBackend = (backend: "neon-db" | "vercel-blob" | "icp-canister") =>
+  sql<DBSyncStatus>`SELECT * FROM sync_status WHERE backend = ${backend}`;
+
+export const refreshGalleryPresence = () => sql`SELECT refresh_gallery_presence()`;
+
 // Type helpers for the enums
 export type MemoryType = (typeof MEMORY_TYPES)[number];
 export type AccessLevel = (typeof ACCESS_LEVELS)[number];

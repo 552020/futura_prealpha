@@ -1,4 +1,4 @@
-import { pgTable, foreignKey, text, timestamp, unique, integer, boolean, json, uniqueIndex, index, primaryKey, pgEnum } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, text, timestamp, unique, integer, boolean, json, uniqueIndex, index, uuid, bigint, primaryKey, pgView, pgEnum } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 export const artifactT = pgEnum("artifact_t", ['metadata', 'asset'])
@@ -236,7 +236,7 @@ export const document = pgTable("document", {
 	size: text().notNull(),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
 	isPublic: boolean("is_public").default(false).notNull(),
-	metadata: json().default({"size":0,"mimeType":"","originalName":"","uploadedAt":"2025-08-31T13:42:37.328Z"}),
+	metadata: json().default({"size":0,"mimeType":"","originalName":"","uploadedAt":"2025-08-31T14:03:56.995Z"}),
 	description: text(),
 	ownerSecureCode: text("owner_secure_code").notNull(),
 	parentFolderId: text("parent_folder_id"),
@@ -255,7 +255,7 @@ export const image = pgTable("image", {
 	caption: text(),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
 	isPublic: boolean("is_public").default(false).notNull(),
-	metadata: json().default({"size":0,"mimeType":"","originalName":"","uploadedAt":"2025-08-31T13:42:37.327Z"}),
+	metadata: json().default({"size":0,"mimeType":"","originalName":"","uploadedAt":"2025-08-31T14:03:56.994Z"}),
 	title: text(),
 	description: text(),
 	ownerSecureCode: text("owner_secure_code").notNull(),
@@ -419,6 +419,29 @@ export const video = pgTable("video", {
 		}).onDelete("cascade"),
 ]);
 
+export const storageEdges = pgTable("storage_edges", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	memoryId: uuid("memory_id").notNull(),
+	memoryType: memoryTypeT("memory_type").notNull(),
+	artifact: artifactT().notNull(),
+	backend: backendT().notNull(),
+	present: boolean().default(false).notNull(),
+	location: text(),
+	contentHash: text("content_hash"),
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	sizeBytes: bigint("size_bytes", { mode: "number" }),
+	syncState: syncT("sync_state").default('idle').notNull(),
+	lastSyncedAt: timestamp("last_synced_at", { mode: 'string' }),
+	syncError: text("sync_error"),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	index("ix_edges_backend_present").using("btree", table.backend.asc().nullsLast().op("bool_ops"), table.artifact.asc().nullsLast().op("enum_ops"), table.present.asc().nullsLast().op("enum_ops")),
+	index("ix_edges_memory").using("btree", table.memoryId.asc().nullsLast().op("uuid_ops"), table.memoryType.asc().nullsLast().op("uuid_ops")),
+	index("ix_edges_sync_state").using("btree", table.syncState.asc().nullsLast().op("enum_ops")),
+	uniqueIndex("uq_edge").using("btree", table.memoryId.asc().nullsLast().op("enum_ops"), table.memoryType.asc().nullsLast().op("uuid_ops"), table.artifact.asc().nullsLast().op("enum_ops"), table.backend.asc().nullsLast().op("uuid_ops")),
+]);
+
 export const groupMember = pgTable("group_member", {
 	groupId: text("group_id").notNull(),
 	userId: text("user_id").notNull(),
@@ -465,3 +488,10 @@ export const account = pgTable("account", {
 		}).onDelete("cascade"),
 	primaryKey({ columns: [table.provider, table.providerAccountId], name: "account_provider_providerAccountId_pk"}),
 ]);
+export const memoryPresence = pgView("memory_presence", {	memoryId: uuid("memory_id"),
+	memoryType: memoryTypeT("memory_type"),
+	metaNeon: boolean("meta_neon"),
+	assetBlob: boolean("asset_blob"),
+	metaIcp: boolean("meta_icp"),
+	assetIcp: boolean("asset_icp"),
+}).as(sql`SELECT e.memory_id, e.memory_type, bool_or(e.backend = 'neon-db'::backend_t AND e.artifact = 'metadata'::artifact_t AND e.present) AS meta_neon, bool_or(e.backend = 'vercel-blob'::backend_t AND e.artifact = 'asset'::artifact_t AND e.present) AS asset_blob, bool_or(e.backend = 'icp-canister'::backend_t AND e.artifact = 'metadata'::artifact_t AND e.present) AS meta_icp, bool_or(e.backend = 'icp-canister'::backend_t AND e.artifact = 'asset'::artifact_t AND e.present) AS asset_icp FROM storage_edges e GROUP BY e.memory_id, e.memory_type`);
