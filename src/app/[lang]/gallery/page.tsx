@@ -148,9 +148,6 @@ export default function GalleryPage() {
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="font-medium text-lg line-clamp-1">{gallery.title}</h3>
                     <div className="flex items-center gap-2">
-                      {/* Debug: Log gallery data */}
-                      {console.log("Gallery data:", gallery)}
-                      {console.log("Storage status:", getGalleryStorageStatus(gallery))}
                       <StorageStatusBadge status={getGalleryStorageStatus(gallery)} />
                       <Badge variant={gallery.isPublic ? "default" : "secondary"}>
                         {gallery.isPublic ? (

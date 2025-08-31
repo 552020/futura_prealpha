@@ -86,7 +86,7 @@ export default function StorageBadgesDemoPage() {
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="font-medium">Wedding Ceremony</h3>
-                <p className="text-sm text-muted-foreground">The moment we said "I do"</p>
+                <p className="text-sm text-muted-foreground">The moment we said &quot;I do&quot;</p>
               </div>
               <StorageStatusBadge status="neon" />
             </div>

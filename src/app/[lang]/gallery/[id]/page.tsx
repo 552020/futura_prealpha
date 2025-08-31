@@ -116,6 +116,50 @@ function GalleryViewContent() {
     console.log("Edit gallery:", gallery?.id);
   };
 
+  const getStoreForeverButtonState = () => {
+    if (!gallery) return { text: "Store Forever", disabled: true, variant: "outline" as const };
+
+    // Check if gallery has storage status
+    if (gallery.storageStatus) {
+      switch (gallery.storageStatus.status) {
+        case "stored_forever":
+          return {
+            text: "Already Stored",
+            disabled: true,
+            variant: "secondary" as const,
+            className:
+              "border-green-200 text-green-700 hover:bg-green-50 dark:border-green-800 dark:text-green-300 dark:hover:bg-green-950",
+          };
+        case "partially_stored":
+          return {
+            text: "Continue Storing",
+            disabled: false,
+            variant: "outline" as const,
+            className:
+              "border-orange-200 text-orange-700 hover:bg-orange-50 dark:border-orange-800 dark:text-orange-300 dark:hover:bg-orange-950",
+          };
+        case "web2_only":
+        default:
+          return {
+            text: "Store Forever",
+            disabled: false,
+            variant: "outline" as const,
+            className:
+              "border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-950",
+          };
+      }
+    }
+
+    // Fallback for galleries without storage status
+    return {
+      text: "Store Forever",
+      disabled: false,
+      variant: "outline" as const,
+      className:
+        "border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-950",
+    };
+  };
+
   const handleStoreForever = () => {
     setShowForeverStorageModal(true);
   };
@@ -184,7 +228,16 @@ function GalleryViewContent() {
               <div className="flex items-center justify-between min-w-0">
                 <h1 className="text-2xl font-light">{gallery.title}</h1>
                 <div className="flex items-center gap-2">
-                  <StorageStatusBadge status={getGalleryStorageStatus(gallery)} />
+                  <div className="relative group">
+                    <StorageStatusBadge status={getGalleryStorageStatus(gallery)} />
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                      {gallery.storageStatus?.status === "stored_forever"
+                        ? "Gallery stored permanently on Internet Computer"
+                        : gallery.storageStatus?.status === "partially_stored"
+                        ? "Gallery partially stored on Internet Computer"
+                        : "Gallery stored in standard database"}
+                    </div>
+                  </div>
                   <Badge variant="outline" className="text-xs font-normal">
                     {gallery.isPublic ? (
                       <>
@@ -233,15 +286,46 @@ function GalleryViewContent() {
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleStoreForever}
-                className="border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-950"
-              >
-                <HardDrive className="h-4 w-4 mr-2" />
-                Store Forever
-              </Button>
+              {(() => {
+                const buttonState = getStoreForeverButtonState();
+                return (
+                  <>
+                    <div className="relative group">
+                      <Button
+                        variant={buttonState.variant}
+                        size="sm"
+                        onClick={handleStoreForever}
+                        disabled={buttonState.disabled}
+                        className={buttonState.className}
+                      >
+                        <HardDrive className="h-4 w-4 mr-2" />
+                        {buttonState.text}
+                      </Button>
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                        {gallery?.storageStatus?.status === "stored_forever"
+                          ? "This gallery is already permanently stored on the Internet Computer"
+                          : gallery?.storageStatus?.status === "partially_stored"
+                          ? "Continue storing the remaining items on the Internet Computer"
+                          : "Store this gallery permanently on the Internet Computer blockchain"}
+                      </div>
+                    </div>
+                    {gallery?.storageStatus?.status === "stored_forever" && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          // TODO: Open ICP explorer or gallery viewer
+                          console.log("View gallery on ICP:", gallery.id);
+                        }}
+                        className="border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-300 dark:hover:bg-purple-950"
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        View on ICP
+                      </Button>
+                    )}
+                  </>
+                );
+              })()}
               <Button variant="outline" size="sm" onClick={handleDeleteGallery} disabled={isDeleting}>
                 {isDeleting ? (
                   <>

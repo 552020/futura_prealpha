@@ -7,6 +7,14 @@ export interface GalleryWithItems extends DBGallery {
   items: (DBGalleryItem & { memory: Memory })[];
   imageCount: number;
   isOwner: boolean;
+  storageStatus?: {
+    totalMemories: number;
+    icpCompleteMemories: number;
+    icpComplete: boolean;
+    icpAny: boolean;
+    icpCompletePercentage: number;
+    status: "stored_forever" | "partially_stored" | "web2_only";
+  };
 }
 
 // Gallery creation request

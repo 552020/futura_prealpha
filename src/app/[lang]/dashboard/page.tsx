@@ -148,7 +148,7 @@ export default function VaultPage() {
       // Check if this is a folder item
       if (id.startsWith("folder-")) {
         const folderName = id.replace("folder-", "");
-        const result = await deleteAllMemories({ folder: folderName });
+        await deleteAllMemories({ folder: folderName });
         setMemories((prev) => prev.filter((memory) => memory.id !== id));
         toast({
           title: "Success",

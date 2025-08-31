@@ -34,7 +34,11 @@ export const mockStorageStatuses = {
 };
 
 // Helper function to determine storage status from gallery data
-export function getGalleryStorageStatus(gallery: any): StorageStatus {
+export function getGalleryStorageStatus(gallery: {
+  storageStatus?: { status: string };
+  icpComplete?: boolean;
+  storedInICP?: boolean;
+}): StorageStatus {
   // If gallery has storageStatus from our API
   if (gallery.storageStatus) {
     // Map the API status values to our badge values
@@ -58,7 +62,11 @@ export function getGalleryStorageStatus(gallery: any): StorageStatus {
 }
 
 // Helper function to determine storage status from memory data
-export function getMemoryStorageStatus(memory: any): StorageStatus {
+export function getMemoryStorageStatus(memory: {
+  storageStatus?: { status: string };
+  icpComplete?: boolean;
+  storedInICP?: boolean;
+}): StorageStatus {
   // If memory has storageStatus from our API
   if (memory.storageStatus) {
     return memory.storageStatus.status === "stored_forever" ? "icp" : "neon";

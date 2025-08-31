@@ -13,7 +13,6 @@ import { TawkChat } from "@/components/tawk-chat";
 import {
   fetchAndNormalizeMemories,
   deleteMemory,
-  deleteAllMemories,
   type NormalizedMemory,
   type DashboardItem,
 } from "@/services/memories";
