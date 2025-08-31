@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import { ForeverStorageProgressModal } from "@/components/galleries/ForeverStora
 // const USE_MOCK_DATA = true;
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_GALLERY === "true";
 
-export default function GalleryViewPage() {
+function GalleryViewContent() {
   const { id } = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -310,5 +310,13 @@ export default function GalleryViewPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function GalleryViewPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <GalleryViewContent />
+    </Suspense>
   );
 }

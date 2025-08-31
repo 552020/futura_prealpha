@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useAuthGuard } from "@/utils/authentication";
@@ -238,7 +238,7 @@ function GalleryGrid({
 
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_GALLERY === "true";
 
-export default function GalleryPreviewPage() {
+function GalleryPreviewContent() {
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();

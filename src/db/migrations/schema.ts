@@ -1,6 +1,10 @@
-import { pgTable, foreignKey, text, timestamp, unique, integer, boolean, json, uniqueIndex, index, primaryKey } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, text, timestamp, unique, integer, boolean, json, uniqueIndex, index, primaryKey, pgEnum } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
+export const artifactT = pgEnum("artifact_t", ['metadata', 'asset'])
+export const backendT = pgEnum("backend_t", ['neon-db', 'vercel-blob', 'icp-canister'])
+export const memoryTypeT = pgEnum("memory_type_t", ['image', 'video', 'note', 'document', 'audio'])
+export const syncT = pgEnum("sync_t", ['idle', 'migrating', 'failed'])
 
 
 export const familyRelationship = pgTable("family_relationship", {
@@ -232,7 +236,7 @@ export const document = pgTable("document", {
 	size: text().notNull(),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
 	isPublic: boolean("is_public").default(false).notNull(),
-	metadata: json().default({"size":0,"mimeType":"","originalName":"","uploadedAt":"2025-08-28T08:31:49.951Z"}),
+	metadata: json().default({"size":0,"mimeType":"","originalName":"","uploadedAt":"2025-08-31T13:42:37.328Z"}),
 	description: text(),
 	ownerSecureCode: text("owner_secure_code").notNull(),
 	parentFolderId: text("parent_folder_id"),
@@ -251,7 +255,7 @@ export const image = pgTable("image", {
 	caption: text(),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
 	isPublic: boolean("is_public").default(false).notNull(),
-	metadata: json().default({"size":0,"mimeType":"","originalName":"","uploadedAt":"2025-08-28T08:31:49.950Z"}),
+	metadata: json().default({"size":0,"mimeType":"","originalName":"","uploadedAt":"2025-08-31T13:42:37.327Z"}),
 	title: text(),
 	description: text(),
 	ownerSecureCode: text("owner_secure_code").notNull(),

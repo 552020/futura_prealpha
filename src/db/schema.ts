@@ -1,5 +1,6 @@
 import {
   pgTable,
+  pgEnum,
   text,
   timestamp,
   json,
@@ -9,12 +10,20 @@ import {
   uniqueIndex,
   foreignKey,
   index,
+  uuid,
+  bigint,
   //   IndexBuilder,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 // import type { AdapterAccount } from "@auth/core/adapters";
 import type { AdapterAccount } from "next-auth/adapters";
+
+// Storage Edge Enums
+export const artifact_t = pgEnum("artifact_t", ["metadata", "asset"]);
+export const backend_t = pgEnum("backend_t", ["neon-db", "vercel-blob", "icp-canister"]); // add more later
+export const memory_type_t = pgEnum("memory_type_t", ["image", "video", "note", "document", "audio"]);
+export const sync_t = pgEnum("sync_t", ["idle", "migrating", "failed"]);
 // Users table - Core user data - required for auth.js
 export const users = pgTable(
   "user",
@@ -751,6 +760,36 @@ export const iiNonces = pgTable(
 
 export type DBIINonce = typeof iiNonces.$inferSelect;
 export type NewDBIINonce = typeof iiNonces.$inferInsert;
+
+// Storage Edges Table - Track storage presence per memory artifact and backend
+export const storageEdges = pgTable(
+  "storage_edges",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    memoryId: uuid("memory_id").notNull(), // References images.id, videos.id, etc.
+    memoryType: memory_type_t("memory_type").notNull(), // 'image' | 'video' | 'note' | 'document' | 'audio'
+    artifact: artifact_t("artifact").notNull(), // 'metadata' | 'asset'
+    backend: backend_t("backend").notNull(), // 'neon-db' | 'vercel-blob' | 'icp-canister'
+    present: boolean("present").notNull().default(false),
+    location: text("location"), // blob key / icp path / etc.
+    contentHash: text("content_hash"), // SHA-256 for assets
+    sizeBytes: bigint("size_bytes", { mode: "number" }),
+    syncState: sync_t("sync_state").notNull().default("idle"), // 'idle' | 'migrating' | 'failed'
+    lastSyncedAt: timestamp("last_synced_at", { mode: "date" }),
+    syncError: text("sync_error"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("uq_edge").on(t.memoryId, t.memoryType, t.artifact, t.backend),
+    index("ix_edges_memory").on(t.memoryId, t.memoryType),
+    index("ix_edges_backend_present").on(t.backend, t.artifact, t.present),
+    index("ix_edges_sync_state").on(t.syncState),
+  ]
+);
+
+export type DBStorageEdge = typeof storageEdges.$inferSelect;
+export type NewDBStorageEdge = typeof storageEdges.$inferInsert;
 
 // Type helpers for the enums
 export type MemoryType = (typeof MEMORY_TYPES)[number];
