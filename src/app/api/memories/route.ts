@@ -6,6 +6,34 @@ import { eq, desc, sql } from "drizzle-orm";
 import { images, documents, notes, videos, audio, allUsers, memoryShares } from "@/db/schema";
 import { DBImage, DBDocument, DBNote } from "@/db/schema";
 import { fetchMemoriesWithGalleries } from "./queries";
+import { cleanupStorageEdgesForMemory } from "./upload/utils";
+
+// Helper function to clean up storage edges for deleted memories
+async function cleanupStorageEdgesForMemories(memories: Array<{ id: string; type: string }>) {
+  const cleanupPromises = memories.map(({ id, type }) =>
+    cleanupStorageEdgesForMemory({
+      memoryId: id,
+      memoryType: type as "image" | "video" | "note" | "document" | "audio",
+    })
+  );
+
+  const results = await Promise.allSettled(cleanupPromises);
+
+  let successCount = 0;
+  let errorCount = 0;
+
+  results.forEach((result) => {
+    if (result.status === "fulfilled" && result.value.success) {
+      successCount++;
+    } else {
+      errorCount++;
+    }
+  });
+
+  console.log(`Storage edge cleanup: ${successCount} successful, ${errorCount} failed`);
+
+  return { successCount, errorCount };
+}
 
 export async function GET(request: NextRequest) {
   // Check authentication
@@ -244,12 +272,28 @@ export async function DELETE(request: NextRequest) {
         deletedNotes.length +
         deletedVideos.length +
         deletedAudio.length;
+
+      // Clean up storage edges for deleted memories
+      const memoriesToCleanup = [
+        ...deletedImages.map((img) => ({ id: img.id, type: "image" })),
+        ...deletedDocuments.map((doc) => ({ id: doc.id, type: "document" })),
+        ...deletedNotes.map((note) => ({ id: note.id, type: "note" })),
+        ...deletedVideos.map((video) => ({ id: video.id, type: "video" })),
+        ...deletedAudio.map((audio) => ({ id: audio.id, type: "audio" })),
+      ];
+
+      if (memoriesToCleanup.length > 0) {
+        await cleanupStorageEdgesForMemories(memoriesToCleanup);
+      }
     } else if (type) {
       // Delete specific type
+      let memoriesToCleanup: Array<{ id: string; type: string }> = [];
+
       switch (type) {
         case "image":
           const deletedImages = await db.delete(images).where(eq(images.ownerId, allUserRecord.id)).returning();
           deletedCount = deletedImages.length;
+          memoriesToCleanup = deletedImages.map((img) => ({ id: img.id, type: "image" }));
           break;
         case "document":
           const deletedDocuments = await db
@@ -257,21 +301,30 @@ export async function DELETE(request: NextRequest) {
             .where(eq(documents.ownerId, allUserRecord.id))
             .returning();
           deletedCount = deletedDocuments.length;
+          memoriesToCleanup = deletedDocuments.map((doc) => ({ id: doc.id, type: "document" }));
           break;
         case "note":
           const deletedNotes = await db.delete(notes).where(eq(notes.ownerId, allUserRecord.id)).returning();
           deletedCount = deletedNotes.length;
+          memoriesToCleanup = deletedNotes.map((note) => ({ id: note.id, type: "note" }));
           break;
         case "video":
           const deletedVideos = await db.delete(videos).where(eq(videos.ownerId, allUserRecord.id)).returning();
           deletedCount = deletedVideos.length;
+          memoriesToCleanup = deletedVideos.map((video) => ({ id: video.id, type: "video" }));
           break;
         case "audio":
           const deletedAudio = await db.delete(audio).where(eq(audio.ownerId, allUserRecord.id)).returning();
           deletedCount = deletedAudio.length;
+          memoriesToCleanup = deletedAudio.map((audio) => ({ id: audio.id, type: "audio" }));
           break;
         default:
           return NextResponse.json({ error: `Invalid type: ${type}` }, { status: 400 });
+      }
+
+      // Clean up storage edges for deleted memories
+      if (memoriesToCleanup.length > 0) {
+        await cleanupStorageEdgesForMemories(memoriesToCleanup);
       }
     } else if (folder) {
       // Delete memories in specific folder (using metadata.folderName)
@@ -304,6 +357,19 @@ export async function DELETE(request: NextRequest) {
         deletedNotes.length +
         deletedVideos.length +
         deletedAudio.length;
+
+      // Clean up storage edges for deleted memories
+      const memoriesToCleanup = [
+        ...deletedImages.map((img) => ({ id: img.id, type: "image" })),
+        ...deletedDocuments.map((doc) => ({ id: doc.id, type: "document" })),
+        ...deletedNotes.map((note) => ({ id: note.id, type: "note" })),
+        ...deletedVideos.map((video) => ({ id: video.id, type: "video" })),
+        ...deletedAudio.map((audio) => ({ id: audio.id, type: "audio" })),
+      ];
+
+      if (memoriesToCleanup.length > 0) {
+        await cleanupStorageEdgesForMemories(memoriesToCleanup);
+      }
     } else {
       return NextResponse.json(
         {

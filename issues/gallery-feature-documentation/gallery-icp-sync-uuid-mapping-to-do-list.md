@@ -68,7 +68,12 @@
     - ✅ **Integrated**: Folder upload (`/api/memories/upload/folder`)
     - ✅ **Integrated**: Onboarding upload (`/api/memories/upload/onboarding`)
     - ✅ **Note**: Notes creation (text input) uses different flow than file uploads
-26. [ ] Update memory deletion to clean up storage edges
+26. [x] Update memory deletion to clean up storage edges
+    - ✅ **Implemented**: `cleanupStorageEdgesForMemory()` function
+    - ✅ **Integrated**: Bulk deletion (all memories)
+    - ✅ **Integrated**: Type-specific deletion (image, video, document, note, audio)
+    - ✅ **Integrated**: Folder-based deletion
+    - ✅ **Added**: Helper function for batch cleanup with error handling
 27. [ ] Add transaction handling for atomic operations
 
 ### Gallery Status Computation
@@ -239,15 +244,15 @@
 
 ## Progress Summary
 
-**Completed Tasks**: 28/116 (24.1%)
+**Completed Tasks**: 29/116 (25.0%)
 
 - ✅ **Phase 1**: 12/12 tasks (100%) - COMPLETE
 - ✅ **Phase 2**: 12/15 tasks (80%) - NEARLY COMPLETE
-- ⏳ **Phase 3**: 3/11 tasks (27%) - IN PROGRESS
+- ⏳ **Phase 3**: 4/11 tasks (36%) - IN PROGRESS
 - ⏳ **Phase 4**: 0/14 tasks (0%) - HIGH PRIORITY
 - ⏳ **Phase 5**: 0/15 tasks (0%)
 - ⏳ **Phase 6**: 4/15 tasks (27%)
 - ⏳ **Phase 7**: 0/12 tasks (0%)
 - ⏳ **Phase 8**: 2/10 tasks (20%)
 
-**Next Priority**: Phase 3 (Backend Logic Updates) - Continue with memory deletion cleanup and gallery status computation
+**Next Priority**: Phase 3 (Backend Logic Updates) - Continue with transaction handling and gallery status computation

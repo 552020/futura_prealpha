@@ -4,6 +4,7 @@ import { put } from "@vercel/blob";
 import { fileTypeFromBuffer } from "file-type";
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { and, eq } from "drizzle-orm";
 
 // Constants
 export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -293,6 +294,48 @@ export async function createStorageEdgesForMemory(params: {
     };
   } catch (error) {
     console.error("❌ Error creating storage edges:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+/**
+ * Clean up storage edges for a deleted memory
+ * This function removes all storage edge records for a given memory
+ */
+export async function cleanupStorageEdgesForMemory(params: {
+  memoryId: string;
+  memoryType: "image" | "video" | "note" | "document" | "audio";
+}) {
+  const { memoryId, memoryType } = params;
+
+  try {
+    console.log("🧹 Cleaning up storage edges for memory:", { memoryId, memoryType });
+
+    // Import the storage edges table
+    const { storageEdges } = await import("@/db/schema");
+
+    // Delete all storage edges for this memory
+    const deletedEdges = await db
+      .delete(storageEdges)
+      .where(and(eq(storageEdges.memoryId, memoryId), eq(storageEdges.memoryType, memoryType)))
+      .returning();
+
+    console.log("✅ Storage edges cleaned up successfully:", {
+      memoryId,
+      memoryType,
+      deletedCount: deletedEdges.length,
+    });
+
+    return {
+      success: true,
+      deletedCount: deletedEdges.length,
+      deletedEdges,
+    };
+  } catch (error) {
+    console.error("❌ Error cleaning up storage edges:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : String(error),
