@@ -10,6 +10,7 @@ import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 import { GalleryTopBar } from "@/components/gallery-top-bar";
 import RequireAuth from "@/components/require-auth";
+import { StorageStatusBadge, getGalleryStorageStatus } from "@/components/storage-status-badge";
 
 // Mock data flag for development
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_GALLERY === "true";
@@ -146,19 +147,25 @@ export default function GalleryPage() {
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="font-medium text-lg line-clamp-1">{gallery.title}</h3>
-                    <Badge variant={gallery.isPublic ? "default" : "secondary"} className="ml-2">
-                      {gallery.isPublic ? (
-                        <>
-                          <Globe className="h-3 w-3 mr-1" />
-                          Public
-                        </>
-                      ) : (
-                        <>
-                          <Lock className="h-3 w-3 mr-1" />
-                          Private
-                        </>
-                      )}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      {/* Debug: Log gallery data */}
+                      {console.log("Gallery data:", gallery)}
+                      {console.log("Storage status:", getGalleryStorageStatus(gallery))}
+                      <StorageStatusBadge status={getGalleryStorageStatus(gallery)} />
+                      <Badge variant={gallery.isPublic ? "default" : "secondary"}>
+                        {gallery.isPublic ? (
+                          <>
+                            <Globe className="h-3 w-3 mr-1" />
+                            Public
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="h-3 w-3 mr-1" />
+                            Private
+                          </>
+                        )}
+                      </Badge>
+                    </div>
                   </div>
                   {gallery.description && (
                     <p className="text-muted-foreground text-sm line-clamp-2 mb-3">{gallery.description}</p>

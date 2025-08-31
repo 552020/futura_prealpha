@@ -37,7 +37,16 @@ export const mockStorageStatuses = {
 export function getGalleryStorageStatus(gallery: any): StorageStatus {
   // If gallery has storageStatus from our API
   if (gallery.storageStatus) {
-    return gallery.storageStatus.status === "stored_forever" ? "icp" : "neon";
+    // Map the API status values to our badge values
+    switch (gallery.storageStatus.status) {
+      case "stored_forever":
+        return "icp";
+      case "partially_stored":
+        return "icp"; // Show as ICP even if partially stored
+      case "web2_only":
+      default:
+        return "neon";
+    }
   }
 
   // Fallback: check if gallery has any ICP storage indicators

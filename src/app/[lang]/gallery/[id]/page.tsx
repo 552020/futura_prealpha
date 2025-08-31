@@ -10,6 +10,7 @@ import { Share2, Edit, Globe, Lock, ImageIcon, Trash2, Eye, EyeOff, Maximize2, H
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 import { ForeverStorageProgressModal } from "@/components/galleries/ForeverStorageProgressModal";
+import { StorageStatusBadge, getGalleryStorageStatus } from "@/components/storage-status-badge";
 
 // Mock data flag for development - same pattern as dashboard
 // const USE_MOCK_DATA = true;
@@ -182,19 +183,22 @@ function GalleryViewContent() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between min-w-0">
                 <h1 className="text-2xl font-light">{gallery.title}</h1>
-                <Badge variant="outline" className="text-xs font-normal">
-                  {gallery.isPublic ? (
-                    <>
-                      <Globe className="h-3 w-3 mr-1" />
-                      Public
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="h-3 w-3 mr-1" />
-                      Private
-                    </>
-                  )}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <StorageStatusBadge status={getGalleryStorageStatus(gallery)} />
+                  <Badge variant="outline" className="text-xs font-normal">
+                    {gallery.isPublic ? (
+                      <>
+                        <Globe className="h-3 w-3 mr-1" />
+                        Public
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="h-3 w-3 mr-1" />
+                        Private
+                      </>
+                    )}
+                  </Badge>
+                </div>
               </div>
               {gallery.description && <p className="text-muted-foreground text-sm mt-1">{gallery.description}</p>}
             </div>
