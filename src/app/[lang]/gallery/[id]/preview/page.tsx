@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
@@ -241,6 +241,7 @@ const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_GALLERY === "true";
 export default function GalleryPreviewPage() {
   const { id } = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isAuthorized, isLoading: authLoading } = useAuthGuard();
   const [gallery, setGallery] = useState<GalleryWithItems | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -272,6 +273,18 @@ export default function GalleryPreviewPage() {
       loadGallery();
     }
   }, [isAuthorized, id, loadGallery]);
+
+  // Auto-open modal if returning from II linking flow
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const shouldOpen = searchParams?.get("storeForever") === "1";
+    if (shouldOpen) {
+      setShowForeverStorageModal(true);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("storeForever");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [searchParams]);
 
   const handleImageClick = (index: number) => {
     setSelectedImageIndex(index);

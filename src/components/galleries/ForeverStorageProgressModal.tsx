@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -80,6 +80,7 @@ export function ForeverStorageProgressModal({
   const [message, setMessage] = useState("");
   const [details, setDetails] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const authResumedRef = useRef(false);
 
   const hasIIPrincipal = Boolean((session?.user as { icpPrincipal?: string })?.icpPrincipal);
 
@@ -149,6 +150,7 @@ export function ForeverStorageProgressModal({
       setMessage("");
       setDetails("");
       setError(null);
+      authResumedRef.current = false;
     }
   }, [isOpen]);
 
@@ -172,7 +174,10 @@ export function ForeverStorageProgressModal({
     try {
       // Redirect to the II-only signin page
       const lang = params.lang || "en";
-      const signinUrl = `/${lang}/sign-ii-only?callbackUrl=${encodeURIComponent(window.location.href)}`;
+      // Ensure we carry a flag to resume the modal on return
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set("storeForever", "1");
+      const signinUrl = `/${lang}/sign-ii-only?callbackUrl=${encodeURIComponent(currentUrl.toString())}`;
       console.log("Redirecting to II-only signin page:", signinUrl);
       window.location.href = signinUrl;
     } catch (error) {
@@ -180,6 +185,15 @@ export function ForeverStorageProgressModal({
       setError("Failed to redirect to sign in page");
     }
   };
+
+  // If user returns with II linked while modal is at auth, auto-resume
+  useEffect(() => {
+    if (isOpen && currentStep === "auth" && hasIIPrincipal && !authResumedRef.current) {
+      authResumedRef.current = true;
+      // Continue the flow from the beginning; it will pass auth now
+      handleStartStorage();
+    }
+  }, [isOpen, currentStep, hasIIPrincipal, handleStartStorage]);
 
   const handleClose = () => {
     if (currentStep === "success") {
