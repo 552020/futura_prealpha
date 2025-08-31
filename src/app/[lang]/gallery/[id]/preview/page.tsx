@@ -5,9 +5,10 @@ import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
-import { X, ChevronLeft, ChevronRight, Download, Share2 } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Download, Share2, HardDrive } from "lucide-react";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
+import { ForeverStorageProgressModal } from "@/components/galleries/ForeverStorageProgressModal";
 
 // Gallery Hero Cover Component
 function GalleryHeroCover({
@@ -54,9 +55,11 @@ function StickyHeader({
   onPublish,
   onDownload,
   onShare,
+  onStoreForever,
   isPublishing,
   isDownloading,
   isSharing,
+  isStoringForever,
   selectedImageIndex,
 }: {
   gallery: GalleryWithItems;
@@ -64,9 +67,11 @@ function StickyHeader({
   onPublish: () => void;
   onDownload: () => void;
   onShare: () => void;
+  onStoreForever: () => void;
   isPublishing: boolean;
   isDownloading: boolean;
   isSharing: boolean;
+  isStoringForever: boolean;
   selectedImageIndex: number | null;
 }) {
   return (
@@ -144,6 +149,25 @@ function StickyHeader({
               <>
                 <Share2 className="h-4 w-4 mr-2" />
                 Share
+              </>
+            )}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onStoreForever}
+            disabled={isStoringForever}
+            className="text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950"
+          >
+            {isStoringForever ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                Storing...
+              </>
+            ) : (
+              <>
+                <HardDrive className="h-4 w-4 mr-2" />
+                Store Forever
               </>
             )}
           </Button>
@@ -227,6 +251,7 @@ export default function GalleryPreviewPage() {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [showForeverStorageModal, setShowForeverStorageModal] = useState(false);
 
   const loadGallery = useCallback(async () => {
     try {
@@ -338,6 +363,26 @@ export default function GalleryPreviewPage() {
     }
   };
 
+  const handleStoreForever = () => {
+    setShowForeverStorageModal(true);
+  };
+
+  const handleForeverStorageSuccess = async (result: {
+    success: boolean;
+    galleryId: string;
+    icpGalleryId: string;
+    timestamp: string;
+  }) => {
+    console.log("Gallery stored forever successfully:", result);
+    // Refresh gallery data to show updated storage status
+    await loadGallery();
+  };
+
+  const handleForeverStorageError = (error: Error) => {
+    console.error("Error storing gallery forever:", error);
+    setError("Failed to store gallery forever");
+  };
+
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -419,9 +464,11 @@ export default function GalleryPreviewPage() {
         onPublish={handlePublish}
         onDownload={handleDownload}
         onShare={handleShare}
+        onStoreForever={handleStoreForever}
         isPublishing={isPublishing}
         isDownloading={isDownloading}
         isSharing={isSharing}
+        isStoringForever={false}
         selectedImageIndex={selectedImageIndex}
       />
 
@@ -491,6 +538,17 @@ export default function GalleryPreviewPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Forever Storage Modal */}
+      {gallery && (
+        <ForeverStorageProgressModal
+          isOpen={showForeverStorageModal}
+          onClose={() => setShowForeverStorageModal(false)}
+          gallery={gallery}
+          onSuccess={handleForeverStorageSuccess}
+          onError={handleForeverStorageError}
+        />
       )}
     </div>
   );

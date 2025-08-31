@@ -7,6 +7,8 @@ import {
   UpdateGalleryRequest,
 } from "@/types/gallery";
 import { generatedGalleries, getGeneratedGallery } from "@/app/[lang]/gallery/generated-gallery-data";
+import { icpGalleryService, type GalleryData, type StoreGalleryResponse } from "./icp-gallery";
+import { Principal } from "@dfinity/principal";
 
 // Analytics tracking shim for future implementation
 const trackEvent = (event: string, properties?: Record<string, unknown>): void => {
@@ -345,6 +347,110 @@ export const galleryService = {
       console.error("Error getting folders:", error);
       // Return empty array instead of throwing for now
       return [];
+    }
+  },
+
+  // ============================================================================
+  // ICP INTEGRATION - "Store Forever" Feature
+  // ============================================================================
+
+  /**
+   * Store a gallery forever in the ICP canister
+   */
+  storeGalleryForever: async (gallery: GalleryWithItems, ownerPrincipal?: string): Promise<StoreGalleryResponse> => {
+    trackEvent("gallery_store_forever_requested", { galleryId: gallery.id });
+
+    try {
+      // Convert Web2 gallery to ICP format
+      const galleryData: GalleryData = icpGalleryService.convertWeb2GalleryToICP(
+        gallery as unknown as Record<string, unknown>,
+        (gallery.items || []) as unknown as Record<string, unknown>[],
+        ownerPrincipal
+          ? ({ Principal: ownerPrincipal } as unknown as Principal)
+          : ({ Principal: "anonymous" } as unknown as Principal)
+      );
+
+      // Store in ICP canister
+      const result = await icpGalleryService.storeGalleryForever(galleryData);
+
+      trackEvent("gallery_store_forever_completed", {
+        galleryId: gallery.id,
+        success: result.success,
+      });
+
+      return result;
+    } catch (error) {
+      console.error("Error storing gallery forever:", error);
+      trackEvent("gallery_store_forever_failed", {
+        galleryId: gallery.id,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+
+      return {
+        success: false,
+        message: `Failed to store gallery forever: ${error instanceof Error ? error.message : "Unknown error"}`,
+        storage_status: { Failed: null },
+      };
+    }
+  },
+
+  /**
+   * Get galleries stored in ICP canister
+   */
+  getICPUserGalleries: async (): Promise<GalleryWithItems[]> => {
+    trackEvent("icp_galleries_requested");
+
+    try {
+      const icpGalleries = await icpGalleryService.getMyGalleries();
+
+      // Convert ICP galleries to Web2 format for frontend compatibility
+      const web2Galleries = icpGalleries.map((icpGallery) => ({
+        id: icpGallery.id,
+        title: icpGallery.title,
+        description: icpGallery.description || "",
+        isPublic: icpGallery.is_public,
+        createdAt: new Date(Number(icpGallery.created_at)),
+        updatedAt: new Date(Number(icpGallery.updated_at)),
+        imageCount: icpGallery.memory_entries.length,
+        isOwner: true, // ICP galleries are owned by the current user
+        ownerId: icpGallery.owner_principal.toString(),
+        items: icpGallery.memory_entries.map((entry) => ({
+          id: entry.memory_id,
+          position: entry.position,
+          caption: entry.gallery_caption || "",
+          isFeatured: entry.is_featured,
+          memory: {
+            id: entry.memory_id,
+            title: `Memory ${entry.memory_id}`,
+            url: "", // Will be populated when we load memory data
+            thumbnail: "", // Will be populated when we load memory data
+            type: "image",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        })),
+      })) as unknown as GalleryWithItems[];
+
+      trackEvent("icp_galleries_retrieved", { count: web2Galleries.length });
+      return web2Galleries;
+    } catch (error) {
+      console.error("Error getting ICP galleries:", error);
+      trackEvent("icp_galleries_failed", {
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+      throw new Error(`Failed to get ICP galleries: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
+  },
+
+  /**
+   * Check if user has a capsule registered for ICP storage
+   */
+  checkICPCapsuleStatus: async (): Promise<boolean> => {
+    try {
+      return await icpGalleryService.checkCapsuleStatus();
+    } catch (error) {
+      console.error("Error checking ICP capsule status:", error);
+      return false;
     }
   },
 };

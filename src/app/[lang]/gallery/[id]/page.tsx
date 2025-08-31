@@ -6,9 +6,10 @@ import Image from "next/image";
 import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Share2, Edit, Globe, Lock, ImageIcon, Trash2, Eye, EyeOff, Maximize2 } from "lucide-react";
+import { Share2, Edit, Globe, Lock, ImageIcon, Trash2, Eye, EyeOff, Maximize2, HardDrive } from "lucide-react";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
+import { ForeverStorageProgressModal } from "@/components/galleries/ForeverStorageProgressModal";
 
 // Mock data flag for development - same pattern as dashboard
 // const USE_MOCK_DATA = true;
@@ -24,6 +25,7 @@ export default function GalleryViewPage() {
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showForeverStorageModal, setShowForeverStorageModal] = useState(false);
 
   const loadGallery = useCallback(async () => {
     try {
@@ -97,6 +99,26 @@ export default function GalleryViewPage() {
   const handleEditGallery = () => {
     // TODO: Navigate to edit page or open edit modal
     console.log("Edit gallery:", gallery?.id);
+  };
+
+  const handleStoreForever = () => {
+    setShowForeverStorageModal(true);
+  };
+
+  const handleForeverStorageSuccess = async (result: {
+    success: boolean;
+    galleryId: string;
+    icpGalleryId: string;
+    timestamp: string;
+  }) => {
+    console.log("Gallery stored forever successfully:", result);
+    // Refresh gallery data to show updated storage status
+    await loadGallery();
+  };
+
+  const handleForeverStorageError = (error: Error) => {
+    console.error("Error storing gallery forever:", error);
+    setError("Failed to store gallery forever");
   };
 
   const handleShareGallery = () => {
@@ -193,6 +215,15 @@ export default function GalleryViewPage() {
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleStoreForever}
+                className="border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:hover:bg-blue-950"
+              >
+                <HardDrive className="h-4 w-4 mr-2" />
+                Store Forever
+              </Button>
               <Button variant="outline" size="sm" onClick={handleDeleteGallery} disabled={isDeleting}>
                 {isDeleting ? (
                   <>
@@ -253,6 +284,17 @@ export default function GalleryViewPage() {
           </div>
         )}
       </div>
+
+      {/* Forever Storage Modal */}
+      {gallery && (
+        <ForeverStorageProgressModal
+          isOpen={showForeverStorageModal}
+          onClose={() => setShowForeverStorageModal(false)}
+          gallery={gallery}
+          onSuccess={handleForeverStorageSuccess}
+          onError={handleForeverStorageError}
+        />
+      )}
     </div>
   );
 }
