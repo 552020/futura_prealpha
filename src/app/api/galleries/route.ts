@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { db } from "@/db/db";
 import { eq, desc, sql } from "drizzle-orm";
 import { galleries, allUsers, images, videos, documents, notes, audio, galleryItems } from "@/db/schema";
+import { addStorageStatusToGalleries } from "./utils";
 
 export async function GET(request: NextRequest) {
   // Returns all galleries owned by the authenticated user
@@ -47,6 +48,9 @@ export async function GET(request: NextRequest) {
       offset: offset,
     });
 
+    // Add computed storage status to galleries
+    const galleriesWithStorageStatus = await addStorageStatusToGalleries(userGalleries);
+
     console.log("Fetched galleries:", {
       page,
       limit,
@@ -55,7 +59,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({
-      galleries: userGalleries,
+      galleries: galleriesWithStorageStatus,
       hasMore: userGalleries.length === limit,
     });
   } catch (error) {

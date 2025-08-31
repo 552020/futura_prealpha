@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db/db";
 import { allUsers, galleries, galleryShares, users, temporaryUsers } from "@/db/schema";
+import { addStorageStatusToGallery } from "../utils";
 import { eq, desc, sql } from "drizzle-orm";
 
 /**
@@ -88,8 +89,11 @@ export async function GET(request: NextRequest) {
           where: eq(allUsers.id, share.ownerId),
         });
 
+        // Add storage status to the gallery
+        const galleryWithStorageStatus = await addStorageStatusToGallery(gallery);
+
         return {
-          ...gallery,
+          ...galleryWithStorageStatus,
           sharedBy: {
             id: share.ownerId,
             name: owner?.userId ? await getOwnerName(share.ownerId) : "Unknown",

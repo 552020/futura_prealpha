@@ -74,7 +74,7 @@
     - ✅ **Integrated**: Type-specific deletion (image, video, document, note, audio)
     - ✅ **Integrated**: Folder-based deletion
     - ✅ **Added**: Helper function for batch cleanup with error handling
-27. [ ] Add transaction handling for atomic operations
+27. [ ] Add transaction handling for atomic operations (overkill for MVP)
 
 ### Gallery Status Computation
 

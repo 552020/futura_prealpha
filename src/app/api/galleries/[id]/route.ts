@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { db } from "@/db/db";
 import { eq, and, inArray } from "drizzle-orm";
 import { galleries, allUsers, galleryShares, galleryItems, images, videos, documents, notes, audio } from "@/db/schema";
+import { addStorageStatusToGallery } from "../utils";
 
 // Helper function to check if user has access to a memory, considering gallery override
 async function checkMemoryAccess(
@@ -259,9 +260,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       }
     }
 
+    // Add storage status to the gallery
+    const galleryWithStorageStatus = await addStorageStatusToGallery(accessibleGallery);
+
     // Create the gallery with items in the expected format
     const galleryWithItems = {
-      ...accessibleGallery,
+      ...galleryWithStorageStatus,
       items: itemsWithMemories,
       imageCount: itemsWithMemories.length,
       isOwner: accessibleGallery.ownerId === allUserRecord.id,
