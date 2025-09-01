@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FileText, ImageIcon, Video, Share2, Trash2, File, Pencil, Music, Folder } from "lucide-react";
 import { Memory } from "@/types/memory";
 import { MemoryStatus } from "./MemoryStatus";
+import { MemoryStorageBadge } from "@/components/memory-storage-badge";
 import Image from "next/image";
 import { shortenTitle } from "@/lib/utils";
 
@@ -56,6 +57,9 @@ export function MemoryCard({ memory, onClick, onShare, onDelete, onEdit, viewMod
                 sharedWithCount={memory.sharedWithCount}
                 sharedBy={memory.sharedBy}
               />
+              {memory.type !== "folder" && (
+                <MemoryStorageBadge memoryId={memory.id} memoryType={memory.type} size="xs" />
+              )}
               <Button
                 variant="ghost"
                 size="icon"
@@ -138,6 +142,13 @@ export function MemoryCard({ memory, onClick, onShare, onDelete, onEdit, viewMod
             <div className="flex flex-col items-center justify-center text-muted-foreground">
               <FileText className="h-16 w-16 mb-2" />
               <span className="text-sm">File</span>
+            </div>
+          )}
+
+          {/* Storage Status Badge - positioned in top-right corner */}
+          {memory.type !== "folder" && (
+            <div className="absolute top-1 right-1 z-10">
+              <MemoryStorageBadge memoryId={memory.id} memoryType={memory.type} size="xs" className="shadow-sm" />
             </div>
           )}
         </div>

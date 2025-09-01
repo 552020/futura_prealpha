@@ -11,6 +11,8 @@ import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 import { ForeverStorageProgressModal } from "@/components/galleries/ForeverStorageProgressModal";
 import { StorageStatusBadge, getGalleryStorageStatus } from "@/components/storage-status-badge";
+import { MemoryStorageBadge } from "@/components/memory-storage-badge";
+import { GalleryStorageSummary } from "@/components/gallery-storage-summary";
 
 // Mock data flag for development - same pattern as dashboard
 // const USE_MOCK_DATA = true;
@@ -344,6 +346,9 @@ function GalleryViewContent() {
         </div>
       </div>
 
+      {/* Gallery Storage Summary */}
+      <GalleryStorageSummary gallery={gallery} onStoreForever={handleStoreForever} />
+
       {/* Photo Grid */}
       <div className="container mx-auto px-6 py-8 min-w-0">
         {gallery.items && gallery.items.length > 0 ? (
@@ -351,7 +356,7 @@ function GalleryViewContent() {
             {gallery.items.map((item, index) => (
               <div
                 key={item.id}
-                className="min-w-0 aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                className="min-w-0 aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative"
                 onClick={() => handleImageClick(index)}
               >
                 {item.memory.url && !failedImages.has(item.memory.url) ? (
@@ -376,6 +381,16 @@ function GalleryViewContent() {
                     </div>
                   </div>
                 )}
+
+                {/* Memory Storage Status Badge */}
+                <div className="absolute top-2 right-2 z-10">
+                  <MemoryStorageBadge
+                    memoryId={item.memory.id}
+                    memoryType={item.memory.type}
+                    size="xs"
+                    showTooltip={true}
+                  />
+                </div>
               </div>
             ))}
           </div>

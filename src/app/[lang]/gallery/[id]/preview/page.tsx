@@ -9,6 +9,7 @@ import { X, ChevronLeft, ChevronRight, Download, Share2, HardDrive } from "lucid
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 import { ForeverStorageProgressModal } from "@/components/galleries/ForeverStorageProgressModal";
+import { MemoryStorageBadge } from "@/components/memory-storage-badge";
 
 // Gallery Hero Cover Component
 function GalleryHeroCover({
@@ -196,7 +197,7 @@ function GalleryGrid({
           {gallery.items.map((item, index) => (
             <div
               key={item.id}
-              className="aspect-square bg-gray-800 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+              className="aspect-square bg-gray-800 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative"
               onClick={() => onImageClick(index)}
             >
               {item.memory.url && !failedImages.has(item.memory.url) ? (
@@ -223,6 +224,16 @@ function GalleryGrid({
                   </div>
                 </div>
               )}
+
+              {/* Memory Storage Status Badge */}
+              <div className="absolute top-2 right-2 z-10">
+                <MemoryStorageBadge
+                  memoryId={item.memory.id}
+                  memoryType={item.memory.type}
+                  size="xs"
+                  showTooltip={true}
+                />
+              </div>
             </div>
           ))}
         </div>
