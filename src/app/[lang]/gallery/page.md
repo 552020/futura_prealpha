@@ -15,9 +15,10 @@ The gallery page is a React client component that displays a user's photo galler
 ### Key Components Used
 
 1. **GalleryTopBar**: Handles filtering, view mode switching, and gallery creation
-2. **CreateGalleryModal**: Modal for creating new galleries
-3. **StorageStatusBadge**: Shows storage status for each gallery
-4. **RequireAuth**: Authentication guard component
+2. **GalleryGrid**: Displays galleries in grid/list view with responsive layout
+3. **CreateGalleryModal**: Modal for creating new galleries
+4. **StorageStatusBadge**: Shows storage status for each gallery
+5. **RequireAuth**: Authentication guard component
 
 ### Data Flow
 
