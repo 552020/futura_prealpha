@@ -99,6 +99,55 @@ export type MemoryAccess =
   | { Scheduled: { access: MemoryAccess; accessible_after: bigint } }
   | { EventTriggered: { access: MemoryAccess; trigger_event: string } };
 
+// Sync types for gallery memory synchronization
+export interface MemorySyncRequest {
+  memory_id: string;
+  memory_type: MemoryType;
+  metadata: SimpleMemoryMetadata;
+  asset_url: string; // URL to fetch asset from (e.g., Vercel Blob)
+  expected_asset_hash: string; // Expected hash of the asset
+  asset_size: bigint; // Size of the asset in bytes (matches backend)
+}
+
+export interface SimpleMemoryMetadata {
+  title?: string;
+  description?: string;
+  tags: string[];
+  created_at: bigint;
+  updated_at: bigint;
+  size?: bigint;
+  content_type?: string;
+  custom_fields: Record<string, string>;
+}
+
+export interface MemorySyncResult {
+  memory_id: string;
+  success: boolean;
+  metadata_stored: boolean;
+  asset_stored: boolean;
+  message: string;
+  error?: ICPErrorCode;
+}
+
+export interface BatchMemorySyncResponse {
+  success: boolean;
+  gallery_id: string;
+  total_memories: number;
+  successful_memories: number;
+  failed_memories: number;
+  results: MemorySyncResult[];
+  message: string;
+  error?: ICPErrorCode;
+}
+
+export type ICPErrorCode =
+  | { Internal: string }
+  | { NotFound: null }
+  | { Unauthorized: null }
+  | { ValidationFailed: string }
+  | { StorageFull: null }
+  | { NetworkError: string };
+
 export interface BlobRef {
   kind: MemoryBlobKind;
   locator: string;
@@ -193,6 +242,8 @@ export class ICPGalleryService {
       };
     }
   }
+
+
 
   /**
    * Get all galleries for the current user

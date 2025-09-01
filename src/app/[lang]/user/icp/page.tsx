@@ -171,11 +171,11 @@ export default function ICPPage() {
 
       // Automatically fetch capsule info after successful login
       try {
-        console.log("Fetching capsule info after login...");
+        // console.log("Fetching capsule info after login...");
         const capsuleData = await authenticatedActor.get_user();
-        console.log("Capsule data received:", capsuleData);
+        // console.log("Capsule data received:", capsuleData);
         setCapsuleInfo(capsuleData[0] || null);
-        console.log("Capsule info set to:", capsuleData[0] || null);
+        // console.log("Capsule info set to:", capsuleData[0] || null);
       } catch (error) {
         console.warn("Failed to fetch capsule info on login:", error);
         // Don't fail the login if capsule info fetch fails
@@ -228,7 +228,7 @@ export default function ICPPage() {
         errorMessage.includes("expired") ||
         errorMessage.includes("401")
       ) {
-        console.log("Delegation expired, prompting re-login");
+        // console.log("Delegation expired, prompting re-login");
         setIsAuthenticated(false);
         setPrincipalId("");
         setGreeting("");
@@ -294,7 +294,7 @@ export default function ICPPage() {
         errorMessage.includes("expired") ||
         errorMessage.includes("401")
       ) {
-        console.log("Delegation expired, prompting re-login");
+        // console.log("Delegation expired, prompting re-login");
         setIsAuthenticated(false);
         setPrincipalId("");
         setGreeting("");
@@ -362,7 +362,7 @@ export default function ICPPage() {
   }
 
   // Debug logging
-  console.log("Rendering ICP page, capsuleInfo:", capsuleInfo);
+  // console.log("Rendering ICP page, capsuleInfo:", capsuleInfo);
 
   return (
     <div className="container mx-auto px-6 py-8">

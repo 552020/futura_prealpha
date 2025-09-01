@@ -14,6 +14,7 @@ import { LanguageSwitcher } from "./language-switcher";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader, SheetClose } from "./ui/sheet";
 import { Dictionary } from "@/utils/dictionaries";
 import { usePathname } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 // Define a proper type for the dictionary with optional fields
 type HeaderDictionary = Dictionary;
@@ -22,6 +23,7 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
   const { data: session, status } = useSession();
   const { mode } = useInterface();
   const pathname = usePathname();
+  const { toast } = useToast();
   // Use the passed lang prop if available, otherwise get it from params
   const currentLang = lang || "en";
 
@@ -33,23 +35,38 @@ export default function Header({ dict, lang }: { dict: HeaderDictionary; lang?: 
   }
 
   const handleShare = async () => {
-    try {
-      if (navigator.share) {
+    if (navigator.share) {
+      try {
         await navigator.share({
-          title: "Futura",
-          text: "Check out Futura - Live Forever. Now.",
+          title: "Check out this content!",
+          text: "I found this interesting content and wanted to share it with you.",
           url: window.location.href,
         });
-        console.log("Content shared successfully");
-      } else {
-        console.log("Web Share API not supported");
+        // console.log("Content shared successfully");
+      } catch (error) {
+        if ((error as Error).name === "AbortError") {
+          // console.log("Web Share API not supported");
+        } else {
+          console.error("Error sharing content:", error);
+        }
       }
-    } catch (error) {
-      if (error instanceof Error && error.name === "AbortError") {
-        console.log("Share was canceled by the user");
-        return;
+    } else {
+      // console.log("Share was canceled by the user");
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "Link copied!",
+          description: "The link has been copied to your clipboard.",
+        });
+      } catch (error) {
+        console.error("Failed to copy link:", error);
+        toast({
+          title: "Error",
+          description: "Failed to copy link to clipboard.",
+          variant: "destructive",
+        });
       }
-      console.error("Error sharing content:", error);
     }
   };
 

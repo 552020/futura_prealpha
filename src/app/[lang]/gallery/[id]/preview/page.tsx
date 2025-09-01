@@ -10,6 +10,7 @@ import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 import { ForeverStorageProgressModal } from "@/components/galleries/ForeverStorageProgressModal";
 import { MemoryStorageBadge } from "@/components/memory-storage-badge";
+import { useToast } from "@/hooks/use-toast";
 
 // Gallery Hero Cover Component
 function GalleryHeroCover({
@@ -254,6 +255,7 @@ function GalleryPreviewContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthorized, isLoading: authLoading } = useAuthGuard();
+  const { toast } = useToast();
   const [gallery, setGallery] = useState<GalleryWithItems | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -336,7 +338,11 @@ function GalleryPreviewContent() {
       setGallery((prev) => (prev ? { ...prev, isPublic: !prev.isPublic } : null));
 
       // Show success message (you can add toast notification here)
-      console.log(`Gallery ${gallery.isPublic ? "hidden" : "published"} successfully`);
+      // console.log(`Gallery ${gallery.isPublic ? "hidden" : "published"} successfully`);
+      toast({
+        title: "Success",
+        description: `Gallery ${gallery.isPublic ? "hidden" : "published"} successfully`,
+      });
     } catch (error) {
       console.error("Failed to update gallery:", error);
       // Show error message (you can add toast notification here)
@@ -378,7 +384,11 @@ function GalleryPreviewContent() {
       });
 
       // Show success message (you can add toast notification here)
-      console.log("Gallery shared successfully");
+      // console.log("Gallery shared successfully");
+      toast({
+        title: "Success",
+        description: "Gallery shared successfully",
+      });
     } catch (error) {
       console.error("Failed to share gallery:", error);
       // Show error message (you can add toast notification here)
@@ -391,13 +401,11 @@ function GalleryPreviewContent() {
     setShowForeverStorageModal(true);
   };
 
-  const handleForeverStorageSuccess = async (result: {
-    success: boolean;
-    galleryId: string;
-    icpGalleryId: string;
-    timestamp: string;
-  }) => {
-    console.log("Gallery stored forever successfully:", result);
+  const handleForeverStorageSuccess = async () => {
+    toast({
+      title: "Success!",
+      description: "Gallery stored forever on ICP successfully!",
+    });
     // Refresh gallery data to show updated storage status
     await loadGallery();
   };

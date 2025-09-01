@@ -29,7 +29,7 @@ function SignInPageInternal() {
   const [iiBusy, setIiBusy] = useState(false);
 
   async function handleCredentialsSignIn(e: React.FormEvent) {
-    console.log("handleCredentialsSignIn", email, password);
+    // console.log("handleCredentialsSignIn", email, password);
     e.preventDefault();
     if (busy) return;
     setBusy(true);
@@ -45,7 +45,7 @@ function SignInPageInternal() {
         setError("Invalid email or password");
         return;
       }
-      console.log("handleCredentialsSignIn", res);
+      // console.log("handleCredentialsSignIn", res);
 
       // Navigate after successful credentials sign-in
       router.push(safeCallbackUrl);
@@ -65,31 +65,31 @@ function SignInPageInternal() {
   }
 
   async function handleInternetIdentity() {
-    console.log("handleInternetIdentity", iiBusy, busy);
+    // console.log("handleInternetIdentity", iiBusy, busy);
     if (iiBusy || busy) return;
     setError(null);
     setIiBusy(true);
     try {
       // 1. Ensure II identity with AuthClient.login
-      console.log("handleInternetIdentity", "before loginWithII");
+      // console.log("handleInternetIdentity", "before loginWithII");
       const { loginWithII } = await import("@/ic/ii");
       const { principal, identity } = await loginWithII();
-      console.log("handleInternetIdentity", "after loginWithII", principal);
+      // console.log("handleInternetIdentity", "after loginWithII", principal);
 
       // Fetch challenge → get { nonceId, nonce }
-      console.log("handleInternetIdentity", "before fetchChallenge");
+      // console.log("handleInternetIdentity", "before fetchChallenge");
       const { fetchChallenge } = await import("@/lib/ii-client");
       const challenge = await fetchChallenge(safeCallbackUrl);
-      console.log("handleInternetIdentity", "after fetchChallenge", challenge);
+      // console.log("handleInternetIdentity", "after fetchChallenge", challenge);
 
       // Register user and prove nonce in one call
-      console.log("handleInternetIdentity", "before registerWithNonce");
+      // console.log("handleInternetIdentity", "before registerWithNonce");
       const { registerWithNonce } = await import("@/lib/ii-client");
-      const registration = await registerWithNonce(challenge.nonce, identity);
-      console.log("handleInternetIdentity", "after registerWithNonce", registration);
+      await registerWithNonce(challenge.nonce, identity);
+      // console.log("handleInternetIdentity", "after registerWithNonce");
 
       // Call signIn with principal + nonceId + actual nonce (without callbackUrl to avoid URL construction error)
-      console.log("handleInternetIdentity", "before signIn", principal, challenge.nonceId);
+      // console.log("handleInternetIdentity", "before signIn", principal, challenge.nonceId);
       const signInResult = await signIn("ii", {
         principal,
         nonceId: challenge.nonceId,
@@ -97,26 +97,26 @@ function SignInPageInternal() {
         redirect: false,
         // Remove callbackUrl to avoid NextAuth URL construction error
       });
-      console.log("handleInternetIdentity", "after signIn", signInResult);
+      // console.log("handleInternetIdentity", "after signIn", signInResult);
 
       // (Optional) After success, call mark_bound() on canister
       if (signInResult?.ok) {
-        console.log("handleInternetIdentity", "before markBoundOnCanister");
+        // console.log("handleInternetIdentity", "before markBoundOnCanister");
         try {
           const { markBoundOnCanister } = await import("@/lib/ii-client");
           await markBoundOnCanister(identity);
-          console.log("handleInternetIdentity", "after markBoundOnCanister - success");
+          // console.log("handleInternetIdentity", "after markBoundOnCanister - success");
         } catch (error) {
           console.warn("handleInternetIdentity", "markBoundOnCanister failed", error);
           // Don't fail the auth flow if this optional step fails
         }
 
         // Redirect manually after successful authentication (fixes the URL construction error)
-        console.log("DEBUG: About to redirect to:", safeCallbackUrl);
-        console.log(
-          "DEBUG: Current window.location:",
-          typeof window !== "undefined" ? window.location.href : "server-side"
-        );
+        // console.log("DEBUG: About to redirect to:", safeCallbackUrl);
+        // console.log(
+        //   "DEBUG: Current window.location:",
+        //   typeof window !== "undefined" ? window.location.href : "server-side"
+        // );
         router.push(safeCallbackUrl);
       } else {
         console.error("handleInternetIdentity", "signIn failed", signInResult?.error);

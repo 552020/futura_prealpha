@@ -373,6 +373,11 @@ export const galleryService = {
       // Store in ICP canister
       const result = await icpGalleryService.storeGalleryForever(galleryData);
 
+      // If successful, update Web2 storage edges to reflect ICP storage
+      if (result.success) {
+        await updateStorageEdgesAfterICPSuccess(gallery);
+      }
+
       trackEvent("gallery_store_forever_completed", {
         galleryId: gallery.id,
         success: result.success,
@@ -454,3 +459,51 @@ export const galleryService = {
     }
   },
 };
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Update Web2 storage edges after successful ICP storage
+ * This ensures storage status badges show correct "ICP" or "BOTH" status
+ */
+async function updateStorageEdgesAfterICPSuccess(gallery: GalleryWithItems): Promise<void> {
+  try {
+    // Update storage edges for each memory in the gallery
+    for (const item of gallery.items || []) {
+      const memory = item.memory;
+
+      // Update metadata edge
+      await fetch("/api/storage/edges", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          memoryId: memory.id,
+          memoryType: memory.type,
+          backend: "icp-canister",
+          artifact: "metadata",
+          present: true,
+        }),
+      });
+
+      // Update asset edge
+      await fetch("/api/storage/edges", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          memoryId: memory.id,
+          memoryType: memory.type,
+          backend: "icp-canister",
+          artifact: "asset",
+          present: true,
+        }),
+      });
+    }
+
+    console.log(`Updated storage edges for ${gallery.items?.length || 0} memories in gallery ${gallery.id}`);
+  } catch (error) {
+    console.error("Error updating storage edges after ICP success:", error);
+    // Don't throw - this is a side effect, not critical to the main operation
+  }
+}

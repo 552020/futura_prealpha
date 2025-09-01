@@ -49,10 +49,10 @@ export function ShareDialog({ memoryId, onShare }: ShareDialogProps) {
         throw new Error(error.error || "Failed to share memory");
       }
 
-      const data = await response.json();
-      console.log("🎉 SHARE SUCCESS - Memory shared successfully!", data);
+      await response.json();
+      // console.log("🎉 SHARE SUCCESS - Memory shared successfully!");
       toast({
-        title: "Success",
+        title: "Success!",
         description: "Memory shared successfully!",
       });
       setIsOpen(false);

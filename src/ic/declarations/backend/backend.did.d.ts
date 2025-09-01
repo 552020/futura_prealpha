@@ -483,6 +483,10 @@ export interface _SERVICE {
   'set_migration_enabled' : ActorMethod<[boolean], Result_4>,
   'set_personal_canister_creation_enabled' : ActorMethod<[boolean], Result_4>,
   'store_gallery_forever' : ActorMethod<[GalleryData], StoreGalleryResponse>,
+  'store_gallery_forever_with_memories' : ActorMethod<
+    [GalleryData, boolean],
+    StoreGalleryResponse
+  >,
   'sync_gallery_memories' : ActorMethod<
     [string, Array<MemorySyncRequest>],
     ICPResult_6
@@ -490,6 +494,10 @@ export interface _SERVICE {
   'update_gallery' : ActorMethod<
     [string, GalleryUpdateData],
     UpdateGalleryResponse
+  >,
+  'update_gallery_storage_status' : ActorMethod<
+    [string, GalleryStorageStatus],
+    boolean
   >,
   'update_memory_in_capsule' : ActorMethod<
     [string, MemoryUpdateData],

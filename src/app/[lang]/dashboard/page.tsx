@@ -53,12 +53,12 @@ export default function VaultPage() {
   const params = useParams();
 
   const fetchMemories = useCallback(async () => {
-    console.log("🚀 LINE 104: ENTERING fetchMemories function");
+    // console.log("🚀 LINE 104: ENTERING fetchMemories function");
     const timestamp = new Date().toISOString();
-    console.log("🔍 fetchMemories called with:", { currentPage, USE_MOCK_DATA, timestamp });
+    // console.log("🔍 fetchMemories called with:", { currentPage, USE_MOCK_DATA, timestamp });
 
     if (USE_MOCK_DATA) {
-      console.log("🎭 MOCK DATA - Using sample data for demo");
+      // console.log("🎭 MOCK DATA - Using sample data for demo");
       const processedItems = processDashboardItems(sampleDashboardMemories as NormalizedMemory[]);
       setMemories(processedItems);
       setHasMore(false);
@@ -67,30 +67,30 @@ export default function VaultPage() {
     }
 
     try {
-      console.log("🔄 FETCH MEMORIES - Starting fetch:", {
-        page: currentPage,
-        timestamp,
-      });
+      // console.log("🔄 FETCH MEMORIES - Starting fetch:", {
+      //   page: currentPage,
+      //   timestamp,
+      // });
 
-      console.log("🚀 LINE 122: CALLING fetchAndNormalizeMemories");
+      // console.log("🚀 LINE 122: CALLING fetchAndNormalizeMemories");
       const result = await fetchAndNormalizeMemories(currentPage);
-      console.log("✅ LINE 124: EXITED fetchAndNormalizeMemories");
+      // console.log("✅ LINE 124: EXITED fetchAndNormalizeMemories");
 
-      console.log("🚀 LINE 126: CALLING processDashboardItems");
+      // console.log("🚀 LINE 126: CALLING processDashboardItems");
       const processedItems = processDashboardItems(result.memories);
-      console.log("✅ LINE 128: EXITED processDashboardItems");
+      // console.log("✅ LINE 128: EXITED processDashboardItems");
 
-      console.log("✅ FETCH MEMORIES - Success:", {
-        memoriesCount: result.memories.length,
-        processedItemsCount: processedItems.length,
-        hasMore: result.hasMore,
-        timestamp,
-      });
+      // console.log("✅ FETCH MEMORIES - Success:", {
+      //   memoriesCount: result.memories.length,
+      //   processedItemsCount: processedItems.length,
+      //   hasMore: result.hasMore,
+      //   timestamp,
+      // });
 
-      console.log("🔍 About to set memories with processedItems:", processedItems);
+      // console.log("🔍 About to set memories with processedItems:", processedItems);
       setMemories((prev) => {
         const newMemories = currentPage === 1 ? processedItems : [...prev, ...processedItems];
-        console.log("🔍 Setting memories to:", newMemories);
+        // console.log("🔍 Setting memories to:", newMemories);
         return newMemories;
       });
       setHasMore(result.hasMore);
@@ -109,19 +109,19 @@ export default function VaultPage() {
     } finally {
       setIsLoadingMemories(false);
     }
-    console.log("🚀 LINE 156: EXITING fetchMemories function");
+    // console.log("🚀 LINE 156: EXITING fetchMemories function");
   }, [currentPage, toast]);
 
   // Removed automatic redirect - now handled by RequireAuth component in render
 
   useEffect(() => {
-    console.log("🔍 Dashboard useEffect - Auth check:", { isAuthorized, userId, isLoading });
+    // console.log("🔍 Dashboard useEffect - Auth check:", { isAuthorized, userId, isLoading });
     if (isAuthorized && !isLoading) {
-      console.log("🚀 LINE 168: CALLING fetchMemories");
+      // console.log("🚀 LINE 168: CALLING fetchMemories");
       fetchMemories();
-      console.log("✅ LINE 170: EXITED fetchMemories");
+      // console.log("✅ LINE 170: EXITED fetchMemories");
     } else {
-      console.log("🔍 Dashboard useEffect - Not authorized or still loading");
+      // console.log("🔍 Dashboard useEffect - Not authorized or still loading");
     }
   }, [isAuthorized, isLoading, userId, fetchMemories]);
 
@@ -145,24 +145,12 @@ export default function VaultPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      // Check if this is a folder item
-      if (id.startsWith("folder-")) {
-        const folderName = id.replace("folder-", "");
-        await deleteAllMemories({ folder: folderName });
-        setMemories((prev) => prev.filter((memory) => memory.id !== id));
-        toast({
-          title: "Success",
-          description: `Folder "${folderName}" and all its contents deleted successfully.`,
-        });
-      } else {
-        // Handle individual memory deletion
-        await deleteMemory(id);
-        setMemories((prev) => prev.filter((memory) => memory.id !== id));
-        toast({
-          title: "Success",
-          description: "Memory deleted successfully.",
-        });
-      }
+      await deleteMemory(id);
+      setMemories((prev) => prev.filter((memory) => memory.id !== id));
+      toast({
+        title: "Success",
+        description: "Memory deleted successfully.",
+      });
     } catch (error) {
       console.error("Error deleting memory:", error);
       toast({
@@ -178,31 +166,21 @@ export default function VaultPage() {
     fetchMemories();
   };
 
-  const handleEdit = (memoryId: string) => {
-    // TODO: Implement edit functionality
-    console.log("Edit memory:", memoryId);
-    // For now, just show a toast
-    toast({
-      title: "Edit",
-      description: "Edit functionality coming soon!",
-    });
-  };
-
   const handleMemoryClick = (memory: Memory) => {
-    console.log("🔍 Memory clicked:", memory);
-    console.log("🔍 Memory type:", memory.type);
-    console.log("🔍 Memory ID:", memory.id);
+    // console.log("🔍 Memory clicked:", memory);
+    // console.log("🔍 Memory type:", memory.type);
+    // console.log("🔍 Memory ID:", memory.id);
 
     // Check if it's a folder item
     if (memory.type === "folder") {
       // For folders, we need to extract the folder name from the ID
       const folderName = memory.id.replace("folder-", "");
-      console.log("🔍 Extracted folder name:", folderName);
-      console.log("🔍 Navigating to folder:", folderName);
+      // console.log("🔍 Extracted folder name:", folderName);
+      // console.log("🔍 Navigating to folder:", folderName);
       router.push(`/${params.lang}/dashboard/folder/${folderName}`);
     } else {
       // For individual memories, navigate to the memory detail page
-      console.log("🔍 Navigating to memory:", memory.id);
+      // console.log("🔍 Navigating to memory:", memory.id);
       router.push(`/${params.lang}/dashboard/${memory.id}`);
     }
   };
@@ -315,7 +293,6 @@ export default function VaultPage() {
           memories={filteredMemories}
           onDelete={handleDelete}
           onShare={handleShare}
-          onEdit={handleEdit}
           onClick={handleMemoryClick}
           viewMode={viewMode}
         />

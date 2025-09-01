@@ -115,7 +115,7 @@ function GalleryViewContent() {
 
   const handleEditGallery = () => {
     // TODO: Navigate to edit page or open edit modal
-    console.log("Edit gallery:", gallery?.id);
+    // console.log("Edit gallery:", gallery?.id);
   };
 
   const getStoreForeverButtonState = () => {
@@ -166,13 +166,7 @@ function GalleryViewContent() {
     setShowForeverStorageModal(true);
   };
 
-  const handleForeverStorageSuccess = async (result: {
-    success: boolean;
-    galleryId: string;
-    icpGalleryId: string;
-    timestamp: string;
-  }) => {
-    console.log("Gallery stored forever successfully:", result);
+  const handleForeverStorageSuccess = async () => {
     // Refresh gallery data to show updated storage status
     await loadGallery();
   };
@@ -184,7 +178,7 @@ function GalleryViewContent() {
 
   const handleShareGallery = () => {
     // TODO: Implement share functionality
-    console.log("Share gallery:", gallery?.id);
+    // console.log("Share gallery:", gallery?.id);
   };
 
   if (authLoading || isLoading) {
@@ -317,7 +311,7 @@ function GalleryViewContent() {
                         size="sm"
                         onClick={() => {
                           // TODO: Open ICP explorer or gallery viewer
-                          console.log("View gallery on ICP:", gallery.id);
+                          // console.log("View gallery on ICP:", gallery.id);
                         }}
                         className="border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-300 dark:hover:bg-purple-950"
                       >

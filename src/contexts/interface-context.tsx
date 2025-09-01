@@ -50,14 +50,14 @@ export function InterfaceProvider({ children }: { children: ReactNode }) {
   const isAtLeastDeveloper = ["developer", "superadmin"].includes(userRole);
 
   useEffect(() => {
-    console.log("InterfaceProvider Debug:", {
-      pathname,
-      isAppRoute: isAppRoute(pathname),
-      newMode: isAppRoute(pathname) ? "app" : "marketing",
-      userRole: session?.user?.role,
-      isDeveloper,
-      isAdmin,
-    });
+    // console.log("InterfaceProvider Debug:", {
+    //   pathname,
+    //   isAppRoute: isAppRoute(pathname),
+    //   newMode: isAppRoute(pathname) ? "app" : "marketing",
+    //   userRole: session?.user?.role,
+    //   isDeveloper,
+    //   isAdmin,
+    // });
     setMode(isAppRoute(pathname) ? "app" : "marketing");
   }, [pathname, session?.user?.role, isDeveloper, isAdmin]);
 

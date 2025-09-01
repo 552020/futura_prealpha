@@ -53,7 +53,7 @@ export default function GalleryPage() {
 
   const handleCreateGallery = () => {
     // TODO: Open create gallery modal
-    console.log("Open create gallery modal");
+    // console.log("Open create gallery modal");
   };
 
   const handleFilteredGalleriesChange = (filtered: GalleryWithItems[]) => {

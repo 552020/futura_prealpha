@@ -583,6 +583,11 @@ export const idlFactory = ({ IDL }) => {
         [StoreGalleryResponse],
         [],
       ),
+    'store_gallery_forever_with_memories' : IDL.Func(
+        [GalleryData, IDL.Bool],
+        [StoreGalleryResponse],
+        [],
+      ),
     'sync_gallery_memories' : IDL.Func(
         [IDL.Text, IDL.Vec(MemorySyncRequest)],
         [ICPResult_6],
@@ -591,6 +596,11 @@ export const idlFactory = ({ IDL }) => {
     'update_gallery' : IDL.Func(
         [IDL.Text, GalleryUpdateData],
         [UpdateGalleryResponse],
+        [],
+      ),
+    'update_gallery_storage_status' : IDL.Func(
+        [IDL.Text, GalleryStorageStatus],
+        [IDL.Bool],
         [],
       ),
     'update_memory_in_capsule' : IDL.Func(

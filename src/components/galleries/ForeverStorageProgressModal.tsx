@@ -200,7 +200,7 @@ export function ForeverStorageProgressModal({
       const currentUrl = new URL(window.location.href);
       currentUrl.searchParams.set("storeForever", "1");
       const signinUrl = `/${lang}/sign-ii-only?callbackUrl=${encodeURIComponent(currentUrl.toString())}`;
-      console.log("Redirecting to II-only signin page:", signinUrl);
+      // console.log("Redirecting to II-only signin page:", signinUrl);
       window.location.href = signinUrl;
     } catch (error) {
       console.error("Failed to redirect to II signin page:", error);

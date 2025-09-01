@@ -4,9 +4,11 @@ import Link from "next/link";
 import { Dictionary } from "@/utils/dictionaries";
 import { Share2, Twitter, Instagram, Facebook } from "lucide-react";
 import { useInterface } from "@/contexts/interface-context";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Footer({ dict, lang }: { dict?: Dictionary; lang?: string }) {
   const { mode } = useInterface();
+  const { toast } = useToast();
 
   // Don't render footer in app mode
   if (mode === "app") {
@@ -17,30 +19,38 @@ export default function Footer({ dict, lang }: { dict?: Dictionary; lang?: strin
   const currentLang = lang || "en";
 
   const handleShare = async () => {
-    try {
-      if (navigator.share) {
+    if (navigator.share) {
+      try {
         await navigator.share({
           title: "Futura",
           text: "Check out Futura - Live Forever. Now.",
           url: window.location.href,
         });
-        console.log("Content shared successfully");
-      } else {
-        // Fallback for browsers that don't support the Web Share API
-        console.log("Web Share API not supported");
-        // You could show a modal with share options or copy to clipboard here
+        // console.log("Content shared successfully");
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") {
+          // console.log("Web Share API not supported");
+          return;
+        }
+        console.error("Error sharing content:", error);
       }
-    } catch (error) {
-      // Check if it's an AbortError (user canceled)
-      if (error instanceof Error && error.name === "AbortError") {
-        console.log("Share was canceled by the user");
-        // This is not an error condition, just a user choice
-        return;
+    } else {
+      // console.log("Share was canceled by the user");
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "Link copied!",
+          description: "The link has been copied to your clipboard.",
+        });
+      } catch (error) {
+        console.error("Failed to copy link:", error);
+        toast({
+          title: "Error",
+          description: "Failed to copy link to clipboard.",
+          variant: "destructive",
+        });
       }
-
-      // Handle other errors
-      console.error("Error sharing content:", error);
-      // You might want to show a user-friendly error message here
     }
   };
 

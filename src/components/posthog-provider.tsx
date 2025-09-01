@@ -3,28 +3,28 @@
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider, usePostHog } from "posthog-js/react";
 import { Suspense, useEffect } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   const apiHost = process.env.NEXT_PUBLIC_POSTHOG_INGEST;
 
   useEffect(() => {
-    console.log("Initializing PostHog with:");
-    console.log("  Key:", process.env.NEXT_PUBLIC_POSTHOG_KEY);
-    console.log("  Host:", apiHost);
+    if (!posthog.isFeatureEnabled) {
+      // console.log("Initializing PostHog with:");
+      // console.log("  Key:", process.env.NEXT_PUBLIC_POSTHOG_KEY);
+      // console.log("  Host:", apiHost);
 
-    if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-      console.warn("❌ No PostHog key found. Skipping init.");
-      return;
+      posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+        api_host: apiHost,
+        capture_pageview: false, // We'll handle this manually
+        capture_pageleave: true,
+        disable_session_recording: true, // Disable session recording for privacy
+        opt_out_capturing_by_default: false,
+        loaded: () => {
+          // console.log("✅ Final PostHog config after init");
+        },
+      });
     }
-
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host: apiHost,
-      person_profiles: "identified_only",
-      capture_pageview: false,
-      capture_pageleave: true,
-    });
-    console.log("✅ Final PostHog config after init:", posthog.config); // 🔍 Check what this shows
   }, [apiHost]);
 
   return (
@@ -37,21 +37,18 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
 function PostHogPageView() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const posthog = usePostHog();
 
   useEffect(() => {
-    if (pathname && posthog) {
-      let url = window.origin + pathname;
-      const search = searchParams.toString();
-      if (search) {
-        url += "?" + search;
-      }
-      console.log("📡 Capturing pageview:", url);
-
-      posthog.capture("$pageview", { $current_url: url });
+    if (posthog && pathname) {
+      const url = window.origin + pathname;
+      // console.log("📡 Capturing pageview:", url);
+      posthog.capture("$pageview", {
+        $current_url: url,
+        $pathname: pathname,
+      });
     }
-  }, [pathname, searchParams, posthog]);
+  }, [posthog, pathname]);
 
   return null;
 }
