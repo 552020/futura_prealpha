@@ -121,7 +121,11 @@ export function ForeverStorageProgressModal({
       const ownerPrincipal = identity.getPrincipal();
 
       const icpService = new ICPGalleryService(identity);
-      const galleryData = icpService.convertWeb2GalleryToICP(gallery, gallery.items, ownerPrincipal);
+      const galleryData = icpService.convertWeb2GalleryToICP(
+        gallery as unknown as Record<string, unknown>,
+        gallery.items as unknown as Record<string, unknown>[],
+        ownerPrincipal
+      );
       const result = await icpService.storeGalleryForever(galleryData);
 
       // Step 4: Verify storage
