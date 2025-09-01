@@ -17,12 +17,12 @@ export function MemoryStorageBadge({
   className = "",
   showTooltip = true,
 }: MemoryStorageBadgeProps) {
+  const { status, data: presenceData } = useMemoryStorageStatus(memoryId, memoryType);
+
   // Safety check: don't render if required props are missing
   if (!memoryId || !memoryType) {
     return null;
   }
-
-  const { status, data: presenceData } = useMemoryStorageStatus(memoryId, memoryType);
 
   const getBadgeConfig = () => {
     switch (status) {

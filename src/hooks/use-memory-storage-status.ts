@@ -150,7 +150,7 @@ export function useBatchMemoryStorageStatus(memories: Array<{ id: string; type: 
     }
 
     fetchBatchStatus();
-  }, [memoriesKey]); // Use stable key instead of memories array
+  }, [memoriesKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getMemoryStatus = (memoryId: string, memoryType: string) => {
     const key = `${memoryId}:${memoryType}`;
