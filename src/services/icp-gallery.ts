@@ -493,11 +493,11 @@ export class ICPGalleryService {
     }));
 
     const gallery: Gallery = {
-      id: web2Gallery.id as string,
+      id: String(web2Gallery.id || "unknown"),
       owner_principal: ownerPrincipal,
-      title: web2Gallery.title as string,
-      description: web2Gallery.description ? [web2Gallery.description as string] : [],
-      is_public: web2Gallery.is_public as boolean,
+      title: String(web2Gallery.title || "Untitled Gallery"),
+      description: web2Gallery.description ? [String(web2Gallery.description)] : [],
+      is_public: Boolean(web2Gallery.is_public),
       created_at: BigInt((web2Gallery.created_at as number) || Date.now()),
       updated_at: BigInt((web2Gallery.updated_at as number) || Date.now()),
       storage_status: { Web2Only: null },

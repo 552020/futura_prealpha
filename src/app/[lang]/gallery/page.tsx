@@ -11,6 +11,7 @@ import { GalleryWithItems } from "@/types/gallery";
 import { GalleryTopBar } from "@/components/gallery-top-bar";
 import RequireAuth from "@/components/require-auth";
 import { StorageStatusBadge, getGalleryStorageStatus } from "@/components/storage-status-badge";
+import { CreateGalleryModal } from "@/components/galleries/CreateGalleryModal";
 
 // Mock data flag for development
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_GALLERY === "true";
@@ -23,6 +24,7 @@ export default function GalleryPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     if (isAuthorized) {
@@ -51,9 +53,10 @@ export default function GalleryPage() {
     window.location.href = `/en/gallery/${gallery.id}`;
   };
 
-  const handleCreateGallery = () => {
-    // TODO: Open create gallery modal
-    // console.log("Open create gallery modal");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleGalleryCreated = (_galleryId: string) => {
+    // Reload galleries to show the new one
+    loadGalleries();
   };
 
   const handleFilteredGalleriesChange = (filtered: GalleryWithItems[]) => {
@@ -111,9 +114,9 @@ export default function GalleryPage() {
         <GalleryTopBar
           galleries={galleries}
           onFilteredGalleriesChange={handleFilteredGalleriesChange}
-          onCreateGallery={handleCreateGallery}
           viewMode={viewMode}
           onViewModeChange={handleViewModeChange}
+          onCreateGallery={() => setShowCreateModal(true)}
         />
       </div>
 
@@ -127,7 +130,6 @@ export default function GalleryPage() {
             </div>
             <h3 className="text-xl font-semibold mb-2">No galleries yet</h3>
             <p className="text-muted-foreground mb-6">Create your first gallery to start organizing your photos</p>
-            <Button onClick={handleCreateGallery}>Create Gallery</Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -184,6 +186,14 @@ export default function GalleryPage() {
           </div>
         )}
       </div>
+
+      {/* Create Gallery Modal */}
+      <CreateGalleryModal
+        trigger={<Button className="hidden">Create Gallery</Button>}
+        open={showCreateModal}
+        onOpenChange={setShowCreateModal}
+        onGalleryCreated={handleGalleryCreated}
+      />
     </div>
   );
 }

@@ -188,10 +188,10 @@ export const processDashboardItems = (memories: NormalizedMemory[]): DashboardIt
 export const memoryActions = {
   delete: deleteMemory,
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    share: async (id: string) => {
-      // TODO: Implement share logic
-      // console.log("Sharing memory:", id);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  share: async (id: string) => {
+    // TODO: Implement share logic
+    // console.log("Sharing memory:", id);
   },
 
   navigate: (memory: Memory, lang: string, segment: string) => {

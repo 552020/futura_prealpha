@@ -217,7 +217,7 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
         }
 
         const endTime = Date.now();
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const totalTime = (endTime - startTime) / 1000;
         // console.log(`Folder upload completed in ${totalTime} seconds`);
         onSuccess?.();

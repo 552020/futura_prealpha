@@ -77,11 +77,11 @@ export function middleware(request: NextRequest) {
       response.headers.set("Access-Control-Expose-Headers", "*");
 
       // Log the response headers
-              // console.log("🧾 Response Headers being sent:");
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        response.headers.forEach((_value, _key) => {
-          // console.log(`   - ${_key}: ${_value}`);
-        });
+      // console.log("🧾 Response Headers being sent:");
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      response.headers.forEach((_value, _key) => {
+        // console.log(`   - ${_key}: ${_value}`);
+      });
     } else {
       // console.warn("❌ No CORS headers set — origin not allowed:", origin);
     }

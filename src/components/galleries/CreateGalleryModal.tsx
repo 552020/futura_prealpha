@@ -39,6 +39,8 @@ interface CreateGalleryModalProps {
   prefillFolderName?: string;
   className?: string;
   hideFolderSelection?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function CreateGalleryModal({
@@ -47,8 +49,14 @@ export function CreateGalleryModal({
   prefillFolderName,
   className,
   hideFolderSelection = false,
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange,
 }: CreateGalleryModalProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  // Use external state if provided, otherwise use internal state
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = externalOnOpenChange || setInternalOpen;
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [folders, setFolders] = useState<FolderInfo[]>([]);
