@@ -13,8 +13,8 @@ import { eq, and, isNull, gt } from "drizzle-orm";
 import { backendActor } from "@/ic/backend";
 import { validateNonce, consumeNonce } from "@/lib/ii-nonce";
 
-console.log("--------------------------------");
-console.log("auth.ts");
+// console.log("--------------------------------");
+// console.log("auth.ts");
 // console.log("--------------------------------");
 // console.log("NODE_ENV:", process.env.NODE_ENV);
 
@@ -121,16 +121,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         const { principal, nonceId, nonce } = credentials;
-        console.log("[II] authorize:start", { principal, nonceId });
+        // console.log("[II] authorize:start", { principal, nonceId });
 
         // Validate inputs
         if (!principal || typeof principal !== "string" || principal.length < 5) {
-          console.log("[II] authorize:invalid-principal", { principal });
+          // console.log("[II] authorize:invalid-principal", { principal });
           throw new Error("Invalid principal provided. Please try signing in again.");
         }
 
         if (!nonceId || typeof nonceId !== "string") {
-          console.log("[II] authorize:invalid-nonceId", { nonceId });
+          // console.log("[II] authorize:invalid-nonceId", { nonceId });
           throw new Error("Invalid authentication challenge. Please try signing in again.");
         }
 
@@ -141,29 +141,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
 
         if (!nonceRecord) {
-          console.log("[II] authorize:nonce-not-found", { nonceId });
+          // console.log("[II] authorize:nonce-not-found", { nonceId });
           throw new Error("Authentication challenge not found. Please try signing in again.");
         }
 
         if (nonceRecord.usedAt) {
-          console.log("[II] authorize:nonce-already-used", { nonceId });
+          // console.log("[II] authorize:nonce-already-used", { nonceId });
           throw new Error("Authentication challenge already used. Please try signing in again.");
         }
 
         if (nonceRecord.expiresAt < new Date()) {
-          console.log("[II] authorize:nonce-expired", { nonceId });
+          // console.log("[II] authorize:nonce-expired", { nonceId });
           throw new Error("Authentication challenge expired. Please try signing in again.");
         }
 
         // 5.3: Call API route to verify nonce proof
         try {
           if (!nonce) {
-            console.log("[II] authorize:no-nonce-provided", { nonceId, principal });
+            // console.log("[II] authorize:no-nonce-provided", { nonceId, principal });
             throw new Error("Authentication nonce not provided. Please try signing in again.");
           }
 
           const nonceStr = nonce as string;
-          console.log("[II] authorize:verifying-nonce", { nonceId, principal, nonceLength: nonceStr.length });
+          // console.log("[II] authorize:verifying-nonce", { nonceId, principal, nonceLength: nonceStr.length });
 
           // Call our API route to verify the nonce
           const baseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
@@ -174,29 +174,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
 
           if (!response.ok) {
-            console.error("[II] authorize:api-error", { status: response.status, statusText: response.statusText });
+            // console.error("[II] authorize:api-error", { status: response.status, statusText: response.statusText });
             throw new Error("Authentication verification service unavailable. Please try signing in again.");
           }
 
           const result = await response.json();
 
           if (!result.success) {
-            console.log("[II] authorize:verification-failed", { error: result.error });
+            // console.log("[II] authorize:verification-failed", { error: result.error });
             throw new Error("Authentication proof verification failed. Please try signing in again.");
           }
 
           const provedPrincipal = result.principal;
           if (provedPrincipal !== principal) {
-            console.log("[II] authorize:principal-mismatch", {
-              claimed: principal,
-              proved: provedPrincipal,
-            });
+            // console.log("[II] authorize:principal-mismatch", {
+            //   claimed: principal,
+            //   proved: provedPrincipal,
+            // });
             throw new Error("Authentication proof mismatch. Please try signing in again.");
           }
 
-          console.log("[II] authorize:nonce-verified", { principal, nonceId });
+          // console.log("[II] authorize:nonce-verified", { principal, nonceId });
         } catch (error) {
-          console.error("[II] authorize:verification-error", error);
+          // console.error("[II] authorize:verification-error", error);
           throw new Error("Unable to verify authentication. Please try signing in again.");
         }
 
@@ -215,7 +215,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               where: (u, { eq }) => eq(u.id, existingAccount.userId),
             });
             if (existingUser) {
-              console.log("[II] authorize:found-existing", { userId: existingUser.id, principal });
+              // console.log("[II] authorize:found-existing", { userId: existingUser.id, principal });
               return {
                 id: existingUser.id,
                 email: existingUser.email,
@@ -243,7 +243,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           // Ensure allUsers entry exists for business linkage
           await db.insert(allUsers).values({ type: "user", userId: newUser.id }).onConflictDoNothing?.();
 
-          console.log("[II] authorize:created", { userId: newUser.id, principal });
+          // console.log("[II] authorize:created", { userId: newUser.id, principal });
 
           return {
             id: newUser.id,
@@ -253,7 +253,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             icpPrincipal: principal,
           };
         } catch (error) {
-          console.error("[II] authorize:db-error", error);
+          // console.error("[II] authorize:db-error", error);
           throw new Error("Unable to create user account. Please try signing in again.");
         }
       },
@@ -279,26 +279,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const urlObj = new URL(url);
           lang = urlObj.searchParams.get("lang") || "en";
           urlParseSuccess = true;
-          console.log("[NextAuth] Successfully parsed URL:", { url, lang });
+          // console.log("[NextAuth] Successfully parsed URL:", { url, lang });
         } catch (error) {
-          console.warn("[NextAuth] Invalid URL in redirect callback - using fallback:", {
-            invalidUrl: url,
-            error: error instanceof Error ? error.message : String(error),
-            fallbackLang: "en",
-            baseUrl,
-          });
+          // console.warn("[NextAuth] Invalid URL in redirect callback - using fallback:", {
+          //   invalidUrl: url,
+          //   error: error instanceof Error ? error.message : String(error),
+          //   fallbackLang: "en",
+          //   baseUrl,
+          // });
           // Fallback to default language if URL is invalid
           lang = "en";
         }
 
         const redirectTo = `${baseUrl}/${lang}/dashboard`;
-        console.log("[NextAuth] Redirecting after login:", {
-          redirectTo,
-          urlParseSuccess,
-          originalUrl: url,
-          baseUrl,
-          lang,
-        });
+        // console.log("[NextAuth] Redirecting after login:", {
+        //   redirectTo,
+        //   urlParseSuccess,
+        //   originalUrl: url,
+        //   baseUrl,
+        //   lang,
+        // });
         return redirectTo;
       }
 
@@ -348,7 +348,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const userAny = user as unknown as { icpPrincipal?: string } | undefined;
       if (userAny?.icpPrincipal && typeof userAny.icpPrincipal === "string") {
         (token as unknown as { icpPrincipal?: string }).icpPrincipal = userAny.icpPrincipal;
-        console.log("[II][JWT] set from user", { icpPrincipal: token.icpPrincipal });
+        // console.log("[II][JWT] set from user", { icpPrincipal: token.icpPrincipal });
       }
       //   if (user) {
       //     token.role = user.role;
@@ -378,10 +378,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
           if (iiAccount?.providerAccountId) {
             (token as unknown as { icpPrincipal?: string }).icpPrincipal = iiAccount.providerAccountId;
-            console.log("[II][JWT] backfilled from accounts", { icpPrincipal: iiAccount.providerAccountId });
+            // console.log("[II][JWT] backfilled from accounts", { icpPrincipal: iiAccount.providerAccountId });
           }
         } catch (error) {
-          console.warn("[II][JWT] failed to backfill icpPrincipal", error);
+          // console.warn("[II][JWT] failed to backfill icpPrincipal", error);
         }
       }
 
@@ -394,15 +394,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
           if (allUser?.id) {
             token.businessUserId = allUser.id;
-            console.log("[Auth] ✅ Business user ID added to token:", {
-              authUserId: user.id,
-              businessUserId: allUser.id,
-            });
+            // console.log("[Auth] ✅ Business user ID added to token:", {
+            //   authUserId: user.id,
+            //   businessUserId: allUser.id,
+            // });
           } else {
-            console.warn("[Auth] ⚠️ No allUsers entry found for Auth.js user:", user.id);
+            // console.warn("[Auth] ⚠️ No allUsers entry found for Auth.js user:", user.id);
           }
         } catch (error) {
-          console.error("[Auth] ❌ Error looking up business user ID:", error);
+          // console.error("[Auth] ❌ Error looking up business user ID:", error);
         }
       }
 
@@ -473,7 +473,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Delete the temporary user since we've migrated their data
         await db.delete(temporaryUsers).where(eq(temporaryUsers.id, temporaryUser.id));
 
-        console.log("[Auth] ✅ Successfully promoted user");
+        // console.log("[Auth] ✅ Successfully promoted user");
       } else if (temporaryUser) {
         // console.log("[Auth] ⚠️ Found temporary user but no corresponding allUsers entry:", {
         //   temporaryUserId: temporaryUser.id,
@@ -481,30 +481,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // });
       } else {
         // No temporary user found, create a new allUsers entry
-        console.log("[Auth] 🆕 Creating new allUsers entry for:", {
-          userId: user.id,
-          email: user.email,
-        });
+        // console.log("[Auth] 🆕 Creating new allUsers entry for:", {
+        //   userId: user.id,
+        //   email: user.email,
+        // });
 
         await db.insert(allUsers).values({
           type: "user",
           userId: user.id,
         });
 
-        console.log("[Auth] ✅ Successfully created allUsers entry");
+        // console.log("[Auth] ✅ Successfully created allUsers entry");
       }
     },
     async linkAccount(account) {
-      console.log("[Auth] 🔗 Account linked:", account);
+      // console.log("[Auth] 🔗 Account linked:", account);
     },
     async signIn({ user, account, profile }) {
-      console.log("[Auth] 👋 User signed in:", { user, account, profile });
+      // console.log("[Auth] 👋 User signed in:", { user, account, profile });
     },
     async signOut(message) {
       if ("session" in message) {
-        console.log("[Auth] User signed out, session object:", message.session);
+        // console.log("[Auth] User signed out, session object:", message.session);
       } else if ("token" in message) {
-        console.log("[Auth] User signed out, JWT token:", message.token);
+        // console.log("[Auth] User signed out, JWT token:", message.token);
       }
     },
   },
