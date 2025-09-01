@@ -243,8 +243,6 @@ export class ICPGalleryService {
     }
   }
 
-
-
   /**
    * Get all galleries for the current user
    */
