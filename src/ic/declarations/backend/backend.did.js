@@ -18,6 +18,13 @@ export const idlFactory = ({ IDL }) => {
     'message' : IDL.Text,
     'success' : IDL.Bool,
   });
+  const MemoryType = IDL.Variant({
+    'Note' : IDL.Null,
+    'Image' : IDL.Null,
+    'Document' : IDL.Null,
+    'Audio' : IDL.Null,
+    'Video' : IDL.Null,
+  });
   const ICPErrorCode = IDL.Variant({
     'Internal' : IDL.Text,
     'NotFound' : IDL.Null,
@@ -28,6 +35,7 @@ export const idlFactory = ({ IDL }) => {
   const UploadSession = IDL.Record({
     'session_id' : IDL.Text,
     'chunks_received' : IDL.Vec(IDL.Bool),
+    'memory_type' : MemoryType,
     'created_at' : IDL.Nat64,
     'memory_id' : IDL.Text,
     'expected_hash' : IDL.Text,
@@ -178,13 +186,6 @@ export const idlFactory = ({ IDL }) => {
     'Document' : DocumentMetadata,
     'Audio' : AudioMetadata,
     'Video' : VideoMetadata,
-  });
-  const MemoryType = IDL.Variant({
-    'Note' : IDL.Null,
-    'Image' : IDL.Null,
-    'Document' : IDL.Null,
-    'Audio' : IDL.Null,
-    'Video' : IDL.Null,
   });
   const MemoryInfo = IDL.Record({
     'updated_at' : IDL.Nat64,
@@ -364,6 +365,47 @@ export const idlFactory = ({ IDL }) => {
     'icp_gallery_id' : IDL.Opt(IDL.Text),
     'success' : IDL.Bool,
   });
+  const SimpleMemoryMetadata = IDL.Record({
+    'title' : IDL.Opt(IDL.Text),
+    'updated_at' : IDL.Nat64,
+    'size' : IDL.Opt(IDL.Nat64),
+    'tags' : IDL.Vec(IDL.Text),
+    'content_type' : IDL.Opt(IDL.Text),
+    'description' : IDL.Opt(IDL.Text),
+    'created_at' : IDL.Nat64,
+    'custom_fields' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
+  });
+  const MemorySyncRequest = IDL.Record({
+    'asset_size' : IDL.Nat64,
+    'memory_type' : MemoryType,
+    'metadata' : SimpleMemoryMetadata,
+    'expected_asset_hash' : IDL.Text,
+    'memory_id' : IDL.Text,
+    'asset_url' : IDL.Text,
+  });
+  const MemorySyncResult = IDL.Record({
+    'memory_id' : IDL.Text,
+    'error' : IDL.Opt(ICPErrorCode),
+    'message' : IDL.Text,
+    'metadata_stored' : IDL.Bool,
+    'success' : IDL.Bool,
+    'asset_stored' : IDL.Bool,
+  });
+  const BatchMemorySyncResponse = IDL.Record({
+    'total_memories' : IDL.Nat32,
+    'failed_memories' : IDL.Nat32,
+    'gallery_id' : IDL.Text,
+    'results' : IDL.Vec(MemorySyncResult),
+    'error' : IDL.Opt(ICPErrorCode),
+    'message' : IDL.Text,
+    'success' : IDL.Bool,
+    'successful_memories' : IDL.Nat32,
+  });
+  const ICPResult_6 = IDL.Record({
+    'data' : IDL.Opt(BatchMemorySyncResponse),
+    'error' : IDL.Opt(ICPErrorCode),
+    'success' : IDL.Bool,
+  });
   const GalleryUpdateData = IDL.Record({
     'is_public' : IDL.Opt(IDL.Bool),
     'title' : IDL.Opt(IDL.Text),
@@ -380,23 +422,13 @@ export const idlFactory = ({ IDL }) => {
     'metadata' : IDL.Opt(MemoryMetadata),
     'name' : IDL.Opt(IDL.Text),
   });
-  const SimpleMemoryMetadata = IDL.Record({
-    'title' : IDL.Opt(IDL.Text),
-    'updated_at' : IDL.Nat64,
-    'size' : IDL.Opt(IDL.Nat64),
-    'tags' : IDL.Vec(IDL.Text),
-    'content_type' : IDL.Opt(IDL.Text),
-    'description' : IDL.Opt(IDL.Text),
-    'created_at' : IDL.Nat64,
-    'custom_fields' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Text)),
-  });
   const MetadataResponse = IDL.Record({
     'memory_id' : IDL.Opt(IDL.Text),
     'error' : IDL.Opt(ICPErrorCode),
     'message' : IDL.Text,
     'success' : IDL.Bool,
   });
-  const ICPResult_6 = IDL.Record({
+  const ICPResult_7 = IDL.Record({
     'data' : IDL.Opt(MetadataResponse),
     'error' : IDL.Opt(ICPErrorCode),
     'success' : IDL.Bool,
@@ -409,11 +441,13 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'begin_asset_upload' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Nat32, IDL.Nat64],
+        [IDL.Text, MemoryType, IDL.Text, IDL.Nat32, IDL.Nat64],
         [ICPResult],
         [],
       ),
     'cancel_upload' : IDL.Func([IDL.Text], [ICPResult_1], []),
+    'cleanup_expired_sessions' : IDL.Func([], [IDL.Nat32], []),
+    'cleanup_orphaned_chunks' : IDL.Func([], [IDL.Nat32], []),
     'clear_creation_state' : IDL.Func([IDL.Principal], [Result], []),
     'clear_migration_state' : IDL.Func([IDL.Principal], [Result], []),
     'commit_asset' : IDL.Func([IDL.Text, IDL.Text], [ICPResult_2], []),
@@ -490,6 +524,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(IDL.Principal)],
         ['query'],
       ),
+    'get_upload_session_stats' : IDL.Func(
+        [],
+        [IDL.Nat32, IDL.Nat32, IDL.Nat64],
+        ['query'],
+      ),
     'get_user' : IDL.Func([], [IDL.Opt(CapsuleInfo)], ['query']),
     'get_user_creation_status' : IDL.Func(
         [IDL.Principal],
@@ -544,6 +583,11 @@ export const idlFactory = ({ IDL }) => {
         [StoreGalleryResponse],
         [],
       ),
+    'sync_gallery_memories' : IDL.Func(
+        [IDL.Text, IDL.Vec(MemorySyncRequest)],
+        [ICPResult_6],
+        [],
+      ),
     'update_gallery' : IDL.Func(
         [IDL.Text, GalleryUpdateData],
         [UpdateGalleryResponse],
@@ -556,7 +600,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'upsert_metadata' : IDL.Func(
         [IDL.Text, MemoryType, SimpleMemoryMetadata, IDL.Text],
-        [ICPResult_6],
+        [ICPResult_7],
         [],
       ),
     'verify_nonce' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Principal)], ['query']),

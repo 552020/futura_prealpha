@@ -9,6 +9,7 @@ import { Loader2, Image as ImageIcon, Video, FileText, Music, ChevronLeft } from
 import { useAuthGuard } from "@/utils/authentication";
 import { format } from "date-fns";
 import { shortenTitle } from "@/lib/utils";
+import { MemoryStorageBadge } from "@/components/memory-storage-badge";
 import { sampleDashboardMemories } from "../sample-data";
 
 // Demo flag - set to true to use mock data for demo
@@ -260,7 +261,13 @@ export default function MemoryDetailPage() {
               <h1 className="text-xl font-semibold sm:text-2xl md:text-3xl truncate min-w-0" title={displayTitle}>
                 {shortTitle}
               </h1>
-              <p className="text-sm text-muted-foreground">Saved on {format(new Date(memory.createdAt), "PPP")}</p>
+              <div className="flex items-center gap-3">
+                <p className="text-sm text-muted-foreground">Saved on {format(new Date(memory.createdAt), "PPP")}</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Storage:</span>
+                  <MemoryStorageBadge memoryId={memory.id} memoryType={memory.type} size="sm" showTooltip={true} />
+                </div>
+              </div>
             </div>
           </div>
           {isOwner && <MemoryActions id={memory.id} onDelete={handleDelete} onShare={handleShare} />}

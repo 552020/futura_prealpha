@@ -18,6 +18,16 @@ export interface AudioMetadata {
   'bitrate' : [] | [number],
   'format' : [] | [string],
 }
+export interface BatchMemorySyncResponse {
+  'total_memories' : number,
+  'failed_memories' : number,
+  'gallery_id' : string,
+  'results' : Array<MemorySyncResult>,
+  'error' : [] | [ICPErrorCode],
+  'message' : string,
+  'success' : boolean,
+  'successful_memories' : number,
+}
 export interface BlobRef {
   'locator' : string,
   'hash' : [] | [Uint8Array | number[]],
@@ -199,6 +209,11 @@ export interface ICPResult_5 {
   'success' : boolean,
 }
 export interface ICPResult_6 {
+  'data' : [] | [BatchMemorySyncResponse],
+  'error' : [] | [ICPErrorCode],
+  'success' : boolean,
+}
+export interface ICPResult_7 {
   'data' : [] | [MetadataResponse],
   'error' : [] | [ICPErrorCode],
   'success' : boolean,
@@ -283,6 +298,22 @@ export interface MemoryPresenceResult {
   'memory_id' : string,
   'asset_present' : boolean,
 }
+export interface MemorySyncRequest {
+  'asset_size' : bigint,
+  'memory_type' : MemoryType,
+  'metadata' : SimpleMemoryMetadata,
+  'expected_asset_hash' : string,
+  'memory_id' : string,
+  'asset_url' : string,
+}
+export interface MemorySyncResult {
+  'memory_id' : string,
+  'error' : [] | [ICPErrorCode],
+  'message' : string,
+  'metadata_stored' : boolean,
+  'success' : boolean,
+  'asset_stored' : boolean,
+}
 export type MemoryType = { 'Note' : null } |
   { 'Image' : null } |
   { 'Document' : null } |
@@ -352,6 +383,7 @@ export interface UpdateGalleryResponse {
 export interface UploadSession {
   'session_id' : string,
   'chunks_received' : Array<boolean>,
+  'memory_type' : MemoryType,
   'created_at' : bigint,
   'memory_id' : string,
   'expected_hash' : string,
@@ -379,10 +411,12 @@ export interface _SERVICE {
     MemoryOperationResponse
   >,
   'begin_asset_upload' : ActorMethod<
-    [string, string, number, bigint],
+    [string, MemoryType, string, number, bigint],
     ICPResult
   >,
   'cancel_upload' : ActorMethod<[string], ICPResult_1>,
+  'cleanup_expired_sessions' : ActorMethod<[], number>,
+  'cleanup_orphaned_chunks' : ActorMethod<[], number>,
   'clear_creation_state' : ActorMethod<[Principal], Result>,
   'clear_migration_state' : ActorMethod<[Principal], Result>,
   'commit_asset' : ActorMethod<[string, string], ICPResult_2>,
@@ -419,6 +453,7 @@ export interface _SERVICE {
   'get_my_personal_canister_id' : ActorMethod<[], [] | [Principal]>,
   'get_personal_canister_creation_stats' : ActorMethod<[], Result_2>,
   'get_personal_canister_id' : ActorMethod<[Principal], [] | [Principal]>,
+  'get_upload_session_stats' : ActorMethod<[], [number, number, bigint]>,
   'get_user' : ActorMethod<[], [] | [CapsuleInfo]>,
   'get_user_creation_status' : ActorMethod<[Principal], Result_3>,
   'get_user_galleries' : ActorMethod<[Principal], Array<Gallery>>,
@@ -448,6 +483,10 @@ export interface _SERVICE {
   'set_migration_enabled' : ActorMethod<[boolean], Result_4>,
   'set_personal_canister_creation_enabled' : ActorMethod<[boolean], Result_4>,
   'store_gallery_forever' : ActorMethod<[GalleryData], StoreGalleryResponse>,
+  'sync_gallery_memories' : ActorMethod<
+    [string, Array<MemorySyncRequest>],
+    ICPResult_6
+  >,
   'update_gallery' : ActorMethod<
     [string, GalleryUpdateData],
     UpdateGalleryResponse
@@ -458,7 +497,7 @@ export interface _SERVICE {
   >,
   'upsert_metadata' : ActorMethod<
     [string, MemoryType, SimpleMemoryMetadata, string],
-    ICPResult_6
+    ICPResult_7
   >,
   'verify_nonce' : ActorMethod<[string], [] | [Principal]>,
   'whoami' : ActorMethod<[], Principal>,
