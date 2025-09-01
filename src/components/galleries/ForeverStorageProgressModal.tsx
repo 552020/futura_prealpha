@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, AlertCircle, Loader2, Shield, Database, CheckSquare, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { GalleryWithItems } from "@/types/gallery";
+import { ICPGalleryService } from "@/services/icp-gallery";
+import { getAuthClient } from "@/ic/ii";
 
 interface ForeverStorageProgressModalProps {
   isOpen: boolean;
@@ -113,8 +115,14 @@ export function ForeverStorageProgressModal({
       setMessage("Storing gallery on Internet Computer...");
       setDetails("This may take a few moments");
 
-      // TODO: Replace with actual ICP storage call
-      const result = await storeGalleryOnICP(gallery);
+      // Get authenticated identity and create ICP service
+      const authClient = await getAuthClient();
+      const identity = authClient.getIdentity();
+      const ownerPrincipal = identity.getPrincipal();
+
+      const icpService = new ICPGalleryService(identity);
+      const galleryData = icpService.convertWeb2GalleryToICP(gallery, gallery.items, ownerPrincipal);
+      const result = await icpService.storeGalleryForever(galleryData);
 
       // Step 4: Verify storage
       setCurrentStep("verify");
@@ -125,13 +133,23 @@ export function ForeverStorageProgressModal({
       // Simulate verification
       await new Promise((resolve) => setTimeout(resolve, 500));
 
+      // Check if storage was successful
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
       // Success
       setCurrentStep("success");
       setProgress(100);
       setMessage(`Gallery "${gallery.title}" stored forever! 🎉`);
       setDetails("Your gallery is now permanently stored on the Internet Computer");
 
-      onSuccess(result);
+      onSuccess({
+        success: result.success,
+        galleryId: result.gallery_id || gallery.id,
+        icpGalleryId: result.icp_gallery_id || result.gallery_id || gallery.id,
+        timestamp: new Date().toISOString(),
+      });
     } catch (err) {
       setCurrentStep("error");
       setProgress(0);
@@ -361,20 +379,4 @@ export function ForeverStorageProgressModal({
       </DialogContent>
     </Dialog>
   );
-}
-
-// TODO: Replace with actual ICP storage implementation
-async function storeGalleryOnICP(
-  gallery: GalleryWithItems
-): Promise<{ success: boolean; galleryId: string; icpGalleryId: string; timestamp: string }> {
-  // Simulate ICP storage
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-
-  // Simulate success
-  return {
-    success: true,
-    galleryId: gallery.id,
-    icpGalleryId: `icp_${Date.now()}`,
-    timestamp: new Date().toISOString(),
-  };
 }
