@@ -246,7 +246,6 @@ export async function POST(request: NextRequest) {
       .filter((r): r is PromiseFulfilledResult<UploadOk> => r.status === "fulfilled" && r.value.success)
       .map((r) => r.value);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const failures = results.filter(
       (r) => r.status === "rejected" || (r.status === "fulfilled" && !(r.value as UploadOk | UploadErr).success)
     ).length;
@@ -270,7 +269,6 @@ export async function POST(request: NextRequest) {
       });
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     // console.log(`✅ ${ok.length} uploads ready for batch insert, ❌ ${failures} failures`);
 
     // Batch insert all successful files (no transactions - Neon HTTP limitation)
