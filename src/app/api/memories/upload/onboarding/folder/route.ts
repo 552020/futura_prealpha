@@ -246,10 +246,6 @@ export async function POST(request: NextRequest) {
       .filter((r): r is PromiseFulfilledResult<UploadOk> => r.status === "fulfilled" && r.value.success)
       .map((r) => r.value);
 
-    const failures = results.filter(
-      (r) => r.status === "rejected" || (r.status === "fulfilled" && !(r.value as UploadOk | UploadErr).success)
-    ).length;
-
     // Split rows by type using type guards
     ok.forEach((value) => {
       if (value.memoryType === "image") {
@@ -268,8 +264,6 @@ export async function POST(request: NextRequest) {
         memoryId: "", // Will be set after batch insert
       });
     });
-
-    // console.log(`✅ ${ok.length} uploads ready for batch insert, ❌ ${failures} failures`);
 
     // Batch insert all successful files (no transactions - Neon HTTP limitation)
     const insertedIds: string[] = [];

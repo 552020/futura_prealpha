@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,11 +13,15 @@ import { GalleryTopBar } from "@/components/gallery-top-bar";
 import RequireAuth from "@/components/require-auth";
 import { StorageStatusBadge, getGalleryStorageStatus } from "@/components/storage-status-badge";
 import { CreateGalleryModal } from "@/components/galleries/CreateGalleryModal";
+import { LoadingSpinner } from "@/components/common/loading-spinner";
+import { ErrorState } from "@/components/common/error-state";
 
 // Mock data flag for development
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_GALLERY === "true";
 
 export default function GalleryPage() {
+  const params = useParams();
+  const lang = params.lang as string;
   const { isAuthorized, isLoading: authLoading } = useAuthGuard();
 
   const [galleries, setGalleries] = useState<GalleryWithItems[]>([]);
@@ -50,7 +55,7 @@ export default function GalleryPage() {
 
   const handleGalleryClick = (gallery: GalleryWithItems) => {
     // Navigate to gallery view
-    window.location.href = `/en/gallery/${gallery.id}`;
+    window.location.href = `/${lang}/gallery/${gallery.id}`;
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -70,14 +75,7 @@ export default function GalleryPage() {
   if (!isAuthorized || authLoading) {
     // Show loading spinner only while status is loading
     if (authLoading) {
-      return (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading...</p>
-          </div>
-        </div>
-      );
+      return <LoadingSpinner fullScreen text="Loading..." />;
     }
 
     // Show access denied for unauthenticated users
@@ -85,25 +83,18 @@ export default function GalleryPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading galleries...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner fullScreen text="Loading galleries..." />;
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-4">Something went wrong</h2>
-          <p className="text-muted-foreground mb-6">{error}</p>
-          <Button onClick={loadGalleries}>Try Again</Button>
-        </div>
-      </div>
+      <ErrorState
+        title="Something went wrong"
+        message={error}
+        onRetry={loadGalleries}
+        retryText="Try Again"
+        fullScreen
+      />
     );
   }
 
