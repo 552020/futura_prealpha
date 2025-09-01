@@ -11,8 +11,11 @@ import { icpGalleryService, type GalleryData, type StoreGalleryResponse } from "
 import { Principal } from "@dfinity/principal";
 
 // Analytics tracking shim for future implementation
-const trackEvent = (event: string, properties?: Record<string, unknown>): void => {
-  console.log("Gallery Analytics:", { event, properties, timestamp: new Date().toISOString() });
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const trackGalleryEvent = (event: string, _properties: Record<string, unknown> = {}) => {
+  // console.log("Gallery Analytics:", { event, properties: _properties, timestamp: new Date().toISOString() });
+  // TODO: Implement actual analytics tracking
+  // This could send data to PostHog, Google Analytics, or other analytics services
 };
 
 // Mock data for development - now using generated data
@@ -55,7 +58,7 @@ export const galleryService = {
     limit: number = 12,
     useMockData: boolean = false
   ): Promise<GalleryListResponse> => {
-    trackEvent("gallery_list_requested", { page, limit });
+    trackGalleryEvent("gallery_list_requested", { page, limit });
 
     if (useMockData) {
       return {
@@ -76,7 +79,7 @@ export const galleryService = {
 
   // Get single gallery
   getGallery: async (id: string, useMockData: boolean = false): Promise<GalleryDetailResponse> => {
-    trackEvent("gallery_viewed", { galleryId: id });
+    trackGalleryEvent("gallery_viewed", { galleryId: id });
 
     if (useMockData) {
       const gallery = getGeneratedGallery(id);
@@ -108,7 +111,7 @@ export const galleryService = {
     isPublic: boolean = false,
     useMockData: boolean = false
   ): Promise<GalleryWithItems> => {
-    trackEvent("gallery_created_from_folder", { folderName, title });
+    trackGalleryEvent("gallery_created_from_folder", { folderName, title });
 
     if (useMockData) {
       const newGallery: GalleryWithItems = {
@@ -135,7 +138,7 @@ export const galleryService = {
         isPublic,
       };
 
-      console.log("Sending request to API:", request);
+      // console.log("Sending request to API:", request);
 
       const response = await fetch("/api/galleries", {
         method: "POST",
@@ -143,11 +146,11 @@ export const galleryService = {
         body: JSON.stringify(request),
       });
 
-      console.log("API response status:", response.status);
+      // console.log("API response status:", response.status);
 
       const result = await handleApiResponse(response);
-      console.log("API response result:", result);
-      console.log("Gallery items count:", result.gallery?.items?.length || 0);
+      // console.log("API response result:", result);
+      // console.log("Gallery items count:", result.gallery?.items?.length || 0);
       return result.gallery;
     } catch (error) {
       console.error("Error creating gallery from folder:", error);
@@ -163,7 +166,7 @@ export const galleryService = {
     isPublic: boolean = false,
     useMockData: boolean = false
   ): Promise<GalleryWithItems> => {
-    trackEvent("gallery_created_from_memories", { memoriesCount: memories.length, title });
+    trackGalleryEvent("gallery_created_from_memories", { memoriesCount: memories.length, title });
 
     if (useMockData) {
       const newGallery: GalleryWithItems = {
@@ -206,7 +209,7 @@ export const galleryService = {
 
   // Create gallery (legacy function - now uses the specific functions above)
   createGallery: async (request: CreateGalleryRequest, useMockData: boolean = false): Promise<GalleryWithItems> => {
-    trackEvent("gallery_created", { type: request.type });
+    trackGalleryEvent("gallery_created", { type: request.type });
 
     if (useMockData) {
       const newGallery: GalleryWithItems = {
@@ -245,7 +248,7 @@ export const galleryService = {
     updates: UpdateGalleryRequest,
     useMockData: boolean = false
   ): Promise<GalleryWithItems> => {
-    trackEvent("gallery_updated", { galleryId: id, updates });
+    trackGalleryEvent("gallery_updated", { galleryId: id, updates });
 
     if (useMockData) {
       const gallery = getGeneratedGallery(id);
@@ -277,7 +280,7 @@ export const galleryService = {
 
   // Delete gallery
   deleteGallery: async (id: string, useMockData: boolean = false): Promise<void> => {
-    trackEvent("gallery_deleted", { galleryId: id });
+    trackGalleryEvent("gallery_deleted", { galleryId: id });
 
     if (useMockData) {
       // Mock deletion - just return success
@@ -305,7 +308,7 @@ export const galleryService = {
     shareData: { sharedWithType: string; sharedWithId: string },
     useMockData: boolean = false
   ): Promise<void> => {
-    trackEvent("gallery_shared", { galleryId: id, shareData });
+    trackGalleryEvent("gallery_shared", { galleryId: id, shareData });
 
     if (useMockData) {
       // Mock sharing - just return success
@@ -331,7 +334,7 @@ export const galleryService = {
 
   // Get folders with images for gallery creation
   getFoldersWithImages: async (useMockData: boolean = false): Promise<FolderInfo[]> => {
-    trackEvent("folders_requested");
+    trackGalleryEvent("folders_requested");
 
     if (useMockData) {
       return mockFolders;
@@ -358,7 +361,7 @@ export const galleryService = {
    * Store a gallery forever in the ICP canister
    */
   storeGalleryForever: async (gallery: GalleryWithItems, ownerPrincipal?: string): Promise<StoreGalleryResponse> => {
-    trackEvent("gallery_store_forever_requested", { galleryId: gallery.id });
+    trackGalleryEvent("gallery_store_forever_requested", { galleryId: gallery.id });
 
     try {
       // Convert Web2 gallery to ICP format
@@ -378,7 +381,7 @@ export const galleryService = {
         await updateStorageEdgesAfterICPSuccess(gallery);
       }
 
-      trackEvent("gallery_store_forever_completed", {
+      trackGalleryEvent("gallery_store_forever_completed", {
         galleryId: gallery.id,
         success: result.success,
       });
@@ -386,7 +389,7 @@ export const galleryService = {
       return result;
     } catch (error) {
       console.error("Error storing gallery forever:", error);
-      trackEvent("gallery_store_forever_failed", {
+      trackGalleryEvent("gallery_store_forever_failed", {
         galleryId: gallery.id,
         error: error instanceof Error ? error.message : "Unknown error",
       });
@@ -403,7 +406,7 @@ export const galleryService = {
    * Get galleries stored in ICP canister
    */
   getICPUserGalleries: async (): Promise<GalleryWithItems[]> => {
-    trackEvent("icp_galleries_requested");
+    trackGalleryEvent("icp_galleries_requested");
 
     try {
       const icpGalleries = await icpGalleryService.getMyGalleries();
@@ -436,11 +439,11 @@ export const galleryService = {
         })),
       })) as unknown as GalleryWithItems[];
 
-      trackEvent("icp_galleries_retrieved", { count: web2Galleries.length });
+      trackGalleryEvent("icp_galleries_retrieved", { count: web2Galleries.length });
       return web2Galleries;
     } catch (error) {
       console.error("Error getting ICP galleries:", error);
-      trackEvent("icp_galleries_failed", {
+      trackGalleryEvent("icp_galleries_failed", {
         error: error instanceof Error ? error.message : "Unknown error",
       });
       throw new Error(`Failed to get ICP galleries: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -501,7 +504,7 @@ async function updateStorageEdgesAfterICPSuccess(gallery: GalleryWithItems): Pro
       });
     }
 
-    console.log(`Updated storage edges for ${gallery.items?.length || 0} memories in gallery ${gallery.id}`);
+    // console.log(`Updated storage edges for ${gallery.items?.length || 0} memories in gallery ${gallery.id}`);
   } catch (error) {
     console.error("Error updating storage edges after ICP success:", error);
     // Don't throw - this is a side effect, not critical to the main operation

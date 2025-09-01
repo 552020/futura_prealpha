@@ -243,7 +243,7 @@ export async function createStorageEdgesForMemory(params: {
   const { memoryId, memoryType, url, size, contentHash } = params;
 
   try {
-    console.log("🔗 Creating storage edges for memory:", { memoryId, memoryType });
+    // console.log("🔗 Creating storage edges for memory:", { memoryId, memoryType });
 
     // Create metadata edge for neon-db (always present when memory is created)
     const metadataEdge = {
@@ -282,10 +282,10 @@ export async function createStorageEdgesForMemory(params: {
       db.insert(storageEdges).values(assetEdge).returning(),
     ]);
 
-    console.log("✅ Storage edges created successfully:", {
-      metadataEdgeId: metadataResult[0]?.id,
-      assetEdgeId: assetResult[0]?.id,
-    });
+    // console.log("✅ Storage edges created successfully:", {
+    //   metadataEdgeId: metadataResult[0]?.id,
+    //   assetEdgeId: assetResult[0]?.id,
+    // });
 
     return {
       success: true,
@@ -312,7 +312,7 @@ export async function cleanupStorageEdgesForMemory(params: {
   const { memoryId, memoryType } = params;
 
   try {
-    console.log("🧹 Cleaning up storage edges for memory:", { memoryId, memoryType });
+    // console.log("🧹 Cleaning up storage edges for memory:", { memoryId, memoryType });
 
     // Import the storage edges table
     const { storageEdges } = await import("@/db/schema");
@@ -323,11 +323,11 @@ export async function cleanupStorageEdgesForMemory(params: {
       .where(and(eq(storageEdges.memoryId, memoryId), eq(storageEdges.memoryType, memoryType)))
       .returning();
 
-    console.log("✅ Storage edges cleaned up successfully:", {
-      memoryId,
-      memoryType,
-      deletedCount: deletedEdges.length,
-    });
+    // console.log("✅ Storage edges cleaned up successfully:", {
+    //   memoryId,
+    //   memoryType,
+    //   deletedCount: deletedEdges.length,
+    // });
 
     return {
       success: true,
@@ -354,7 +354,7 @@ export async function cleanupStorageEdgesForMemory(params: {
 export async function parseSingleFile(
   request: NextRequest
 ): Promise<{ file: File | null; formData: FormData | null; error: NextResponse | null }> {
-  console.log("📦 Parsing form data...");
+  // console.log("📦 Parsing form data...");
 
   try {
     const formData = await request.formData();
@@ -387,7 +387,7 @@ export async function parseSingleFile(
 export async function parseMultipleFiles(
   request: NextRequest
 ): Promise<{ files: File[]; userId?: string; error: NextResponse | null }> {
-  console.log("📦 Parsing form data for folder upload...");
+  // console.log("📦 Parsing form data for folder upload...");
 
   try {
     const formData = await request.formData();
@@ -402,7 +402,7 @@ export async function parseMultipleFiles(
       };
     }
 
-    console.log(`📁 Found ${files.length} files in folder upload`);
+    // console.log(`📁 Found ${files.length} files in folder upload`);
     return { files, userId: userId || undefined, error: null };
   } catch (error) {
     console.error("❌ Error parsing form data:", error);
@@ -417,12 +417,13 @@ export async function parseMultipleFiles(
  * Log file details for debugging
  * Used for both single file and folder uploads
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function logFileDetails(file: File): void {
-  console.log("📄 File details:", {
-    name: file.name,
-    type: file.type,
-    size: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
-  });
+  // console.log("📄 File details:", {
+  //   name: file.name,
+  //   type: file.type,
+  //   size: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
+  // });
 }
 
 /**
@@ -430,10 +431,10 @@ export function logFileDetails(file: File): void {
  * Used for folder uploads
  */
 export function logMultipleFileDetails(files: File[]): void {
-  console.log(`📁 Folder contains ${files.length} files:`);
-  files.forEach((file, index) => {
-    console.log(`  ${index + 1}. `);
-    logFileDetails(file);
+  // console.log(`📁 Folder contains ${files.length} files:`);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  files.forEach((_file, _index) => {
+    // console.log(`  ${_index + 1}. `);
   });
 }
 
@@ -461,7 +462,7 @@ export async function validateFileWithErrorHandling(
 }> {
   let validationResult;
   try {
-    console.log("🔍 Starting file validation...");
+    // console.log("🔍 Starting file validation...");
     validationResult = await validateFile(file);
     if (!validationResult.isValid) {
       console.error("❌ File validation failed:", validationResult.error);
@@ -470,10 +471,10 @@ export async function validateFileWithErrorHandling(
         error: NextResponse.json({ error: validationResult.error }, { status: 400 }),
       };
     }
-    console.log("✅ File validation successful:", {
-      type: file.type,
-      size: file.size,
-    });
+    // console.log("✅ File validation successful:", {
+    //   type: file.type,
+    //   size: file.size,
+    // });
     return { validationResult, error: null };
   } catch (validationError) {
     console.error("❌ Validation error:", validationError);
@@ -502,9 +503,9 @@ export async function uploadFileToStorageWithErrorHandling(
 ): Promise<{ url: string; error: NextResponse | null }> {
   let url;
   try {
-    console.log("📤 Starting file upload to storage...");
+    // console.log("📤 Starting file upload to storage...");
     url = await uploadFileToStorage(file, buffer);
-    console.log("✅ File uploaded successfully to:", url);
+    // console.log("✅ File uploaded successfully to:", url);
     return { url, error: null };
   } catch (uploadError) {
     console.error("❌ Upload error:", uploadError);
@@ -545,7 +546,7 @@ export async function storeFileInDatabaseWithErrorHandling(
   }) => Promise<{ type: string; data: { id: string; ownerId: string } }>
 ): Promise<{ result: { type: string; data: { id: string; ownerId: string } } | null; error: NextResponse | null }> {
   try {
-    console.log("💾 Storing file metadata in database...");
+    // console.log("💾 Storing file metadata in database...");
     const result = await storeInDatabase({
       type: getMemoryType(file.type as AcceptedMimeType),
       ownerId,
@@ -558,7 +559,7 @@ export async function storeFileInDatabaseWithErrorHandling(
         mimeType: file.type as AcceptedMimeType,
       },
     });
-    console.log("✅ File metadata stored successfully");
+    // console.log("✅ File metadata stored successfully");
     return { result, error: null };
   } catch (dbError) {
     console.error("❌ Database error:", dbError);
@@ -584,9 +585,9 @@ export async function createTemporaryUserWithErrorHandling(
   createTemporaryUserBase: (role: "inviter" | "invitee") => Promise<{ allUser: { id: string } }>
 ): Promise<{ allUser: { id: string }; error: NextResponse | null }> {
   try {
-    console.log("👤 Creating temporary user...");
+    // console.log("👤 Creating temporary user...");
     const { allUser } = await createTemporaryUserBase("inviter");
-    console.log("✅ Temporary user created:", { userId: allUser.id });
+    // console.log("✅ Temporary user created:", { userId: allUser.id });
     return { allUser, error: null };
   } catch (userError) {
     console.error("❌ User creation error:", userError);

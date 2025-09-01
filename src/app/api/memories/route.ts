@@ -30,7 +30,7 @@ async function cleanupStorageEdgesForMemories(memories: Array<{ id: string; type
     }
   });
 
-  console.log(`Storage edge cleanup: ${successCount} successful, ${errorCount} failed`);
+  // console.log(`Storage edge cleanup: ${successCount} successful, ${errorCount} failed`);
 
   return { successCount, errorCount };
 }
@@ -61,14 +61,14 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit;
     const useOptimizedQuery = searchParams.get("optimized") === "true";
 
-    console.log("Fetching memories for:", {
-      sessionUserId: session.user.id,
-      allUserId: allUserRecord.id,
-      page,
-      limit,
-      offset,
-      useOptimizedQuery,
-    });
+    // console.log("Fetching memories for:", {
+    //   sessionUserId: session.user.id,
+    //   allUserId: allUserRecord.id,
+    //   page,
+    //   limit,
+    //   offset,
+    //   useOptimizedQuery,
+    // });
 
     // Use optimized query if requested
     if (useOptimizedQuery) {
@@ -78,11 +78,11 @@ export async function GET(request: NextRequest) {
         // Apply pagination
         const paginatedMemories = memoriesWithGalleries.slice(offset, offset + limit);
 
-        console.log("Optimized query results:", {
-          total: memoriesWithGalleries.length,
-          paginated: paginatedMemories.length,
-          hasMore: memoriesWithGalleries.length > offset + limit,
-        });
+        // console.log("Optimized query results:", {
+        //   total: memoriesWithGalleries.length,
+        //   paginated: paginatedMemories.length,
+        //   hasMore: memoriesWithGalleries.length > offset + limit,
+        // });
 
         return NextResponse.json({
           data: paginatedMemories,
@@ -201,14 +201,14 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    console.log("Fetched memories:", {
-      page,
-      limit,
-      offset,
-      imagesCount: userImages.length,
-      documentsCount: userDocuments.length,
-      notesCount: userNotes.length,
-    });
+    // console.log("Fetched memories:", {
+    //   page,
+    //   limit,
+    //   offset,
+    //   imagesCount: userImages.length,
+    //   documentsCount: userDocuments.length,
+    //   notesCount: userNotes.length,
+    // });
 
     return NextResponse.json({
       images: userImages,
@@ -247,13 +247,13 @@ export async function DELETE(request: NextRequest) {
     const folder = searchParams.get("folder"); // folder name to delete
     const all = searchParams.get("all"); // "true" to delete all memories
 
-    console.log("Bulk delete request:", {
-      sessionUserId: session.user.id,
-      allUserId: allUserRecord.id,
-      type,
-      folder,
-      all,
-    });
+    // console.log("Bulk delete request:", {
+    //   sessionUserId: session.user.id,
+    //   allUserId: allUserRecord.id,
+    //   type,
+    //   folder,
+    //   all,
+    // });
 
     let deletedCount = 0;
 
@@ -379,7 +379,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    console.log("Bulk delete completed:", { deletedCount, type, folder, all });
+    // console.log("Bulk delete completed:", { deletedCount, type, folder, all });
 
     return NextResponse.json({
       success: true,

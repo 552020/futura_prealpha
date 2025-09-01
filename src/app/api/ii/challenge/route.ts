@@ -164,11 +164,11 @@ export async function POST(request: NextRequest) {
     const result = await createNonce(context);
 
     // Security logging (never log raw nonce)
-    console.log(
-      `II Challenge created: nonceId=${result.nonceId}, ttl=${
-        result.ttlSeconds
-      }s, ip=${ipAddress}, ua=${userAgent?.substring(0, 50)}...`
-    );
+    // console.log(
+    //   `II Challenge created: nonceId=${result.nonceId}, ttl=${
+    //     result.ttlSeconds
+    //   }s, ip=${ipAddress}, ua=${userAgent?.substring(0, 50)}...`
+    // );
 
     // Return nonce data (the plain nonce is sent to client, hash is stored)
     return NextResponse.json({

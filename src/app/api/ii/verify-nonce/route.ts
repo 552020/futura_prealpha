@@ -111,14 +111,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Security logging (never log raw nonce)
-    console.log(`II Verify: Attempting verification for nonce length ${nonce.length} from IP ${ipAddress}`);
+    // console.log(`II Verify: Attempting verification for nonce length ${nonce.length} from IP ${ipAddress}`);
 
     // Call canister to verify nonce
     const actor = await createServerSideActor();
     const provedPrincipal = await actor.verify_nonce(nonce);
 
     if (!provedPrincipal) {
-      console.log(`II Verify: No proof found for nonce from IP ${ipAddress}`);
+      // console.log(`II Verify: No proof found for nonce from IP ${ipAddress}`);
       return NextResponse.json({
         success: false,
         error: "Authentication proof not found",
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
     }
 
     const principalStr = provedPrincipal.toString();
-    console.log(`II Verify: Successfully verified nonce for principal ${principalStr} from IP ${ipAddress}`);
+    // console.log(`II Verify: Successfully verified nonce for principal ${principalStr} from IP ${ipAddress}`);
 
     return NextResponse.json({
       success: true,

@@ -78,7 +78,7 @@ export interface FetchAndNormalizeResult {
 }
 
 export const fetchAndNormalizeMemories = async (page: number): Promise<FetchAndNormalizeResult> => {
-  console.log("🚀 LINE 63: ENTERING fetchAndNormalizeMemories");
+  // console.log("🚀 LINE 63: ENTERING fetchAndNormalizeMemories");
   const data = await fetchMemories(page);
 
   const normalizedMemories = normalizeMemories({
@@ -92,7 +92,7 @@ export const fetchAndNormalizeMemories = async (page: number): Promise<FetchAndN
     sharedWithCount: 0, // Default to 0 for user's own memories
   }));
 
-  console.log("✅ LINE 63: EXITING fetchAndNormalizeMemories");
+  // console.log("✅ LINE 63: EXITING fetchAndNormalizeMemories");
   return {
     memories: normalizedMemories,
     hasMore: data.hasMore,
@@ -138,8 +138,8 @@ export const deleteAllMemories = async (options?: {
 };
 
 export const processDashboardItems = (memories: NormalizedMemory[]): DashboardItem[] => {
-  console.log("🚀 LINE 129: ENTERING processDashboardItems");
-  console.log("🔍 processDashboardItems - Received memories:", memories.length);
+  // console.log("🚀 LINE 129: ENTERING processDashboardItems");
+  // console.log("🔍 processDashboardItems - Received memories:", memories.length);
 
   // Step 1: Group memories by folderName
   const folderGroups = memories.reduce((groups, memory) => {
@@ -153,7 +153,7 @@ export const processDashboardItems = (memories: NormalizedMemory[]): DashboardIt
     return groups;
   }, {} as Record<string, NormalizedMemory[]>);
 
-  console.log("🔍 Folder groups:", folderGroups);
+  // console.log("🔍 Folder groups:", folderGroups);
 
   // Step 2: Create FolderItems for each group
   const folderItems: FolderItem[] = Object.entries(folderGroups).map(([folderName, folderMemories]) => ({
@@ -170,27 +170,28 @@ export const processDashboardItems = (memories: NormalizedMemory[]): DashboardIt
     sharedWithCount: 0,
   }));
 
-  console.log("🔍 Created folder items:", folderItems);
+  // console.log("🔍 Created folder items:", folderItems);
 
   // Step 3: Get individual memories (not in folders)
   const individualMemories = memories.filter((memory) => !memory.metadata?.folderName);
 
-  console.log("🔍 Individual memories:", individualMemories.length);
+  // console.log("🔍 Individual memories:", individualMemories.length);
 
   // Step 4: Combine and return
   const result = [...individualMemories, ...folderItems];
-  console.log("🔍 Final result:", result.length, "items");
+  // console.log("🔍 Final result:", result.length, "items");
 
-  console.log("✅ LINE 180: EXITING processDashboardItems");
+  // console.log("✅ LINE 180: EXITING processDashboardItems");
   return result;
 };
 
 export const memoryActions = {
   delete: deleteMemory,
 
-  share: async (id: string) => {
-    // TODO: Implement share logic
-    console.log("Sharing memory:", id);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    share: async (id: string) => {
+      // TODO: Implement share logic
+      // console.log("Sharing memory:", id);
   },
 
   navigate: (memory: Memory, lang: string, segment: string) => {

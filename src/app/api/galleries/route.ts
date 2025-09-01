@@ -32,13 +32,13 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "12");
     const offset = (page - 1) * limit;
 
-    console.log("Fetching galleries for:", {
-      sessionUserId: session.user.id,
-      allUserId: allUserRecord.id,
-      page,
-      limit,
-      offset,
-    });
+    // console.log("Fetching galleries for:", {
+    //   sessionUserId: session.user.id,
+    //   allUserId: allUserRecord.id,
+    //   page,
+    //   limit,
+    //   offset,
+    // });
 
     // Fetch user's galleries
     const userGalleries = await db.query.galleries.findMany({
@@ -51,12 +51,12 @@ export async function GET(request: NextRequest) {
     // Add computed storage status to galleries
     const galleriesWithStorageStatus = await addStorageStatusToGalleries(userGalleries);
 
-    console.log("Fetched galleries:", {
-      page,
-      limit,
-      offset,
-      galleriesCount: userGalleries.length,
-    });
+    // console.log("Fetched galleries:", {
+    //   page,
+    //   limit,
+    //   offset,
+    //   galleriesCount: userGalleries.length,
+    // });
 
     return NextResponse.json({
       galleries: galleriesWithStorageStatus,
@@ -170,13 +170,13 @@ export async function POST(request: NextRequest) {
     // Insert gallery items
     await db.insert(galleryItems).values(galleryItemsData);
 
-    console.log("Created gallery:", {
-      type,
-      folderName,
-      galleryId: gallery.id,
-      memoriesCount: galleryMemories.length,
-      galleryItemsData: galleryItemsData,
-    });
+    // console.log("Created gallery:", {
+    //   type,
+    //   folderName,
+    //   galleryId: gallery.id,
+    //   memoriesCount: galleryMemories.length,
+    //   galleryItemsData: galleryItemsData,
+    // });
 
     return NextResponse.json(
       {

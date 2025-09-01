@@ -12,7 +12,7 @@ import {
 } from "../../utils";
 
 export async function POST(request: NextRequest) {
-  console.log("🚀 Starting onboarding file upload process...");
+  // console.log("🚀 Starting onboarding file upload process...");
   try {
     // Parse form data and extract file
     const { file, error } = await parseSingleFile(request);

@@ -40,9 +40,9 @@ type UploadErr = { success: false; fileName: string; error: unknown };
 function extractFolderInfo(fileName: string): { originalPath: string; folderName: string } {
   // When using webkitdirectory, fileName contains the full relative path
   // e.g., "Wedding Photos/ceremony/img001.jpg" -> folderName: "Wedding Photos", originalPath: "Wedding Photos/ceremony/img001.jpg"
-  const pathParts = fileName.split('/');
+  const pathParts = fileName.split("/");
   const folderName = pathParts.length > 1 ? pathParts[0] : "Ungrouped";
-  
+
   return {
     originalPath: fileName,
     folderName: folderName,
@@ -53,7 +53,7 @@ function extractFolderInfo(fileName: string): { originalPath: string; folderName
 function buildImageRow(file: File, url: string, ownerId: string): ImageInsert {
   const name = file.name || "Untitled";
   const { originalPath, folderName } = extractFolderInfo(name);
-  
+
   return {
     ownerId,
     url,
@@ -75,7 +75,7 @@ function buildImageRow(file: File, url: string, ownerId: string): ImageInsert {
 function buildVideoRow(file: File, url: string, ownerId: string): VideoInsert {
   const name = file.name || "Untitled";
   const { originalPath, folderName } = extractFolderInfo(name);
-  
+
   return {
     ownerId,
     url,
@@ -94,7 +94,7 @@ function buildVideoRow(file: File, url: string, ownerId: string): VideoInsert {
 function buildDocumentRow(file: File, url: string, ownerId: string): DocumentInsert {
   const name = file.name || "Untitled";
   const { originalPath, folderName } = extractFolderInfo(name);
-  
+
   return {
     ownerId,
     url,
@@ -139,7 +139,7 @@ function buildDocumentRow(file: File, url: string, ownerId: string): DocumentIns
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  console.log("🚀 Starting onboarding folder upload process...");
+  // console.log("🚀 Starting onboarding folder upload process...");
 
   try {
     // Parse form data and extract files
@@ -246,7 +246,8 @@ export async function POST(request: NextRequest) {
       .filter((r): r is PromiseFulfilledResult<UploadOk> => r.status === "fulfilled" && r.value.success)
       .map((r) => r.value);
 
-    const failures = results.filter(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const failures = results.filter(
       (r) => r.status === "rejected" || (r.status === "fulfilled" && !(r.value as UploadOk | UploadErr).success)
     ).length;
 
@@ -269,7 +270,8 @@ export async function POST(request: NextRequest) {
       });
     });
 
-    console.log(`✅ ${ok.length} uploads ready for batch insert, ❌ ${failures} failures`);
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // console.log(`✅ ${ok.length} uploads ready for batch insert, ❌ ${failures} failures`);
 
     // Batch insert all successful files (no transactions - Neon HTTP limitation)
     const insertedIds: string[] = [];
@@ -296,7 +298,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    console.log(`✅ Batch inserted ${insertedIds.length} files into database`);
+    // console.log(`✅ Batch inserted ${insertedIds.length} files into database`);
 
     const endTime = Date.now();
     const totalTime = (endTime - startTime) / 1000;
@@ -306,15 +308,15 @@ export async function POST(request: NextRequest) {
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
     const totalSizeMB = (totalSize / (1024 * 1024)).toFixed(2);
 
-    console.log("=== FOLDER UPLOAD COMPLETE ===");
-    console.log(`📁 Files processed: ${uploadResults.length}/${files.length} successful`);
-    console.log(`📦 Total size: ${totalSizeMB} MB`);
-    console.log(`⏱️ Total time: ${totalTime.toFixed(1)} seconds`);
-    console.log(`📊 Average: ${averageTime.toFixed(1)} seconds per file`);
-    console.log(`🚀 Upload speed: ${(parseFloat(totalSizeMB) / totalTime).toFixed(2)} MB/s`);
-    console.log(`👤 User ID: ${allUser.id}`);
-    console.log(`❌ Failed uploads: ${files.length - uploadResults.length}`);
-    console.log("================================");
+    // console.log("=== FOLDER UPLOAD COMPLETE ===");
+    // console.log(`📁 Files processed: ${uploadResults.length}/${files.length} successful`);
+    // console.log(`📦 Total size: ${totalSizeMB} MB`);
+    // console.log(`⏱️ Total time: ${totalTime.toFixed(1)} seconds`);
+    // console.log(`📊 Average: ${averageTime.toFixed(1)} seconds per file`);
+    // console.log(`🚀 Upload speed: ${(parseFloat(totalSizeMB) / totalTime).toFixed(2)} MB/s`);
+    // console.log(`👤 User ID: ${allUser.id}`);
+    // console.log(`❌ Failed uploads: ${files.length - uploadResults.length}`);
+    // console.log("================================");
 
     return NextResponse.json({
       message: "Folder upload completed successfully",

@@ -109,13 +109,13 @@ export async function GET(request: NextRequest) {
     const validGalleries = sharedGalleries.filter(Boolean);
     const paginatedGalleries = validGalleries.slice(offset, offset + limit);
 
-    console.log("Fetched shared galleries:", {
-      page,
-      limit,
-      offset,
-      totalCount: validGalleries.length,
-      returnedCount: paginatedGalleries.length,
-    });
+    // console.log("Fetched shared galleries:", {
+    //   page,
+    //   limit,
+    //   offset,
+    //   totalCount: validGalleries.length,
+    //   returnedCount: paginatedGalleries.length,
+    // });
 
     return NextResponse.json({
       galleries: paginatedGalleries,

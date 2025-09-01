@@ -75,7 +75,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       })
       .returning();
 
-    console.log("Created gallery share:", newShare[0]);
+    // console.log("Created gallery share:", newShare[0]);
 
     return NextResponse.json(
       {
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       where: eq(galleryShares.galleryId, galleryId),
     });
 
-    console.log("Fetched gallery shares:", gallerySharesList.length);
+    // console.log("Fetched gallery shares:", gallerySharesList.length);
 
     return NextResponse.json({
       shares: gallerySharesList,

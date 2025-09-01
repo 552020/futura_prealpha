@@ -23,10 +23,11 @@ export async function GET() {
       return NextResponse.json({ error: "User record not found" }, { status: 404 });
     }
 
-    console.log("Fetching folders for user:", {
-      sessionUserId: session.user.id,
-      allUserId: allUserRecord.id,
-    });
+    // console.log("Fetching folders for user:", {
+    //   sessionUserId: session.user.id,
+    //   allUserId: allUserRecord.id,
+    //   useMockData,
+    // });
 
     // Get all memories for the user and extract unique folder names
     const folderCondition = sql`metadata->>'folderName' IS NOT NULL AND metadata->>'folderName' != ''`;
@@ -122,10 +123,10 @@ export async function GET() {
     // Sort folders by name
     folders.sort((a, b) => a.name.localeCompare(b.name));
 
-    console.log("Found folders:", {
-      folderCount: folders.length,
-      folders: folders.map((f) => ({ name: f.name, imageCount: f.imageCount })),
-    });
+    // console.log("Found folders:", {
+    //   count: folders.length,
+    //   folders: folders.map(f => ({ name: f.name, count: f.count })),
+    // });
 
     return NextResponse.json(folders);
   } catch (error) {

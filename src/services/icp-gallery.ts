@@ -254,7 +254,7 @@ export class ICPGalleryService {
       // const galleries = await actor.get_my_galleries();
 
       // Placeholder implementation until backend is ready
-      console.log("Get my galleries - placeholder");
+      // console.log("Get my galleries - placeholder");
       return [];
     } catch (error) {
       console.error("Error getting user galleries:", error);
@@ -265,7 +265,8 @@ export class ICPGalleryService {
   /**
    * Get a specific gallery by ID
    */
-  async getGalleryById(galleryId: string): Promise<Gallery | null> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getGalleryById(_galleryId: string): Promise<Gallery | null> {
     try {
       // const actor = await backendActor(this.identity);
 
@@ -273,7 +274,7 @@ export class ICPGalleryService {
       // const gallery = await actor.get_gallery_by_id(galleryId);
 
       // Placeholder implementation
-      console.log("Get gallery by ID:", galleryId);
+      // console.log("Get gallery by ID:", galleryId);
 
       return null;
     } catch (error) {
@@ -285,7 +286,8 @@ export class ICPGalleryService {
   /**
    * Update a gallery in the ICP canister
    */
-  async updateGallery(galleryId: string, updateData: GalleryUpdateData): Promise<UpdateGalleryResponse> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async updateGallery(_galleryId: string, _updateData: GalleryUpdateData): Promise<UpdateGalleryResponse> {
     try {
       // const actor = await backendActor(this.identity);
 
@@ -293,7 +295,7 @@ export class ICPGalleryService {
       // const result = await actor.update_gallery(galleryId, updateData);
 
       // Placeholder implementation
-      console.log("Update gallery:", galleryId, updateData);
+      // console.log("Update gallery:", galleryId, updateData);
 
       return {
         success: true,
@@ -311,7 +313,8 @@ export class ICPGalleryService {
   /**
    * Delete a gallery from the ICP canister
    */
-  async deleteGallery(galleryId: string): Promise<DeleteGalleryResponse> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async deleteGallery(_galleryId: string): Promise<DeleteGalleryResponse> {
     try {
       // const actor = await backendActor(this.identity);
 
@@ -319,7 +322,7 @@ export class ICPGalleryService {
       // const result = await actor.delete_gallery(galleryId);
 
       // Placeholder implementation
-      console.log("Delete gallery:", galleryId);
+      // console.log("Delete gallery:", galleryId);
 
       return {
         success: true,
@@ -341,7 +344,8 @@ export class ICPGalleryService {
   /**
    * Add a memory to the user's capsule
    */
-  async addMemoryToCapsule(memoryData: MemoryData): Promise<MemoryOperationResponse> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async addMemoryToCapsule(_memoryData: MemoryData): Promise<MemoryOperationResponse> {
     try {
       // const actor = await backendActor(this.identity);
 
@@ -349,7 +353,7 @@ export class ICPGalleryService {
       // const result = await actor.add_memory_to_capsule(memoryData);
 
       // Placeholder implementation
-      console.log("Add memory to capsule:", memoryData);
+      // console.log("Add memory to capsule:", memoryData);
 
       return {
         success: true,
@@ -368,7 +372,8 @@ export class ICPGalleryService {
   /**
    * Get a memory from the user's capsule
    */
-  async getMemoryFromCapsule(memoryId: string): Promise<Memory | null> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getMemoryFromCapsule(_memoryId: string): Promise<Memory | null> {
     try {
       // const actor = await backendActor(this.identity);
 
@@ -376,7 +381,7 @@ export class ICPGalleryService {
       // const memory = await actor.get_memory_from_capsule(memoryId);
 
       // Placeholder implementation
-      console.log("Get memory from capsule:", memoryId);
+      // console.log("Get memory from capsule:", memoryId);
 
       return null;
     } catch (error) {
@@ -388,7 +393,8 @@ export class ICPGalleryService {
   /**
    * Update a memory in the user's capsule
    */
-  async updateMemoryInCapsule(memoryId: string, updates: Record<string, unknown>): Promise<MemoryOperationResponse> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async updateMemoryInCapsule(_memoryId: string, _updates: Record<string, unknown>): Promise<MemoryOperationResponse> {
     try {
       // const actor = await backendActor(this.identity);
 
@@ -396,7 +402,7 @@ export class ICPGalleryService {
       // const result = await actor.update_memory_in_capsule(memoryId, updates);
 
       // Placeholder implementation
-      console.log("Update memory in capsule:", memoryId, updates);
+      // console.log("Update memory in capsule:", memoryId, updates);
 
       return {
         success: true,
@@ -414,7 +420,8 @@ export class ICPGalleryService {
   /**
    * Delete a memory from the user's capsule
    */
-  async deleteMemoryFromCapsule(memoryId: string): Promise<MemoryOperationResponse> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async deleteMemoryFromCapsule(_memoryId: string): Promise<MemoryOperationResponse> {
     try {
       // const actor = await backendActor(this.identity);
 
@@ -422,7 +429,7 @@ export class ICPGalleryService {
       // const result = await actor.delete_memory_from_capsule(memoryId);
 
       // Placeholder implementation
-      console.log("Delete memory from capsule:", memoryId);
+      // console.log("Delete memory from capsule:", memoryId);
 
       return {
         success: true,
@@ -448,7 +455,7 @@ export class ICPGalleryService {
       // const result = await actor.list_capsule_memories();
 
       // Placeholder implementation
-      console.log("List capsule memories");
+      // console.log("List capsule memories");
 
       return {
         success: true,
@@ -514,7 +521,7 @@ export class ICPGalleryService {
       // const userInfo = await actor.get_user();
 
       // Placeholder implementation
-      console.log("Check capsule status");
+      // console.log("Check capsule status");
 
       return true; // Assume user has capsule for now
     } catch (error) {

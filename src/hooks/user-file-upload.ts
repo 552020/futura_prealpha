@@ -66,10 +66,10 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
   };
 
   const updateOnboardingContext = (data: { data: { ownerId: string; id: string } }, file: File, url: string) => {
-    console.log("👤 Updating user data with:", {
-      allUserId: data.data.ownerId,
-      memoryId: data.data.id,
-    });
+    // console.log("👤 Updating user data with:", {
+    //   allUserId: data.data.ownerId,
+    //   memoryId: data.data.id,
+    // });
 
     updateUserData({
       allUserId: data.data.ownerId,
@@ -85,15 +85,15 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
       memoryId: data.data.id,
       fileType: file.type,
     };
-    console.log("📝 Adding file to onboarding context:", fileToAdd);
+    // console.log("📝 Adding file to onboarding context:", fileToAdd);
     addOnboardingFile(fileToAdd);
 
     // Set the next step based on authentication status
     if (session) {
-      console.log("🔄 Setting current step to share (authenticated user)");
+      // console.log("🔄 Setting current step to share (authenticated user)");
       setCurrentStep("share");
     } else {
-      console.log("🔄 Setting current step to user-info (unauthenticated user)");
+      // console.log("🔄 Setting current step to user-info (unauthenticated user)");
       setCurrentStep("user-info");
     }
   };
@@ -104,22 +104,22 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
 
       // Create a temporary URL for preview
       const url = URL.createObjectURL(file);
-      console.log("🖼️ Created temporary preview URL");
+      // console.log("🖼️ Created temporary preview URL");
 
       const data = await uploadFile(file, isOnboarding, existingUserId, mode);
-      console.log("📦 Response data:", data);
+      // console.log("📦 Response data:", data);
 
       if (isOnboarding) {
         updateOnboardingContext(data, file, url);
       }
 
-      console.log("✅ Upload process completed successfully");
+      // console.log("✅ Upload process completed successfully");
       if (!skipSuccess) {
         onSuccess?.();
       }
     } catch (error) {
-      console.log("🔍 Caught error in processSingleFile:", error);
-      console.log("🔍 Error message:", error instanceof Error ? error.message : String(error));
+      // console.log("🔍 Caught error in processSingleFile:", error);
+      // console.log("🔍 Error message:", error instanceof Error ? error.message : String(error));
 
       let title = "Something went wrong";
       let description = "Please try uploading again.";
@@ -136,7 +136,7 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
       }
 
       console.error("❌ Upload error:", error);
-      console.log("🔍 Showing toast with:", { title, description });
+      // console.log("🔍 Showing toast with:", { title, description });
 
       toast({
         variant: "destructive",
@@ -153,11 +153,11 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (mode == "folder") {
       const startTime = Date.now();
-      console.log("Starting folder upload process in mode 'folder'...");
+      // console.log("Starting folder upload process in mode 'folder'...");
       const files = event.target.files;
       if (!files) return;
 
-      console.log(`Found ${files.length} files in folder`);
+      // console.log(`Found ${files.length} files in folder`);
 
       // Check file count limit
       if (files.length > 25) {
@@ -178,7 +178,7 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
           formData.append("file", file);
         });
 
-        console.log("Sending folder to server...");
+        // console.log("Sending folder to server...");
         const endpoint = isOnboarding ? "/api/memories/upload/onboarding/folder" : "/api/memories/upload/folder";
         const response = await fetch(endpoint, {
           method: "POST",
@@ -186,7 +186,7 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
         });
 
         const data = await response.json();
-        console.log("Folder upload response:", data);
+        // console.log("Folder upload response:", data);
 
         if (!response.ok) {
           throw new Error(data.error || "Folder upload failed");
@@ -194,11 +194,11 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
 
         // Update context with results
         if (isOnboarding && data.successfulUploads > 0) {
-          console.log("📝 Updating onboarding context with folder upload results:", {
-            successfulUploads: data.successfulUploads,
-            allUserId: data.userId,
-            memoryId: data.results?.[0]?.memoryId,
-          });
+          // console.log("📝 Updating onboarding context with folder upload results:", {
+          //   successfulUploads: data.successfulUploads,
+          //   allUserId: data.userId,
+          //   memoryId: data.results?.[0]?.memoryId,
+          // });
 
           updateUserData({
             uploadedFileCount: data.successfulUploads,
@@ -208,17 +208,18 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
 
           // Set the next step based on authentication status
           if (session) {
-            console.log("🔄 Setting current step to share (authenticated user)");
+            // console.log("🔄 Setting current step to share (authenticated user)");
             setCurrentStep("share");
           } else {
-            console.log("🔄 Setting current step to user-info (unauthenticated user)");
+            // console.log("🔄 Setting current step to user-info (unauthenticated user)");
             setCurrentStep("user-info");
           }
         }
 
         const endTime = Date.now();
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const totalTime = (endTime - startTime) / 1000;
-        console.log(`Folder upload completed in ${totalTime} seconds`);
+        // console.log(`Folder upload completed in ${totalTime} seconds`);
         onSuccess?.();
       } catch (error) {
         console.error("Folder upload error:", error);
@@ -236,17 +237,17 @@ export function useFileUpload({ isOnboarding = false, mode = "folder", onSuccess
     }
 
     if (mode == "files") {
-      console.log("🎯 Starting client-side upload process in mode 'files'...");
+      // console.log("🎯 Starting client-side upload process in mode 'files'...");
 
       const file = event.target.files?.[0];
       if (!file) return;
 
-      console.log("🎯 Starting client-side upload process...");
-      console.log("📄 File selected:", {
-        name: file.name,
-        type: file.type,
-        size: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
-      });
+      // console.log("🎯 Starting client-side upload process...");
+      // console.log("📄 File selected:", {
+      //   name: file.name,
+      //   type: file.type,
+      //   size: `${(file.size / 1024 / 1024).toFixed(2)}MB`,
+      // });
 
       setIsLoading(true);
       await processSingleFile(file, false, undefined);

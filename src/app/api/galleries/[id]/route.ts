@@ -149,7 +149,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     let accessibleGallery = null;
 
     if (ownedGallery) {
-      console.log("User owns gallery:", ownedGallery);
+      // console.log("User owns gallery:", ownedGallery);
       accessibleGallery = ownedGallery;
     } else {
       // Check if gallery exists and is public (gallery override)
@@ -158,7 +158,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       });
 
       if (publicGallery) {
-        console.log("User accessing public gallery:", publicGallery);
+        // console.log("User accessing public gallery:", publicGallery);
         accessibleGallery = publicGallery;
       } else {
         // Check if gallery is shared with this user
@@ -177,7 +177,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           });
 
           if (shareRecord) {
-            console.log("User has shared access to gallery:", sharedGallery);
+            // console.log("User has shared access to gallery:", sharedGallery);
             accessibleGallery = sharedGallery;
           }
         }
@@ -203,19 +203,19 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       }
     }
 
-    console.log("Gallery access result:", {
-      galleryId,
-      totalItems: galleryItemsList.length,
-      accessibleItems: accessibleItems.length,
-    });
+    // console.log("Gallery access result:", {
+    //   galleryId,
+    //   totalItems: galleryItemsList.length,
+    //   accessibleItems: accessibleItems.length,
+    // });
 
     // Get the actual memory data for each item
     const itemsWithMemories = [];
-    console.log("Processing accessible items:", accessibleItems.length);
+    // console.log("Processing accessible items:", accessibleItems.length);
 
     for (const item of accessibleItems) {
       try {
-        console.log(`Processing item: ${item.memoryId} (type: ${item.memoryType})`);
+        // console.log(`Processing item: ${item.memoryId} (type: ${item.memoryType})`);
         let memory = null;
 
         switch (item.memoryType) {
@@ -247,7 +247,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         }
 
         if (memory) {
-          console.log(`Found memory for item ${item.memoryId}`);
+          // console.log(`Found memory for item ${item.memoryId}`);
           itemsWithMemories.push({
             ...item,
             memory,
@@ -271,11 +271,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       isOwner: accessibleGallery.ownerId === allUserRecord.id,
     };
 
-    console.log("Returning gallery with items:", {
-      galleryId,
-      itemsCount: itemsWithMemories.length,
-      isOwner: galleryWithItems.isOwner,
-    });
+    // console.log("Returning gallery with items:", {
+    //   galleryId,
+    //   itemsCount: itemsWithMemories.length,
+    //   isOwner: galleryWithItems.isOwner,
+    // });
 
     return NextResponse.json({
       gallery: galleryWithItems,
@@ -380,10 +380,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       }
     }
 
-    console.log("Updated gallery:", {
-      gallery: updatedGallery[0],
-      items: itemsResult,
-    });
+    // console.log("Updated gallery:", {
+    //   gallery: updatedGallery[0],
+    //   items: itemsResult,
+    // });
 
     return NextResponse.json({
       success: true,
@@ -429,7 +429,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     // Delete gallery (cascade will handle gallery_items)
     await db.delete(galleries).where(eq(galleries.id, galleryId));
 
-    console.log("Deleted gallery:", galleryId);
+    // console.log("Deleted gallery:", galleryId);
 
     return NextResponse.json({
       message: "Gallery deleted successfully",

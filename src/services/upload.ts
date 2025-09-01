@@ -32,19 +32,23 @@ export const uploadFile = async (
     formData.append("existingUserId", existingUserId);
   }
 
-  console.log("📤 Sending file to server...");
+  try {
+    // console.log("📤 Sending file to server...");
+    const response = await fetch(endpoint, {
+      method: "POST",
+      body: formData,
+    });
 
-  const response = await fetch(endpoint, {
-    method: "POST",
-    body: formData,
-  });
+    const data = await response.json();
 
-  const data = await response.json();
+    if (!response.ok) {
+      console.error("❌ Server returned error:", data);
+      throw new Error(data.error || "Upload failed");
+    }
 
-  if (!response.ok) {
-    console.error("❌ Server returned error:", data);
-    throw new Error(data.error || "Upload failed");
+    return data;
+  } catch (error) {
+    console.error("❌ Upload failed:", error);
+    throw error;
   }
-
-  return data;
 };
