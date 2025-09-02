@@ -8,7 +8,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
 import { Button } from "@/components/ui/button";
-import { FolderTopBar } from "@/components/folder-top-bar";
+import { FolderTopBar } from "@/components/dashboard/folder-top-bar";
 import { TawkChat } from "@/components/tawk-chat";
 import {
   fetchAndNormalizeMemories,

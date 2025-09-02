@@ -1,17 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { Menu, Share2, Twitter, Instagram, Facebook } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { ModeToggle } from "./mode-toggle";
-import { SettingsButton } from "./settings-button";
-import NavBar from "./nav-bar";
-// import UserButtonClient from "./user-button-client";
-import UserButtonClientWithII from "./user-button-client-with-ii";
+import { ModeToggle } from "@/components/mode-toggle";
+import { SettingsButton } from "@/components/settings-button";
+import NavBar from "@/components/nav-bar";
+// import UserButtonClient from "@/components/user-button-client";
+import UserButtonClientWithII from "@/components/user-button-client-with-ii";
 import { useInterface } from "@/contexts/interface-context";
-import { LanguageSwitcher } from "./language-switcher";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader, SheetClose } from "./ui/sheet";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader, SheetClose } from "@/components/ui/sheet";
 import { Dictionary } from "@/utils/dictionaries";
 import { usePathname } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";

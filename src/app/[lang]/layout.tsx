@@ -3,18 +3,18 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider } from "next-auth/react";
-import Header from "@/components/header";
+import Header from "@/components/layout/header";
 import { InterfaceProvider } from "@/contexts/interface-context";
 import { locales } from "@/middleware";
 import { notFound } from "next/navigation";
 import { getDictionary, Dictionary } from "@/utils/dictionaries";
-import { PostHogProvider } from "@/components/posthog-provider";
+import { PostHogProvider } from "@/components/utils/posthog-provider";
 import BottomNav from "@/components/bottom-nav";
 import Sidebar from "@/components/sidebar";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "@/components/ui/toaster";
-import Footer from "@/components/footer";
+import Footer from "@/components/layout/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
