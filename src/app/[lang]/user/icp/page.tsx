@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getAuthClient as getIiAuthClient, loginWithII, clearIiSession } from "@/ic/ii";
 import RequireAuth from "@/components/auth/require-auth";
 import { LinkedAccounts } from "@/components/user/linked-accounts";
+import { IICoAuthControls } from "@/components/user/ii-coauth-controls";
 
 export default function ICPPage() {
   const { isAuthorized, isLoading } = useAuthGuard();
@@ -369,7 +370,12 @@ export default function ICPPage() {
     <div className="container mx-auto px-6 py-8">
       <h1 className="text-3xl font-bold mb-6">Hello ICP</h1>
 
-      {/* Linked Accounts Section - Prominently Displayed */}
+      {/* II Co-Auth Controls - PROMINENTLY DISPLAYED FIRST */}
+      <div className="mb-6">
+        <IICoAuthControls />
+      </div>
+
+      {/* Linked Accounts Section */}
       <div className="mb-6">
         <LinkedAccounts showActions={true} />
       </div>

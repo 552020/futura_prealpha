@@ -2,7 +2,7 @@
 
 /**
  * Linked Accounts Component
- * 
+ *
  * Displays information about linked Internet Identity accounts,
  * including Principal ID and linking status.
  */
@@ -28,7 +28,7 @@ export function LinkedAccounts({ showActions = true, className = "" }: LinkedAcc
   // Copy Principal to clipboard
   const copyPrincipalToClipboard = async () => {
     if (!linkedIcPrincipal) return;
-    
+
     setIsCopying(true);
     try {
       await navigator.clipboard.writeText(linkedIcPrincipal);
@@ -130,7 +130,7 @@ export function LinkedAccounts({ showActions = true, className = "" }: LinkedAcc
               </Button>
             )}
           </div>
-          
+
           {/* Principal Display */}
           <div className="bg-muted rounded-md p-3">
             <div className="flex items-center justify-between">
@@ -165,21 +165,11 @@ export function LinkedAccounts({ showActions = true, className = "" }: LinkedAcc
         {/* Action Buttons */}
         {showActions && (
           <div className="flex gap-2 pt-2">
-            <Button
-              onClick={handleLinkII}
-              variant="outline"
-              size="sm"
-              className="flex-1"
-            >
+            <Button onClick={handleLinkII} variant="outline" size="sm" className="flex-1">
               <LinkIcon className="h-4 w-4 mr-2" />
               Manage Link
             </Button>
-            <Button
-              onClick={copyPrincipalToClipboard}
-              variant="outline"
-              size="sm"
-              disabled={isCopying}
-            >
+            <Button onClick={copyPrincipalToClipboard} variant="outline" size="sm" disabled={isCopying}>
               <Copy className="h-4 w-4 mr-2" />
               Copy Principal
             </Button>

@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { LiveChatWrapper } from "@/components/chat/livechat-wrapper";
 import { LinkedAccounts } from "@/components/user/linked-accounts";
+import { IICoAuthControls } from "@/components/user/ii-coauth-controls";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -29,6 +30,11 @@ const ProfilePage = async (props: Props) => {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Hello, {session.user.name}! This is your profile page.</h1>
+
+      {/* II Co-Auth Controls */}
+      <div className="mb-6">
+        <IICoAuthControls />
+      </div>
 
       {/* Linked Accounts Section */}
       <div className="mb-6">
