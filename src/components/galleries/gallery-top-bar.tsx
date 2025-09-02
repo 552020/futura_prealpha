@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { GalleryWithItems } from "@/types/gallery";
-import { BaseTopBar } from "@/components/common/BaseTopBar";
+import { BaseTopBar } from "@/components/common/base-top-bar";
 
 interface GalleryTopBarProps {
   galleries: GalleryWithItems[];

@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useInterface } from "@/contexts/interface-context";
 import { useRouter } from "next/navigation";
 import { OnboardModal } from "@/components/onboarding/onboard-modal";
-// import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
-import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
+// import { ItemUploadButton } from "@/components/memory/item-upload-button";
+import { ItemUploadButton } from "@/components/memory/item-upload-button";
 import { Dictionary } from "@/utils/dictionaries";
 
 // Hardcoded constants for this component

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { MemoryGrid } from "@/components/memory/MemoryGrid";
+import { MemoryGrid } from "@/components/memory/memory-grid";
 import { Loader2 } from "lucide-react";
 import { useAuthGuard } from "@/utils/authentication";
 import { useRouter, useParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
+import { ItemUploadButton } from "@/components/memory/item-upload-button";
 import { Button } from "@/components/ui/button";
 import { FolderTopBar } from "@/components/dashboard/folder-top-bar";
 import { TawkChat } from "@/components/tawk-chat";

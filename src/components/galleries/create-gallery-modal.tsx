@@ -18,7 +18,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { FolderSelector } from "./FolderSelector";
+import { FolderSelector } from "./folder-selector";
 import { galleryService } from "@/services/gallery";
 import { FolderInfo } from "@/types/gallery";
 import { Plus, AlertCircle } from "lucide-react";

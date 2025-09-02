@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Memory as BaseMemory } from "@/types/memory";
-import { CreateGalleryModal } from "@/components/galleries/CreateGalleryModal";
-import { BaseTopBar } from "@/components/common/BaseTopBar";
+import { CreateGalleryModal } from "@/components/galleries/create-gallery-modal";
+import { BaseTopBar } from "@/components/common/base-top-bar";
 import { ImageIcon } from "lucide-react";
 
 // Extended Memory interface for gallery with additional properties

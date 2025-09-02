@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { MemoryGrid } from "@/components/memory/MemoryGrid";
+import { MemoryGrid } from "@/components/memory/memory-grid";
 import { Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { useAuthGuard } from "@/utils/authentication";
 import { Memory } from "@/types/memory";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
+import { ItemUploadButton } from "@/components/memory/item-upload-button";
 import { useParams } from "next/navigation";
 import RequireAuth from "@/components/require-auth";
 import {
@@ -28,7 +28,7 @@ interface ExtendedMemory extends BaseMemory {
   views?: number;
 }
 import { TawkChat } from "@/components/tawk-chat";
-import { DashboardTopBar } from "@/components/dashboard/DashboardTopBar";
+import { DashboardTopBar } from "@/components/dashboard/dashboard-top-bar";
 import { sampleDashboardMemories } from "./sample-data";
 
 // Demo flag - set to true to use mock data for demo

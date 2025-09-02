@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, use } from "react";
-import { MemoryGrid } from "@/components/memory/MemoryGrid";
+import { MemoryGrid } from "@/components/memory/memory-grid";
 import { Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { useAuthGuard } from "@/utils/authentication";

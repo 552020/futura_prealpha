@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Memory as BaseMemory } from "@/types/memory";
-import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
-import { BaseTopBar } from "@/components/common/BaseTopBar";
+import { ItemUploadButton } from "@/components/memory/item-upload-button";
+import { BaseTopBar } from "@/components/common/base-top-bar";
 
 // Extended Memory interface for gallery with additional properties
 interface ExtendedMemory extends BaseMemory {

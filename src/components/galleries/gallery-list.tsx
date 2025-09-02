@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { GalleryCard } from "./GalleryCard";
+import { GalleryCard } from "./gallery-card";
 import { GalleryWithItems } from "@/types/gallery";
 import { galleryService } from "@/services/gallery";
 import { AlertCircle, RefreshCw, Plus } from "lucide-react";

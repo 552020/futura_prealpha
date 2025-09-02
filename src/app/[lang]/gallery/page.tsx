@@ -6,12 +6,12 @@ import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
-import { GalleryTopBar } from "@/components/galleries/GalleryTopBar";
+import { GalleryTopBar } from "@/components/galleries/gallery-top-bar";
 import RequireAuth from "@/components/require-auth";
-import { CreateGalleryModal } from "@/components/galleries/CreateGalleryModal";
+import { CreateGalleryModal } from "@/components/galleries/create-gallery-modal";
 import { LoadingSpinner } from "@/components/common/loading-spinner";
 import { ErrorState } from "@/components/common/error-state";
-import { GalleryGrid } from "@/components/galleries/GalleryGrid";
+import { GalleryGrid } from "@/components/galleries/gallery-grid";
 
 // Mock data flag for development
 const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA_GALLERY === "true";

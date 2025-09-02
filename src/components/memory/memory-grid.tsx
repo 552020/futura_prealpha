@@ -1,7 +1,7 @@
 import { Memory } from "@/types/memory";
-import { MemoryCard } from "./MemoryCard";
+import { MemoryCard } from "./memory-card";
 import { DashboardItem } from "@/services/memories";
-import { BaseGrid } from "@/components/common/BaseGrid";
+import { BaseGrid } from "@/components/common/base-grid";
 
 interface MemoryGridProps {
   memories: DashboardItem[] | (Memory & { status: "private" | "shared" | "public"; sharedWithCount?: number })[];

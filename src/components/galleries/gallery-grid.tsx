@@ -1,7 +1,7 @@
 import { Image } from "lucide-react";
 import { GalleryWithItems } from "@/types/gallery";
-import { BaseGrid } from "@/components/common/BaseGrid";
-import { GalleryCard } from "./GalleryCard";
+import { BaseGrid } from "@/components/common/base-grid";
+import { GalleryCard } from "./gallery-card";
 
 interface GalleryGridProps {
   galleries: GalleryWithItems[];

@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, ImageIcon, Video, Share2, Trash2, File, Pencil, Music, Folder } from "lucide-react";
 import { Memory } from "@/types/memory";
-import { MemoryStatus } from "./MemoryStatus";
+import { MemoryStatus } from "./memory-status";
 import { MemoryStorageBadge } from "@/components/memory-storage-badge";
 import Image from "next/image";
 import { shortenTitle } from "@/lib/utils";

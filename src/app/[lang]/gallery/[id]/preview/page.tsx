@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { X, ChevronLeft, ChevronRight, Download, Share2, HardDrive } from "lucide-react";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
-import { ForeverStorageProgressModal } from "@/components/galleries/ForeverStorageProgressModal";
+import { ForeverStorageProgressModal } from "@/components/galleries/forever-storage-progress-modal";
 import { MemoryStorageBadge } from "@/components/memory-storage-badge";
 import { useToast } from "@/hooks/use-toast";
 

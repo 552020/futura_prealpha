@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { MemoryActions } from "@/components/memory/MemoryActions";
+import { MemoryActions } from "@/components/memory/memory-actions";
 import { Button } from "@/components/ui/button";
 import { Loader2, Image as ImageIcon, Video, FileText, Music, ChevronLeft } from "lucide-react";
 import { useAuthGuard } from "@/utils/authentication";

@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Share2, Edit, Globe, Lock, ImageIcon, Trash2, Eye, EyeOff, Maximize2, HardDrive } from "lucide-react";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
-import { ForeverStorageProgressModal } from "@/components/galleries/ForeverStorageProgressModal";
+import { ForeverStorageProgressModal } from "@/components/galleries/forever-storage-progress-modal";
 import { StorageStatusBadge, getGalleryStorageStatus } from "@/components/storage-status-badge";
 import { MemoryStorageBadge } from "@/components/memory-storage-badge";
 import { GalleryStorageSummary } from "@/components/gallery-storage-summary";
