@@ -86,14 +86,8 @@ export function ForeverStorageProgressModal({
   const authResumedRef = useRef(false);
 
   // Use the new co-auth system
-  const {
-    hasLinkedII,
-    isCoAuthActive,
-    linkedIcPrincipal,
-    statusMessage,
-    statusClass,
-    remainingMinutes,
-  } = useIICoAuth();
+  const { hasLinkedII, isCoAuthActive, linkedIcPrincipal, statusMessage, statusClass, remainingMinutes } =
+    useIICoAuth();
 
   const handleStartStorage = useCallback(async () => {
     try {
@@ -104,7 +98,7 @@ export function ForeverStorageProgressModal({
 
       // Check if user has II access (either linked II account or direct II sign-in)
       const hasIIAccess = hasLinkedII || Boolean((session?.user as { icpPrincipal?: string })?.icpPrincipal);
-      
+
       if (!hasIIAccess) {
         setMessage("You need to sign in with Internet Identity to store galleries forever");
         setDetails("This ensures you own your data and can access it securely");
@@ -235,7 +229,7 @@ export function ForeverStorageProgressModal({
     const hasIIAccess = hasLinkedII || Boolean((session?.user as { icpPrincipal?: string })?.icpPrincipal);
     const isIIFirstUser = session?.user?.loginProvider === "internet-identity";
     const canProceed = hasIIAccess && (isIIFirstUser || isCoAuthActive);
-    
+
     if (isOpen && currentStep === "auth" && canProceed && !authResumedRef.current) {
       authResumedRef.current = true;
       // Continue the flow from the beginning; it will pass auth now
@@ -281,7 +275,7 @@ export function ForeverStorageProgressModal({
       case "auth":
         const hasIIAccess = hasLinkedII || Boolean((session?.user as { icpPrincipal?: string })?.icpPrincipal);
         const isIIFirstUser = session?.user?.loginProvider === "internet-identity";
-        
+
         if (!hasIIAccess) {
           return {
             text: "Sign in with Internet Identity",
@@ -289,7 +283,7 @@ export function ForeverStorageProgressModal({
             disabled: false,
           };
         }
-        
+
         if (!isIIFirstUser && !isCoAuthActive) {
           return {
             text: "Activate II Co-Auth",
@@ -304,7 +298,7 @@ export function ForeverStorageProgressModal({
             disabled: false,
           };
         }
-        
+
         return {
           text: "Continue",
           action: () => {},
@@ -336,7 +330,7 @@ export function ForeverStorageProgressModal({
   const getAuthIcon = () => {
     const hasIIAccess = hasLinkedII || Boolean((session?.user as { icpPrincipal?: string })?.icpPrincipal);
     const isIIFirstUser = session?.user?.loginProvider === "internet-identity";
-    
+
     if (!hasIIAccess) {
       return <AlertCircle className="h-4 w-4 text-yellow-500" />;
     }
@@ -404,20 +398,19 @@ export function ForeverStorageProgressModal({
             <div className="space-y-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Internet Identity Status</span>
-                <Badge variant={hasLinkedII ? "default" : "secondary"}>
-                  {hasLinkedII ? "Linked" : "Not Linked"}
-                </Badge>
+                <Badge variant={hasLinkedII ? "default" : "secondary"}>{hasLinkedII ? "Linked" : "Not Linked"}</Badge>
               </div>
-              
+
               {hasLinkedII && (
                 <>
-                  <div className="text-xs text-muted-foreground">
-                    Principal: {linkedIcPrincipal}
-                  </div>
-                  
+                  <div className="text-xs text-muted-foreground">Principal: {linkedIcPrincipal}</div>
+
                   {session?.user?.loginProvider === "internet-identity" ? (
                     <div className="flex items-center gap-2">
-                      <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                      <Badge
+                        variant="default"
+                        className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                      >
                         Direct II Sign-in
                       </Badge>
                       <span className="text-xs text-muted-foreground">Ready to proceed</span>
@@ -430,13 +423,11 @@ export function ForeverStorageProgressModal({
                           {statusMessage}
                         </Badge>
                       </div>
-                      
+
                       {isCoAuthActive && remainingMinutes > 0 && (
-                        <div className="text-xs text-muted-foreground">
-                          ⏰ Session expires in {remainingMinutes}m
-                        </div>
+                        <div className="text-xs text-muted-foreground">⏰ Session expires in {remainingMinutes}m</div>
                       )}
-                      
+
                       {!isCoAuthActive && (
                         <div className="text-xs text-muted-foreground">
                           Click &ldquo;Activate II Co-Auth&rdquo; to enable ICP operations

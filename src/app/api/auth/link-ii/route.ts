@@ -26,6 +26,22 @@ export async function POST(request: NextRequest) {
     }
     const principal = provedPrincipal.toString();
 
+    // Check if this Principal is already linked to another user
+    const existingAccount = await db.query.accounts.findFirst({
+      where: (a, { and, eq }) => and(eq(a.provider, "internet-identity"), eq(a.providerAccountId, principal)),
+    });
+
+    if (existingAccount && existingAccount.userId !== session.user.id) {
+      return NextResponse.json(
+        { 
+          error: "Principal already linked", 
+          message: "This Internet Identity is already linked to another account. Each II Principal can only be linked to one account for security reasons.",
+          code: "PRINCIPAL_CONFLICT"
+        }, 
+        { status: 409 }
+      );
+    }
+
     // Upsert account link: (provider, providerAccountId) unique
     await db
       .insert(accounts)
