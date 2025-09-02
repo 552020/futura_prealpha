@@ -1,4 +1,3 @@
-u/ import { signIn, signOut } from "../../auth";
 // import { Button } from "@/components/ui/button";
 
 // export function SignIn({ provider, ...props }: { provider?: string } & React.ComponentPropsWithRef<typeof Button>) {
