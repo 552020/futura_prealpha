@@ -3,15 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { 
-  Image, 
-  Folder, 
-  Share2, 
-  TrendingUp, 
-  Calendar,
-  Trophy,
-  Zap
-} from "lucide-react";
+import { Image, Folder, Share2, TrendingUp, Calendar, Trophy, Zap } from "lucide-react";
 import { useState, useEffect } from "react";
 
 // This component displays user activity statistics and achievements
@@ -32,8 +24,8 @@ export function ProfileStats() {
   useEffect(() => {
     const loadStats = async () => {
       // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // Mock data - replace with real API calls
       setStats({
         totalMemories: 127,
@@ -53,8 +45,6 @@ export function ProfileStats() {
   const storagePercentage = (stats.storageUsed / stats.storageLimit) * 100;
   const isStorageWarning = storagePercentage > 80;
   const isStorageCritical = storagePercentage > 95;
-
-
 
   const formatStorage = (gb: number) => {
     if (gb >= 1) return `${gb.toFixed(1)} GB`;
@@ -82,9 +72,7 @@ export function ProfileStats() {
           <TrendingUp className="h-5 w-5" />
           Activity & Statistics
         </CardTitle>
-        <CardDescription>
-          Your memory storage and sharing activity
-        </CardDescription>
+        <CardDescription>Your memory storage and sharing activity</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-6">
@@ -104,9 +92,7 @@ export function ProfileStats() {
             <div className="flex items-center justify-center mb-2">
               <Folder className="h-6 w-6 text-purple-600" />
             </div>
-            <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
-              {stats.totalGalleries}
-            </div>
+            <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">{stats.totalGalleries}</div>
             <div className="text-sm text-purple-600 dark:text-purple-400">Galleries</div>
           </div>
 
@@ -114,9 +100,7 @@ export function ProfileStats() {
             <div className="flex items-center justify-center mb-2">
               <Share2 className="h-6 w-6 text-green-600" />
             </div>
-            <div className="text-2xl font-bold text-green-900 dark:text-green-100">
-              {stats.sharedItems}
-            </div>
+            <div className="text-2xl font-bold text-green-900 dark:text-green-100">{stats.sharedItems}</div>
             <div className="text-sm text-green-600 dark:text-green-400">Shared</div>
           </div>
 
@@ -124,9 +108,7 @@ export function ProfileStats() {
             <div className="flex items-center justify-center mb-2">
               <Trophy className="h-6 w-6 text-orange-600" />
             </div>
-            <div className="text-2xl font-bold text-orange-900 dark:text-orange-100">
-              {stats.achievements}
-            </div>
+            <div className="text-2xl font-bold text-orange-900 dark:text-orange-100">{stats.achievements}</div>
             <div className="text-sm text-orange-600 dark:text-orange-400">Achievements</div>
           </div>
         </div>
@@ -135,30 +117,26 @@ export function ProfileStats() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="font-semibold text-slate-700 dark:text-slate-300">Storage Usage</h4>
-            <Badge 
+            <Badge
               variant={isStorageCritical ? "destructive" : isStorageWarning ? "secondary" : "default"}
               className={isStorageCritical ? "bg-red-500" : isStorageWarning ? "bg-yellow-500" : "bg-green-500"}
             >
               {storagePercentage.toFixed(1)}%
             </Badge>
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex justify-between text-sm text-slate-600 dark:text-slate-400">
               <span>Used: {formatStorage(stats.storageUsed)}</span>
               <span>Limit: {formatStorage(stats.storageLimit)}</span>
             </div>
-            <Progress 
-              value={storagePercentage} 
-              className="h-2"
-            />
+            <Progress value={storagePercentage} className="h-2" />
             <div className="text-xs text-slate-500 dark:text-slate-500">
-              {isStorageCritical 
+              {isStorageCritical
                 ? "Storage almost full! Consider upgrading your plan."
-                : isStorageWarning 
+                : isStorageWarning
                 ? "Storage usage is getting high."
-                : "Plenty of storage space available."
-              }
+                : "Plenty of storage space available."}
             </div>
           </div>
         </div>
@@ -169,9 +147,7 @@ export function ProfileStats() {
             <Zap className="h-5 w-5 text-yellow-600" />
             <span className="font-semibold text-yellow-800 dark:text-yellow-200">Activity Streak</span>
           </div>
-          <div className="text-2xl font-bold text-yellow-800 dark:text-yellow-200 mb-1">
-            {stats.streakDays} days
-          </div>
+          <div className="text-2xl font-bold text-yellow-800 dark:text-yellow-200 mb-1">{stats.streakDays} days</div>
           <div className="text-sm text-yellow-700 dark:text-yellow-300">
             Keep it up! You&apos;re on a roll with your memories.
           </div>
@@ -183,18 +159,18 @@ export function ProfileStats() {
             <Calendar className="h-4 w-4" />
             Recent Activity
           </h4>
-          
+
           <div className="space-y-2 text-sm">
             <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded">
               <span className="text-slate-600 dark:text-slate-400">Last active:</span>
               <span className="font-medium">{formatLastActive(stats.lastActive)}</span>
             </div>
-            
+
             <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded">
               <span className="text-slate-600 dark:text-slate-400">This week:</span>
               <span className="font-medium">Added 12 new memories</span>
             </div>
-            
+
             <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded">
               <span className="text-slate-600 dark:text-slate-400">This month:</span>
               <span className="font-medium">Created 3 new galleries</span>
@@ -212,7 +188,7 @@ export function ProfileStats() {
                 <span className="text-sm font-medium text-blue-900 dark:text-blue-100">Upload Memories</span>
               </div>
             </button>
-            
+
             <button className="p-3 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 rounded-lg border border-purple-200 dark:border-purple-800 transition-colors text-left">
               <div className="flex items-center gap-2">
                 <Folder className="h-4 w-4 text-purple-600" />

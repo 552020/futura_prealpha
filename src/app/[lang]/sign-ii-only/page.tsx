@@ -45,8 +45,13 @@ function SignIIOnlyContent() {
           const data = await res.json().catch(() => ({}));
           throw new Error(data.error || "Failed to link Internet Identity");
         }
-        // 4) Refresh NextAuth session to include icpPrincipal
-        await update();
+
+        // Get the principal from the response
+        const data = await res.json();
+        const principal = data.principal;
+
+        // 4) Update NextAuth session to include activeIcPrincipal
+        await update({ activeIcPrincipal: principal });
         // 5) Continue flow
         router.push(safeCallbackUrl);
         return;

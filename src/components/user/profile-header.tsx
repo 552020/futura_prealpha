@@ -27,7 +27,6 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
-
   const [isEditing, setIsEditing] = useState(false);
 
   const getInitials = (name: string) => {
@@ -70,9 +69,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{user.name || "Anonymous User"}</h1>
                 {isPremium && (
-                  <Badge
-                    className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0"
-                  >
+                  <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0">
                     <Crown className="h-3 w-3 mr-1" />
                     Premium
                   </Badge>
@@ -98,14 +95,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
           </div>
 
           {/* User Details Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-            {user.email && (
-              <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-                <Mail className="h-4 w-4" />
-                <span className="truncate">{user.email}</span>
-              </div>
-            )}
-
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
             {user.metadata?.location && (
               <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
                 <MapPin className="h-4 w-4" />
@@ -130,11 +120,6 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                 </a>
               </div>
             )}
-
-            <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-              <Calendar className="h-4 w-4" />
-              <span className="truncate">Joined {formatDate(user.createdAt)}</span>
-            </div>
           </div>
 
           {/* Premium Status */}

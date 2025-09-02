@@ -1,29 +1,29 @@
 "use client";
 
 /**
- * II Co-Auth Controls Component
+ * ICP Card Component
  *
- * Displays prominent II co-authentication controls with:
- * - Current II co-auth status
- * - TTL countdown and status
- * - One-click activation button
- * - Session management controls
+ * Unified card that combines:
+ * - Internet Identity linking status
+ * - Co-authentication controls
+ * - Principal management
+ * - Session management
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Shield, ShieldCheck, Clock, RefreshCw, LogOut } from "lucide-react";
+import { Shield, ShieldCheck, Clock, RefreshCw, LogOut, Copy, Link as LinkIcon, Unlink } from "lucide-react";
 import { useIICoAuth } from "@/hooks/use-ii-coauth";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 
-interface IICoAuthControlsProps {
+interface ICPCardProps {
   className?: string;
 }
 
-export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
+export function ICPCard({ className = "" }: ICPCardProps) {
   const {
     hasLinkedII,
     linkedIcPrincipal,
@@ -41,30 +41,64 @@ export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
   const [isActivating, setIsActivating] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
 
   // Calculate progress percentage for TTL (15 min = 900 seconds)
   const ttlProgress = remainingMinutes > 0 ? Math.max(0, (remainingMinutes / 15) * 100) : 0;
 
-  // Handle II activation
-  const handleActivateII = async () => {
-    if (!hasLinkedII || !linkedIcPrincipal) return;
+  // Copy Principal to clipboard
+  const copyPrincipalToClipboard = async () => {
+    if (!linkedIcPrincipal) return;
 
-    setIsActivating(true);
+    setIsCopying(true);
     try {
-      await activateII(linkedIcPrincipal);
+      await navigator.clipboard.writeText(linkedIcPrincipal);
       toast({
-        title: "II Co-Auth Activated!",
-        description: "Your Internet Identity is now active for this session",
+        title: "Copied!",
+        description: "Principal ID copied to clipboard",
       });
     } catch (error) {
-      console.error("Failed to activate II:", error);
+      console.error("Failed to copy:", error);
       toast({
-        title: "Activation Failed",
-        description: "Failed to activate Internet Identity. Please try again.",
+        title: "Copy Failed",
+        description: "Failed to copy principal ID to clipboard",
         variant: "destructive",
       });
     } finally {
-      setIsActivating(false);
+      setIsCopying(false);
+    }
+  };
+
+  // Handle linking II account
+  const handleLinkII = () => {
+    try {
+      const currentUrl = window.location.href;
+      const signinUrl = `/en/sign-ii-only?callbackUrl=${encodeURIComponent(currentUrl)}`;
+      window.location.href = signinUrl;
+    } catch (error) {
+      console.error("Failed to redirect to II signin page:", error);
+      toast({
+        title: "Redirect Failed",
+        description: "Failed to redirect to Internet Identity linking page",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle II activation - redirect to II sign-in
+  const handleActivateII = async () => {
+    try {
+      // Redirect to the II-only signin page with callback back to current page
+      const currentUrl = window.location.href;
+      const signinUrl = `/en/sign-ii-only?callbackUrl=${encodeURIComponent(currentUrl)}`;
+      window.location.href = signinUrl;
+    } catch (error) {
+      console.error("Failed to redirect to II signin page:", error);
+      toast({
+        title: "Redirect Failed",
+        description: "Failed to redirect to Internet Identity sign-in page",
+        variant: "destructive",
+      });
     }
   };
 
@@ -110,27 +144,38 @@ export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
     }
   };
 
-  // If no linked II account, show nothing
+  // If no linked II account, show linking prompt
   if (!hasLinkedII) {
-    return null;
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5" />
+            Internet Computer (ICP)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-6">
+            <div className="text-muted-foreground mb-4">
+              <p className="text-sm">No Internet Identity account linked yet</p>
+              <p className="text-xs mt-1">Link your II account to enable ICP operations</p>
+            </div>
+            <Button onClick={handleLinkII} variant="outline" size="sm">
+              <LinkIcon className="h-4 w-4 mr-2" />
+              Link Internet Identity
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
-    <Card
-      className={`border-2 ${
-        isCoAuthActive
-          ? "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/20"
-          : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/20"
-      } ${className}`}
-    >
+    <Card className={`border-2 border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/20 ${className}`}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          {isCoAuthActive ? (
-            <ShieldCheck className="h-6 w-6 text-slate-600" />
-          ) : (
-            <Shield className="h-6 w-6 text-slate-600" />
-          )}
-          Internet Identity Co-Authentication
+          <Shield className="h-6 w-6 text-slate-600" />
+          Internet Computer (ICP)
         </CardTitle>
       </CardHeader>
 
@@ -165,17 +210,24 @@ export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
           )}
 
           {/* Principal Display */}
-          {activeIcPrincipal && (
-            <div className="bg-muted rounded-md p-3">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-slate-600" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-muted-foreground mb-1">Active Principal</p>
-                  <p className="font-mono text-sm break-all">{activeIcPrincipal}</p>
-                </div>
+          <div className="bg-muted rounded-md p-3">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground mb-1">Principal ID</p>
+                <p className="font-mono text-sm break-all">{linkedIcPrincipal}</p>
               </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={copyPrincipalToClipboard}
+                disabled={isCopying}
+                className="ml-2 flex-shrink-0"
+                title="Copy to clipboard"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Action Buttons */}
@@ -183,8 +235,8 @@ export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
           {!isCoAuthActive ? (
             // Show Activate button when inactive
             <Button onClick={handleActivateII} disabled={isActivating} className="flex-1">
-              {isActivating ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <Shield className="h-4 w-4 mr-2" />}
-              Activate Internet Identity
+              <Shield className="h-4 w-4 mr-2" />
+              Sign in with Internet Identity
             </Button>
           ) : (
             // Show management buttons when active
@@ -215,8 +267,26 @@ export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
           )}
         </div>
 
+        {/* Additional Actions */}
+        <div className="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+          <Button onClick={handleLinkII} variant="outline" size="sm" className="flex-1">
+            <LinkIcon className="h-4 w-4 mr-2" />
+            Re-link II Account
+          </Button>
+          <Button
+            onClick={copyPrincipalToClipboard}
+            variant="outline"
+            size="sm"
+            disabled={isCopying}
+            className="flex-1"
+          >
+            <Copy className="h-4 w-4 mr-2" />
+            Copy Principal
+          </Button>
+        </div>
+
         {/* Status Messages */}
-        <div className="text-xs text-muted-foreground space-y-1">
+        <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t border-slate-200 dark:border-slate-700">
           {isCoAuthActive ? (
             <>
               <p>✅ Your Internet Identity is active and can perform ICP operations</p>
@@ -226,7 +296,7 @@ export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
           ) : (
             <>
               <p>⚠️ Your Internet Identity is linked but not active for this session</p>
-              <p>🔒 Click &ldquo;Activate Internet Identity&rdquo; to enable ICP operations</p>
+              <p>🔒 Click &ldquo;Sign in with Internet Identity&rdquo; to enable ICP operations</p>
               <p>⏱️ Activation provides 15 minutes of authenticated access</p>
             </>
           )}

@@ -2,11 +2,10 @@ import React from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { LiveChatWrapper } from "@/components/chat/livechat-wrapper";
-import { LinkedAccounts } from "@/components/user/linked-accounts";
-import { IICoAuthControls } from "@/components/user/ii-coauth-controls";
+import { ICPCard } from "@/components/user/icp-card";
 import { ProfileHeader } from "@/components/user/profile-header";
 import { ProfileInfo } from "@/components/user/profile-info";
-import { ProfileStats } from "@/components/user/profile-stats";
+// import { ProfileStats } from "@/components/user/profile-stats";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -29,25 +28,16 @@ const ProfilePage = async (props: Props) => {
       <div className="container mx-auto p-6 max-w-4xl">
         {/* Profile Header with Avatar */}
         <ProfileHeader user={session.user} />
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-          {/* Left Column - Profile Info */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Profile Information */}
-            <ProfileInfo user={session.user} />
-            
-            {/* Profile Statistics */}
-            <ProfileStats />
-          </div>
-          
-          {/* Right Column - Account Management */}
-          <div className="space-y-6">
-            {/* II Co-Auth Controls */}
-            <IICoAuthControls />
-            
-            {/* Linked Accounts Section */}
-            <LinkedAccounts />
-          </div>
+
+        <div className="space-y-6 mt-8">
+          {/* Profile Information */}
+          <ProfileInfo user={session.user} />
+
+          {/* Profile Statistics */}
+          {/* <ProfileStats /> */}
+
+          {/* ICP Card - Unified Internet Identity Management */}
+          <ICPCard />
         </div>
 
         {/* LiveChat */}
