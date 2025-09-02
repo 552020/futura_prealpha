@@ -4,7 +4,7 @@ import { useAuthGuard } from "@/utils/authentication";
 
 import { useState, useEffect, useRef } from "react";
 import type { BackendActor } from "@/ic/backend";
-import type { CapsuleInfo } from "@/ic/declarations/backend/backend.did";
+import type { CapsuleInfo, Capsule } from "@/ic/declarations/backend/backend.did";
 
 // Prevent static generation of this page
 export const dynamic = "force-dynamic";
@@ -26,6 +26,8 @@ export default function ICPPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [principalId, setPrincipalId] = useState("");
   const [capsuleInfo, setCapsuleInfo] = useState<CapsuleInfo | null>(null);
+  const [capsuleReadResult, setCapsuleReadResult] = useState<Capsule | null>(null);
+  const [capsuleIdInput, setCapsuleIdInput] = useState("");
   // UX safety: prevents double-clicks and provides visual feedback
   const [busy, setBusy] = useState(false);
   const [isRehydrating, setIsRehydrating] = useState(true);
@@ -319,6 +321,80 @@ export default function ICPPage() {
     }
   }
 
+  async function handleReadCapsule() {
+    if (busy) return; // UX safety: prevent double-clicks
+    if (!capsuleIdInput.trim()) {
+      toast({
+        title: "Input Required",
+        description: "Please enter a capsule ID",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const authClient = await getAuthClient();
+      const isAuthenticated = await authClient.isAuthenticated();
+
+      if (!isAuthenticated) {
+        toast({
+          title: "Not Authenticated",
+          description: "Please login first to read capsule",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Use cached authenticated actor
+      const authenticatedActor = await getAuthenticatedActor();
+      const capsuleData = await authenticatedActor.capsules_read(capsuleIdInput.trim());
+      setCapsuleReadResult(capsuleData[0] || null);
+
+      if (capsuleData[0]) {
+        toast({
+          title: "Capsule Retrieved",
+          description: "Successfully fetched capsule data",
+        });
+      } else {
+        toast({
+          title: "Capsule Not Found",
+          description: "No capsule found with that ID, or you don't have access",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Read capsule failed:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
+      // Handle expired/invalid delegation
+      if (
+        errorMessage.includes("Invalid delegation") ||
+        errorMessage.includes("expired") ||
+        errorMessage.includes("401")
+      ) {
+        setIsAuthenticated(false);
+        setPrincipalId("");
+        setGreeting("");
+        clearAuthenticatedActor();
+        toast({
+          title: "Session Expired",
+          description: "Your session has expired. Please sign in again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Read Capsule Failed",
+        description: `Failed to read capsule: ${errorMessage}`,
+        variant: "destructive",
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function handleSignOut() {
     if (busy) return;
     setBusy(true);
@@ -390,6 +466,28 @@ export default function ICPPage() {
         <Button onClick={handleGetCapsuleInfo} disabled={busy || !isAuthenticated || isRehydrating}>
           Get Capsule Info
         </Button>
+      </div>
+
+      {/* Capsule Reading Section */}
+      <div className="mb-6 space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="capsuleId">Read Specific Capsule:</Label>
+          <div className="flex gap-4">
+            <Input
+              id="capsuleId"
+              value={capsuleIdInput}
+              onChange={(e) => setCapsuleIdInput(e.target.value)}
+              placeholder="Enter capsule ID (e.g., capsule_1234567890)"
+              className="w-80"
+            />
+            <Button
+              onClick={handleReadCapsule}
+              disabled={busy || !isAuthenticated || isRehydrating || !capsuleIdInput.trim()}
+            >
+              Read Capsule
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* Principal ID Display */}
@@ -512,6 +610,65 @@ export default function ICPPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Capsule Read Result Display */}
+      {capsuleReadResult && (
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Capsule Read Result</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium">Capsule ID</Label>
+                  <p className="text-sm text-muted-foreground font-mono">{capsuleReadResult.id}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Subject</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {"Principal" in capsuleReadResult.subject
+                      ? `Principal: ${capsuleReadResult.subject.Principal}`
+                      : `Opaque: ${capsuleReadResult.subject.Opaque}`}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Created At</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(Number(capsuleReadResult.created_at) / 1000000).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Updated At</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(Number(capsuleReadResult.updated_at) / 1000000).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              {/* Memory and Gallery Counts */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium">Memory Count</Label>
+                  <p className="text-sm text-muted-foreground">{capsuleReadResult.memories?.length || 0}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Gallery Count</Label>
+                  <p className="text-sm text-muted-foreground">{capsuleReadResult.galleries?.length || 0}</p>
+                </div>
+              </div>
+
+              {/* Raw Data Display */}
+              <div className="mt-4">
+                <Label className="text-sm font-medium">Raw Data</Label>
+                <pre className="mt-2 p-3 bg-gray-100 dark:bg-gray-800 rounded text-xs overflow-auto max-h-64">
+                  {JSON.stringify(capsuleReadResult, null, 2)}
+                </pre>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
