@@ -43,12 +43,14 @@ function SignIIOnlyContent() {
         });
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          
+
           // Handle Principal conflict specifically
           if (data.code === "PRINCIPAL_CONFLICT") {
-            throw new Error("This Internet Identity is already linked to another account. Each II Principal can only be linked to one account for security reasons.");
+            throw new Error(
+              "This Internet Identity is already linked to another account. Each II Principal can only be linked to one account for security reasons."
+            );
           }
-          
+
           throw new Error(data.error || data.message || "Failed to link Internet Identity");
         }
 

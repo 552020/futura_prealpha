@@ -33,11 +33,12 @@ export async function POST(request: NextRequest) {
 
     if (existingAccount && existingAccount.userId !== session.user.id) {
       return NextResponse.json(
-        { 
-          error: "Principal already linked", 
-          message: "This Internet Identity is already linked to another account. Each II Principal can only be linked to one account for security reasons.",
-          code: "PRINCIPAL_CONFLICT"
-        }, 
+        {
+          error: "Principal already linked",
+          message:
+            "This Internet Identity is already linked to another account. Each II Principal can only be linked to one account for security reasons.",
+          code: "PRINCIPAL_CONFLICT",
+        },
         { status: 409 }
       );
     }
