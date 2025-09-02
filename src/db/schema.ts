@@ -175,9 +175,19 @@ export const accounts = pgTable(
     session_state: text("session_state"),
   },
   (account) => [
+    // ✅ EXISTING: Composite primary key already enforces uniqueness
+    // This prevents the same II principal from being linked to multiple users
     primaryKey({
       columns: [account.provider, account.providerAccountId],
     }),
+
+    // 🚀 PERFORMANCE: Index for common lookups
+    // Find all accounts for a user by provider (e.g., "does user have II linked?")
+    index("accounts_user_provider_idx").on(account.userId, account.provider),
+
+    // 🚀 PERFORMANCE: Index for finding all accounts for a user
+    // Useful for "show me all linked accounts" queries
+    index("accounts_user_idx").on(account.userId),
   ]
 );
 

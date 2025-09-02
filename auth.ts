@@ -329,60 +329,62 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     async jwt({ token, account, user, trigger }) {
-      //   console.log("--------------------------------");
-      //   console.log("NextAuth JWT callback called with token:", token);
-      //   console.log("NextAuth JWT callback called with account:", account);
-      //   console.log("NextAuth JWT callback called with user:", user);
-      //   console.log("NextAuth JWT callback called with trigger:", trigger);
-      //   console.log("--------------------------------");
+      console.log("🔐 [JWT] Callback triggered with:", {
+        trigger,
+        hasUser: !!user,
+        hasPrincipal: "icpPrincipal" in (token as unknown as Record<string, unknown>),
+        tokenKeys: Object.keys(token),
+        userKeys: user ? Object.keys(user) : "no user",
+      });
 
       // Handle Principal cleanup on signOut
       if (trigger === "update" && !user) {
+        console.log("🚪 [JWT] Detected signOut - clearing Principal");
         // User is signing out - clear the Principal and prevent backfill
         if ("icpPrincipal" in (token as unknown as Record<string, unknown>)) {
           delete (token as unknown as { icpPrincipal?: string }).icpPrincipal;
-          // console.log("[II][JWT] ✅ Cleared icpPrincipal on signOut");
+          console.log("✅ [JWT] Successfully cleared icpPrincipal on signOut");
+        } else {
+          console.log("ℹ️ [JWT] No icpPrincipal found to clear");
         }
         return token;
       }
 
       if (account?.access_token) {
         token.accessToken = account.access_token;
-        // console.log("Added access token to JWT");
+        console.log("🔑 [JWT] Added access token to JWT");
       }
       // On first sign-in
       if (user?.role) {
         token.role = user.role;
-        // console.log("Added role to JWT from user object:", token.role);
+        console.log("👤 [JWT] Added role to JWT from user object:", token.role);
       }
       // Propagate II principal on first sign-in (when present on user)
       const userAny = user as unknown as { icpPrincipal?: string } | undefined;
       if (userAny?.icpPrincipal && typeof userAny.icpPrincipal === "string") {
         (token as unknown as { icpPrincipal?: string }).icpPrincipal = userAny.icpPrincipal;
-        // console.log("[II][JWT] set from user", { icpPrincipal: token.icpPrincipal });
+        console.log("🔐 [JWT] Set icpPrincipal from user:", { icpPrincipal: token.icpPrincipal });
       }
-      //   if (user) {
-      //     token.role = user.role;
-      //     console.log("Added role to JWT:", token.role);
-      //   }
       // On subsequent requests
       if (!token.role && token.sub) {
-        const dbUser = await db.query.users.findFirst({
-          where: (users, { eq }) => eq(users.id, token.sub as string),
-        });
-
-        if (dbUser) {
-          token.role = dbUser.role;
-          // console.log("Fetched role from DB and added to JWT:", token.role);
-        } else {
-          token.role = "user";
-          // console.log("Fallback role set to 'user'");
+        try {
+          const user = await db.query.users.findFirst({
+            where: (u, { eq }) => eq(u.id, token.sub as string),
+            columns: { role: true },
+          });
+          if (user?.role) {
+            token.role = user.role;
+            console.log("👤 [JWT] Added role to JWT from database:", token.role);
+          }
+        } catch (error) {
+          console.warn("⚠️ [JWT] Failed to get role from database:", error);
         }
       }
 
       // Backfill icpPrincipal from accounts mapping when missing
-      // BUT only if we're not in the process of signing out
+      // BUT only if we're not in the process of signing out (i.e., user object is present)
       if (!("icpPrincipal" in (token as unknown as Record<string, unknown>)) && token.sub && user) {
+        console.log("🔄 [JWT] Attempting to backfill icpPrincipal from accounts");
         try {
           const iiAccount = await db.query.accounts.findFirst({
             where: (a, { and, eq }) => and(eq(a.userId, token.sub as string), eq(a.provider, "internet-identity")),
@@ -390,11 +392,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
           if (iiAccount?.providerAccountId) {
             (token as unknown as { icpPrincipal?: string }).icpPrincipal = iiAccount.providerAccountId;
-            // console.log("[II][JWT] backfilled from accounts", { icpPrincipal: iiAccount.providerAccountId });
+            console.log("✅ [JWT] Backfilled icpPrincipal from accounts:", {
+              icpPrincipal: iiAccount.providerAccountId,
+            });
+          } else {
+            console.log("ℹ️ [JWT] No II account found for backfill");
           }
         } catch (error) {
-          // console.warn("[II][JWT] failed to backfill icpPrincipal", error);
+          console.warn("⚠️ [JWT] Failed to backfill icpPrincipal:", error);
         }
+      } else if (!user) {
+        console.log("🚫 [JWT] Skipping backfill - no user object (likely during logout)");
       }
 
       // Add business user ID lookup
@@ -411,7 +419,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             //   businessUserId: allUser.id,
             // });
           } else {
-            // console.log("[Auth] ⚠️ No allUsers entry found for Auth.js user:", user.id);
+            // console.warn("[Auth] ⚠️ No allUsers entry found for Auth.js user:", user.id);
           }
         } catch (error) {
           // console.error("[Auth] ❌ Error looking up business user ID:", error);
