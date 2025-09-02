@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Shield, ShieldCheck, Clock, RefreshCw, LogOut, Copy, Link as LinkIcon, Unlink } from "lucide-react";
+import { Shield, Clock, RefreshCw, LogOut, Copy, Link as LinkIcon } from "lucide-react";
 import { useIICoAuth } from "@/hooks/use-ii-coauth";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -28,17 +28,15 @@ export function ICPCard({ className = "" }: ICPCardProps) {
     hasLinkedII,
     linkedIcPrincipal,
     isCoAuthActive,
-    activeIcPrincipal,
     statusMessage,
     statusClass,
     remainingMinutes,
-    activateII,
     disconnectII,
     refreshTTL,
   } = useIICoAuth();
 
   const { toast } = useToast();
-  const [isActivating, setIsActivating] = useState(false);
+
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
@@ -234,7 +232,7 @@ export function ICPCard({ className = "" }: ICPCardProps) {
         <div className="flex flex-wrap gap-2">
           {!isCoAuthActive ? (
             // Show Activate button when inactive
-            <Button onClick={handleActivateII} disabled={isActivating} className="flex-1">
+            <Button onClick={handleActivateII} className="flex-1">
               <Shield className="h-4 w-4 mr-2" />
               Sign in with Internet Identity
             </Button>

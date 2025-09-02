@@ -1,11 +1,9 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { User, Shield, Calendar, Clock, Edit3, Eye, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { User, Shield, Calendar, Clock, Eye } from "lucide-react";
 
 interface ProfileInfoProps {
   user: {
@@ -27,9 +25,6 @@ interface ProfileInfoProps {
 }
 
 export function ProfileInfo({ user }: ProfileInfoProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-
   const formatDate = (date: Date | string | null | undefined) => {
     if (!date) return "N/A";
     return new Date(date).toLocaleDateString("en-US", {

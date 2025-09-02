@@ -80,7 +80,7 @@ export function ProfileStats() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
             <div className="flex items-center justify-center mb-2">
-              <Image className="h-6 w-6 text-blue-600" />
+              <Image className="h-6 w-6 text-blue-600" aria-hidden="true" />
             </div>
             <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
               {stats.totalMemories.toLocaleString()}
@@ -184,7 +184,7 @@ export function ProfileStats() {
           <div className="grid grid-cols-2 gap-3">
             <button className="p-3 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg border border-blue-200 dark:border-blue-800 transition-colors text-left">
               <div className="flex items-center gap-2">
-                <Image className="h-4 w-4 text-blue-600" />
+                <Image className="h-4 w-4 text-blue-600" aria-hidden="true" />
                 <span className="text-sm font-medium text-blue-900 dark:text-blue-100">Upload Memories</span>
               </div>
             </button>

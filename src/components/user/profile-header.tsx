@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Mail, MapPin, Globe, Crown, User } from "lucide-react";
+import { MapPin, Globe, Crown, User } from "lucide-react";
 
 import { useState } from "react";
 
