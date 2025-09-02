@@ -13,11 +13,11 @@ async function handleCompleteSignOut() {
     // Ignore II cleanup errors - proceed with NextAuth signOut
     console.warn("II cleanup failed:", error);
   }
-  
+
   // Clear NextAuth session completely
   // The JWT callback will handle Principal cleanup automatically
-  await signOut({ 
-    callbackUrl: "/", 
+  await signOut({
+    callbackUrl: "/",
     redirect: true,
   });
 }
@@ -32,12 +32,7 @@ export function SignIn({ provider, ...props }: { provider?: string } & React.Com
 
 export function SignOut(props: React.ComponentPropsWithRef<typeof Button>) {
   return (
-    <Button
-      variant="ghost"
-      className="w-full p-0"
-      {...props}
-      onClick={handleCompleteSignOut}
-    >
+    <Button variant="ghost" className="w-full p-0" {...props} onClick={handleCompleteSignOut}>
       Sign Out
     </Button>
   );
