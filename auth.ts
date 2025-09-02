@@ -328,12 +328,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
 
-    async jwt({ token, account, user }) {
+    async jwt({ token, account, user, trigger }) {
       //   console.log("--------------------------------");
       //   console.log("NextAuth JWT callback called with token:", token);
       //   console.log("NextAuth JWT callback called with account:", account);
       //   console.log("NextAuth JWT callback called with user:", user);
+      //   console.log("NextAuth JWT callback called with trigger:", trigger);
       //   console.log("--------------------------------");
+
+      // Handle Principal cleanup on signOut
+      if (trigger === "update" && !user) {
+        // User is signing out - clear the Principal and prevent backfill
+        if ("icpPrincipal" in (token as unknown as Record<string, unknown>)) {
+          delete (token as unknown as { icpPrincipal?: string }).icpPrincipal;
+          // console.log("[II][JWT] ✅ Cleared icpPrincipal on signOut");
+        }
+        return token;
+      }
 
       if (account?.access_token) {
         token.accessToken = account.access_token;
@@ -370,7 +381,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
 
       // Backfill icpPrincipal from accounts mapping when missing
-      if (!("icpPrincipal" in (token as unknown as Record<string, unknown>)) && token.sub) {
+      // BUT only if we're not in the process of signing out
+      if (!("icpPrincipal" in (token as unknown as Record<string, unknown>)) && token.sub && user) {
         try {
           const iiAccount = await db.query.accounts.findFirst({
             where: (a, { and, eq }) => and(eq(a.userId, token.sub as string), eq(a.provider, "internet-identity")),
@@ -399,7 +411,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             //   businessUserId: allUser.id,
             // });
           } else {
-            // console.warn("[Auth] ⚠️ No allUsers entry found for Auth.js user:", user.id);
+            // console.log("[Auth] ⚠️ No allUsers entry found for Auth.js user:", user.id);
           }
         } catch (error) {
           // console.error("[Auth] ❌ Error looking up business user ID:", error);
