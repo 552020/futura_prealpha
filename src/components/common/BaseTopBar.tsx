@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Search, Filter, Calendar, Grid3X3, List } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,19 +13,19 @@ interface BaseTopBarProps<T> {
   onViewModeChange?: (mode: "grid" | "list") => void;
   viewMode?: "grid" | "list";
   className?: string;
-  
+
   // Search configuration
   searchPlaceholder?: string;
   searchFields?: (item: T) => string[];
-  
+
   // Filter configuration
   filterOptions?: Array<{ value: string; label: string }>;
   filterLogic?: (item: T, filterType: string) => boolean;
-  
+
   // Sort configuration
   sortOptions?: Array<{ value: string; label: string }>;
   sortLogic?: (a: T, b: T, sortBy: string) => number;
-  
+
   // Action buttons
   leftActions?: React.ReactNode;
   rightActions?: React.ReactNode;
@@ -38,31 +38,37 @@ export function BaseTopBar<T>({
   onViewModeChange,
   viewMode = "grid",
   className = "",
-  
+
   // Search
   searchPlaceholder = "Search...",
   searchFields = () => [],
-  
+
   // Filters
   filterOptions = [{ value: "all", label: "All Items" }],
   filterLogic = () => true,
-  
+
   // Sort
   sortOptions = [
     { value: "newest", label: "Newest First" },
     { value: "oldest", label: "Oldest First" },
   ],
-  sortLogic = (a: any, b: any, sortBy: string) => {
+  sortLogic = (a: T, b: T, sortBy: string) => {
     switch (sortBy) {
       case "newest":
-        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+        return (
+          new Date((b as { createdAt?: string | Date }).createdAt || 0).getTime() -
+          new Date((a as { createdAt?: string | Date }).createdAt || 0).getTime()
+        );
       case "oldest":
-        return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+        return (
+          new Date((a as { createdAt?: string | Date }).createdAt || 0).getTime() -
+          new Date((b as { createdAt?: string | Date }).createdAt || 0).getTime()
+        );
       default:
         return 0;
     }
   },
-  
+
   // Actions
   leftActions,
   rightActions,
@@ -70,6 +76,7 @@ export function BaseTopBar<T>({
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("newest");
+  const isInitialRender = useRef(true);
 
   // Filtering and sorting logic
   const filteredItems = useMemo(() => {
@@ -97,17 +104,24 @@ export function BaseTopBar<T>({
 
   // Notify parent component of filtered results
   useEffect(() => {
-    onFilteredItemsChange(filteredItems);
-  }, [filteredItems, onFilteredItemsChange]);
+    // Skip the initial render to prevent infinite loops
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
+
+    // Only call when user actually changes search/filter/sort inputs
+    if (searchQuery || filterType !== "all" || sortBy !== "newest") {
+      onFilteredItemsChange(filteredItems);
+    }
+  }, [searchQuery, filterType, sortBy, onFilteredItemsChange, filteredItems]);
 
   return (
     <div className={`mb-6 space-y-4 ${className}`}>
       {/* Top row: Action buttons and View toggle */}
       <div className="flex justify-between items-center gap-4">
         {/* Left side: Action buttons */}
-        <div className="flex gap-2">
-          {leftActions}
-        </div>
+        <div className="flex gap-2">{leftActions}</div>
 
         {/* Right side: View Mode Toggle or custom actions */}
         <div className="flex gap-2">

@@ -2,9 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Memory as BaseMemory } from "@/types/memory";
-import { CreateGalleryModal } from "@/components/galleries/CreateGalleryModal";
+import { ItemUploadButton } from "@/components/memory/ItemUploadButton";
 import { BaseTopBar } from "@/components/common/BaseTopBar";
-import { ImageIcon } from "lucide-react";
 
 // Extended Memory interface for gallery with additional properties
 interface ExtendedMemory extends BaseMemory {
@@ -13,40 +12,61 @@ interface ExtendedMemory extends BaseMemory {
   views?: number;
 }
 
-interface FolderTopBarProps {
+interface SearchAndFilterBarProps {
   memories: ExtendedMemory[];
   onFilteredMemoriesChange: (filteredMemories: ExtendedMemory[]) => void;
   showViewToggle?: boolean;
   onViewModeChange?: (mode: "grid" | "list") => void;
   viewMode?: "grid" | "list";
   className?: string;
-  folderName?: string;
-  onCreateGallery?: (galleryId?: string) => void;
+  showUploadButtons?: boolean;
+  onUploadSuccess?: () => void;
+  onUploadError?: (error: Error) => void;
+  onClearAllMemories?: () => void;
 }
 
-export function FolderTopBar({
+export function DashboardTopBar({
   memories,
   onFilteredMemoriesChange,
   showViewToggle = true,
   onViewModeChange,
   viewMode = "grid",
   className = "",
-  folderName,
-  onCreateGallery,
-}: FolderTopBarProps) {
-  // Create gallery button action
+  showUploadButtons = false,
+  onUploadSuccess,
+  onUploadError,
+  onClearAllMemories,
+}: SearchAndFilterBarProps) {
+  // Create left action buttons
   const leftActions = (
-    <CreateGalleryModal
-      prefillFolderName={folderName}
-      onGalleryCreated={onCreateGallery}
-      hideFolderSelection={true}
-      trigger={
-        <Button variant="default" size="sm" className="h-9 px-4 py-1 text-sm whitespace-nowrap">
-          <ImageIcon className="h-4 w-4 mr-2" />
-          Create Gallery from &quot;{folderName}&quot;
+    <>
+      {showUploadButtons && (
+        <>
+          <ItemUploadButton
+            mode="folder"
+            variant="dashboard-add-folder"
+            onSuccess={onUploadSuccess}
+            onError={onUploadError}
+          />
+          <ItemUploadButton
+            mode="files"
+            variant="dashboard-add-file"
+            onSuccess={onUploadSuccess}
+            onError={onUploadError}
+          />
+        </>
+      )}
+      {onClearAllMemories && (
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={onClearAllMemories}
+          className="h-9 px-4 py-1 text-sm whitespace-nowrap"
+        >
+          Clear All
         </Button>
-      }
-    />
+      )}
+    </>
   );
 
   return (

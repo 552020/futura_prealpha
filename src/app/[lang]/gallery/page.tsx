@@ -6,7 +6,7 @@ import { useAuthGuard } from "@/utils/authentication";
 import { Button } from "@/components/ui/button";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
-import { GalleryTopBar } from "@/components/gallery-top-bar";
+import { GalleryTopBar } from "@/components/galleries/GalleryTopBar";
 import RequireAuth from "@/components/require-auth";
 import { CreateGalleryModal } from "@/components/galleries/CreateGalleryModal";
 import { LoadingSpinner } from "@/components/common/loading-spinner";

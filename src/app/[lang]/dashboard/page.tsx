@@ -28,7 +28,7 @@ interface ExtendedMemory extends BaseMemory {
   views?: number;
 }
 import { TawkChat } from "@/components/tawk-chat";
-import { DashboardTopBar } from "@/components/dashboard-top-bar";
+import { DashboardTopBar } from "@/components/dashboard/DashboardTopBar";
 import { sampleDashboardMemories } from "./sample-data";
 
 // Demo flag - set to true to use mock data for demo
