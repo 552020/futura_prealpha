@@ -2,7 +2,7 @@
 
 /**
  * II Co-Auth Controls Component
- * 
+ *
  * Displays prominent II co-authentication controls with:
  * - Current II co-auth status
  * - TTL countdown and status
@@ -14,13 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { 
-  Shield, 
-  ShieldCheck, 
-  Clock, 
-  RefreshCw,
-  LogOut
-} from "lucide-react";
+import { Shield, ShieldCheck, Clock, RefreshCw, LogOut } from "lucide-react";
 import { useIICoAuth } from "@/hooks/use-ii-coauth";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -30,19 +24,19 @@ interface IICoAuthControlsProps {
 }
 
 export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
-  const { 
-    hasLinkedII, 
+  const {
+    hasLinkedII,
     linkedIcPrincipal,
-    isCoAuthActive, 
+    isCoAuthActive,
     activeIcPrincipal,
-    statusMessage, 
+    statusMessage,
     statusClass,
     remainingMinutes,
     activateII,
     disconnectII,
-    refreshTTL
+    refreshTTL,
   } = useIICoAuth();
-  
+
   const { toast } = useToast();
   const [isActivating, setIsActivating] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
@@ -54,7 +48,7 @@ export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
   // Handle II activation
   const handleActivateII = async () => {
     if (!hasLinkedII || !linkedIcPrincipal) return;
-    
+
     setIsActivating(true);
     try {
       await activateII(linkedIcPrincipal);
@@ -122,7 +116,13 @@ export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
   }
 
   return (
-    <Card className={`border-2 ${isCoAuthActive ? 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20' : 'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20'} ${className}`}>
+    <Card
+      className={`border-2 ${
+        isCoAuthActive
+          ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20"
+          : "border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20"
+      } ${className}`}
+    >
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           {isCoAuthActive ? (
@@ -131,15 +131,12 @@ export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
             <Shield className="h-6 w-6 text-orange-600" />
           )}
           Internet Identity Co-Authentication
-          <Badge 
-            variant={isCoAuthActive ? "default" : "secondary"} 
-            className={`ml-auto ${statusClass}`}
-          >
+          <Badge variant={isCoAuthActive ? "default" : "secondary"} className={`ml-auto ${statusClass}`}>
             {isCoAuthActive ? "ACTIVE" : "INACTIVE"}
           </Badge>
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {/* Status Information */}
         <div className="space-y-3">
@@ -150,7 +147,7 @@ export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
                 {statusMessage}
               </Badge>
             </div>
-            
+
             {isCoAuthActive && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
@@ -188,27 +185,18 @@ export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
         <div className="flex flex-wrap gap-2">
           {!isCoAuthActive ? (
             // Show Activate button when inactive
-            <Button 
+            <Button
               onClick={handleActivateII}
               disabled={isActivating}
               className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
             >
-              {isActivating ? (
-                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <Shield className="h-4 w-4 mr-2" />
-              )}
+              {isActivating ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <Shield className="h-4 w-4 mr-2" />}
               Activate Internet Identity
             </Button>
           ) : (
             // Show management buttons when active
             <>
-              <Button 
-                onClick={handleRefreshTTL}
-                disabled={isRefreshing}
-                variant="outline"
-                className="flex-1"
-              >
+              <Button onClick={handleRefreshTTL} disabled={isRefreshing} variant="outline" className="flex-1">
                 {isRefreshing ? (
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
                 ) : (
@@ -216,8 +204,8 @@ export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
                 )}
                 Extend Session
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={handleDisconnectII}
                 disabled={isDisconnecting}
                 variant="outline"

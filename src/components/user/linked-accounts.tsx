@@ -50,12 +50,19 @@ export function LinkedAccounts({ showActions = true, className = "" }: LinkedAcc
 
   // Handle linking II account
   const handleLinkII = () => {
-    // This would typically redirect to II linking flow
-    toast({
-      title: "Link II Account",
-      description: "Redirecting to Internet Identity linking...",
-    });
-    // TODO: Implement II linking flow
+    try {
+      // Redirect to the II-only signin page with callback back to current page
+      const currentUrl = window.location.href;
+      const signinUrl = `/en/sign-ii-only?callbackUrl=${encodeURIComponent(currentUrl)}`;
+      window.location.href = signinUrl;
+    } catch (error) {
+      console.error("Failed to redirect to II signin page:", error);
+      toast({
+        title: "Redirect Failed",
+        description: "Failed to redirect to Internet Identity linking page",
+        variant: "destructive",
+      });
+    }
   };
 
   // Handle unlinking II account
@@ -167,7 +174,7 @@ export function LinkedAccounts({ showActions = true, className = "" }: LinkedAcc
           <div className="flex gap-2 pt-2">
             <Button onClick={handleLinkII} variant="outline" size="sm" className="flex-1">
               <LinkIcon className="h-4 w-4 mr-2" />
-              Manage Link
+              Re-link II Account
             </Button>
             <Button onClick={copyPrincipalToClipboard} variant="outline" size="sm" disabled={isCopying}>
               <Copy className="h-4 w-4 mr-2" />
