@@ -415,6 +415,8 @@ export interface _SERVICE {
     ICPResult
   >,
   'cancel_upload' : ActorMethod<[string], ICPResult_1>,
+  'capsules_list' : ActorMethod<[], Array<CapsuleHeader>>,
+  'capsules_read' : ActorMethod<[string], [] | [Capsule]>,
   'cleanup_expired_sessions' : ActorMethod<[], number>,
   'cleanup_orphaned_chunks' : ActorMethod<[], number>,
   'clear_creation_state' : ActorMethod<[Principal], Result>,
@@ -428,7 +430,6 @@ export interface _SERVICE {
   'delete_gallery' : ActorMethod<[string], DeleteGalleryResponse>,
   'delete_memory_from_capsule' : ActorMethod<[string], MemoryOperationResponse>,
   'get_api_version' : ActorMethod<[], string>,
-  'get_capsule' : ActorMethod<[string], [] | [Capsule]>,
   'get_creation_states_by_status' : ActorMethod<[CreationStatus], Result_1>,
   'get_creation_status' : ActorMethod<[], [] | [CreationStatusResponse]>,
   'get_detailed_creation_status' : ActorMethod<
@@ -465,7 +466,6 @@ export interface _SERVICE {
   'list_all_creation_states' : ActorMethod<[], Result_1>,
   'list_all_migration_states' : ActorMethod<[], Result_1>,
   'list_capsule_memories' : ActorMethod<[], MemoryListResponse>,
-  'list_my_capsules' : ActorMethod<[], Array<CapsuleHeader>>,
   'list_superadmins' : ActorMethod<[], Array<Principal>>,
   'list_users' : ActorMethod<[], Array<CapsuleHeader>>,
   'mark_bound' : ActorMethod<[], boolean>,

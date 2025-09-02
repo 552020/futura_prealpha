@@ -59,37 +59,18 @@ export const idlFactory = ({ IDL }) => {
     'error' : IDL.Opt(ICPErrorCode),
     'success' : IDL.Bool,
   });
-  const Result = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
-  const CommitResponse = IDL.Record({
-    'total_bytes' : IDL.Nat64,
-    'memory_id' : IDL.Text,
-    'error' : IDL.Opt(ICPErrorCode),
-    'message' : IDL.Text,
-    'final_hash' : IDL.Text,
-    'success' : IDL.Bool,
-  });
-  const ICPResult_2 = IDL.Record({
-    'data' : IDL.Opt(CommitResponse),
-    'error' : IDL.Opt(ICPErrorCode),
-    'success' : IDL.Bool,
-  });
   const PersonRef = IDL.Variant({
     'Opaque' : IDL.Text,
     'Principal' : IDL.Principal,
   });
-  const CapsuleCreationResult = IDL.Record({
-    'capsule_id' : IDL.Opt(IDL.Text),
-    'message' : IDL.Text,
-    'success' : IDL.Bool,
-  });
-  const PersonalCanisterCreationResponse = IDL.Record({
-    'canister_id' : IDL.Opt(IDL.Principal),
-    'message' : IDL.Text,
-    'success' : IDL.Bool,
-  });
-  const DeleteGalleryResponse = IDL.Record({
-    'message' : IDL.Text,
-    'success' : IDL.Bool,
+  const CapsuleHeader = IDL.Record({
+    'id' : IDL.Text,
+    'updated_at' : IDL.Nat64,
+    'subject' : PersonRef,
+    'owner_count' : IDL.Nat32,
+    'created_at' : IDL.Nat64,
+    'controller_count' : IDL.Nat32,
+    'memory_count' : IDL.Nat32,
   });
   const ControllerState = IDL.Record({
     'granted_at' : IDL.Nat64,
@@ -241,6 +222,34 @@ export const idlFactory = ({ IDL }) => {
     'bound_to_web2' : IDL.Bool,
     'galleries' : IDL.Vec(IDL.Tuple(IDL.Text, Gallery)),
   });
+  const Result = IDL.Variant({ 'Ok' : IDL.Bool, 'Err' : IDL.Text });
+  const CommitResponse = IDL.Record({
+    'total_bytes' : IDL.Nat64,
+    'memory_id' : IDL.Text,
+    'error' : IDL.Opt(ICPErrorCode),
+    'message' : IDL.Text,
+    'final_hash' : IDL.Text,
+    'success' : IDL.Bool,
+  });
+  const ICPResult_2 = IDL.Record({
+    'data' : IDL.Opt(CommitResponse),
+    'error' : IDL.Opt(ICPErrorCode),
+    'success' : IDL.Bool,
+  });
+  const CapsuleCreationResult = IDL.Record({
+    'capsule_id' : IDL.Opt(IDL.Text),
+    'message' : IDL.Text,
+    'success' : IDL.Bool,
+  });
+  const PersonalCanisterCreationResponse = IDL.Record({
+    'canister_id' : IDL.Opt(IDL.Principal),
+    'message' : IDL.Text,
+    'success' : IDL.Bool,
+  });
+  const DeleteGalleryResponse = IDL.Record({
+    'message' : IDL.Text,
+    'success' : IDL.Bool,
+  });
   const CreationStatus = IDL.Variant({
     'Importing' : IDL.Null,
     'Creating' : IDL.Null,
@@ -325,15 +334,6 @@ export const idlFactory = ({ IDL }) => {
     'memories' : IDL.Vec(Memory),
     'message' : IDL.Text,
     'success' : IDL.Bool,
-  });
-  const CapsuleHeader = IDL.Record({
-    'id' : IDL.Text,
-    'updated_at' : IDL.Nat64,
-    'subject' : PersonRef,
-    'owner_count' : IDL.Nat32,
-    'created_at' : IDL.Nat64,
-    'controller_count' : IDL.Nat32,
-    'memory_count' : IDL.Nat32,
   });
   const ChunkResponse = IDL.Record({
     'chunk_index' : IDL.Nat32,
@@ -446,6 +446,8 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'cancel_upload' : IDL.Func([IDL.Text], [ICPResult_1], []),
+    'capsules_list' : IDL.Func([], [IDL.Vec(CapsuleHeader)], ['query']),
+    'capsules_read' : IDL.Func([IDL.Text], [IDL.Opt(Capsule)], ['query']),
     'cleanup_expired_sessions' : IDL.Func([], [IDL.Nat32], []),
     'cleanup_orphaned_chunks' : IDL.Func([], [IDL.Nat32], []),
     'clear_creation_state' : IDL.Func([IDL.Principal], [Result], []),
@@ -464,7 +466,6 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'get_api_version' : IDL.Func([], [IDL.Text], ['query']),
-    'get_capsule' : IDL.Func([IDL.Text], [IDL.Opt(Capsule)], ['query']),
     'get_creation_states_by_status' : IDL.Func(
         [CreationStatus],
         [Result_1],
@@ -556,7 +557,6 @@ export const idlFactory = ({ IDL }) => {
     'list_all_creation_states' : IDL.Func([], [Result_1], ['query']),
     'list_all_migration_states' : IDL.Func([], [Result_1], ['query']),
     'list_capsule_memories' : IDL.Func([], [MemoryListResponse], ['query']),
-    'list_my_capsules' : IDL.Func([], [IDL.Vec(CapsuleHeader)], ['query']),
     'list_superadmins' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
     'list_users' : IDL.Func([], [IDL.Vec(CapsuleHeader)], ['query']),
     'mark_bound' : IDL.Func([], [IDL.Bool], []),

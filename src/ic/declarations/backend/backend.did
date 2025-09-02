@@ -389,6 +389,8 @@ service : () -> {
   begin_asset_upload : (text, MemoryType, text, nat32, nat64) -> (ICPResult);
   // Cancel upload and cleanup resources
   cancel_upload : (text) -> (ICPResult_1);
+  capsules_list : () -> (vec CapsuleHeader) query;
+  capsules_read : (text) -> (opt Capsule) query;
   // Clean up expired upload sessions (admin function)
   cleanup_expired_sessions : () -> (nat32);
   // Clean up orphaned chunks (admin function)
@@ -402,7 +404,6 @@ service : () -> {
   delete_gallery : (text) -> (DeleteGalleryResponse);
   delete_memory_from_capsule : (text) -> (MemoryOperationResponse);
   get_api_version : () -> (text) query;
-  get_capsule : (text) -> (opt Capsule) query;
   get_creation_states_by_status : (CreationStatus) -> (Result_1) query;
   get_creation_status : () -> (opt CreationStatusResponse) query;
   get_detailed_creation_status : () -> (opt DetailedCreationStatus) query;
@@ -435,7 +436,6 @@ service : () -> {
   list_all_creation_states : () -> (Result_1) query;
   list_all_migration_states : () -> (Result_1) query;
   list_capsule_memories : () -> (MemoryListResponse) query;
-  list_my_capsules : () -> (vec CapsuleHeader) query;
   list_superadmins : () -> (vec principal) query;
   list_users : () -> (vec CapsuleHeader) query;
   mark_bound : () -> (bool);
