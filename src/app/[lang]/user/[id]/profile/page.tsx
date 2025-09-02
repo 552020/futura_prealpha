@@ -4,19 +4,16 @@ import { redirect } from "next/navigation";
 import { LiveChatWrapper } from "@/components/chat/livechat-wrapper";
 import { LinkedAccounts } from "@/components/user/linked-accounts";
 import { IICoAuthControls } from "@/components/user/ii-coauth-controls";
+import { ProfileHeader } from "@/components/user/profile-header";
+import { ProfileInfo } from "@/components/user/profile-info";
+import { ProfileStats } from "@/components/user/profile-stats";
 
 interface Props {
   params: Promise<{ id: string }>;
-  // If you’re not using searchParams, you can either remove it or define it similarly.
-  // searchParams: Promise<{ [key: string]: string }>;
 }
 
 const ProfilePage = async (props: Props) => {
-  // Await the asynchronous values
   const resolvedParams = await props.params;
-  // If you're using searchParams, await it too:
-  // const resolvedSearchParams = await props.searchParams;
-
   const session = await auth();
 
   if (!session) {
@@ -28,21 +25,36 @@ const ProfilePage = async (props: Props) => {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Hello, {session.user.name}! This is your profile page.</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <div className="container mx-auto p-6 max-w-4xl">
+        {/* Profile Header with Avatar */}
+        <ProfileHeader user={session.user} />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+          {/* Left Column - Profile Info */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Profile Information */}
+            <ProfileInfo user={session.user} />
+            
+            {/* Profile Statistics */}
+            <ProfileStats />
+          </div>
+          
+          {/* Right Column - Account Management */}
+          <div className="space-y-6">
+            {/* II Co-Auth Controls */}
+            <IICoAuthControls />
+            
+            {/* Linked Accounts Section */}
+            <LinkedAccounts />
+          </div>
+        </div>
 
-      {/* II Co-Auth Controls */}
-      <div className="mb-6">
-        <IICoAuthControls />
+        {/* LiveChat */}
+        <div className="mt-8">
+          <LiveChatWrapper />
+        </div>
       </div>
-
-      {/* Linked Accounts Section */}
-      <div className="mb-6">
-        <LinkedAccounts />
-      </div>
-
-      {/* LiveChat */}
-      <LiveChatWrapper />
     </div>
   );
 };
