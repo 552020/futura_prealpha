@@ -4,12 +4,13 @@ export type StorageStatus = "icp" | "neon";
 
 interface StorageStatusBadgeProps {
   status: StorageStatus;
-  size?: "sm" | "md";
+  size?: "xs" | "sm" | "md";
   className?: string;
 }
 
 export function StorageStatusBadge({ status, size = "sm", className = "" }: StorageStatusBadgeProps) {
   const sizeClasses = {
+    xs: "text-[10px] px-1 py-0.5 h-4 min-w-[24px]",
     sm: "text-xs px-2 py-0.5",
     md: "text-sm px-2.5 py-1",
   };

@@ -1,59 +1,61 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Image, Lock, Globe } from "lucide-react";
+import { Image, Lock, Globe } from "lucide-react";
 import { GalleryWithItems } from "@/types/gallery";
 import { StorageStatusBadge, getGalleryStorageStatus } from "@/components/storage-status-badge";
+import { BaseCard } from "@/components/common/base-card";
 
 interface GalleryCardProps {
   gallery: GalleryWithItems;
   onClick: (gallery: GalleryWithItems) => void;
+  onEdit?: (gallery: GalleryWithItems) => void;
+  onShare?: (gallery: GalleryWithItems) => void;
+  onDelete?: (gallery: GalleryWithItems) => void;
 }
 
-export function GalleryCard({ gallery, onClick }: GalleryCardProps) {
+export function GalleryCard({ gallery, onClick, onEdit, onShare, onDelete }: GalleryCardProps) {
   return (
-    <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-200" onClick={() => onClick(gallery)}>
-      <div className="aspect-[4/3] bg-muted rounded-t-lg overflow-hidden">
-        {/* Cover image placeholder */}
-        <div className="w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
-          <Image className="h-12 w-12 text-muted-foreground/50" aria-hidden="true" />
+    <BaseCard
+      item={gallery}
+      onClick={onClick}
+      onEdit={onEdit}
+      onShare={onShare}
+      onDelete={onDelete}
+      renderPreview={() => (
+        <div className="flex flex-col items-center justify-center text-muted-foreground">
+          {/* eslint-disable-next-line jsx-a11y/alt-text */}
+          <Image className="h-16 w-16 mb-2" aria-hidden="true" />
+          <span className="text-sm">Gallery</span>
         </div>
-      </div>
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="font-medium text-lg line-clamp-1">{gallery.title}</h3>
-          <div className="flex items-center gap-2">
-            <StorageStatusBadge status={getGalleryStorageStatus(gallery)} />
-            <Badge variant={gallery.isPublic ? "default" : "secondary"}>
-              {gallery.isPublic ? (
-                <>
-                  <Globe className="h-3 w-3 mr-1" />
-                  Public
-                </>
-              ) : (
-                <>
-                  <Lock className="h-3 w-3 mr-1" />
-                  Private
-                </>
-              )}
-            </Badge>
-          </div>
-        </div>
-        {gallery.description && (
-          <p className="text-muted-foreground text-sm line-clamp-2 mb-3">{gallery.description}</p>
-        )}
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <div className="flex items-center gap-1">
+      )}
+      renderTitle={(gallery) => gallery.title}
+      renderDescription={(gallery) => gallery.description}
+      renderStorageBadge={(gallery) => <StorageStatusBadge status={getGalleryStorageStatus(gallery)} size="xs" />}
+      renderLeftStatus={(gallery) => (
+        <>
+          {/* Image count icon */}
+          <div className="flex-shrink-0">
+            {/* eslint-disable-next-line jsx-a11y/alt-text */}
             <Image className="h-4 w-4" aria-hidden="true" />
-            <span>{gallery.imageCount} images</span>
           </div>
-          <div className="flex items-center gap-1">
-            <Calendar className="h-4 w-4" />
-            <span>{new Date(gallery.createdAt).toLocaleDateString()}</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+
+          {/* Privacy status */}
+          <Badge variant={gallery.isPublic ? "default" : "secondary"} className="text-xs">
+            {gallery.isPublic ? (
+              <>
+                <Globe className="h-3 w-3 mr-1" />
+                Public
+              </>
+            ) : (
+              <>
+                <Lock className="h-3 w-3 mr-1" />
+                Private
+              </>
+            )}
+          </Badge>
+        </>
+      )}
+    />
   );
 }

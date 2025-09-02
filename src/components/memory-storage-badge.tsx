@@ -1,3 +1,11 @@
+/**
+ * NOTE: This component is currently NOT USED in memory cards.
+ * Storage location info has been moved to the description area for consistency with galleries.
+ * 
+ * This component is kept for potential future use (e.g., overlay badges, detailed tooltips, etc.)
+ * but is not actively rendered in the current UI.
+ */
+
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { useMemoryStorageStatus, type MemoryStorageStatus } from "@/hooks/use-memory-storage-status";
