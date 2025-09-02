@@ -16,6 +16,7 @@ import { Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAuthClient as getIiAuthClient, loginWithII, clearIiSession } from "@/ic/ii";
 import RequireAuth from "@/components/auth/require-auth";
+import { LinkedAccounts } from "@/components/user/linked-accounts";
 
 export default function ICPPage() {
   const { isAuthorized, isLoading } = useAuthGuard();
@@ -367,6 +368,11 @@ export default function ICPPage() {
   return (
     <div className="container mx-auto px-6 py-8">
       <h1 className="text-3xl font-bold mb-6">Hello ICP</h1>
+
+      {/* Linked Accounts Section - Prominently Displayed */}
+      <div className="mb-6">
+        <LinkedAccounts showActions={true} />
+      </div>
 
       <div className="mb-6 flex gap-4">
         <Button onClick={isAuthenticated ? handleSignOut : handleLogin} id="login" disabled={busy}>
