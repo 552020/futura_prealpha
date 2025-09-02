@@ -27,6 +27,11 @@ declare module "next-auth" {
     user: User & {
       id: string;
       businessUserId?: string;
+
+      /** ICP Principal Co-Auth System */
+      icpPrincipal?: string; // Only when II co-auth is active (activeIcPrincipal)
+      linkedIcPrincipal?: string; // Always available if user has linked II
+      loginProvider?: string; // Base session provider for UI logic
     } & DefaultSession["user"];
   }
 }
@@ -36,6 +41,12 @@ declare module "next-auth/jwt" {
     /** Add role to JWT */
     role?: string;
     businessUserId?: string;
+
+    /** ICP Principal Co-Auth System */
+    loginProvider?: string; // Base session provider (e.g., "google") - authoritative on each fresh sign-in
+    activeIcPrincipal?: string; // II co-auth flag - only when II is currently proven
+    activeIcAssertedAt?: number; // When II proof was last verified (for TTL) - timestamp
+    linkedIcPrincipal?: string; // Stored Principal from DB (identifier only, not proof)
   }
 }
 
@@ -332,80 +343,71 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       console.log("🔐 [JWT] Callback triggered with:", {
         trigger,
         hasUser: !!user,
-        hasPrincipal: "icpPrincipal" in (token as unknown as Record<string, unknown>),
         tokenKeys: Object.keys(token),
         userKeys: user ? Object.keys(user) : "no user",
       });
 
-      // Handle Principal cleanup on signOut
-      if (trigger === "update" && !user) {
-        console.log("🚪 [JWT] Detected signOut - clearing Principal");
-        // User is signing out - clear the Principal and prevent backfill
-        if ("icpPrincipal" in (token as unknown as Record<string, unknown>)) {
-          delete (token as unknown as { icpPrincipal?: string }).icpPrincipal;
-          console.log("✅ [JWT] Successfully cleared icpPrincipal on signOut");
-        } else {
-          console.log("ℹ️ [JWT] No icpPrincipal found to clear");
+      // 🚫 CRITICAL: NO database writes in JWT callback
+      // Linking/unlinking happens in API routes or events.linkAccount/unlinkAccount
+
+      // Handle fresh sign-in (new session)
+      if (trigger === "signIn" && user && account) {
+        console.log("🆕 [JWT] Fresh sign-in detected");
+
+        // Set base session provider (authoritative on each fresh sign-in)
+        token.loginProvider = account.provider;
+        console.log("🔑 [JWT] Set loginProvider:", token.loginProvider);
+
+        // Clear any existing II co-auth flags on fresh sign-in
+        if (account.provider !== "internet-identity") {
+          console.log("🧹 [JWT] Clearing II co-auth flags (non-II sign-in)");
+          delete token.activeIcPrincipal;
+          delete token.activeIcAssertedAt;
         }
+
+        // One-time fetch of linkedIcPrincipal from DB (never on each request)
+        if (!token.linkedIcPrincipal && token.sub) {
+          try {
+            const iiAccount = await db.query.accounts.findFirst({
+              where: (a, { and, eq }) => and(eq(a.userId, token.sub as string), eq(a.provider, "internet-identity")),
+              columns: { providerAccountId: true },
+            });
+            if (iiAccount?.providerAccountId) {
+              token.linkedIcPrincipal = iiAccount.providerAccountId;
+              console.log("🔗 [JWT] Set linkedIcPrincipal from DB:", token.linkedIcPrincipal);
+            }
+          } catch (error) {
+            console.warn("⚠️ [JWT] Failed to fetch linkedIcPrincipal:", error);
+          }
+        }
+      }
+
+      // Handle session update (II co-auth activation)
+      if (trigger === "update" && user) {
+        console.log("🔄 [JWT] Session update triggered");
+        // activeIcPrincipal and activeIcAssertedAt are set via session.update() from client
+        // This callback just preserves them
+      }
+
+      // Handle signOut
+      if (trigger === "update" && !user) {
+        console.log("🚪 [JWT] SignOut detected - clearing co-auth flags");
+        delete token.activeIcPrincipal;
+        delete token.activeIcAssertedAt;
+        // Keep linkedIcPrincipal for identity consistency
         return token;
       }
 
+      // Standard token updates
       if (account?.access_token) {
         token.accessToken = account.access_token;
-        console.log("🔑 [JWT] Added access token to JWT");
       }
-      // On first sign-in
+
       if (user?.role) {
         token.role = user.role;
-        console.log("👤 [JWT] Added role to JWT from user object:", token.role);
-      }
-      // Propagate II principal on first sign-in (when present on user)
-      const userAny = user as unknown as { icpPrincipal?: string } | undefined;
-      if (userAny?.icpPrincipal && typeof userAny.icpPrincipal === "string") {
-        (token as unknown as { icpPrincipal?: string }).icpPrincipal = userAny.icpPrincipal;
-        console.log("🔐 [JWT] Set icpPrincipal from user:", { icpPrincipal: token.icpPrincipal });
-      }
-      // On subsequent requests
-      if (!token.role && token.sub) {
-        try {
-          const user = await db.query.users.findFirst({
-            where: (u, { eq }) => eq(u.id, token.sub as string),
-            columns: { role: true },
-          });
-          if (user?.role) {
-            token.role = user.role;
-            console.log("👤 [JWT] Added role to JWT from database:", token.role);
-          }
-        } catch (error) {
-          console.warn("⚠️ [JWT] Failed to get role from database:", error);
-        }
       }
 
-      // Backfill icpPrincipal from accounts mapping when missing
-      // BUT only if we're not in the process of signing out (i.e., user object is present)
-      if (!("icpPrincipal" in (token as unknown as Record<string, unknown>)) && token.sub && user) {
-        console.log("🔄 [JWT] Attempting to backfill icpPrincipal from accounts");
-        try {
-          const iiAccount = await db.query.accounts.findFirst({
-            where: (a, { and, eq }) => and(eq(a.userId, token.sub as string), eq(a.provider, "internet-identity")),
-            columns: { providerAccountId: true },
-          });
-          if (iiAccount?.providerAccountId) {
-            (token as unknown as { icpPrincipal?: string }).icpPrincipal = iiAccount.providerAccountId;
-            console.log("✅ [JWT] Backfilled icpPrincipal from accounts:", {
-              icpPrincipal: iiAccount.providerAccountId,
-            });
-          } else {
-            console.log("ℹ️ [JWT] No II account found for backfill");
-          }
-        } catch (error) {
-          console.warn("⚠️ [JWT] Failed to backfill icpPrincipal:", error);
-        }
-      } else if (!user) {
-        console.log("🚫 [JWT] Skipping backfill - no user object (likely during logout)");
-      }
-
-      // Add business user ID lookup
+      // Business user ID lookup
       if (user?.id && !token.businessUserId) {
         try {
           const allUser = await db.query.allUsers.findFirst({
@@ -443,10 +445,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (token.businessUserId && typeof token.businessUserId === "string") {
           (session.user as { businessUserId?: string }).businessUserId = token.businessUserId;
         }
-        // Add icpPrincipal when present
-        const tokenAny = token as unknown as { icpPrincipal?: string };
-        if (typeof tokenAny.icpPrincipal === "string") {
-          (session.user as unknown as { icpPrincipal?: string }).icpPrincipal = tokenAny.icpPrincipal;
+        // Add ICP Principal Co-Auth System fields
+        if (token.loginProvider) {
+          (session.user as { loginProvider?: string }).loginProvider = token.loginProvider;
+        }
+
+        if (token.linkedIcPrincipal) {
+          (session.user as { linkedIcPrincipal?: string }).linkedIcPrincipal = token.linkedIcPrincipal;
+        }
+
+        // Only expose icpPrincipal when II co-auth is active
+        if (token.activeIcPrincipal && token.activeIcAssertedAt) {
+          (session.user as { icpPrincipal?: string }).icpPrincipal = token.activeIcPrincipal;
         }
       }
       if (token.accessToken) {
@@ -515,7 +525,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     },
     async linkAccount(account) {
-      // console.log("[Auth] 🔗 Account linked:", account);
+      console.log("[Auth] 🔗 Account linked:", account);
+      // Note: linkedIcPrincipal will be fetched on next sign-in
+      // No need to update token here - JWT callback handles it
     },
     async signIn({ user, account, profile }) {
       // console.log("[Auth] 👋 User signed in:", { user, account, profile });
