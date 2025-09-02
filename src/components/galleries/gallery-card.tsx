@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Image, Lock, Globe } from "lucide-react";
 import { GalleryWithItems } from "@/types/gallery";
-import { StorageStatusBadge, getGalleryStorageStatus } from "@/components/storage-status-badge";
+import { StorageStatusBadge, getGalleryStorageStatus } from "@/components/common/storage-status-badge";
 import { BaseCard } from "@/components/common/base-card";
 
 interface GalleryCardProps {

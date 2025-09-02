@@ -1,5 +1,5 @@
-// import { signIn, signOut } from "../../auth";
-// import { Button } from "./ui/button";
+u/ import { signIn, signOut } from "../../auth";
+// import { Button } from "@/components/ui/button";
 
 // export function SignIn({ provider, ...props }: { provider?: string } & React.ComponentPropsWithRef<typeof Button>) {
 //   return (
@@ -33,7 +33,7 @@
 "use client"; // Ensure this runs on the client
 
 import { signIn, signOut } from "next-auth/react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { clearIiSession } from "@/ic/ii";
 
 export function SignIn({ provider, ...props }: { provider?: string } & React.ComponentPropsWithRef<typeof Button>) {

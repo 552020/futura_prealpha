@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 import { GalleryTopBar } from "@/components/galleries/gallery-top-bar";
-import RequireAuth from "@/components/require-auth";
+import RequireAuth from "@/components/auth/require-auth";
 import { CreateGalleryModal } from "@/components/galleries/create-gallery-modal";
 import { LoadingSpinner } from "@/components/common/loading-spinner";
 import { ErrorState } from "@/components/common/error-state";

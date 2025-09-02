@@ -2,7 +2,7 @@
 
 import { type MemoryWithType } from "@/app/api/memories/utils/memory";
 import Image from "next/image";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { Download, Edit, Trash } from "lucide-react";
 import { useState, useEffect } from "react";
 import type { DBImage, DBDocument, DBNote, DBVideo } from "@/db/schema";
@@ -63,7 +63,9 @@ export function MemoryViewer({ memory, isOwner }: MemoryViewerProps) {
     <div className="space-y-4">
       {/* Title and Actions */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold" title={memory.data.title || ""}>{shortenTitle(memory.data.title || "", 40)}</h2>
+        <h2 className="text-xl font-semibold" title={memory.data.title || ""}>
+          {shortenTitle(memory.data.title || "", 40)}
+        </h2>
         <div className="flex gap-2">
           <Button variant="outline" size="icon" onClick={handleDownload}>
             <Download className="h-4 w-4" />

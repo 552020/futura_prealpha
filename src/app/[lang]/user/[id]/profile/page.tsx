@@ -1,7 +1,7 @@
 import React from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { LiveChatWrapper } from "@/components/livechat-wrapper";
+import { LiveChatWrapper } from "@/components/chat/livechat-wrapper";
 
 interface Props {
   params: Promise<{ id: string }>;

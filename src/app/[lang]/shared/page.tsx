@@ -9,7 +9,7 @@ import { normalizeMemories } from "@/utils/normalizeMemories";
 import { Memory } from "@/types/memory";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import RequireAuth from "@/components/require-auth";
+import RequireAuth from "@/components/auth/require-auth";
 
 export default function SharedMemoriesPage({ params }: { params: Promise<{ lang: string }> }) {
   // Unwrap params using React.use()

@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import RequireAuth from "@/components/require-auth";
+import RequireAuth from "@/components/auth/require-auth";
 
 export default function ProfileRedirect() {
   const { data: session, status } = useSession();

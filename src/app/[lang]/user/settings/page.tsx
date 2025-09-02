@@ -2,7 +2,7 @@
 
 import { useAuthGuard } from "@/utils/authentication";
 import { Loader2 } from "lucide-react";
-import RequireAuth from "@/components/require-auth";
+import RequireAuth from "@/components/auth/require-auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";

@@ -1,7 +1,7 @@
 "use client";
 
 import { Settings } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 

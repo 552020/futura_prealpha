@@ -15,7 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAuthClient as getIiAuthClient, loginWithII, clearIiSession } from "@/ic/ii";
-import RequireAuth from "@/components/require-auth";
+import RequireAuth from "@/components/auth/require-auth";
 
 export default function ICPPage() {
   const { isAuthorized, isLoading } = useAuthGuard();

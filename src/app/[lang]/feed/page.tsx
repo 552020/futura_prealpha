@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import { useAuthGuard } from "@/utils/authentication";
 import { Loader2 } from "lucide-react";
-import RequireAuth from "@/components/require-auth";
+import RequireAuth from "@/components/auth/require-auth";
 
 interface FeedItem {
   id: string;

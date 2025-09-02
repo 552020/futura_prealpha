@@ -10,9 +10,9 @@ import { Share2, Edit, Globe, Lock, ImageIcon, Trash2, Eye, EyeOff, Maximize2, H
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 import { ForeverStorageProgressModal } from "@/components/galleries/forever-storage-progress-modal";
-import { StorageStatusBadge, getGalleryStorageStatus } from "@/components/storage-status-badge";
-import { MemoryStorageBadge } from "@/components/memory-storage-badge";
-import { GalleryStorageSummary } from "@/components/gallery-storage-summary";
+import { StorageStatusBadge, getGalleryStorageStatus } from "@/components/common/storage-status-badge";
+import { MemoryStorageBadge } from "@/components/common/memory-storage-badge";
+import { GalleryStorageSummary } from "@/components/galleries/gallery-storage-summary";
 
 // Mock data flag for development - same pattern as dashboard
 // const USE_MOCK_DATA = true;

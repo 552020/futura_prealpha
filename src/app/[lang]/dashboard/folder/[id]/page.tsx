@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ItemUploadButton } from "@/components/memory/item-upload-button";
 import { Button } from "@/components/ui/button";
 import { FolderTopBar } from "@/components/dashboard/folder-top-bar";
-import { TawkChat } from "@/components/tawk-chat";
+import { TawkChat } from "@/components/chat/tawk-chat";
 import {
   fetchAndNormalizeMemories,
   deleteMemory,

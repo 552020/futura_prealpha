@@ -9,7 +9,7 @@ import { Loader2, Image as ImageIcon, Video, FileText, Music, ChevronLeft } from
 import { useAuthGuard } from "@/utils/authentication";
 import { format } from "date-fns";
 import { shortenTitle } from "@/lib/utils";
-import { MemoryStorageBadge } from "@/components/memory-storage-badge";
+import { MemoryStorageBadge } from "@/components/common/memory-storage-badge";
 import { sampleDashboardMemories } from "../sample-data";
 
 // Demo flag - set to true to use mock data for demo

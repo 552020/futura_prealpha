@@ -1,5 +1,5 @@
-import Hero from "@/components/hero";
-import HeroDemo from "@/components/hero-demo";
+import Hero from "@/components/marketing/hero";
+import HeroDemo from "@/components/marketing/hero-demo";
 import { getDictionary } from "@/utils/dictionaries";
 import { cookies } from "next/headers";
 import { auth } from "@/auth";

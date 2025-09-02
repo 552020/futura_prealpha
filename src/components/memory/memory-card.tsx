@@ -3,7 +3,7 @@
 import { FileText, ImageIcon, Video, Share2, Trash2, File, Pencil, Music, Folder } from "lucide-react";
 import { Memory } from "@/types/memory";
 import { MemoryStatus } from "./memory-status";
-import { MemoryStorageBadge } from "@/components/memory-storage-badge";
+import { MemoryStorageBadge } from "@/components/common/memory-storage-badge";
 import { BaseCard } from "@/components/common/base-card";
 import Image from "next/image";
 import { shortenTitle } from "@/lib/utils";

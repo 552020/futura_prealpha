@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useInterface } from "@/contexts/interface-context";
-import UserButtonClient from "./user-button-client";
+import UserButtonClient from "@/components/auth/user-button-client";
 import { mainNavItems, secondaryNavItems, getTranslatedLabel } from "@/utils/navigation";
 import { Dictionary } from "@/utils/dictionaries";
 import { Separator } from "@/components/ui/separator";

@@ -1,15 +1,15 @@
 "use client";
 
 import { useSession, signIn } from "next-auth/react";
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
-import { Button } from "./ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { SignOut } from "./auth-components";
 import Link from "next/link";
 // Removed tooltip to avoid click interception; using native title on button instead

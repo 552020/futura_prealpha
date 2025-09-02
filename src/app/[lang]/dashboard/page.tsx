@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { ItemUploadButton } from "@/components/memory/item-upload-button";
 import { useParams } from "next/navigation";
-import RequireAuth from "@/components/require-auth";
+import RequireAuth from "@/components/auth/require-auth";
 import {
   fetchAndNormalizeMemories,
   processDashboardItems,
@@ -27,7 +27,7 @@ interface ExtendedMemory extends BaseMemory {
   isFavorite?: boolean;
   views?: number;
 }
-import { TawkChat } from "@/components/tawk-chat";
+import { TawkChat } from "@/components/chat/tawk-chat";
 import { DashboardTopBar } from "@/components/dashboard/dashboard-top-bar";
 import { sampleDashboardMemories } from "./sample-data";
 

@@ -6,10 +6,41 @@ import { GalleryCard } from "./gallery-card";
 interface GalleryGridProps {
   galleries: GalleryWithItems[];
   onGalleryClick: (gallery: GalleryWithItems) => void;
+  onGalleryEdit?: (gallery: GalleryWithItems) => void;
+  onGalleryShare?: (gallery: GalleryWithItems) => void;
+  onGalleryDelete?: (gallery: GalleryWithItems) => void;
   viewMode?: "grid" | "list";
 }
 
-export function GalleryGrid({ galleries, onGalleryClick, viewMode = "grid" }: GalleryGridProps) {
+export function GalleryGrid({
+  galleries,
+  onGalleryClick,
+  onGalleryEdit,
+  onGalleryShare,
+  onGalleryDelete,
+  viewMode = "grid",
+}: GalleryGridProps) {
+  // Placeholder action handlers if not provided
+  const handleEdit =
+    onGalleryEdit ||
+    ((gallery: GalleryWithItems) => {
+      console.log("Edit gallery:", gallery.id);
+      // TODO: Implement gallery editing
+    });
+
+  const handleShare =
+    onGalleryShare ||
+    ((gallery: GalleryWithItems) => {
+      console.log("Share gallery:", gallery.id);
+      // TODO: Implement gallery sharing
+    });
+
+  const handleDelete =
+    onGalleryDelete ||
+    ((gallery: GalleryWithItems) => {
+      console.log("Delete gallery:", gallery.id);
+      // TODO: Implement gallery deletion
+    });
   // Create empty state component
   const emptyState = (
     <div className="text-center py-16">
@@ -24,7 +55,15 @@ export function GalleryGrid({ galleries, onGalleryClick, viewMode = "grid" }: Ga
   return (
     <BaseGrid
       items={galleries}
-      renderItem={(gallery) => <GalleryCard gallery={gallery} onClick={onGalleryClick} />}
+      renderItem={(gallery) => (
+        <GalleryCard
+          gallery={gallery}
+          onClick={onGalleryClick}
+          onEdit={handleEdit}
+          onShare={handleShare}
+          onDelete={handleDelete}
+        />
+      )}
       emptyState={emptyState}
       viewMode={viewMode}
       gap="md"

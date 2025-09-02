@@ -9,7 +9,7 @@ import { X, ChevronLeft, ChevronRight, Download, Share2, HardDrive } from "lucid
 import { galleryService } from "@/services/gallery";
 import { GalleryWithItems } from "@/types/gallery";
 import { ForeverStorageProgressModal } from "@/components/galleries/forever-storage-progress-modal";
-import { MemoryStorageBadge } from "@/components/memory-storage-badge";
+import { MemoryStorageBadge } from "@/components/common/memory-storage-badge";
 import { useToast } from "@/hooks/use-toast";
 
 // Gallery Hero Cover Component
