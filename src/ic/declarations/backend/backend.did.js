@@ -63,6 +63,11 @@ export const idlFactory = ({ IDL }) => {
     'Opaque' : IDL.Text,
     'Principal' : IDL.Principal,
   });
+  const CapsuleCreationResult = IDL.Record({
+    'capsule_id' : IDL.Opt(IDL.Text),
+    'message' : IDL.Text,
+    'success' : IDL.Bool,
+  });
   const CapsuleHeader = IDL.Record({
     'id' : IDL.Text,
     'updated_at' : IDL.Nat64,
@@ -71,6 +76,16 @@ export const idlFactory = ({ IDL }) => {
     'created_at' : IDL.Nat64,
     'controller_count' : IDL.Nat32,
     'memory_count' : IDL.Nat32,
+  });
+  const CapsuleInfo = IDL.Record({
+    'updated_at' : IDL.Nat64,
+    'subject' : PersonRef,
+    'capsule_id' : IDL.Text,
+    'is_owner' : IDL.Bool,
+    'created_at' : IDL.Nat64,
+    'bound_to_web2' : IDL.Bool,
+    'is_self_capsule' : IDL.Bool,
+    'is_controller' : IDL.Bool,
   });
   const ControllerState = IDL.Record({
     'granted_at' : IDL.Nat64,
@@ -236,11 +251,6 @@ export const idlFactory = ({ IDL }) => {
     'error' : IDL.Opt(ICPErrorCode),
     'success' : IDL.Bool,
   });
-  const CapsuleCreationResult = IDL.Record({
-    'capsule_id' : IDL.Opt(IDL.Text),
-    'message' : IDL.Text,
-    'success' : IDL.Bool,
-  });
   const PersonalCanisterCreationResponse = IDL.Record({
     'canister_id' : IDL.Opt(IDL.Principal),
     'message' : IDL.Text,
@@ -316,16 +326,6 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : PersonalCanisterCreationStats,
     'Err' : IDL.Text,
   });
-  const CapsuleInfo = IDL.Record({
-    'updated_at' : IDL.Nat64,
-    'subject' : PersonRef,
-    'capsule_id' : IDL.Text,
-    'is_owner' : IDL.Bool,
-    'created_at' : IDL.Nat64,
-    'bound_to_web2' : IDL.Bool,
-    'is_self_capsule' : IDL.Bool,
-    'is_controller' : IDL.Bool,
-  });
   const Result_3 = IDL.Variant({
     'Ok' : IDL.Opt(DetailedCreationStatus),
     'Err' : IDL.Text,
@@ -345,12 +345,6 @@ export const idlFactory = ({ IDL }) => {
   const ICPResult_5 = IDL.Record({
     'data' : IDL.Opt(ChunkResponse),
     'error' : IDL.Opt(ICPErrorCode),
-    'success' : IDL.Bool,
-  });
-  const CapsuleRegistrationResult = IDL.Record({
-    'capsule_id' : IDL.Opt(IDL.Text),
-    'is_new' : IDL.Bool,
-    'message' : IDL.Text,
     'success' : IDL.Bool,
   });
   const Result_4 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Text });
@@ -446,14 +440,27 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'cancel_upload' : IDL.Func([IDL.Text], [ICPResult_1], []),
+    'capsules_create' : IDL.Func(
+        [IDL.Opt(PersonRef)],
+        [CapsuleCreationResult],
+        [],
+      ),
     'capsules_list' : IDL.Func([], [IDL.Vec(CapsuleHeader)], ['query']),
-    'capsules_read' : IDL.Func([IDL.Text], [IDL.Opt(Capsule)], ['query']),
+    'capsules_read_basic' : IDL.Func(
+        [IDL.Opt(IDL.Text)],
+        [IDL.Opt(CapsuleInfo)],
+        ['query'],
+      ),
+    'capsules_read_full' : IDL.Func(
+        [IDL.Opt(IDL.Text)],
+        [IDL.Opt(Capsule)],
+        ['query'],
+      ),
     'cleanup_expired_sessions' : IDL.Func([], [IDL.Nat32], []),
     'cleanup_orphaned_chunks' : IDL.Func([], [IDL.Nat32], []),
     'clear_creation_state' : IDL.Func([IDL.Principal], [Result], []),
     'clear_migration_state' : IDL.Func([IDL.Principal], [Result], []),
     'commit_asset' : IDL.Func([IDL.Text, IDL.Text], [ICPResult_2], []),
-    'create_capsule' : IDL.Func([PersonRef], [CapsuleCreationResult], []),
     'create_personal_canister' : IDL.Func(
         [],
         [PersonalCanisterCreationResponse],
@@ -530,7 +537,6 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Nat32, IDL.Nat32, IDL.Nat64],
         ['query'],
       ),
-    'get_user' : IDL.Func([], [IDL.Opt(CapsuleInfo)], ['query']),
     'get_user_creation_status' : IDL.Func(
         [IDL.Principal],
         [Result_3],
@@ -569,7 +575,6 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'register' : IDL.Func([], [IDL.Bool], []),
-    'register_capsule' : IDL.Func([], [CapsuleRegistrationResult], []),
     'register_with_nonce' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'remove_admin' : IDL.Func([IDL.Principal], [IDL.Bool], []),
     'set_migration_enabled' : IDL.Func([IDL.Bool], [Result_4], []),

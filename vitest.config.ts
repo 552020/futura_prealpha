@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
-    // setupFiles: ["./src/test/setup.ts"], // Commented out since file doesn't exist
+    setupFiles: ["./src/test/setup.ts"], // Enable test setup for mocking
     include: [
       "src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",
       "tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}",

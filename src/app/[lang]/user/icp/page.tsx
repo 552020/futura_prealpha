@@ -176,7 +176,7 @@ export default function ICPPage() {
       // Automatically fetch capsule info after successful login
       try {
         // console.log("Fetching capsule info after login...");
-        const capsuleData = await authenticatedActor.get_user();
+        const capsuleData = await authenticatedActor.capsules_read_basic();
         // console.log("Capsule data received:", capsuleData);
         setCapsuleInfo(capsuleData[0] || null);
         // console.log("Capsule info set to:", capsuleData[0] || null);
@@ -273,7 +273,7 @@ export default function ICPPage() {
 
       // Use cached authenticated actor
       const authenticatedActor = await getAuthenticatedActor();
-      const capsuleData = await authenticatedActor.get_user();
+      const capsuleData = await authenticatedActor.capsules_read_basic();
       setCapsuleInfo(capsuleData[0] || null);
 
       if (capsuleData) {

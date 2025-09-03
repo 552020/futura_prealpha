@@ -70,12 +70,6 @@ export interface CapsuleInfo {
   'is_self_capsule' : boolean,
   'is_controller' : boolean,
 }
-export interface CapsuleRegistrationResult {
-  'capsule_id' : [] | [string],
-  'is_new' : boolean,
-  'message' : string,
-  'success' : boolean,
-}
 export interface ChunkResponse {
   'chunk_index' : number,
   'error' : [] | [ICPErrorCode],
@@ -415,14 +409,15 @@ export interface _SERVICE {
     ICPResult
   >,
   'cancel_upload' : ActorMethod<[string], ICPResult_1>,
+  'capsules_create' : ActorMethod<[[] | [PersonRef]], CapsuleCreationResult>,
   'capsules_list' : ActorMethod<[], Array<CapsuleHeader>>,
-  'capsules_read' : ActorMethod<[string], [] | [Capsule]>,
+  'capsules_read_basic' : ActorMethod<[[] | [string]], [] | [CapsuleInfo]>,
+  'capsules_read_full' : ActorMethod<[[] | [string]], [] | [Capsule]>,
   'cleanup_expired_sessions' : ActorMethod<[], number>,
   'cleanup_orphaned_chunks' : ActorMethod<[], number>,
   'clear_creation_state' : ActorMethod<[Principal], Result>,
   'clear_migration_state' : ActorMethod<[Principal], Result>,
   'commit_asset' : ActorMethod<[string, string], ICPResult_2>,
-  'create_capsule' : ActorMethod<[PersonRef], CapsuleCreationResult>,
   'create_personal_canister' : ActorMethod<
     [],
     PersonalCanisterCreationResponse
@@ -455,7 +450,6 @@ export interface _SERVICE {
   'get_personal_canister_creation_stats' : ActorMethod<[], Result_2>,
   'get_personal_canister_id' : ActorMethod<[Principal], [] | [Principal]>,
   'get_upload_session_stats' : ActorMethod<[], [number, number, bigint]>,
-  'get_user' : ActorMethod<[], [] | [CapsuleInfo]>,
   'get_user_creation_status' : ActorMethod<[Principal], Result_3>,
   'get_user_galleries' : ActorMethod<[Principal], Array<Gallery>>,
   'get_user_migration_status' : ActorMethod<[Principal], Result_3>,
@@ -477,7 +471,6 @@ export interface _SERVICE {
     ICPResult_5
   >,
   'register' : ActorMethod<[], boolean>,
-  'register_capsule' : ActorMethod<[], CapsuleRegistrationResult>,
   'register_with_nonce' : ActorMethod<[string], boolean>,
   'remove_admin' : ActorMethod<[Principal], boolean>,
   'set_migration_enabled' : ActorMethod<[boolean], Result_4>,
