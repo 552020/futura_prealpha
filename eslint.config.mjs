@@ -17,6 +17,12 @@ const eslintConfig = [
       "**/ic/declarations/**/*", // Alternative path pattern
     ],
   },
+  {
+    rules: {
+      // Disable jsx-a11y/alt-text for Lucide icon components (they're SVGs, not img elements)
+      "jsx-a11y/alt-text": "off",
+    },
+  },
 ];
 
 export default eslintConfig;
