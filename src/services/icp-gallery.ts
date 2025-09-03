@@ -447,7 +447,10 @@ export class ICPGalleryService {
   /**
    * List all memories in a specific capsule
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async listMemories(capsuleId: string): Promise<MemoryListResponse> {
+    // TODO: Implement when backend is ready
+    // Currently placeholder - capsuleId will be used when implemented
     try {
       // const actor = await backendActor(this.identity);
 
