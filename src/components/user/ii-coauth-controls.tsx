@@ -26,45 +26,37 @@ interface IICoAuthControlsProps {
 export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
   const {
     hasLinkedII,
-    linkedIcPrincipal,
     isCoAuthActive,
     activeIcPrincipal,
     statusMessage,
     statusClass,
     remainingMinutes,
-    activateII,
     disconnectII,
     refreshTTL,
   } = useIICoAuth();
 
   const { toast } = useToast();
-  const [isActivating, setIsActivating] = useState(false);
+
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Calculate progress percentage for TTL (15 min = 900 seconds)
   const ttlProgress = remainingMinutes > 0 ? Math.max(0, (remainingMinutes / 15) * 100) : 0;
 
-  // Handle II activation
-  const handleActivateII = async () => {
-    if (!hasLinkedII || !linkedIcPrincipal) return;
-
-    setIsActivating(true);
+  // Handle linking II account (redirect to sign-in page)
+  const handleLinkII = () => {
     try {
-      await activateII(linkedIcPrincipal);
-      toast({
-        title: "II Co-Auth Activated!",
-        description: "Your Internet Identity is now active for this session",
-      });
+      // Redirect to the II-only signin page with callback back to current page
+      const currentUrl = window.location.href;
+      const signinUrl = `/en/sign-ii-only?callbackUrl=${encodeURIComponent(currentUrl)}`;
+      window.location.href = signinUrl;
     } catch (error) {
-      console.error("Failed to activate II:", error);
+      console.error("Failed to redirect to II signin page:", error);
       toast({
-        title: "Activation Failed",
-        description: "Failed to activate Internet Identity. Please try again.",
+        title: "Redirect Failed",
+        description: "Failed to redirect to Internet Identity linking page",
         variant: "destructive",
       });
-    } finally {
-      setIsActivating(false);
     }
   };
 
@@ -181,10 +173,10 @@ export function IICoAuthControls({ className = "" }: IICoAuthControlsProps) {
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2">
           {!isCoAuthActive ? (
-            // Show Activate button when inactive
-            <Button onClick={handleActivateII} disabled={isActivating} className="flex-1">
-              {isActivating ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <Shield className="h-4 w-4 mr-2" />}
-              Activate Internet Identity
+            // Show Link button when inactive
+            <Button onClick={handleLinkII} className="flex-1">
+              <Shield className="h-4 w-4 mr-2" />
+              Sign in with Internet Identity
             </Button>
           ) : (
             // Show management buttons when active

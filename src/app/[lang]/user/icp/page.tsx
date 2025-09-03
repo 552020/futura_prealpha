@@ -4,8 +4,7 @@ import { useAuthGuard } from "@/utils/authentication";
 
 import { useState, useEffect, useRef } from "react";
 import type { BackendActor } from "@/ic/backend";
-import type { CapsuleInfo, Capsule, CapsuleHeader } from "@/ic/declarations/backend/backend.did";
-import { Principal } from "@dfinity/principal";
+import type { CapsuleInfo, Capsule } from "@/ic/declarations/backend/backend.did";
 
 // Prevent static generation of this page
 export const dynamic = "force-dynamic";
@@ -13,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAuthClient as getIiAuthClient, loginWithII, clearIiSession } from "@/ic/ii";
@@ -29,12 +29,6 @@ export default function ICPPage() {
   const [capsuleInfo, setCapsuleInfo] = useState<CapsuleInfo | null>(null);
   const [capsuleReadResult, setCapsuleReadResult] = useState<Capsule | null>(null);
   const [capsuleIdInput, setCapsuleIdInput] = useState("");
-  const [showFullCapsule, setShowFullCapsule] = useState(false);
-  const [fullCapsuleData, setFullCapsuleData] = useState<Capsule | null>(null);
-  const [isLoadingFull, setIsLoadingFull] = useState(false);
-  const [capsulesList, setCapsulesList] = useState<CapsuleHeader[]>([]);
-  const [isLoadingCapsules, setIsLoadingCapsules] = useState(false);
-  const [newCapsuleSubject, setNewCapsuleSubject] = useState("");
   // UX safety: prevents double-clicks and provides visual feedback
   const [busy, setBusy] = useState(false);
   const [isRehydrating, setIsRehydrating] = useState(true);
@@ -90,118 +84,6 @@ export default function ICPPage() {
   // Clear cached actor when user signs out
   const clearAuthenticatedActor = () => {
     authenticatedActorRef.current = null;
-  };
-
-  // Fetch full capsule data
-  const handleFetchFullCapsule = async () => {
-    if (busy || !isAuthenticated || isRehydrating) return;
-
-    setBusy(true);
-    setIsLoadingFull(true);
-    try {
-      const authenticatedActor = await getAuthenticatedActor();
-      const fullData = await authenticatedActor.capsules_read_full([]);
-
-      if (fullData && fullData.length > 0 && fullData[0]) {
-        setFullCapsuleData(fullData[0]);
-        setShowFullCapsule(true);
-        toast({
-          title: "Full Capsule Data Loaded",
-          description: "Successfully retrieved complete capsule information",
-        });
-      } else {
-        toast({
-          title: "No Full Data",
-          description: "Could not retrieve full capsule data",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("Failed to fetch full capsule data:", error);
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      toast({
-        title: "Fetch Failed",
-        description: `Failed to fetch full capsule data: ${errorMessage}`,
-        variant: "destructive",
-      });
-    } finally {
-      setBusy(false);
-      setIsLoadingFull(false);
-    }
-  };
-
-  // Toggle back to basic view
-  const handleShowBasicCapsule = () => {
-    setShowFullCapsule(false);
-    setFullCapsuleData(null);
-  };
-
-  // Fetch capsules list
-  const handleFetchCapsulesList = async () => {
-    if (busy || !isAuthenticated || isRehydrating) return;
-
-    setBusy(true);
-    setIsLoadingCapsules(true);
-    try {
-      const authenticatedActor = await getAuthenticatedActor();
-      const capsules = await authenticatedActor.capsules_list();
-
-      setCapsulesList(capsules);
-      toast({
-        title: "Capsules List Loaded",
-        description: `Found ${capsules.length} capsule(s)`,
-      });
-    } catch (error) {
-      console.error("Failed to fetch capsules list:", error);
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      toast({
-        title: "Fetch Failed",
-        description: `Failed to fetch capsules list: ${errorMessage}`,
-        variant: "destructive",
-      });
-    } finally {
-      setBusy(false);
-      setIsLoadingCapsules(false);
-    }
-  };
-
-  // Create new capsule
-  const handleCreateCapsule = async () => {
-    if (busy || !isAuthenticated || isRehydrating) return;
-
-    setBusy(true);
-    try {
-      const authenticatedActor = await getAuthenticatedActor();
-      const result = newCapsuleSubject.trim()
-        ? await authenticatedActor.capsules_create([{ Principal: Principal.fromText(principalId) }])
-        : await authenticatedActor.capsules_create([]);
-
-      if (result.success) {
-        setNewCapsuleSubject("");
-        toast({
-          title: "Capsule Created",
-          description: result.message,
-        });
-        // Refresh capsules list
-        handleFetchCapsulesList();
-      } else {
-        toast({
-          title: "Creation Failed",
-          description: result.message,
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("Failed to create capsule:", error);
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      toast({
-        title: "Creation Failed",
-        description: `Failed to create capsule: ${errorMessage}`,
-        variant: "destructive",
-      });
-    } finally {
-      setBusy(false);
-    }
   };
 
   // Copy principal ID to clipboard
@@ -297,8 +179,8 @@ export default function ICPPage() {
         // console.log("Fetching capsule info after login...");
         const capsuleData = await authenticatedActor.capsules_read_basic([]);
         // console.log("Capsule data received:", capsuleData);
-        setCapsuleInfo(capsuleData[0] || null);
-        // console.log("Capsule info set to:", capsuleData[0] || null);
+        setCapsuleInfo(Array.isArray(capsuleData) && capsuleData.length > 0 && capsuleData[0] ? capsuleData[0] : null);
+        // console.log("Capsule info set to:", Array.isArray(capsuleData) && capsuleData.length > 0 ? capsuleData[0] : null);
       } catch (error) {
         console.warn("Failed to fetch capsule info on login:", error);
         // Don't fail the login if capsule info fetch fails
@@ -393,7 +275,7 @@ export default function ICPPage() {
       // Use cached authenticated actor
       const authenticatedActor = await getAuthenticatedActor();
       const capsuleData = await authenticatedActor.capsules_read_basic([]);
-      setCapsuleInfo(capsuleData[0] || null);
+      setCapsuleInfo(Array.isArray(capsuleData) && capsuleData.length > 0 && capsuleData[0] ? capsuleData[0] : null);
 
       if (capsuleData) {
         toast({
@@ -527,10 +409,6 @@ export default function ICPPage() {
       setGreeting("");
       setWhoamiResult("");
       setCapsuleInfo(null);
-      setFullCapsuleData(null);
-      setShowFullCapsule(false);
-      setCapsulesList([]);
-      setNewCapsuleSubject("");
       toast({
         title: "Signed Out",
         description: "Successfully signed out",
@@ -581,11 +459,29 @@ export default function ICPPage() {
 
       <div className="mb-6 flex gap-4">
         <Button onClick={isAuthenticated ? handleSignOut : handleLogin} id="login" disabled={busy}>
-          {isAuthenticated ? "Sign Out" : "Continue with Internet Identity"}
+          {isAuthenticated ? "Sign Out" : "Sign in with Internet Identity"}
         </Button>
-        <Button onClick={handleWhoami} disabled={busy || !isAuthenticated || isRehydrating}>
-          Test Backend Connection
-        </Button>
+      </div>
+
+      {/* Who Am I Section - Separate from main buttons */}
+      <div className="mb-6">
+        <div className="flex items-center gap-4">
+          <Button onClick={handleWhoami} disabled={busy || !isAuthenticated || isRehydrating}>
+            Who Am I?
+          </Button>
+          <div className="flex-1">
+            <Input
+              value={whoamiResult || ""}
+              readOnly
+              placeholder="Click 'Who Am I?' to get your backend principal"
+              className="font-mono text-sm"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Get Capsule Info Section */}
+      <div className="mb-6">
         <Button onClick={handleGetCapsuleInfo} disabled={busy || !isAuthenticated || isRehydrating}>
           Get Capsule Info
         </Button>
@@ -661,167 +557,91 @@ export default function ICPPage() {
         </Card>
       )}
 
-      {whoamiResult && (
-        <Card>
-          <CardContent className="pt-6">
-            <p>{whoamiResult}</p>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Capsule Information Display */}
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Your Capsule Information</span>
+          <CardTitle className="flex items-center gap-2">
+            <span>Your Capsule Summary</span>
             {capsuleInfo && (
-              <div className="flex gap-2">
-                {!showFullCapsule ? (
-                  <Button onClick={handleFetchFullCapsule} disabled={busy || isLoadingFull} variant="outline" size="sm">
-                    {isLoadingFull ? "Loading..." : "📊 Show Full Data"}
-                  </Button>
-                ) : (
-                  <Button onClick={handleShowBasicCapsule} disabled={busy} variant="outline" size="sm">
-                    📋 Show Basic Data
-                  </Button>
-                )}
-              </div>
+              <Badge variant="secondary" className="text-xs">
+                {capsuleInfo.memory_count + capsuleInfo.gallery_count + capsuleInfo.connection_count} Total Items
+              </Badge>
             )}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {capsuleInfo ? (
             <div className="space-y-4">
-              {!showFullCapsule ? (
-                // Basic Capsule Info View
-                <>
-                  <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
-                      💡 <strong>Basic View:</strong> Lightweight capsule information (fast loading)
-                    </p>
+              {/* Summary Section */}
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-lg p-4 mb-4">
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                      {capsuleInfo.memory_count || 0}
+                    </div>
+                    <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">Memories</div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium">Capsule ID</Label>
-                      <p className="text-sm text-muted-foreground font-mono">{capsuleInfo.capsule_id}</p>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-1">
+                      {capsuleInfo.gallery_count || 0}
                     </div>
-                    <div>
-                      <Label className="text-sm font-medium">Subject</Label>
-                      <p className="text-sm text-muted-foreground">
-                        {"Principal" in capsuleInfo.subject
-                          ? `Principal: ${capsuleInfo.subject.Principal}`
-                          : `Opaque: ${capsuleInfo.subject.Opaque}`}
-                      </p>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Is Owner</Label>
-                      <p className="text-sm text-muted-foreground">{capsuleInfo.is_owner ? "Yes" : "No"}</p>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Is Controller</Label>
-                      <p className="text-sm text-muted-foreground">{capsuleInfo.is_controller ? "Yes" : "No"}</p>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Is Self Capsule</Label>
-                      <p className="text-sm text-muted-foreground">{capsuleInfo.is_self_capsule ? "Yes" : "No"}</p>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Bound to Web2</Label>
-                      <p className="text-sm text-muted-foreground">{capsuleInfo.bound_to_web2 ? "Yes" : "No"}</p>
-                    </div>
+                    <div className="text-sm text-green-600 dark:text-green-400 font-medium">Galleries</div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label className="text-sm font-medium">Created At</Label>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(Number(capsuleInfo.created_at) / 1000000).toLocaleString()}
-                      </p>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1">
+                      {capsuleInfo.connection_count || 0}
                     </div>
-                    <div>
-                      <Label className="text-sm font-medium">Updated At</Label>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(Number(capsuleInfo.updated_at) / 1000000).toLocaleString()}
-                      </p>
-                    </div>
+                    <div className="text-sm text-purple-600 dark:text-purple-400 font-medium">Connections</div>
                   </div>
-                </>
-              ) : (
-                // Full Capsule Data View
-                <>
-                  <div className="mb-4 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
-                    <p className="text-sm text-green-700 dark:text-green-300">
-                      🚀 <strong>Full View:</strong> Complete capsule data including memories, galleries, and
-                      connections
-                    </p>
-                  </div>
-                  {fullCapsuleData ? (
-                    <div className="space-y-6">
-                      {/* Basic Info Section */}
-                      <div>
-                        <h4 className="font-medium mb-3 text-sm">Basic Information</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label className="text-sm font-medium">Capsule ID</Label>
-                            <p className="text-sm text-muted-foreground font-mono">{fullCapsuleData.id}</p>
-                          </div>
-                          <div>
-                            <Label className="text-sm font-medium">Subject</Label>
-                            <p className="text-sm text-muted-foreground">
-                              {"Principal" in fullCapsuleData.subject
-                                ? `Principal: ${fullCapsuleData.subject.Principal}`
-                                : `Opaque: ${fullCapsuleData.subject.Opaque}`}
-                            </p>
-                          </div>
-                          <div>
-                            <Label className="text-sm font-medium">Created At</Label>
-                            <p className="text-sm text-muted-foreground">
-                              {new Date(Number(fullCapsuleData.created_at) / 1000000).toLocaleString()}
-                            </p>
-                          </div>
-                          <div>
-                            <Label className="text-sm font-medium">Updated At</Label>
-                            <p className="text-sm text-muted-foreground">
-                              {new Date(Number(fullCapsuleData.updated_at) / 1000000).toLocaleString()}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                </div>
+              </div>
 
-                      {/* Counts Section */}
-                      <div>
-                        <h4 className="font-medium mb-3 text-sm">Content Counts</h4>
-                        <div className="grid grid-cols-3 gap-4">
-                          <div>
-                            <Label className="text-sm font-medium">Memories</Label>
-                            <p className="text-sm text-muted-foreground">{fullCapsuleData.memories?.length || 0}</p>
-                          </div>
-                          <div>
-                            <Label className="text-sm font-medium">Galleries</Label>
-                            <p className="text-sm text-muted-foreground">{fullCapsuleData.galleries?.length || 0}</p>
-                          </div>
-                          <div>
-                            <Label className="text-sm font-medium">Connections</Label>
-                            <p className="text-sm text-muted-foreground">{fullCapsuleData.connections?.length || 0}</p>
-                          </div>
-                        </div>
-                      </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium">Capsule ID</Label>
+                  <p className="text-sm text-muted-foreground font-mono">{capsuleInfo.capsule_id}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Subject</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {"Principal" in capsuleInfo.subject
+                      ? `Principal: ${capsuleInfo.subject.Principal}`
+                      : `Opaque: ${capsuleInfo.subject.Opaque}`}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Is Owner</Label>
+                  <p className="text-sm text-muted-foreground">{capsuleInfo.is_owner ? "Yes" : "No"}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Is Controller</Label>
+                  <p className="text-sm text-muted-foreground">{capsuleInfo.is_controller ? "Yes" : "No"}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Is Self Capsule</Label>
+                  <p className="text-sm text-muted-foreground">{capsuleInfo.is_self_capsule ? "Yes" : "No"}</p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Bound to Web2</Label>
+                  <p className="text-sm text-muted-foreground">{capsuleInfo.bound_to_web2 ? "Yes" : "No"}</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium">Created At</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(Number(capsuleInfo.created_at) / 1000000).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Updated At</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(Number(capsuleInfo.updated_at) / 1000000).toLocaleString()}
+                  </p>
+                </div>
+              </div>
 
-                      {/* Raw Data Section */}
-                      <div>
-                        <h4 className="font-medium mb-3 text-sm">Raw Data</h4>
-                        <pre className="p-3 bg-gray-100 dark:bg-gray-800 rounded text-xs overflow-auto max-h-64">
-                          {JSON.stringify(fullCapsuleData, null, 2)}
-                        </pre>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-gray-800 dark:border-gray-700 dark:border-t-gray-200 mx-auto mb-4" />
-                      <p className="text-muted-foreground">Loading full capsule data...</p>
-                    </div>
-                  )}
-                </>
-              )}
+
             </div>
           ) : (
             <div className="text-center py-4">
@@ -832,93 +652,6 @@ export default function ICPPage() {
               </p>
             </div>
           )}
-        </CardContent>
-      </Card>
-
-      {/* Capsules List and Creation Section */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Capsules Management</span>
-            {isAuthenticated && (
-              <Button
-                onClick={handleFetchCapsulesList}
-                disabled={busy || isLoadingCapsules}
-                variant="outline"
-                size="sm"
-              >
-                {isLoadingCapsules ? "Loading..." : "📋 Refresh List"}
-              </Button>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            {/* Create New Capsule */}
-            <div>
-              <h4 className="font-medium mb-3 text-sm">Create New Capsule</h4>
-              <div className="flex gap-4 items-end">
-                <div className="flex-1">
-                  <Label htmlFor="newCapsuleSubject" className="text-sm">
-                    Subject Principal (optional)
-                  </Label>
-                  <Input
-                    id="newCapsuleSubject"
-                    value={newCapsuleSubject}
-                    onChange={(e) => setNewCapsuleSubject(e.target.value)}
-                    placeholder="Leave empty for self-capsule"
-                    className="mt-1"
-                  />
-                </div>
-                <Button onClick={handleCreateCapsule} disabled={busy || !isAuthenticated} size="sm">
-                  🆕 Create Capsule
-                </Button>
-              </div>
-            </div>
-
-            {/* Capsules List */}
-            <div>
-              <h4 className="font-medium mb-3 text-sm">Your Capsules</h4>
-              {capsulesList.length > 0 ? (
-                <div className="space-y-3">
-                  {capsulesList.map((capsule, index) => (
-                    <div key={index} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border">
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <Label className="text-xs font-medium">Capsule ID</Label>
-                          <p className="font-mono text-xs">{capsule.id}</p>
-                        </div>
-                        <div>
-                          <Label className="text-xs font-medium">Subject</Label>
-                          <p className="text-xs">
-                            {"Principal" in capsule.subject
-                              ? `Principal: ${capsule.subject.Principal}`
-                              : `Opaque: ${capsule.subject.Opaque}`}
-                          </p>
-                        </div>
-                        <div>
-                          <Label className="text-xs font-medium">Owner Count</Label>
-                          <p className="text-xs">{capsule.owner_count}</p>
-                        </div>
-                        <div>
-                          <Label className="text-xs font-medium">Memory Count</Label>
-                          <p className="text-xs">{capsule.memory_count}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-muted-foreground text-sm">
-                    {isAuthenticated
-                      ? "No capsules found. Create your first capsule above."
-                      : "Please sign in to manage capsules."}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
         </CardContent>
       </Card>
 
