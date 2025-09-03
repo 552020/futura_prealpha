@@ -62,11 +62,14 @@ export interface CapsuleHeader {
 }
 export interface CapsuleInfo {
   'updated_at' : bigint,
+  'gallery_count' : number,
   'subject' : PersonRef,
   'capsule_id' : string,
   'is_owner' : boolean,
   'created_at' : bigint,
+  'memory_count' : number,
   'bound_to_web2' : boolean,
+  'connection_count' : number,
   'is_self_capsule' : boolean,
   'is_controller' : boolean,
 }
@@ -422,8 +425,19 @@ export interface _SERVICE {
     [],
     PersonalCanisterCreationResponse
   >,
-  'delete_gallery' : ActorMethod<[string], DeleteGalleryResponse>,
   'delete_memory_from_capsule' : ActorMethod<[string], MemoryOperationResponse>,
+  'galleries_create' : ActorMethod<[GalleryData], StoreGalleryResponse>,
+  'galleries_create_with_memories' : ActorMethod<
+    [GalleryData, boolean],
+    StoreGalleryResponse
+  >,
+  'galleries_delete' : ActorMethod<[string], DeleteGalleryResponse>,
+  'galleries_list' : ActorMethod<[], Array<Gallery>>,
+  'galleries_read' : ActorMethod<[string], [] | [Gallery]>,
+  'galleries_update' : ActorMethod<
+    [string, GalleryUpdateData],
+    UpdateGalleryResponse
+  >,
   'get_api_version' : ActorMethod<[], string>,
   'get_creation_states_by_status' : ActorMethod<[CreationStatus], Result_1>,
   'get_creation_status' : ActorMethod<[], [] | [CreationStatusResponse]>,
@@ -435,7 +449,6 @@ export interface _SERVICE {
     [],
     [] | [DetailedCreationStatus]
   >,
-  'get_gallery_by_id' : ActorMethod<[string], [] | [Gallery]>,
   'get_memory_from_capsule' : ActorMethod<[string], [] | [Memory]>,
   'get_memory_list_presence_icp' : ActorMethod<
     [Array<string>, [] | [string], number],
@@ -445,13 +458,11 @@ export interface _SERVICE {
   'get_migration_states_by_status' : ActorMethod<[CreationStatus], Result_1>,
   'get_migration_stats' : ActorMethod<[], Result_2>,
   'get_migration_status' : ActorMethod<[], [] | [CreationStatusResponse]>,
-  'get_my_galleries' : ActorMethod<[], Array<Gallery>>,
   'get_my_personal_canister_id' : ActorMethod<[], [] | [Principal]>,
   'get_personal_canister_creation_stats' : ActorMethod<[], Result_2>,
   'get_personal_canister_id' : ActorMethod<[Principal], [] | [Principal]>,
   'get_upload_session_stats' : ActorMethod<[], [number, number, bigint]>,
   'get_user_creation_status' : ActorMethod<[Principal], Result_3>,
-  'get_user_galleries' : ActorMethod<[Principal], Array<Gallery>>,
   'get_user_migration_status' : ActorMethod<[Principal], Result_3>,
   'greet' : ActorMethod<[string], string>,
   'is_migration_enabled' : ActorMethod<[], boolean>,
@@ -475,18 +486,9 @@ export interface _SERVICE {
   'remove_admin' : ActorMethod<[Principal], boolean>,
   'set_migration_enabled' : ActorMethod<[boolean], Result_4>,
   'set_personal_canister_creation_enabled' : ActorMethod<[boolean], Result_4>,
-  'store_gallery_forever' : ActorMethod<[GalleryData], StoreGalleryResponse>,
-  'store_gallery_forever_with_memories' : ActorMethod<
-    [GalleryData, boolean],
-    StoreGalleryResponse
-  >,
   'sync_gallery_memories' : ActorMethod<
     [string, Array<MemorySyncRequest>],
     ICPResult_6
-  >,
-  'update_gallery' : ActorMethod<
-    [string, GalleryUpdateData],
-    UpdateGalleryResponse
   >,
   'update_gallery_storage_status' : ActorMethod<
     [string, GalleryStorageStatus],

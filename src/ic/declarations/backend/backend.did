@@ -60,11 +60,14 @@ type CapsuleHeader = record {
 };
 type CapsuleInfo = record {
   updated_at : nat64;
+  gallery_count : nat32;
   subject : PersonRef;
   capsule_id : text;
   is_owner : bool;
   created_at : nat64;
+  memory_count : nat32;
   bound_to_web2 : bool;
+  connection_count : nat32;
   is_self_capsule : bool;
   is_controller : bool;
 };
@@ -396,14 +399,20 @@ service : () -> {
   // Finalize upload after all chunks received
   commit_asset : (text, text) -> (ICPResult_2);
   create_personal_canister : () -> (PersonalCanisterCreationResponse);
-  delete_gallery : (text) -> (DeleteGalleryResponse);
   delete_memory_from_capsule : (text) -> (MemoryOperationResponse);
+  galleries_create : (GalleryData) -> (StoreGalleryResponse);
+  galleries_create_with_memories : (GalleryData, bool) -> (
+      StoreGalleryResponse,
+    );
+  galleries_delete : (text) -> (DeleteGalleryResponse);
+  galleries_list : () -> (vec Gallery) query;
+  galleries_read : (text) -> (opt Gallery) query;
+  galleries_update : (text, GalleryUpdateData) -> (UpdateGalleryResponse);
   get_api_version : () -> (text) query;
   get_creation_states_by_status : (CreationStatus) -> (Result_1) query;
   get_creation_status : () -> (opt CreationStatusResponse) query;
   get_detailed_creation_status : () -> (opt DetailedCreationStatus) query;
   get_detailed_migration_status : () -> (opt DetailedCreationStatus) query;
-  get_gallery_by_id : (text) -> (opt Gallery) query;
   get_memory_from_capsule : (text) -> (opt Memory) query;
   // Check presence for multiple memories with pagination
   get_memory_list_presence_icp : (vec text, opt text, nat32) -> (
@@ -414,14 +423,12 @@ service : () -> {
   get_migration_states_by_status : (CreationStatus) -> (Result_1) query;
   get_migration_stats : () -> (Result_2) query;
   get_migration_status : () -> (opt CreationStatusResponse) query;
-  get_my_galleries : () -> (vec Gallery) query;
   get_my_personal_canister_id : () -> (opt principal) query;
   get_personal_canister_creation_stats : () -> (Result_2) query;
   get_personal_canister_id : (principal) -> (opt principal) query;
   // Get upload session statistics for monitoring
   get_upload_session_stats : () -> (nat32, nat32, nat64) query;
   get_user_creation_status : (principal) -> (Result_3) query;
-  get_user_galleries : (principal) -> (vec Gallery) query;
   get_user_migration_status : (principal) -> (Result_3) query;
   greet : (text) -> (text) query;
   is_migration_enabled : () -> (bool) query;
@@ -443,13 +450,8 @@ service : () -> {
   remove_admin : (principal) -> (bool);
   set_migration_enabled : (bool) -> (Result_4);
   set_personal_canister_creation_enabled : (bool) -> (Result_4);
-  store_gallery_forever : (GalleryData) -> (StoreGalleryResponse);
-  store_gallery_forever_with_memories : (GalleryData, bool) -> (
-      StoreGalleryResponse,
-    );
   // Batch sync multiple memories for a gallery to ICP
   sync_gallery_memories : (text, vec MemorySyncRequest) -> (ICPResult_6);
-  update_gallery : (text, GalleryUpdateData) -> (UpdateGalleryResponse);
   update_gallery_storage_status : (text, GalleryStorageStatus) -> (bool);
   update_memory_in_capsule : (text, MemoryUpdateData) -> (
       MemoryOperationResponse,

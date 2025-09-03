@@ -79,11 +79,14 @@ export const idlFactory = ({ IDL }) => {
   });
   const CapsuleInfo = IDL.Record({
     'updated_at' : IDL.Nat64,
+    'gallery_count' : IDL.Nat32,
     'subject' : PersonRef,
     'capsule_id' : IDL.Text,
     'is_owner' : IDL.Bool,
     'created_at' : IDL.Nat64,
+    'memory_count' : IDL.Nat32,
     'bound_to_web2' : IDL.Bool,
+    'connection_count' : IDL.Nat32,
     'is_self_capsule' : IDL.Bool,
     'is_controller' : IDL.Bool,
   });
@@ -256,9 +259,31 @@ export const idlFactory = ({ IDL }) => {
     'message' : IDL.Text,
     'success' : IDL.Bool,
   });
+  const GalleryData = IDL.Record({
+    'owner_principal' : IDL.Principal,
+    'gallery' : Gallery,
+  });
+  const StoreGalleryResponse = IDL.Record({
+    'gallery_id' : IDL.Opt(IDL.Text),
+    'message' : IDL.Text,
+    'storage_status' : GalleryStorageStatus,
+    'icp_gallery_id' : IDL.Opt(IDL.Text),
+    'success' : IDL.Bool,
+  });
   const DeleteGalleryResponse = IDL.Record({
     'message' : IDL.Text,
     'success' : IDL.Bool,
+  });
+  const GalleryUpdateData = IDL.Record({
+    'is_public' : IDL.Opt(IDL.Bool),
+    'title' : IDL.Opt(IDL.Text),
+    'memory_entries' : IDL.Opt(IDL.Vec(GalleryMemoryEntry)),
+    'description' : IDL.Opt(IDL.Text),
+  });
+  const UpdateGalleryResponse = IDL.Record({
+    'message' : IDL.Text,
+    'success' : IDL.Bool,
+    'gallery' : IDL.Opt(Gallery),
   });
   const CreationStatus = IDL.Variant({
     'Importing' : IDL.Null,
@@ -348,17 +373,6 @@ export const idlFactory = ({ IDL }) => {
     'success' : IDL.Bool,
   });
   const Result_4 = IDL.Variant({ 'Ok' : IDL.Null, 'Err' : IDL.Text });
-  const GalleryData = IDL.Record({
-    'owner_principal' : IDL.Principal,
-    'gallery' : Gallery,
-  });
-  const StoreGalleryResponse = IDL.Record({
-    'gallery_id' : IDL.Opt(IDL.Text),
-    'message' : IDL.Text,
-    'storage_status' : GalleryStorageStatus,
-    'icp_gallery_id' : IDL.Opt(IDL.Text),
-    'success' : IDL.Bool,
-  });
   const SimpleMemoryMetadata = IDL.Record({
     'title' : IDL.Opt(IDL.Text),
     'updated_at' : IDL.Nat64,
@@ -399,17 +413,6 @@ export const idlFactory = ({ IDL }) => {
     'data' : IDL.Opt(BatchMemorySyncResponse),
     'error' : IDL.Opt(ICPErrorCode),
     'success' : IDL.Bool,
-  });
-  const GalleryUpdateData = IDL.Record({
-    'is_public' : IDL.Opt(IDL.Bool),
-    'title' : IDL.Opt(IDL.Text),
-    'memory_entries' : IDL.Opt(IDL.Vec(GalleryMemoryEntry)),
-    'description' : IDL.Opt(IDL.Text),
-  });
-  const UpdateGalleryResponse = IDL.Record({
-    'message' : IDL.Text,
-    'success' : IDL.Bool,
-    'gallery' : IDL.Opt(Gallery),
   });
   const MemoryUpdateData = IDL.Record({
     'access' : IDL.Opt(MemoryAccess),
@@ -466,10 +469,23 @@ export const idlFactory = ({ IDL }) => {
         [PersonalCanisterCreationResponse],
         [],
       ),
-    'delete_gallery' : IDL.Func([IDL.Text], [DeleteGalleryResponse], []),
     'delete_memory_from_capsule' : IDL.Func(
         [IDL.Text],
         [MemoryOperationResponse],
+        [],
+      ),
+    'galleries_create' : IDL.Func([GalleryData], [StoreGalleryResponse], []),
+    'galleries_create_with_memories' : IDL.Func(
+        [GalleryData, IDL.Bool],
+        [StoreGalleryResponse],
+        [],
+      ),
+    'galleries_delete' : IDL.Func([IDL.Text], [DeleteGalleryResponse], []),
+    'galleries_list' : IDL.Func([], [IDL.Vec(Gallery)], ['query']),
+    'galleries_read' : IDL.Func([IDL.Text], [IDL.Opt(Gallery)], ['query']),
+    'galleries_update' : IDL.Func(
+        [IDL.Text, GalleryUpdateData],
+        [UpdateGalleryResponse],
         [],
       ),
     'get_api_version' : IDL.Func([], [IDL.Text], ['query']),
@@ -493,7 +509,6 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(DetailedCreationStatus)],
         ['query'],
       ),
-    'get_gallery_by_id' : IDL.Func([IDL.Text], [IDL.Opt(Gallery)], ['query']),
     'get_memory_from_capsule' : IDL.Func(
         [IDL.Text],
         [IDL.Opt(Memory)],
@@ -516,7 +531,6 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(CreationStatusResponse)],
         ['query'],
       ),
-    'get_my_galleries' : IDL.Func([], [IDL.Vec(Gallery)], ['query']),
     'get_my_personal_canister_id' : IDL.Func(
         [],
         [IDL.Opt(IDL.Principal)],
@@ -540,11 +554,6 @@ export const idlFactory = ({ IDL }) => {
     'get_user_creation_status' : IDL.Func(
         [IDL.Principal],
         [Result_3],
-        ['query'],
-      ),
-    'get_user_galleries' : IDL.Func(
-        [IDL.Principal],
-        [IDL.Vec(Gallery)],
         ['query'],
       ),
     'get_user_migration_status' : IDL.Func(
@@ -583,24 +592,9 @@ export const idlFactory = ({ IDL }) => {
         [Result_4],
         [],
       ),
-    'store_gallery_forever' : IDL.Func(
-        [GalleryData],
-        [StoreGalleryResponse],
-        [],
-      ),
-    'store_gallery_forever_with_memories' : IDL.Func(
-        [GalleryData, IDL.Bool],
-        [StoreGalleryResponse],
-        [],
-      ),
     'sync_gallery_memories' : IDL.Func(
         [IDL.Text, IDL.Vec(MemorySyncRequest)],
         [ICPResult_6],
-        [],
-      ),
-    'update_gallery' : IDL.Func(
-        [IDL.Text, GalleryUpdateData],
-        [UpdateGalleryResponse],
         [],
       ),
     'update_gallery_storage_status' : IDL.Func(

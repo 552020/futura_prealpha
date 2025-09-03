@@ -125,60 +125,36 @@ export function LinkedAccounts({ showActions = true, className = "" }: LinkedAcc
                 </Badge>
               )}
             </div>
-            {showActions && (
-              <Button
-                onClick={handleUnlinkII}
-                variant="ghost"
-                size="sm"
-                className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
-              >
-                <Unlink className="h-4 w-4 mr-2" />
-                Unlink
-              </Button>
-            )}
           </div>
 
           {/* Principal Display */}
-          <div className="bg-muted rounded-md p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-muted-foreground mb-1">Principal ID</p>
-                <p className="font-mono text-sm break-all">{linkedIcPrincipal}</p>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={copyPrincipalToClipboard}
-                disabled={isCopying}
-                className="ml-2 flex-shrink-0"
-                title="Copy to clipboard"
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Status Information */}
-          <div className="text-xs text-muted-foreground">
-            <p>This account is linked to your profile and can be used for ICP operations.</p>
-            {isCoAuthActive && (
-              <p className="mt-1">
-                <span className="font-medium">Current Status:</span> {statusMessage}
-              </p>
-            )}
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-muted-foreground whitespace-nowrap flex items-center h-6">
+              Principal ID:
+            </span>
+            <code className="flex-1 bg-muted px-2 py-1 rounded text-sm font-mono break-all">{linkedIcPrincipal}</code>
           </div>
         </div>
 
         {/* Action Buttons */}
         {showActions && (
-          <div className="flex gap-2 pt-2">
-            <Button onClick={handleLinkII} variant="outline" size="sm" className="flex-1">
+          <div className="flex gap-2 pt-2 border-t">
+            <Button onClick={handleLinkII} variant="outline" size="sm">
               <LinkIcon className="h-4 w-4 mr-2" />
               Re-link II Account
             </Button>
             <Button onClick={copyPrincipalToClipboard} variant="outline" size="sm" disabled={isCopying}>
               <Copy className="h-4 w-4 mr-2" />
               Copy Principal
+            </Button>
+            <Button
+              onClick={handleUnlinkII}
+              variant="outline"
+              size="sm"
+              className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 dark:text-red-400 dark:hover:text-red-300"
+            >
+              <Unlink className="h-4 w-4 mr-2" />
+              Unlink
             </Button>
           </div>
         )}
