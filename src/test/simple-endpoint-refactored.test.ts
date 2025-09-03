@@ -122,6 +122,21 @@ describe("Simple Endpoint - Reusable Test Server", () => {
   // ============================================================================
   // 5. TEMPLATE ENDPOINT TESTING
   // ============================================================================
+  // Template endpoints are pre-built, reusable endpoint patterns that you can
+  // customize with different parameters. Think of them as "cookie cutters" for
+  // common HTTP response patterns.
+  //
+  // WHY USE TEMPLATES?
+  // - Quick setup: No need to write the same endpoint structure repeatedly
+  // - Consistent behavior: All similar endpoints behave the same way
+  // - Easy customization: Just pass different parameters
+  // - Maintainable: Change the template, update all endpoints using it
+  //
+  // EXAMPLES:
+  // - simpleGet: Creates GET endpoints with customizable messages
+  // - healthCheck: Creates health check endpoints with configurable status
+  // - errorSimulator: Creates error endpoints with custom status codes and messages
+  // - validationEndpoint: Creates POST endpoints with custom validation logic
 
   describe("Template Endpoint Testing", () => {
     it("should demonstrate template usage", async () => {
