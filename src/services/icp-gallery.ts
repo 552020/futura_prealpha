@@ -224,7 +224,7 @@ export class ICPGalleryService {
       const actor = await backendActor(this.identity);
 
       // Call the real backend endpoint
-      const result = await actor.store_gallery_forever(galleryData);
+      const result = await actor.galleries_create(galleryData);
 
       return {
         success: result.success,
