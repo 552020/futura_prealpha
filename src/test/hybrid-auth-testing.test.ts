@@ -283,7 +283,7 @@ Now that we have hybrid authentication working, we can test:
    - Test CSRF protection
 
 3. **Principal Unlinking Endpoint**:
-   - POST /api/auth/unlink-ii with valid JWT
+   - POST /api/auth/unlink-ii with valid JWTt p
    - Test unlinking logic
 
 4. **Complete Authentication Scenarios**:

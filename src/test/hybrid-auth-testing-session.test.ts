@@ -326,3 +326,4 @@ Now that we have session cookie authentication working, we can test:
     });
   });
 });
+

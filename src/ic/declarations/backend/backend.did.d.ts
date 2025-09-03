@@ -403,10 +403,6 @@ export interface VideoMetadata {
 }
 export interface _SERVICE {
   'add_admin' : ActorMethod<[Principal], boolean>,
-  'add_memory_to_capsule' : ActorMethod<
-    [string, MemoryData],
-    MemoryOperationResponse
-  >,
   'begin_asset_upload' : ActorMethod<
     [string, MemoryType, string, number, bigint],
     ICPResult
@@ -425,7 +421,6 @@ export interface _SERVICE {
     [],
     PersonalCanisterCreationResponse
   >,
-  'delete_memory_from_capsule' : ActorMethod<[string], MemoryOperationResponse>,
   'galleries_create' : ActorMethod<[GalleryData], StoreGalleryResponse>,
   'galleries_create_with_memories' : ActorMethod<
     [GalleryData, boolean],
@@ -449,7 +444,6 @@ export interface _SERVICE {
     [],
     [] | [DetailedCreationStatus]
   >,
-  'get_memory_from_capsule' : ActorMethod<[string], [] | [Memory]>,
   'get_memory_list_presence_icp' : ActorMethod<
     [Array<string>, [] | [string], number],
     ICPResult_3
@@ -470,11 +464,21 @@ export interface _SERVICE {
   'list_admins' : ActorMethod<[], Array<Principal>>,
   'list_all_creation_states' : ActorMethod<[], Result_1>,
   'list_all_migration_states' : ActorMethod<[], Result_1>,
-  'list_capsule_memories' : ActorMethod<[], MemoryListResponse>,
   'list_superadmins' : ActorMethod<[], Array<Principal>>,
   'list_users' : ActorMethod<[], Array<CapsuleHeader>>,
   'mark_bound' : ActorMethod<[], boolean>,
   'mark_capsule_bound_to_web2' : ActorMethod<[], boolean>,
+  'memories_create' : ActorMethod<
+    [string, MemoryData],
+    MemoryOperationResponse
+  >,
+  'memories_delete' : ActorMethod<[string], MemoryOperationResponse>,
+  'memories_list' : ActorMethod<[string], MemoryListResponse>,
+  'memories_read' : ActorMethod<[string], [] | [Memory]>,
+  'memories_update' : ActorMethod<
+    [string, MemoryUpdateData],
+    MemoryOperationResponse
+  >,
   'migrate_capsule' : ActorMethod<[], PersonalCanisterCreationResponse>,
   'prove_nonce' : ActorMethod<[string], boolean>,
   'put_chunk' : ActorMethod<
@@ -493,10 +497,6 @@ export interface _SERVICE {
   'update_gallery_storage_status' : ActorMethod<
     [string, GalleryStorageStatus],
     boolean
-  >,
-  'update_memory_in_capsule' : ActorMethod<
-    [string, MemoryUpdateData],
-    MemoryOperationResponse
   >,
   'upsert_metadata' : ActorMethod<
     [string, MemoryType, SimpleMemoryMetadata, string],

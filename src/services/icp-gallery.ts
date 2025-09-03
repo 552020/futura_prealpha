@@ -342,15 +342,15 @@ export class ICPGalleryService {
   // ============================================================================
 
   /**
-   * Add a memory to the user's capsule
+   * Create a new memory
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async addMemoryToCapsule(_memoryData: MemoryData): Promise<MemoryOperationResponse> {
+  async createMemory(_memoryData: MemoryData): Promise<MemoryOperationResponse> {
     try {
       // const actor = await backendActor(this.identity);
 
       // Call the real backend endpoint
-      // const result = await actor.add_memory_to_capsule(memoryData);
+      // const result = await actor.memories_create(capsuleId, memoryData);
 
       // Placeholder implementation
       // console.log("Add memory to capsule:", memoryData);
@@ -370,15 +370,15 @@ export class ICPGalleryService {
   }
 
   /**
-   * Get a memory from the user's capsule
+   * Get a memory by ID
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getMemoryFromCapsule(_memoryId: string): Promise<Memory | null> {
+  async getMemory(_memoryId: string): Promise<Memory | null> {
     try {
       // const actor = await backendActor(this.identity);
 
       // TODO: Update this call when declarations are regenerated
-      // const memory = await actor.get_memory_from_capsule(memoryId);
+      // const memory = await actor.memories_read(memoryId);
 
       // Placeholder implementation
       // console.log("Get memory from capsule:", memoryId);
@@ -391,15 +391,15 @@ export class ICPGalleryService {
   }
 
   /**
-   * Update a memory in the user's capsule
+   * Update a memory by ID
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async updateMemoryInCapsule(_memoryId: string, _updates: Record<string, unknown>): Promise<MemoryOperationResponse> {
+  async updateMemory(_memoryId: string, _updates: Record<string, unknown>): Promise<MemoryOperationResponse> {
     try {
       // const actor = await backendActor(this.identity);
 
       // TODO: Update this call when declarations are regenerated
-      // const result = await actor.update_memory_in_capsule(memoryId, updates);
+      // const result = await actor.memories_update(memoryId, updates);
 
       // Placeholder implementation
       // console.log("Update memory in capsule:", memoryId, updates);
@@ -418,15 +418,15 @@ export class ICPGalleryService {
   }
 
   /**
-   * Delete a memory from the user's capsule
+   * Delete a memory by ID
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async deleteMemoryFromCapsule(_memoryId: string): Promise<MemoryOperationResponse> {
+  async deleteMemory(_memoryId: string): Promise<MemoryOperationResponse> {
     try {
       // const actor = await backendActor(this.identity);
 
       // TODO: Update this call when declarations are regenerated
-      // const result = await actor.delete_memory_from_capsule(memoryId);
+      // const result = await actor.memories_delete(memoryId);
 
       // Placeholder implementation
       // console.log("Delete memory from capsule:", memoryId);
@@ -445,17 +445,17 @@ export class ICPGalleryService {
   }
 
   /**
-   * List all memories in the user's capsule
+   * List all memories in a specific capsule
    */
-  async listCapsuleMemories(): Promise<MemoryListResponse> {
+  async listMemories(capsuleId: string): Promise<MemoryListResponse> {
     try {
       // const actor = await backendActor(this.identity);
 
       // TODO: Update this call when declarations are regenerated
-      // const result = await actor.list_capsule_memories();
+      // const result = await actor.memories_list(capsuleId);
 
       // Placeholder implementation
-      // console.log("List capsule memories");
+      // console.log("List memories for capsule:", capsuleId);
 
       return {
         success: true,
