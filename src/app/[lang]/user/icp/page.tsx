@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getAuthClient as getIiAuthClient, loginWithII, clearIiSession } from "@/ic/ii";
@@ -177,10 +176,10 @@ export default function ICPPage() {
       // Automatically fetch capsule info after successful login
       try {
         // console.log("Fetching capsule info after login...");
-        const capsuleData = await authenticatedActor.capsules_read_basic([]);
-        // console.log("Capsule data received:", capsuleData);
-        setCapsuleInfo(Array.isArray(capsuleData) && capsuleData.length > 0 && capsuleData[0] ? capsuleData[0] : null);
-        // console.log("Capsule info set to:", Array.isArray(capsuleData) && capsuleData.length > 0 ? capsuleData[0] : null);
+        const capsuleInfo = await authenticatedActor.capsules_read_basic([]);
+        // console.log("Capsule data received:", capsuleInfo);
+        setCapsuleInfo(capsuleInfo[0] || null);
+        // console.log("Capsule info set to:", capsuleInfo[0] || null);
       } catch (error) {
         console.warn("Failed to fetch capsule info on login:", error);
         // Don't fail the login if capsule info fetch fails
@@ -274,10 +273,10 @@ export default function ICPPage() {
 
       // Use cached authenticated actor
       const authenticatedActor = await getAuthenticatedActor();
-      const capsuleData = await authenticatedActor.capsules_read_basic([]);
-      setCapsuleInfo(Array.isArray(capsuleData) && capsuleData.length > 0 && capsuleData[0] ? capsuleData[0] : null);
+      const capsuleInfo = await authenticatedActor.capsules_read_basic([]);
+      setCapsuleInfo(capsuleInfo[0] || null);
 
-      if (capsuleData) {
+      if (capsuleInfo[0]) {
         toast({
           title: "Capsule Info Retrieved",
           description: "Successfully fetched your capsule information",
@@ -459,29 +458,11 @@ export default function ICPPage() {
 
       <div className="mb-6 flex gap-4">
         <Button onClick={isAuthenticated ? handleSignOut : handleLogin} id="login" disabled={busy}>
-          {isAuthenticated ? "Sign Out" : "Sign in with Internet Identity"}
+          {isAuthenticated ? "Sign Out" : "Continue with Internet Identity"}
         </Button>
-      </div>
-
-      {/* Who Am I Section - Separate from main buttons */}
-      <div className="mb-6">
-        <div className="flex items-center gap-4">
-          <Button onClick={handleWhoami} disabled={busy || !isAuthenticated || isRehydrating}>
-            Who Am I?
-          </Button>
-          <div className="flex-1">
-            <Input
-              value={whoamiResult || ""}
-              readOnly
-              placeholder="Click 'Who Am I?' to get your backend principal"
-              className="font-mono text-sm"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Get Capsule Info Section */}
-      <div className="mb-6">
+        <Button onClick={handleWhoami} disabled={busy || !isAuthenticated || isRehydrating}>
+          Test Backend Connection
+        </Button>
         <Button onClick={handleGetCapsuleInfo} disabled={busy || !isAuthenticated || isRehydrating}>
           Get Capsule Info
         </Button>
@@ -557,45 +538,22 @@ export default function ICPPage() {
         </Card>
       )}
 
+      {whoamiResult && (
+        <Card>
+          <CardContent className="pt-6">
+            <p>{whoamiResult}</p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Capsule Information Display */}
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span>Your Capsule Summary</span>
-            {capsuleInfo && (
-              <Badge variant="secondary" className="text-xs">
-                {capsuleInfo.memory_count + capsuleInfo.gallery_count + capsuleInfo.connection_count} Total Items
-              </Badge>
-            )}
-          </CardTitle>
+          <CardTitle>Your Capsule Information</CardTitle>
         </CardHeader>
         <CardContent>
           {capsuleInfo ? (
             <div className="space-y-4">
-              {/* Summary Section */}
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-lg p-4 mb-4">
-                <div className="grid grid-cols-3 gap-6">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">
-                      {capsuleInfo.memory_count || 0}
-                    </div>
-                    <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">Memories</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-1">
-                      {capsuleInfo.gallery_count || 0}
-                    </div>
-                    <div className="text-sm text-green-600 dark:text-green-400 font-medium">Galleries</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1">
-                      {capsuleInfo.connection_count || 0}
-                    </div>
-                    <div className="text-sm text-purple-600 dark:text-purple-400 font-medium">Connections</div>
-                  </div>
-                </div>
-              </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium">Capsule ID</Label>
@@ -622,8 +580,8 @@ export default function ICPPage() {
                   <p className="text-sm text-muted-foreground">{capsuleInfo.is_self_capsule ? "Yes" : "No"}</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium">Bound to Web2</Label>
-                  <p className="text-sm text-muted-foreground">{capsuleInfo.bound_to_web2 ? "Yes" : "No"}</p>
+                  <Label className="text-sm font-medium">Bound to Neon</Label>
+                  <p className="text-sm text-muted-foreground">{capsuleInfo.bound_to_neon ? "Yes" : "No"}</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -640,8 +598,6 @@ export default function ICPPage() {
                   </p>
                 </div>
               </div>
-
-
             </div>
           ) : (
             <div className="text-center py-4">

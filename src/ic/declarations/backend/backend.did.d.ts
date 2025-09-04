@@ -43,7 +43,7 @@ export interface Capsule {
   'connection_groups' : Array<[string, ConnectionGroup]>,
   'connections' : Array<[PersonRef, Connection]>,
   'memories' : Array<[string, Memory]>,
-  'bound_to_web2' : boolean,
+  'bound_to_neon' : boolean,
   'galleries' : Array<[string, Gallery]>,
 }
 export interface CapsuleCreationResult {
@@ -67,8 +67,8 @@ export interface CapsuleInfo {
   'capsule_id' : string,
   'is_owner' : boolean,
   'created_at' : bigint,
+  'bound_to_neon' : boolean,
   'memory_count' : number,
-  'bound_to_web2' : boolean,
   'connection_count' : number,
   'is_self_capsule' : boolean,
   'is_controller' : boolean,
@@ -145,6 +145,7 @@ export interface Gallery {
   'memory_entries' : Array<GalleryMemoryEntry>,
   'description' : [] | [string],
   'created_at' : bigint,
+  'bound_to_neon' : boolean,
   'storage_status' : GalleryStorageStatus,
   'owner_principal' : Principal,
 }
@@ -171,10 +172,20 @@ export interface GalleryUpdateData {
   'description' : [] | [string],
 }
 export type ICPErrorCode = { 'Internal' : string } |
+  { 'CapsuleInlineBudgetExceeded' : null } |
+  { 'ChunkNotFound' : null } |
+  { 'InvalidChunkIndex' : null } |
+  { 'SessionNotFound' : null } |
+  { 'SizeMismatch' : null } |
+  { 'PayloadTooLarge' : null } |
   { 'NotFound' : null } |
+  { 'CapsuleNotFound' : null } |
   { 'InvalidHash' : null } |
   { 'Unauthorized' : null } |
-  { 'AlreadyExists' : null };
+  { 'AlreadyExists' : null } |
+  { 'ChecksumMismatch' : null } |
+  { 'ChunkTooLarge' : null } |
+  { 'BlobNotFound' : null };
 export interface ICPResult {
   'data' : [] | [UploadSessionResponse],
   'error' : [] | [ICPErrorCode],
@@ -191,26 +202,31 @@ export interface ICPResult_2 {
   'success' : boolean,
 }
 export interface ICPResult_3 {
-  'data' : [] | [MemoryListPresenceResponse],
+  'data' : [] | [bigint],
   'error' : [] | [ICPErrorCode],
   'success' : boolean,
 }
 export interface ICPResult_4 {
-  'data' : [] | [MemoryPresenceResponse],
+  'data' : [] | [string],
   'error' : [] | [ICPErrorCode],
   'success' : boolean,
 }
 export interface ICPResult_5 {
-  'data' : [] | [ChunkResponse],
+  'data' : [] | [Array<MemoryPresenceResult>],
   'error' : [] | [ICPErrorCode],
   'success' : boolean,
 }
 export interface ICPResult_6 {
-  'data' : [] | [BatchMemorySyncResponse],
+  'data' : [] | [ChunkResponse],
   'error' : [] | [ICPErrorCode],
   'success' : boolean,
 }
 export interface ICPResult_7 {
+  'data' : [] | [BatchMemorySyncResponse],
+  'error' : [] | [ICPErrorCode],
+  'success' : boolean,
+}
+export interface ICPResult_8 {
   'data' : [] | [MetadataResponse],
   'error' : [] | [ICPErrorCode],
   'success' : boolean,
@@ -253,17 +269,15 @@ export interface MemoryInfo {
   'created_at' : bigint,
   'uploaded_at' : bigint,
 }
-export interface MemoryListPresenceResponse {
-  'cursor' : [] | [string],
-  'results' : Array<MemoryPresenceResult>,
-  'error' : [] | [ICPErrorCode],
-  'success' : boolean,
-  'has_more' : boolean,
-}
 export interface MemoryListResponse {
   'memories' : Array<Memory>,
   'message' : string,
   'success' : boolean,
+}
+export interface MemoryMeta {
+  'name' : string,
+  'tags' : Array<string>,
+  'description' : [] | [string],
 }
 export type MemoryMetadata = { 'Note' : NoteMetadata } |
   { 'Image' : ImageMetadata } |
@@ -275,6 +289,7 @@ export interface MemoryMetadataBase {
   'size' : bigint,
   'people_in_memory' : [] | [Array<string>],
   'mime_type' : string,
+  'bound_to_neon' : boolean,
   'original_name' : string,
   'uploaded_at' : string,
   'format' : [] | [string],
@@ -283,12 +298,6 @@ export interface MemoryOperationResponse {
   'memory_id' : [] | [string],
   'message' : string,
   'success' : boolean,
-}
-export interface MemoryPresenceResponse {
-  'metadata_present' : boolean,
-  'error' : [] | [ICPErrorCode],
-  'success' : boolean,
-  'asset_present' : boolean,
 }
 export interface MemoryPresenceResult {
   'metadata_present' : boolean,
@@ -345,6 +354,9 @@ export interface PersonalCanisterCreationStats {
   'total_attempts' : bigint,
   'total_cycles_consumed' : bigint,
 }
+export type ResourceType = { 'Memory' : null } |
+  { 'Capsule' : null } |
+  { 'Gallery' : null };
 export type Result = { 'Ok' : boolean } |
   { 'Err' : string };
 export type Result_1 = { 'Ok' : Array<[Principal, DetailedCreationStatus]> } |
@@ -408,6 +420,7 @@ export interface _SERVICE {
     ICPResult
   >,
   'cancel_upload' : ActorMethod<[string], ICPResult_1>,
+  'capsules_bind_neon' : ActorMethod<[ResourceType, string, boolean], boolean>,
   'capsules_create' : ActorMethod<[[] | [PersonRef]], CapsuleCreationResult>,
   'capsules_list' : ActorMethod<[], Array<CapsuleHeader>>,
   'capsules_read_basic' : ActorMethod<[[] | [string]], [] | [CapsuleInfo]>,
@@ -433,7 +446,6 @@ export interface _SERVICE {
     [string, GalleryUpdateData],
     UpdateGalleryResponse
   >,
-  'get_api_version' : ActorMethod<[], string>,
   'get_creation_states_by_status' : ActorMethod<[CreationStatus], Result_1>,
   'get_creation_status' : ActorMethod<[], [] | [CreationStatusResponse]>,
   'get_detailed_creation_status' : ActorMethod<
@@ -444,11 +456,6 @@ export interface _SERVICE {
     [],
     [] | [DetailedCreationStatus]
   >,
-  'get_memory_list_presence_icp' : ActorMethod<
-    [Array<string>, [] | [string], number],
-    ICPResult_3
-  >,
-  'get_memory_presence_icp' : ActorMethod<[string], ICPResult_4>,
   'get_migration_states_by_status' : ActorMethod<[CreationStatus], Result_1>,
   'get_migration_stats' : ActorMethod<[], Result_2>,
   'get_migration_status' : ActorMethod<[], [] | [CreationStatusResponse]>,
@@ -465,15 +472,30 @@ export interface _SERVICE {
   'list_all_creation_states' : ActorMethod<[], Result_1>,
   'list_all_migration_states' : ActorMethod<[], Result_1>,
   'list_superadmins' : ActorMethod<[], Array<Principal>>,
-  'list_users' : ActorMethod<[], Array<CapsuleHeader>>,
-  'mark_bound' : ActorMethod<[], boolean>,
-  'mark_capsule_bound_to_web2' : ActorMethod<[], boolean>,
+  'memories_abort' : ActorMethod<[bigint], ICPResult_1>,
+  'memories_begin_upload' : ActorMethod<
+    [string, MemoryMeta, number],
+    ICPResult_3
+  >,
+  'memories_commit' : ActorMethod<
+    [bigint, Uint8Array | number[], bigint],
+    ICPResult_4
+  >,
   'memories_create' : ActorMethod<
     [string, MemoryData],
     MemoryOperationResponse
   >,
+  'memories_create_inline' : ActorMethod<
+    [string, Uint8Array | number[], MemoryMeta],
+    ICPResult_4
+  >,
   'memories_delete' : ActorMethod<[string], MemoryOperationResponse>,
   'memories_list' : ActorMethod<[string], MemoryListResponse>,
+  'memories_ping' : ActorMethod<[Array<string>], ICPResult_5>,
+  'memories_put_chunk' : ActorMethod<
+    [bigint, number, Uint8Array | number[]],
+    ICPResult_1
+  >,
   'memories_read' : ActorMethod<[string], [] | [Memory]>,
   'memories_update' : ActorMethod<
     [string, MemoryUpdateData],
@@ -483,7 +505,7 @@ export interface _SERVICE {
   'prove_nonce' : ActorMethod<[string], boolean>,
   'put_chunk' : ActorMethod<
     [string, number, Uint8Array | number[]],
-    ICPResult_5
+    ICPResult_6
   >,
   'register' : ActorMethod<[], boolean>,
   'register_with_nonce' : ActorMethod<[string], boolean>,
@@ -492,7 +514,7 @@ export interface _SERVICE {
   'set_personal_canister_creation_enabled' : ActorMethod<[boolean], Result_4>,
   'sync_gallery_memories' : ActorMethod<
     [string, Array<MemorySyncRequest>],
-    ICPResult_6
+    ICPResult_7
   >,
   'update_gallery_storage_status' : ActorMethod<
     [string, GalleryStorageStatus],
@@ -500,7 +522,7 @@ export interface _SERVICE {
   >,
   'upsert_metadata' : ActorMethod<
     [string, MemoryType, SimpleMemoryMetadata, string],
-    ICPResult_7
+    ICPResult_8
   >,
   'verify_nonce' : ActorMethod<[string], [] | [Principal]>,
   'whoami' : ActorMethod<[], Principal>,

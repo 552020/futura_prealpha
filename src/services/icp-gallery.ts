@@ -27,6 +27,7 @@ export interface Gallery {
   updated_at: bigint;
   storage_status: GalleryStorageStatus;
   memory_entries: GalleryMemoryEntry[];
+  bound_to_neon: boolean;
 }
 
 export type GalleryStorageStatus =
@@ -505,6 +506,7 @@ export class ICPGalleryService {
       updated_at: BigInt((web2Gallery.updated_at as number) || Date.now()),
       storage_status: { Web2Only: null },
       memory_entries: memoryEntries,
+      bound_to_neon: false, // Default to false for Web2 galleries
     };
 
     return {

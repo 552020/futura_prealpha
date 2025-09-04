@@ -99,7 +99,7 @@ function SignInPageInternal() {
       });
       // console.log("handleInternetIdentity", "after signIn", signInResult);
 
-      // (Optional) After success, call mark_bound() on canister
+              // (Optional) After success, call capsules_bind_neon() on canister
       if (signInResult?.ok) {
         // console.log("handleInternetIdentity", "before markBoundOnCanister");
         try {

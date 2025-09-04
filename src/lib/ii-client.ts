@@ -67,7 +67,8 @@ export async function registerWithNonce(nonce: string, identity: Identity) {
  */
 export async function markBoundOnCanister(identity: Identity) {
   const actor = await backendActor(identity);
-  return actor.mark_bound();
+      // Use the new flexible binding function to bind the caller's capsule to Neon
+    return actor.capsules_bind_neon({ Capsule: null }, "", true);
 }
 
 /**
